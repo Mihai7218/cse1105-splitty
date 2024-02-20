@@ -20,30 +20,53 @@ public class Participant {
 
     public String name;
     public String email;
-    public String IBAN;
-    public String BIC;
+    public String iban;
+    public String bic;
 
+    /**
+     * Empty constructor for object mapper
+     */
     @SuppressWarnings("unused")
     private Participant() {
     }
 
-    public Participant(String name, String email, String IBAN, String BIC) {
+    /**
+     * Constructor for a participant
+     * @param name The name of the participant
+     * @param email The email-address of the participant
+     * @param iban The IBAN number of the participant
+     * @param bic The BIC code of the participant
+     */
+    public Participant(String name, String email, String iban, String bic) {
         this.name = name;
         this.email = email;
-        this.IBAN = IBAN;
-        this.BIC = BIC;
+        this.iban = iban;
+        this.bic = bic;
     }
 
+    /**
+     * An equals methode for to compare 2 participants
+     * @param obj The object to compare to the participant
+     * @return returns if the other participant is the same as the one this function is called on
+     */
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj);
     }
 
+    /**
+     * Function to hash a participant
+     * @return returns a hashcode of a participant
+     */
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * A toString methode to display a participant in a human-readable format
+     * @return returns a human-readable format of a participant
+     */
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
