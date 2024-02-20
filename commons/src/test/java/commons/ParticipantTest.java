@@ -35,7 +35,7 @@ public class ParticipantTest {
     public void ToStringTest() {
         var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG").toString();
         assertEquals(
-                "Participant{name='Joe', email='joe.doe@gmail.com', iban='NL12 1923 1237 8374 02', bic='ALSUENBG'}", participant);
+                "Participant{name='Joe', email='joe.doe@gmail.com', iban='NL12 1923 1237 8374 02', bic='ALSUENBG'}", participant.toString());
     }
 
     @Test
