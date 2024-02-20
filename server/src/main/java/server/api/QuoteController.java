@@ -87,17 +87,17 @@ public class QuoteController {
     }
 
     /**
-     *
-     * @param s
-     * @return
+     * Returns whether a string is null or empty
+     * @param s String to check
+     * @return null or not null
      */
     private static boolean isNullOrEmpty(String s) {
         return s == null || s.isEmpty();
     }
 
     /**
-     *
-     * @return
+     * Returns a random quote.
+     * @return a random quote as a response to the GET request.
      */
     @GetMapping("rnd")
     public ResponseEntity<Quote> getRandom() {
