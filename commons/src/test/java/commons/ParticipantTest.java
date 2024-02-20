@@ -35,14 +35,15 @@ public class ParticipantTest {
     @Test
     public void ToStringTest() {
         var actual = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG").toString();
-        var ewa = actual.substring(28);
         assertTrue(actual.contains(Participant.class.getSimpleName()));
-        assertEquals("[\r\n" + "  bic=ALSUENBG\r\n" +
-                "  email=joe.doe@gmail.com\r\n" +
-                "  iban=NL12 1923 1237 8374 02\r\n" +
-                "  id=0\r\n" +
-                "  name=Joe\r\n" +
-                "]", actual.substring(28));
+        assertEquals("""
+                [\r
+                  bic=ALSUENBG\r
+                  email=joe.doe@gmail.com\r
+                  iban=NL12 1923 1237 8374 02\r
+                  id=0\r
+                  name=Joe\r
+                ]""", actual.substring(28));
     }
 
     @Test
