@@ -1,10 +1,15 @@
 
 package commons;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.util.Objects;
 
+@Entity
 public class Tag {
 
+    @Id
     public String name;
     public String color;
 
@@ -12,7 +17,7 @@ public class Tag {
      * Empty constructor for object mapper
      */
     @SuppressWarnings("unused")
-    private Tag() {
+    public Tag() {
     }
 
     /**
