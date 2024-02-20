@@ -34,7 +34,7 @@ public class Event {
     }
 
     /**
-     * Constructor for a participant
+     * Constructor for a event
      * @param invitecode The invitecode of the event
      * @param title The title of the event
      * @param expenses The expenses of the event
@@ -56,9 +56,9 @@ public class Event {
 
 
     /**
-     * An equals methode for to compare 2 participants
-     * @param o The object to compare to the participant
-     * @return returns if the other participant is the same as the one this function is called on
+     * An equals methode for to compare 2 event
+     * @param o The object to compare to the event
+     * @return returns if the other event is the same as the one this function is called on
      */
     @Override
     public boolean equals(Object o) {
@@ -85,7 +85,7 @@ public class Event {
 
     /**
      * A toString methode to display a participant in a human-readable format
-     * @return returns a human-readable format of a participant
+     * @return returns a human-readable format of a event
      */
     @Override
     public String toString() {
