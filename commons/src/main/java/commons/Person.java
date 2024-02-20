@@ -40,7 +40,7 @@ public class Person {
      *
      */
     @SuppressWarnings("unused")
-    private Person() {
+    public Person() {
         // for object mapper
     }
 

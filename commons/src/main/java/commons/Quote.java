@@ -43,7 +43,7 @@ public class Quote {
      *
      */
     @SuppressWarnings("unused")
-    private Quote() {
+    public Quote() {
         // for object mappers
     }
 
