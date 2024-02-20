@@ -46,12 +46,22 @@ public class QuoteOverviewCtrl implements Initializable {
     @FXML
     private TableColumn<Quote, String> colQuote;
 
+    /**
+     *
+     * @param server
+     * @param mainCtrl
+     */
     @Inject
     public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
 
+    /**
+     *
+     * @param location
+     * @param resources
+     */
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         colFirstName.setCellValueFactory(q ->
@@ -62,10 +72,16 @@ public class QuoteOverviewCtrl implements Initializable {
                 new SimpleStringProperty(q.getValue().quote));
     }
 
+    /**
+     *
+     */
     public void addQuote() {
         mainCtrl.showAdd();
     }
 
+    /**
+     *
+     */
     public void refresh() {
         var quotes = server.getQuotes();
         data = FXCollections.observableList(quotes);

@@ -16,13 +16,13 @@
     Authors: Max Vetrenko, Ruslan Diachenko, Roman Ivanov.
  -->
 
- <!--
-    Specific code style file created for the OOP course (CSE1100) at Delft University of Technology
-    Authors: Thomas Overklift, Andy Zaidman & Ruben Backx.
- -->
+<!--
+   Specific code style file created for the OOP course (CSE1100) at Delft University of Technology
+   Authors: Thomas Overklift, Andy Zaidman & Ruben Backx.
+-->
 
- <!--
-    Adapted for the OOP Project (CSE1105)
+<!--
+   Adapted for the OOP Project (CSE1105)
 -->
 
 
@@ -41,19 +41,15 @@
             <property name="allowedAnnotations" value="Main"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
         </module>
-	<module name="JavadocMethod">
-	    <property name="accessModifiers" value="private"/>
-	    <property name="allowMissingParamTags" value="false"/>
-	    <property name="allowMissingReturnTag" value="false"/>
-	</module>
-    <module name="MethodLength">
+        <module name="JavadocMethod">
+            <property name="accessModifiers" value="private"/>
+            <property name="allowMissingParamTags" value="false"/>
+            <property name="allowMissingReturnTag" value="false"/>
+        </module>
+        <module name="MethodLength">
             <property name="severity" value="error"/>
             <property name="tokens" value="METHOD_DEF, CTOR_DEF, COMPACT_CTOR_DEF"/>
             <property name="max" value="50"/>
-        </module>
-        <module name="VisibilityModifier">
-            <property name="severity" value="error"/>
-            <property name="protectedAllowed" value="true"/>
         </module>
 
         <module name="OuterTypeFilename">
@@ -67,31 +63,32 @@
         <module name="CyclomaticComplexity">
             <property name="severity" value="warning"/>
             <property name="switchBlockAsSingleDecisionPoint" value="true"/>
-	        <property name="max" value="6"/>
-	        <property name="tokens" value="LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_CASE, QUESTION"/>
+            <property name="max" value="6"/>
+            <property name="tokens"
+                      value="LITERAL_WHILE, LITERAL_DO, LITERAL_FOR, LITERAL_IF, LITERAL_SWITCH, LITERAL_CASE, QUESTION"/>
         </module>
         <module name="Indentation">
             <property name="severity" value="warning"/>
         </module>
-        <module name="UnusedImports" />
-        <module name="MemberName" />
-        <module name="MethodName" />
-        <module name="ParameterName" />
-        <module name="LocalVariableName" />
-        <module name="StaticVariableName" />
-        <module name="LambdaParameterName" />
-        <module name="TypeName" />
+        <module name="UnusedImports"/>
+        <module name="MemberName"/>
+        <module name="MethodName"/>
+        <module name="ParameterName"/>
+        <module name="LocalVariableName"/>
+        <module name="StaticVariableName"/>
+        <module name="LambdaParameterName"/>
+        <module name="TypeName"/>
         <module name="ClassTypeParameterName">
             <property name="format" value="(^[A-Z][0-9]?)$|([A-Z][a-zA-Z0-9]*$)"/>
             <message key="name.invalidPattern"
-                    value="Class type name ''{0}'' must match pattern ''{1}''."/>
+                     value="Class type name ''{0}'' must match pattern ''{1}''."/>
         </module>
 
         <!--Added-->
-        <module name="EmptyBlock" />
-        <module name="EmptyCatchBlock" />
-        <module name="EmptyStatement" />
-        <module name="EqualsHashCode" />
+        <module name="EmptyBlock"/>
+        <module name="EmptyCatchBlock"/>
+        <module name="EmptyStatement"/>
+        <module name="EqualsHashCode"/>
     </module>
 
     <module name="LineLength">

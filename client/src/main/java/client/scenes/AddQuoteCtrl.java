@@ -41,6 +41,11 @@ public class AddQuoteCtrl {
     @FXML
     private TextField quote;
 
+    /**
+     * Constructs a new AddQuoteCtrl object.
+     * @param server ServerUtils object
+     * @param mainCtrl MainCtrl object
+     */
     @Inject
     public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
@@ -48,11 +53,17 @@ public class AddQuoteCtrl {
 
     }
 
+    /**
+     * Clears fields and returns to the overview
+     */
     public void cancel() {
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     * Adds the new quote, then returns to the overview.
+     */
     public void ok() {
         try {
             server.addQuote(getQuote());
@@ -69,28 +80,41 @@ public class AddQuoteCtrl {
         mainCtrl.showOverview();
     }
 
+    /**
+     * Returns a new Quote object with the provided details.
+     * @return a Quote object with the details.
+     */
     private Quote getQuote() {
         var p = new Person(firstName.getText(), lastName.getText());
         var q = quote.getText();
         return new Quote(p, q);
     }
 
+    /**
+     * Clears the fields.
+     */
     private void clearFields() {
         firstName.clear();
         lastName.clear();
         quote.clear();
     }
 
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it submits the quote.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * @param e KeyEvent
+     */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-        case ENTER:
-            ok();
-            break;
-        case ESCAPE:
-            cancel();
-            break;
-        default:
-            break;
+            case ENTER:
+                ok();
+                break;
+            case ESCAPE:
+                cancel();
+                break;
+            default:
+                break;
         }
     }
 }
