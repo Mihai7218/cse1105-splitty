@@ -33,6 +33,10 @@ public class TestQuoteRepository implements QuoteRepository {
     public final List<Quote> quotes = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
 
+    /**
+     *
+     * @param name
+     */
     private void call(String name) {
         calledMethods.add(name);
     }
@@ -276,6 +280,10 @@ public class TestQuoteRepository implements QuoteRepository {
 
     }
 
+    /**
+     * 
+     * @param entity
+     */
     @Override
     public void delete(Quote entity) {
         // TODO Auto-generated method stub
