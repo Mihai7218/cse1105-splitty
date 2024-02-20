@@ -4,7 +4,6 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -69,6 +68,11 @@ public class Participant {
      */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return "Participant{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", iban='" + iban + '\'' +
+                ", bic='" + bic + '\'' +
+                '}';
     }
 }

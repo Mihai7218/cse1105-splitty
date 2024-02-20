@@ -35,16 +35,8 @@ public class ParticipantTest {
     @Test
     public void ToStringTest() {
         var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG").toString();
-        assertTrue(participant.contains(Participant.class.getSimpleName()));
-        int splitter = participant.indexOf("[");
         assertEquals(
-                "[\r\n" +
-                        "  bic=ALSUENBG\r\n" +
-                        "  email=joe.doe@gmail.com\r\n" +
-                        "  iban=NL12 1923 1237 8374 02\r\n" +
-                        "  id=0\r\n" +
-                        "  name=Joe\r\n" +
-                        "]", participant.substring(splitter));
+                "Participant{name='Joe', email='joe.doe@gmail.com', iban='NL12 1923 1237 8374 02', bic='ALSUENBG'}", participant.toString());
     }
 
     @Test
