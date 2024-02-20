@@ -17,7 +17,6 @@ package commons;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +35,7 @@ public class ParticipantTest {
     public void ToStringTest() {
         var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG").toString();
         assertEquals(
-                "Participant{name='Joe', email='joe.doe@gmail.com', iban='NL12 1923 1237 8374 02', bic='ALSUENBG'}", participant.toString());
+                "Participant{name='Joe', email='joe.doe@gmail.com', iban='NL12 1923 1237 8374 02', bic='ALSUENBG'}", participant);
     }
 
     @Test
