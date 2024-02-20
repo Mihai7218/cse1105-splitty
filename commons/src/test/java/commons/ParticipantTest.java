@@ -37,14 +37,14 @@ public class ParticipantTest {
         var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG").toString();
         assertTrue(participant.contains(Participant.class.getSimpleName()));
         int splitter = participant.indexOf("[");
-        assertEquals("""
-                [\r
-                  bic=ALSUENBG\r
-                  email=joe.doe@gmail.com\r
-                  iban=NL12 1923 1237 8374 02\r
-                  id=0\r
-                  name=Joe\r
-                ]""", participant.substring(splitter));
+        assertEquals(
+                "[\r\n" +
+                        "  bic=ALSUENBG\r\n" +
+                        "  email=joe.doe@gmail.com\r\n" +
+                        "  iban=NL12 1923 1237 8374 02\r\n" +
+                        "  id=0\r\n" +
+                        "  name=Joe\r\n" +
+                        "]", participant.substring(splitter));
     }
 
     @Test
