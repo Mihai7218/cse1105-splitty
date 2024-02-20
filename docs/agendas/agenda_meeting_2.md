@@ -6,7 +6,7 @@
 | Location: | DW PC1 Cubicle 6 |  
 | Chair | Mihai Bratu |  
 | Minute Taker | Stella Schultz |  
-| Attendees: | Vlad Cioculeasa,<br>Zico Krassenburg,<br>Philip Lekkerkerker,<br>Azra Ocak |  
+| Attendees: | Vlad Cioculeasa,<br>Philip Lekkerkerker,<br>Azra Ocak |  
 ## Summary:  
 - Opening by chair (1 min)  
 - Check-in: How is everyone doing? (2 min) - git assignment  
