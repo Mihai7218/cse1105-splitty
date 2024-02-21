@@ -48,6 +48,13 @@ class ParticipantPaymentTest {
         ParticipantPayment PP3 = new ParticipantPayment(PARTICIPANT_2, 5.00f);
         ParticipantPayment PP4 = null;
         assertNotEquals(PP3, PP4);
+    }
+
+    @Test
+    public void equalsHashcodeNullField(){
+        ParticipantPayment PP3 = new ParticipantPayment(PARTICIPANT_2, 5.00f);
+        ParticipantPayment PP4 = new ParticipantPayment(null, 5.00f);
+        assertNotEquals(PP3, PP4);
         assertNotEquals(PP3.hashCode(), PP4.hashCode());
     }
 
