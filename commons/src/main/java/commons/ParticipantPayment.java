@@ -11,7 +11,7 @@ public class ParticipantPayment {
      * Empty constructor for object mapper
      */
     @SuppressWarnings("unused")
-    private Participant() {
+    private ParticipantPayment() {
     }
 
     /**
@@ -31,10 +31,18 @@ public class ParticipantPayment {
      */
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         ParticipantPayment that = (ParticipantPayment) o;
-        return Float.compare(value, that.value) == 0 && Objects.equals(participant, that.participant);
+        boolean participantEqual = Objects.equals(participant, that.participant);
+        boolean valueEqual = Float.compare(value, that.value) == 0;
+
+        return  participantEqual && valueEqual;
+
     }
 
     /**
