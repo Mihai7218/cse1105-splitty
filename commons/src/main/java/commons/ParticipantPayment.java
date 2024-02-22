@@ -1,11 +1,20 @@
 package commons;
 
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
+@Entity
 public class ParticipantPayment {
 
-    public Participant participant;
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO)
+    private Long id;
+
     public float value;
+    @ManyToOne
+    public Participant participant;
+
 
     /**
      * Empty constructor for object mapper
