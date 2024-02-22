@@ -1,10 +1,15 @@
 
 package commons;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
 import java.util.Objects;
 
+@Entity
 public class Tag {
 
+    @Id
     public String name;
     public String color;
 
