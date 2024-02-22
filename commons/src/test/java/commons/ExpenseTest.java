@@ -2,8 +2,6 @@ package commons;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 
@@ -11,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ExpenseTest {
     double amount;
@@ -25,9 +25,9 @@ public class ExpenseTest {
     @BeforeEach
     public void init(){
         amount = 40.45;
-        currency = "euro";
+        currency = "Euro";
         title = "Taxi";
-        description = "ride back home";
+        description = "Ride back home";
         date = new Date(2024, Calendar.FEBRUARY,14);
         split = new ArrayList<>();
         Participant participant1 = new Participant("George", "george@gmail.com",
@@ -38,7 +38,7 @@ public class ExpenseTest {
         ParticipantPayment payment2 = new ParticipantPayment(participant2, 10.45f);
         split.add(payment1);
         split.add(payment2);
-        tag = new Tag("food", "blue");
+        tag = new Tag("transport", "blue");
         payee = new Participant("Rudolf", "rudolf@gmail.com",
                 "NL27RABO2766662000", "RABONL2U");
         expense = new Expense(amount, currency, title, description, date, split, tag, payee);
@@ -55,4 +55,50 @@ public class ExpenseTest {
         assertEquals(expense.payee, payee);
         assertEquals(expense.getSplit(), split);
     }
+
+    @Test
+    void EqualsTest(){
+        double amount = 40.45;
+        String currency = "Euro";
+        String title = "Taxi";
+        String description = "Ride back home";
+        Date date = new Date(2024, Calendar.FEBRUARY,14);
+        ArrayList<ParticipantPayment> split = new ArrayList<>();
+        Participant participant1 = new Participant("George", "george@gmail.com",
+                "NL27RABO2766662669", "RABONL2U");
+        Participant participant2 = new Participant("Ilinca", "ilinca@gmail.com",
+                "NL27RABO2711112669", "RABONL2U");
+        ParticipantPayment payment1 = new ParticipantPayment(participant1, 30.40f);
+        ParticipantPayment payment2 = new ParticipantPayment(participant2, 10.45f);
+        split.add(payment1);
+        split.add(payment2);
+        Tag tag = new Tag("transport", "blue");
+        Participant payee = new Participant("Rudolf", "rudolf@gmail.com",
+                "NL27RABO2766662000", "RABONL2U");
+        Expense expense2 = new Expense(amount, currency, title, description, date, split, tag, payee);
+        assertEquals(expense2, expense);
+    }
+    @Test
+    void NotEqualsTest(){
+        double amount = 40.45;
+        String currency = "Euro";
+        String title = "Taxi";
+        String description = "Ride back home";
+        Date date = new Date(2024, Calendar.FEBRUARY,14);
+        ArrayList<ParticipantPayment> split = new ArrayList<>();
+        Participant participant1 = new Participant("George", "george@gmail.com",
+                "NL27RABO2766662669", "RABONL2U");
+        Participant participant2 = new Participant("Ilinca", "ilinca@gmail.com",
+                "NL27RABO2711112669", "RABONL2U");
+        ParticipantPayment payment1 = new ParticipantPayment(participant1, 30.40f);
+        ParticipantPayment payment2 = new ParticipantPayment(participant2, 10.45f);
+        split.add(payment1);
+        split.add(payment2);
+        Tag tag = new Tag("transport", "yellow");
+        Participant payee = new Participant("Rudolf", "rudolf@gmail.com",
+                "NL27RABO2766662000", "RABONL2U");
+        Expense expense2 = new Expense(amount, currency, title, description, date, split, tag, payee);
+        assertNotEquals(expense2, expense);
+    }
+
 }
