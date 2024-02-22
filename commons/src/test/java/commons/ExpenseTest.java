@@ -146,7 +146,7 @@ public class ExpenseTest {
     }
     @Test
     void toStringTest(){
-        String s = "Expense{id=0, amount=40.45, currency='Euro', title='Taxi', " +
+        String s = "Expense{id="+expense.getId()+", amount=40.45, currency='Euro', title='Taxi', " +
                 "description='Ride back home', date=Thu Feb 14 00:00:00 CET 3924, " +
                 "split=[ParticipantPayment{participant=Participant{name='George', " +
                 "email='george@gmail.com', iban='NL27RABO2766662669', bic='RABONL2U'}, " +
