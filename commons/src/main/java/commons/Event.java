@@ -21,7 +21,7 @@ public class Event {
     public String invitecode;
     public String title;
     // TO DO: specify the list to be a list of expenses
-    public List expensesList;
+    public List<Expense> expensesList;
     public List<Participant> participantsList;
     public List<Tag> tagsList;
     public Date creationdate;
@@ -35,7 +35,7 @@ public class Event {
     }
 
     /**
-     * Constructor for a event
+     * Constructor for an Event
      * @param invitecode The invitecode of the event
      * @param title The title of the event
      * @param creationdate The creation date of the event
@@ -87,7 +87,7 @@ public class Event {
      * Retrieves Event expensesList
      * @return list of the expenses of the Event
      */
-    public List getExpensesList() {
+    public List<Expense> getExpensesList() {
         return expensesList;
     }
 
@@ -95,7 +95,7 @@ public class Event {
      * Changes the list to a different list
      * @param expensesList List for new Event expenses list
      */
-    public void setExpensesList(List expensesList) {
+    public void setExpensesList(List<Expense> expensesList) {
         this.expensesList = expensesList;
     }
 
@@ -175,7 +175,8 @@ public class Event {
         Event that = (Event) o;
         return Objects.equals(invitecode, that.invitecode) &&
                 Objects.equals(title, that.title) &&
-                Objects.equals(expensesList, that.participantsList) &&
+                Objects.equals(expensesList, that.expensesList) &&
+                Objects.equals(participantsList, that.participantsList) &&
                 Objects.equals(tagsList, that.tagsList) &&
                 Objects.equals(creationdate, that.creationdate) &&
                 Objects.equals(lastactivity, that.lastactivity);
@@ -183,8 +184,8 @@ public class Event {
 
 
     /**
-     * Function to hash a Event
-     * @return returns a hashcode of a Event
+     * Function to hash an Event
+     * @return returns a hashcode of an Event
      */
     @Override
     public int hashCode() {
@@ -193,7 +194,7 @@ public class Event {
 
     /**
      * A toString methode to display a participant in a human-readable format
-     * @return returns a human-readable format of a event
+     * @return returns a human-readable format of an Event
      */
     @Override
     public String toString() {
