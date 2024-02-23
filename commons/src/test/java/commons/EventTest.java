@@ -98,7 +98,7 @@ class EventTest {
     @Test
     void setExpensesList() {
         List<Expense> newExpensesList = new ArrayList<>();
-        Expense testExpense = new Expense("Expense1", 100.0);
+        Expense testExpense = new Expense();
         newExpensesList.add(testExpense);
         event.setExpensesList(newExpensesList);
         assertEquals(newExpensesList, event.getExpensesList());
