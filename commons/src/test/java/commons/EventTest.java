@@ -82,7 +82,7 @@ class EventTest {
 
     /**
      * Tests the getExpensesList method for 3 different instances
-     * by looking at the size
+     * by comparing the size
      */
     @Test
     void getExpensesList() {
@@ -92,8 +92,7 @@ class EventTest {
     }
 
     /**
-     * Tests the setExpensesList method for 3 different instances
-     * by changing the expenseList and comparing this to the
+     * Tests the setExpensesList method by changing the expenseList and comparing this to the
      * originally added list
      */
     @Test
@@ -105,20 +104,52 @@ class EventTest {
         assertEquals(newExpensesList, event.getExpensesList());
     }
 
+    /**
+     * Tests the getParticipantsList method for 3 different instances
+     * by comparing the size
+     */
     @Test
     void getParticipantsList() {
+        assertEquals(0, event.getParticipantsList().size());
+        assertEquals(0, sameEvent.getParticipantsList().size());
+        assertEquals(0, differentEvent.getParticipantsList().size());
     }
 
+    /**
+     * Tests the setExpensesList method by changing the expenseList and comparing this to the
+     * originally added list
+     */
     @Test
     void setParticipantsList() {
+        List<Participant> newParticipantList = new ArrayList<>();
+        Participant testParticipant = new Participant("Joe", "hello@world.com", "iban", "bic");
+        newParticipantList.add(testParticipant);
+        event.setParticipantsList(newParticipantList);
+        assertEquals(newParticipantList, event.getParticipantsList());
     }
 
+    /**
+     * Tests the getTagsList method for 3 different instances
+     * by comparing the size
+     */
     @Test
     void getTagsList() {
+        assertEquals(0, event.getTagsList().size());
+        assertEquals(0, sameEvent.getTagsList().size());
+        assertEquals(0, differentEvent.getTagsList().size());
     }
 
+    /**
+     * Tests the setTagsList method by changing the expenseList and comparing this to the
+     * originally added list
+     */
     @Test
     void setTagsList() {
+        List<Tag> newTagList = new ArrayList<>();
+        Tag testTag = new Tag("blue", "blue");
+        newTagList.add(testTag);
+        event.setTagsList(newTagList);
+        assertEquals(newTagList, event.getTagsList());
     }
 
     @Test
