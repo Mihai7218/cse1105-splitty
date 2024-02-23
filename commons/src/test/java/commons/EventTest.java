@@ -234,8 +234,15 @@ class EventTest {
      */
     @Test
     void testToString() {
-        String expected = "Event{inviteCode='1', title='Test Event', expenses='[], participants='[], tags='[], " +
-                "creationDate='" + creationDate + "', lastActivity='" + lastActivity + "'}";
+        String expected = "Event{" +
+                "inviteCode='" + event.getInviteCode() + '\'' +
+                ", title='" + event.getTitle() + '\'' +
+                ", expenses='" + event.getExpensesList().toString() + '\'' +
+                ", participants='" + event.getParticipantsList().toString() + '\'' +
+                ", tags='" + event.getTitle().toString() + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                ", lastActivity='" + lastActivity + '\'' +
+                '}';
         assertEquals(expected, event.toString());
     }
 }
