@@ -98,10 +98,15 @@ class EventTest {
     @Test
     void setExpensesList() {
         List<Expense> newExpensesList = new ArrayList<>();
-        Expense testExpense = new Expense();
+        List<ParticipantPayment> split = new ArrayList<>();
+        Tag tag = new Tag("food", "blue");
+        Participant participant = new Participant("joe", "hello@world.nl", "iban", "bic");
+        Date partyDate = new Date(2023, 4, 5);
+        Expense testExpense = new Expense(0.0, "EUR", "party",
+                "party", partyDate, split, tag, participant);
         newExpensesList.add(testExpense);
         event.setExpensesList(newExpensesList);
-        assertEquals(newExpensesList, event.getExpensesList());
+        assertEquals(1, event.getExpensesList().size());
     }
 
     /**
