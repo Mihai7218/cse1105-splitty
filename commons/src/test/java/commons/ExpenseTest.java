@@ -28,7 +28,7 @@ public class ExpenseTest {
         currency = "Euro";
         title = "Taxi";
         description = "Ride back home";
-        date = new Date(2024, Calendar.FEBRUARY,14);
+        date = new Date(230);
         split = new ArrayList<>();
         Participant participant1 = new Participant("George", "george@gmail.com",
                 "NL27RABO2766662669", "RABONL2U");
@@ -62,7 +62,7 @@ public class ExpenseTest {
         String currency = "Euro";
         String title = "Taxi";
         String description = "Ride back home";
-        Date date = new Date(2024, Calendar.FEBRUARY,14);
+        Date date = new Date(230);
         ArrayList<ParticipantPayment> split = new ArrayList<>();
         Participant participant1 = new Participant("George", "george@gmail.com",
                 "NL27RABO2766662669", "RABONL2U");
@@ -84,7 +84,7 @@ public class ExpenseTest {
         String currency = "Euro";
         String title = "Taxi";
         String description = "Ride back home";
-        Date date = new Date(2024, Calendar.FEBRUARY,14);
+        Date date = new Date(230);
         ArrayList<ParticipantPayment> split = new ArrayList<>();
         Participant participant1 = new Participant("George", "george@gmail.com",
                 "NL27RABO2766662669", "RABONL2U");
@@ -106,7 +106,7 @@ public class ExpenseTest {
         String currency = "Euro";
         String title = "Taxi";
         String description = "Ride back home";
-        Date date = new Date(2024, Calendar.FEBRUARY,14);
+        Date date = new Date(230);
         ArrayList<ParticipantPayment> split = new ArrayList<>();
         Participant participant1 = new Participant("George", "george@gmail.com",
                 "NL27RABO2766662669", "RABONL2U");
@@ -128,7 +128,7 @@ public class ExpenseTest {
         String currency = "Euro";
         String title = "Taxi";
         String description = "Ride back home";
-        Date date = new Date(2024, Calendar.FEBRUARY,14);
+        Date date = new Date(230);
         ArrayList<ParticipantPayment> split = new ArrayList<>();
         Participant participant1 = new Participant("George", "george@gmail.com",
                 "NL27RABO2766662669", "RABONL2U");
@@ -146,15 +146,15 @@ public class ExpenseTest {
     }
     @Test
     void toStringTest(){
-        String s = "Expense{id="+expense.getId()+", amount=40.45, currency='Euro', title='Taxi', " +
-                "description='Ride back home', date=Thu Feb 14 00:00:00 CET 3924, " +
+        String s = "Expense{id="+expense.getId()+", amount=40.45, " +
+                "currency='Euro', title='Taxi', description='Ride back home', " +
+                "date=Thu Jan 01 01:00:00 CET 1970, " +
                 "split=[ParticipantPayment{participant=Participant{name='George', " +
-                "email='george@gmail.com', iban='NL27RABO2766662669', bic='RABONL2U'}, " +
-                "value=30.4}, ParticipantPayment{participant=Participant{name='Ilinca', " +
-                "email='ilinca@gmail.com', iban='NL27RABO2711112669', bic='RABONL2U'}, " +
-                "value=10.45}], tag=Tag{name='transport', color='blue'}, " +
-                "payee=Participant{name='Rudolf', email='rudolf@gmail.com', " +
-                "iban='NL27RABO2766662000', bic='RABONL2U'}}";
+                "email='george@gmail.com', iban='NL27RABO2766662669', " +
+                "bic='RABONL2U'}, value=30.4}, ParticipantPayment{participant=Participant{name='Ilinca', " +
+                "email='ilinca@gmail.com', iban='NL27RABO2711112669', bic='RABONL2U'}, value=10.45}], " +
+                "tag=Tag{name='transport', color='blue'}, payee=Participant{name='Rudolf', " +
+                "email='rudolf@gmail.com', iban='NL27RABO2766662000', bic='RABONL2U'}}";
         assertEquals(s, expense.toString());
     }
 }
