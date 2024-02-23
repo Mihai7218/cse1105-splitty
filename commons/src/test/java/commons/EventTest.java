@@ -200,15 +200,37 @@ class EventTest {
         assertEquals(newLastActivity, differentEvent.getCreationDate());
     }
 
+    /**
+     * Tests whether event and sameEvent are equal (they are)
+     * and event/sameEvent are equal to differentEvent (they are not)
+     */
     @Test
     void testEquals() {
+        assertTrue(event.equals(sameEvent) && sameEvent.equals(event));
+        assertTrue(event.equals(event) && sameEvent.equals(sameEvent)
+                && differentEvent.equals(differentEvent));
+        assertFalse(event.equals(differentEvent) && differentEvent.equals(sameEvent));
     }
 
+    /**
+     * Tests whether the hash codes of event and sameEvent are equal (they are)
+     * and the hash codes of event/sameEvent are equal to differentEvent (they are not)
+     */
     @Test
     void testHashCode() {
+        assertEquals(event.hashCode(), event.hashCode());
+        assertEquals(event.hashCode(), sameEvent.hashCode());
+        assertTrue(event.hashCode() != differentEvent.hashCode());
+        assertTrue(sameEvent.hashCode() != differentEvent.hashCode());
     }
 
+    /**
+     * Tests whether the toString version of event is as expected
+     */
     @Test
     void testToString() {
+        String expected = "Event{inviteCode='1', title='Test Event', expenses='[], participants='[], tags='[], " +
+                "creationDate='" + creationDate + "', lastActivity='" + lastActivity + "'}";
+        assertEquals(expected, event.toString());
     }
 }
