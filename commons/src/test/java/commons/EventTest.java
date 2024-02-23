@@ -26,8 +26,8 @@ class EventTest {
         List<Expense> expensesList = new ArrayList<>();
         List<Participant> participantsList = new ArrayList<>();
         List<Tag> tagsList = new ArrayList<>();
-        creationDate = new Date();
-        lastActivity = new Date();
+        creationDate = new Date(2024, 2, 15);
+        lastActivity = new Date(2022, 3, 17);
 
         event = new Event(1, "Test Event", expensesList, participantsList, tagsList, creationDate, lastActivity);
         sameEvent = new Event(1, "Test Event", expensesList, participantsList, tagsList, creationDate, lastActivity);
@@ -152,20 +152,52 @@ class EventTest {
         assertEquals(newTagList, event.getTagsList());
     }
 
+    /**
+     * Tests the getter for the creationDate attribute for 3 instances
+     */
     @Test
     void getCreationDate() {
+        assertEquals(creationDate, event.getCreationDate());
+        assertEquals(creationDate, sameEvent.getCreationDate());
+        assertEquals(creationDate, differentEvent.getCreationDate());
     }
 
+    /**
+     * Tests the setter for the creationDate attribute for 3 instances
+     */
     @Test
     void setCreationDate() {
+        Date newCreationDate = new Date(2023, 1, 15);
+        event.setCreationDate(newCreationDate);
+        sameEvent.setCreationDate(newCreationDate);
+        differentEvent.setCreationDate(newCreationDate);
+        assertEquals(newCreationDate, event.getCreationDate());
+        assertEquals(newCreationDate, sameEvent.getCreationDate());
+        assertEquals(newCreationDate, differentEvent.getCreationDate());
     }
 
+    /**
+     * Tests the getter for the lastActivity attribute for 3 instances
+     */
     @Test
     void getLastActivity() {
+        assertEquals(lastActivity, event.getLastActivity());
+        assertEquals(lastActivity, sameEvent.getLastActivity());
+        assertEquals(lastActivity, differentEvent.getLastActivity());
     }
 
+    /**
+     * Tests the setter for the lastActivity attribute for 3 instances
+     */
     @Test
     void setLastActivity() {
+        Date newLastActivity = new Date(2023, 1, 15);
+        event.setCreationDate(newLastActivity);
+        sameEvent.setCreationDate(newLastActivity);
+        differentEvent.setCreationDate(newLastActivity);
+        assertEquals(newLastActivity, event.getCreationDate());
+        assertEquals(newLastActivity, sameEvent.getCreationDate());
+        assertEquals(newLastActivity, differentEvent.getCreationDate());
     }
 
     @Test
