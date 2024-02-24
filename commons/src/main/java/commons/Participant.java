@@ -14,12 +14,12 @@ public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
 
-    public String name;
-    public String email;
-    public String iban;
-    public String bic;
+    private String name;
+    private String email;
+    private String iban;
+    private String bic;
 
     /**
      * Empty constructor for object mapper
@@ -42,7 +42,70 @@ public class Participant {
         this.bic = bic;
     }
 
+    /**
+     * Setter for the name attribute
+     * @param name the value to set name to
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
 
+    /**
+     * Setter for the email attribute
+     * @param email the value to set email to
+     */
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    /**
+     * Setter for the iban attribute
+     * @param iban the value to set iban to
+     */
+    public void setIban(String iban) {
+        this.iban = iban;
+    }
+
+    /**
+     * Setter for the bic attribute
+     * @param bic the value to set bic to
+     */
+    public void setBic(String bic) {
+        this.bic = bic;
+    }
+
+
+    /**
+     * getter for the name attribute
+     * @return the value of the name attribute
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * getter for the email attribute
+     * @return the value of the email attribute
+     */
+    public String getEmail() {
+        return email;
+    }
+
+    /**
+     * getter for the iban attribute
+     * @return the value of the iban attribute
+     */
+    public String getIban() {
+        return iban;
+    }
+
+    /**
+     * getter for the bic attribute
+     * @return the value of the bic attribute
+     */
+    public String getBic() {
+        return bic;
+    }
 
     /**
      * An equals methode for to compare 2 participants

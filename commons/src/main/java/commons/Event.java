@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -53,6 +54,117 @@ public class Event {
         this.lastActivity = lastActivity;
     }
 
+    /**
+     * Retrieves Event invitecode
+     * @return String for the Event invitecode
+     */
+    public String getInvitecode() {
+        return invitecode;
+    }
+
+    /**
+     * Modifies the invitecode
+     * @param invitecode string for new Event invitecode
+     */
+    public void setInvitecode(String invitecode) {
+        this.invitecode = invitecode;
+    }
+
+    /**
+     * Retrieves Event title
+     * @return String for the Event title
+     */
+    public String getTitle() {
+        return title;
+    }
+
+    /**
+     * Modifies the title
+     * @param title String for new Event title
+     */
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    /**
+     * Retrieves Event expensesList
+     * @return list of the expenses of the Event
+     */
+    public List<Expense> getExpensesList() {
+        return expensesList;
+    }
+
+    /**
+     * Changes the list to a different list
+     * @param expensesList List for new Event expenses list
+     */
+    public void setExpensesList(List<Expense> expensesList) {
+        this.expensesList = expensesList;
+    }
+
+    /**
+     * Retrieves Event participantsList
+     * @return list of the participants of the Event
+     */
+    public List<Participant> getParticipantsList() {
+        return participantsList;
+    }
+
+    /**
+     * Changes the list to a different list
+     * @param participantsList List for new Event participant list
+     */
+    public void setParticipantsList(List<Participant> participantsList) {
+        this.participantsList = participantsList;
+    }
+
+    /**
+     * Retrieves Event tagsList
+     * @return list of the tags of the Event
+     */
+    public List<Tag> getTagsList() {
+        return tagsList;
+    }
+
+    /**
+     * Changes the list to a different list
+     * @param tagsList List for new Event tags list
+     */
+    public void setTagsList(List<Tag> tagsList) {
+        this.tagsList = tagsList;
+    }
+
+    /**
+     * Retrieves Event creation date
+     * @return Date for the creation date of the Event
+     */
+    public Date getCreationdate() {
+        return creationdate;
+    }
+
+    /**
+     * Changes the creation date of the Event
+     * @param creationdate Date for the new creation date of the Event
+     */
+    public void setCreationdate(Date creationdate) {
+        this.creationdate = creationdate;
+    }
+
+    /**
+     * Retrieves date of the last activity
+     * @return Date for the last activity of the Event
+     */
+    public Date getLastactivity() {
+        return lastactivity;
+    }
+
+    /**
+     * Changes the last activity date of the Event
+     * @param lastactivity Date for the new last activity date of the Event
+     */
+    public void setLastactivity(Date lastactivity) {
+        this.lastactivity = lastactivity;
+    }
 
     /**
      * @return returns the invite code of the event
