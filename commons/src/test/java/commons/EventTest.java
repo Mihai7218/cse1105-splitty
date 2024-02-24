@@ -13,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+//TODO: edge case testing, null testing, etc
 class EventTest {
 
     private Date creationDate;
