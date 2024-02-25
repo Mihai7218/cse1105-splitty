@@ -25,10 +25,10 @@ public class ParticipantTest {
     @Test
     public void ConstructorTest() {
         var p = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
-        assertEquals("Joe", p.name);
-        assertEquals("joe.doe@gmail.com", p.email);
-        assertEquals("NL12 1923 1237 8374 02", p.iban);
-        assertEquals("ALSUENBG", p.bic);
+        assertEquals("Joe", p.getName());
+        assertEquals("joe.doe@gmail.com", p.getEmail());
+        assertEquals("NL12 1923 1237 8374 02", p.getIban());
+        assertEquals("ALSUENBG", p.getBic());
     }
 
     @Test
@@ -62,5 +62,37 @@ public class ParticipantTest {
         var participant1 = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
         var participant2 = new Participant("Jo", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
         assertNotEquals(participant2.hashCode(), participant1.hashCode());
+    }
+
+    @Test
+    void setName() {
+        var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
+        assertEquals("Joe",participant.getName());
+        participant.setName("Marco");
+        assertEquals("Marco",participant.getName());
+    }
+
+    @Test
+    void setEmail() {
+        var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
+        assertEquals("joe.doe@gmail.com",participant.getEmail());
+        participant.setEmail("Marco@gmail.com");
+        assertEquals("Marco@gmail.com",participant.getEmail());
+    }
+
+    @Test
+    void setIban() {
+        var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
+        assertEquals("NL12 1923 1237 8374 02",participant.getIban());
+        participant.setIban("NL78 2348 5640 2348 45");
+        assertEquals("NL78 2348 5640 2348 45",participant.getIban());
+    }
+
+    @Test
+    void setBic() {
+        var participant = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
+        assertEquals("ALSUENBG",participant.getBic());
+        participant.setBic("KFYCVAGS");
+        assertEquals("KFYCVAGS",participant.getBic());
     }
 }

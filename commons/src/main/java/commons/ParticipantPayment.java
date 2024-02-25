@@ -11,10 +11,9 @@ public class ParticipantPayment {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
-    public float value;
+    private double value;
     @ManyToOne
-    public Participant participant;
-
+    private Participant participant;
 
     /**
      * Empty constructor for object mapper
@@ -28,10 +27,52 @@ public class ParticipantPayment {
      * @param participant Participant object
      * @param value float value they owe
      */
-    public ParticipantPayment(Participant participant, float value) {
+    public ParticipantPayment(Participant participant, double value) {
         this.participant = participant;
         this.value = value;
     }
+
+    /**
+     * retrieve the unique id for the transaction
+     * @return long id value
+     */
+    public Long getId() {
+        return id;
+    }
+
+    /**
+     * retrieve the value associated with the transaction
+     * @return double value for the amount owed
+     */
+    public double getValue() {
+        return value;
+    }
+
+    /**
+     * retrieve the participant involved in the transaction
+     * @return participant object
+     */
+    public Participant getParticipant() {
+        return participant;
+    }
+
+    /**
+     * Setter for the value associated with the transaction
+     * @param value double value for the amount owed
+     */
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    /**
+     * Setter for the participant involved in the transaction
+     * @param participant the participant involved
+     */
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
+    }
+
+
 
     /**
      * Checks the equality between this and another object
@@ -48,7 +89,7 @@ public class ParticipantPayment {
         }
         ParticipantPayment that = (ParticipantPayment) o;
         boolean participantEqual = Objects.equals(participant, that.participant);
-        boolean valueEqual = Float.compare(value, that.value) == 0;
+        boolean valueEqual = value == that.value;
 
         return  participantEqual && valueEqual;
 
