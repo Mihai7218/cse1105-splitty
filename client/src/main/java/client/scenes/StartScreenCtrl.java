@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -54,7 +55,8 @@ public class StartScreenCtrl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         try {
-            prop.load(new FileInputStream("src/main/resources/config.properties"));
+            File f = new File("."); System.out.println(f.getAbsolutePath());
+            prop.load(new FileInputStream("client/src/main/resources/config.properties"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,7 +93,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public static void setProperty(String key, String value) throws IOException {
         prop.setProperty(key, value);
-        prop.store(new PrintWriter("src/main/resources/config.properties"),
+        prop.store(new PrintWriter("client/src/main/resources/config.properties"),
                 "Splitty Configuration File");
     }
 
@@ -102,7 +104,7 @@ public class StartScreenCtrl implements Initializable {
         String language = getProperty("language");
         try {
             languageConfig.load(new FileInputStream(
-                    String.format("src/main/resources/languages/%s.properties", language)));
+                    String.format("client/src/main/resources/languages/%s.properties", language)));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

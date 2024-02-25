@@ -26,7 +26,7 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
         } else {
             try {
                 language.load(new FileInputStream(
-                        String.format("src/main/resources/languages/%s.properties", item)));
+                        String.format("client/src/main/resources/languages/%s.properties", item)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
