@@ -30,6 +30,9 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    private StartScreenCtrl startScreenCtrl;
+    private Scene startScreen;
+
     /**
      * Initialize the main controller with the primary stage,
      * @param primaryStage primary stage of the controller.
@@ -37,7 +40,7 @@ public class MainCtrl {
      * @param add add quote controller and scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl, Parent> startScreen) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -45,7 +48,10 @@ public class MainCtrl {
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
-        showOverview();
+        this.startScreenCtrl = startScreen.getKey();
+        this.startScreen = new Scene(startScreen.getValue());
+
+        showStartMenu();
         primaryStage.show();
     }
 
@@ -56,6 +62,14 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
         overviewCtrl.refresh();
+    }
+
+    /**
+     * Shows the start menu scene.
+     */
+    public void showStartMenu() {
+        primaryStage.setTitle("Splitty: Start Screen");
+        primaryStage.setScene(startScreen);
     }
 
     /**

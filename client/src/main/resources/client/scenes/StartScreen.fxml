@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutX="70.0" layoutY="51.0" prefHeight="410.0" prefWidth="310.0">
+         <children>
+            <VBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
+               <children>
+                  <Label fx:id="createNewEventLabel" text="Create New Event">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
+                     <children>
+                        <TextField fx:id="newEventTitle" promptText="Title..." />
+                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Button id="joinButton" fx:id="createEventButton" mnemonicParsing="false" text="Create" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
+            <VBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
+               <children>
+                  <Label fx:id="joinEventLabel" text="Join Event">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
+                     <children>
+                        <TextField fx:id="eventInvite" promptText="Invite code..." />
+                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Button id="joinButton" fx:id="joinEventButton" mnemonicParsing="false" text="Join" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
+            <VBox prefHeight="200.0" prefWidth="100.0">
+               <children>
+                  <Label fx:id="recentEventsLabel" text="Recently viewed events:">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <ListView id="recentEvents" fx:id="recentEvents" prefHeight="200.0" prefWidth="200.0" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+      <Pane layoutX="26.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0">
+         <children>
+            <Text layoutX="14.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
+               <font>
+                  <Font name="MathJax_SansSerif-Regular" size="30.0" />
+               </font>
+            </Text>
+            <ComboBox fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#refreshLanguage" prefWidth="50.0" />
+         </children>
+      </Pane>
+   </children>
+</Pane>
