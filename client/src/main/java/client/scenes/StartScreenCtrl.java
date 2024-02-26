@@ -79,7 +79,12 @@ public class StartScreenCtrl implements Initializable {
      * Refreshes labels to the newly selected language.
      */
     public void refreshLanguage() {
-        String language = config.getProperty("language");
+        String language = languages.getValue();
+        try {
+            config.setProperty("language", language);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         try {
             languageConfig.load(new FileInputStream(
                     String.valueOf(Path.of("client", "src", "main",

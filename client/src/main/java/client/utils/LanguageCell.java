@@ -63,11 +63,6 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
             }
             ImageView flag = new ImageView(image);
             setGraphic(flag);
-            try {
-                config.setProperty("language", languageCode);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }
     }
 
