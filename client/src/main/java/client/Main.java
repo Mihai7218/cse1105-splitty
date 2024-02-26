@@ -17,9 +17,6 @@ package client;
 
 import static com.google.inject.Guice.createInjector;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-
 import client.scenes.StartScreenCtrl;
 import com.google.inject.Injector;
 
@@ -27,7 +24,9 @@ import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
 import javafx.application.Application;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.util.Pair;
 
 public class Main extends Application {
 
@@ -37,26 +36,26 @@ public class Main extends Application {
     /**
      * Main method of the client.
      * @param args array of arguments passed to the method.
-     * @throws URISyntaxException may throw this
-     * @throws IOException may throw this
      */
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) {
         launch();
     }
 
     /**
      * Starts the primary stage.
      * @param primaryStage primary stage
-     * @throws IOException may throw this
      */
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
 
         var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
         var startScreen = FXML.load(StartScreenCtrl.class, "client", "scenes", "StartScreen.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, overview, add, startScreen);
+        mainCtrl.initialize(primaryStage,
+                new Pair<>(overview.getKey(), new Scene(overview.getValue())),
+                new Pair<>(add.getKey(), new Scene(add.getValue())),
+                new Pair<>(startScreen.getKey(), new Scene(startScreen.getValue())));
     }
 }

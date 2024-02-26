@@ -15,21 +15,73 @@
  */
 package client.scenes;
 
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+import javafx.util.Pair;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 public class MainCtrlTest {
 
     private MainCtrl sut;
+    private Stage stage = mock(Stage.class);
+    private Pair overview = mock(Pair.class);
+    private Pair startScreen = mock(Pair.class);
+    private Pair addQuote = mock(Pair.class);
+    private Scene aqs = mock(Scene.class);
+    private Scene sss = mock(Scene.class);
+    private Scene qos = mock(Scene.class);
+    private AddQuoteCtrl aqc = mock(AddQuoteCtrl.class);
+    private StartScreenCtrl ssc = mock(StartScreenCtrl.class);
+    private QuoteOverviewCtrl qoc = mock(QuoteOverviewCtrl.class);
 
     @BeforeEach
     public void setup() {
         sut = new MainCtrl();
+        when(overview.getKey()).thenReturn(qoc);
+        when(overview.getValue()).thenReturn(qos);
+        when(startScreen.getKey()).thenReturn(ssc);
+        when(startScreen.getValue()).thenReturn(sss);
+        when(addQuote.getKey()).thenReturn(aqc);
+        when(addQuote.getValue()).thenReturn(aqs);
+        sut.initialize(stage, overview, addQuote, startScreen);
     }
 
     @Test
-    public void writeSomeTests() {
-        // TODO create replacement objects and write some tests
-        // sut.initialize(null, null, null);
+    void initializeTest() {
+        assertEquals(stage, sut.getPrimaryStage());
+        assertEquals(qoc, sut.getOverviewCtrl());
+        assertEquals(qos, sut.getOverview());
+        assertEquals(aqc, sut.getAddCtrl());
+        assertEquals(aqs, sut.getAdd());
+        assertEquals(ssc, sut.getStartScreenCtrl());
+        assertEquals(sss, sut.getStartScreen());
+        verify(stage).show();
+    }
+
+    @Test
+    void showOverviewTest() {
+        sut.showOverview();
+        verify(stage).setTitle("Quotes: Overview");
+        verify(stage).setScene(qos);
+        verify(qoc).refresh();
+    }
+
+    @Test
+    void showStartMenuTest() {
+        sut.showStartMenu();
+        verify(stage, times(2)).setTitle("Splitty: Start Screen");
+        verify(stage, times(2)).setScene(sss);
+    }
+
+    @Test
+    void showAddTest() {
+        sut.showAdd();
+        verify(stage).setTitle("Quotes: Adding Quote");
+        verify(stage).setScene(aqs);
+        verify(aqs).setOnKeyPressed(any());
     }
 }
