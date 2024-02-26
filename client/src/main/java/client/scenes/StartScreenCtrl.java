@@ -1,7 +1,9 @@
 package client.scenes;
 
+import client.utils.Config;
 import client.utils.LanguageCell;
 
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -12,12 +14,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.util.*;
 
 public class StartScreenCtrl implements Initializable {
 
-    private static final Properties prop = new Properties();
+    @Inject
+    Config config;
+
     @FXML
     private ComboBox<String> languages;
 
@@ -54,21 +58,16 @@ public class StartScreenCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        try {
-            File f = new File("."); System.out.println(f.getAbsolutePath());
-            prop.load(new FileInputStream("client/src/main/resources/config.properties"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        languages.getItems().addAll(
-                "de",
-                "en",
-                "fr",
-                "nl"
-        );
-        languages.setCellFactory(param -> new LanguageCell());
-        languages.setButtonCell(new LanguageCell());
-        String language = getProperty("language");
+        File languagesFolder = new File("client/src/main/resources/languages");
+        List<String> languageNames = Arrays.stream(Objects
+                .requireNonNull(languagesFolder.listFiles()))
+                .map(File::getName)
+                .filter(name -> !name.equals("template.properties"))
+                .map(filename -> filename.substring(0, 2)).toList();
+        languages.getItems().addAll(languageNames);
+        languages.setCellFactory(param -> new LanguageCell(config));
+        languages.setButtonCell(new LanguageCell(config));
+        String language = config.getProperty("language");
         if (language == null) {
             language = "en";
         }
@@ -77,31 +76,10 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
-     * Getter for a property.
-     * @param key - key of the property
-     * @return - value of the property
-     */
-    public static String getProperty(String key) {
-        return prop.getProperty(key);
-    }
-
-    /**
-     * Setter for a property.
-     * @param key - key of the property
-     * @param value - value of the property
-     * @throws IOException - if the file is not found
-     */
-    public static void setProperty(String key, String value) throws IOException {
-        prop.setProperty(key, value);
-        prop.store(new PrintWriter("client/src/main/resources/config.properties"),
-                "Splitty Configuration File");
-    }
-
-    /**
      * Refreshes labels to the newly selected language.
      */
     public void refreshLanguage() {
-        String language = getProperty("language");
+        String language = config.getProperty("language");
         try {
             languageConfig.load(new FileInputStream(
                     String.format("client/src/main/resources/languages/%s.properties", language)));

@@ -15,6 +15,8 @@
  */
 package client;
 
+import client.scenes.StartScreenCtrl;
+import client.utils.Config;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
@@ -31,8 +33,10 @@ public class MyModule implements Module {
      */
     @Override
     public void configure(Binder binder) {
+        binder.bind(Config.class).in(Scopes.SINGLETON);
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(StartScreenCtrl.class).in(Scopes.SINGLETON);
         binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
     }
 }

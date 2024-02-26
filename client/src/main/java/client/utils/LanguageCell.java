@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.StartScreenCtrl;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -11,6 +10,12 @@ import java.util.Properties;
 public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     private static final Properties language = new Properties();
+
+    private final Config config;
+
+    public LanguageCell(Config config) {
+        this.config = config;
+    }
 
     /**
      * Updates item in the list to have the flag and the name of the language
@@ -31,10 +36,17 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
                 throw new RuntimeException(e);
             }
             setText(language.getProperty("name"));
-            ImageView flag = new ImageView(new Image(String.format("flags/%s.png", item)));
+            Image image = null;
+            try {
+                image = new Image(String.format("flags/%s.png", item));
+            }
+            catch (IllegalArgumentException ignored) {
+
+            }
+            ImageView flag = new ImageView(image);
             setGraphic(flag);
             try {
-                StartScreenCtrl.setProperty("language", item);
+                config.setProperty("language", item);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
