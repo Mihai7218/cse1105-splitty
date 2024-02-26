@@ -10,6 +10,9 @@ public class Config {
 
     private static final Properties prop = new Properties();
 
+    /**
+     * Constructor for the config.
+     */
     public Config() {
         try {
             File config = new File("client/src/main/resources/config.properties");

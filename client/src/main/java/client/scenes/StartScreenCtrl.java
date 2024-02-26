@@ -12,9 +12,7 @@ import javafx.scene.layout.HBox;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
-import java.nio.file.Files;
 import java.util.*;
 
 public class StartScreenCtrl implements Initializable {

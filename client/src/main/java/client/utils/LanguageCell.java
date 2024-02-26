@@ -3,6 +3,7 @@ package client.utils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
@@ -13,6 +14,10 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     private final Config config;
 
+    /**
+     * Constructor for the LanguageCell.
+     * @param config - config object
+     */
     public LanguageCell(Config config) {
         this.config = config;
     }
@@ -41,6 +46,7 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
                 image = new Image(String.format("flags/%s.png", item));
             }
             catch (IllegalArgumentException ignored) {
+                File flag = new File(String.format("flags/%s.png", item));
 
             }
             ImageView flag = new ImageView(image);
