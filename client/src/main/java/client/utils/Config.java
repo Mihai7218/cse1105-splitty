@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.util.Properties;
 
 public class Config {
@@ -12,13 +13,16 @@ public class Config {
 
     /**
      * Constructor for the config.
+     * Creates the config file if it does not exist yet.
      */
     public Config() {
+        File config = null;
         try {
-            File config = new File("client/src/main/resources/config.properties");
+            config = new File(String.valueOf(Path.of("client", "src",
+                    "main", "resources", "config.properties")));
             prop.load(new FileInputStream(config));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 

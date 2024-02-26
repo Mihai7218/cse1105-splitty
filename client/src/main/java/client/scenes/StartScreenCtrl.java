@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Path;
 import java.util.*;
 
 public class StartScreenCtrl implements Initializable {
@@ -56,7 +57,8 @@ public class StartScreenCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        File languagesFolder = new File("client/src/main/resources/languages");
+        File languagesFolder = new File(String.valueOf(Path.of("client",
+                "src", "main", "resources", "languages")));
         List<String> languageNames = Arrays.stream(Objects
                 .requireNonNull(languagesFolder.listFiles()))
                 .map(File::getName)
@@ -80,12 +82,14 @@ public class StartScreenCtrl implements Initializable {
         String language = config.getProperty("language");
         try {
             languageConfig.load(new FileInputStream(
-                    String.format("client/src/main/resources/languages/%s.properties", language)));
+                    String.valueOf(Path.of("client", "src", "main",
+                            "resources", "languages", language + ".properties"))));
         } catch (IOException e) {
             try { //defaults to English if the language in the config is not found
                 config.setProperty("language", "en");
                 languageConfig.load(new FileInputStream(
-                        "client/src/main/resources/languages/en.properties"));
+                        String.valueOf(Path.of("client", "src", "main",
+                                "resources", "languages", "en.properties"))));
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }

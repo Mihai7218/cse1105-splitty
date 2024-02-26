@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Properties;
@@ -41,14 +42,14 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
         } else {
             try {
                 language.load(new FileInputStream(
-                        String.format("client/src/main/resources/languages/%s.properties",
-                                languageCode)));
+                        String.valueOf(Path.of("client", "src", "main",
+                                "resources", "languages", languageCode+".properties"))));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             setText(language.getProperty("name"));
             Image image = null;
-            String flagPath = String.format("flags/%s.png", languageCode);
+            String flagPath = String.valueOf(Path.of("flags", languageCode+".png"));
             try {
                 image = new Image(flagPath);
             }
@@ -81,7 +82,7 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
             throws IOException, URISyntaxException {
         InputStream in = new URI(String.format("https://flagsapi.com/%s/flat/24.png",
                 language.toUpperCase())).toURL().openStream();
-        Files.copy(in, Paths.get("client/src/main/resources/"
-                + flagPath), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(in, Paths.get("client", "src", "main",
+                "resources", flagPath), StandardCopyOption.REPLACE_EXISTING);
     }
 }
