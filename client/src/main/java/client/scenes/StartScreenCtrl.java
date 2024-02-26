@@ -82,7 +82,13 @@ public class StartScreenCtrl implements Initializable {
             languageConfig.load(new FileInputStream(
                     String.format("client/src/main/resources/languages/%s.properties", language)));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            try { //defaults to English if the language in the config is not found
+                config.setProperty("language", "en");
+                languageConfig.load(new FileInputStream(
+                        "client/src/main/resources/languages/en.properties"));
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
         }
         newEventTitle.setPromptText(languageConfig.getProperty("newEventTitle"));
         createNewEventLabel.setText(languageConfig.getProperty("createNewEventLabel"));
