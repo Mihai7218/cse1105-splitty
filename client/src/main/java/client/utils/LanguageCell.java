@@ -3,9 +3,14 @@ package client.utils;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 public class LanguageCell extends javafx.scene.control.ListCell<String> {
@@ -24,38 +29,59 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     /**
      * Updates item in the list to have the flag and the name of the language
-     * @param item - ISO 639-1 code of the language
+     * @param languageCode - ISO 639-1 code of the language
      * @param empty - whether the item is empty or not
      */
     @Override
-    protected void updateItem(String item, boolean empty) {
-        super.updateItem(item, empty);
-        if (empty || item == null) {
+    protected void updateItem(String languageCode, boolean empty) {
+        super.updateItem(languageCode, empty);
+        if (empty || languageCode == null) {
             setText(null);
             setGraphic(null);
         } else {
             try {
                 language.load(new FileInputStream(
-                        String.format("client/src/main/resources/languages/%s.properties", item)));
+                        String.format("client/src/main/resources/languages/%s.properties",
+                                languageCode)));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             setText(language.getProperty("name"));
             Image image = null;
+            String flagPath = String.format("flags/%s.png", languageCode);
             try {
-                image = new Image(String.format("flags/%s.png", item));
+                image = new Image(flagPath);
             }
-            catch (IllegalArgumentException ignored) {
-                File flag = new File(String.format("flags/%s.png", item));
-
+            catch (IllegalArgumentException e) {
+                try {
+                    downloadFlag(languageCode, flagPath);
+                    image = new Image(flagPath);
+                } catch (IOException | URISyntaxException ignored1) {
+                    e.printStackTrace();
+                }
             }
             ImageView flag = new ImageView(image);
             setGraphic(flag);
             try {
-                config.setProperty("language", item);
+                config.setProperty("language", languageCode);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    /**
+     * Downloads missing flag file from flagsapi.com and saves it in the resources/flags folder.
+     * @param language - ISO 639-1 code of the language
+     * @param flagPath - path of the flag file
+     * @throws IOException - in case the file is inaccessible
+     * @throws URISyntaxException - in case the URL of the Flags API is invalid
+     */
+    private static void downloadFlag(String language, String flagPath)
+            throws IOException, URISyntaxException {
+        InputStream in = new URI(String.format("https://flagsapi.com/%s/flat/24.png",
+                language.toUpperCase())).toURL().openStream();
+        Files.copy(in, Paths.get("client/src/main/resources/"
+                + flagPath), StandardCopyOption.REPLACE_EXISTING);
     }
 }
