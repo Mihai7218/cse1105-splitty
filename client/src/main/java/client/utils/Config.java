@@ -6,9 +6,9 @@ import java.util.Properties;
 
 public class Config implements ConfigInterface {
 
-    private static final Properties prop = new Properties();
+    private final Properties prop = new Properties();
 
-    private final OutputStream outputStream;
+    private OutputStream outputStream = null;
 
     /**
      * Constructor for the config with a default file path.
@@ -23,20 +23,21 @@ public class Config implements ConfigInterface {
      * @throws FileNotFoundException - in case the file is not found
      */
     public Config(File file) throws FileNotFoundException {
-        this(new FileInputStream(file), new FileOutputStream(file));
+        this(new FileInputStream(file), null);
+        this.outputStream = new FileOutputStream(file);
     }
 
     /**
      * Constructor for the config.
      * Creates the config file if it does not exist yet.
      */
-    public Config(InputStream inputStream, OutputStream outputStream) {
-        this.outputStream = outputStream;
+    public Config(InputStream inputStream, FileOutputStream outputStream) {
         try {
             prop.load(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        if (outputStream != null) this.outputStream = outputStream;
     }
 
     /**
@@ -54,8 +55,15 @@ public class Config implements ConfigInterface {
      * @param value - value of the property
      * @throws IOException - if the file is not found
      */
-    public void setProperty(String key, String value) throws IOException {
+    public void setProperty(String key, String value) {
         prop.setProperty(key, value);
-        prop.store(this.outputStream, "Splitty Configuration File");
+    }
+
+    /**
+     * Saves the config to the output stream.
+     * @throws IOException  when outputStream cannot write the config.
+     */
+    public void saveProperties() throws IOException {
+        prop.store(outputStream, "Splitty Config File");
     }
 }

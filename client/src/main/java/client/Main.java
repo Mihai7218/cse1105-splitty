@@ -15,18 +15,18 @@
  */
 package client;
 
-import static com.google.inject.Guice.createInjector;
-
-import client.scenes.StartScreenCtrl;
-import com.google.inject.Injector;
-
 import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
+import client.scenes.StartScreenCtrl;
+import client.utils.Config;
+import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import static com.google.inject.Guice.createInjector;
 
 public class Main extends Application {
 
@@ -57,5 +57,17 @@ public class Main extends Application {
                 new Pair<>(overview.getKey(), new Scene(overview.getValue())),
                 new Pair<>(add.getKey(), new Scene(add.getValue())),
                 new Pair<>(startScreen.getKey(), new Scene(startScreen.getValue())));
+    }
+
+    /**
+     * Method that runs when the application is terminated.
+     * Saves the config to file.
+     * @throws Exception -
+     */
+    @Override
+    public void stop() throws Exception {
+        var config = INJECTOR.getInstance(Config.class);
+        config.saveProperties();
+        super.stop();
     }
 }
