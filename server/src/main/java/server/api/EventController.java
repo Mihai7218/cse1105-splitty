@@ -3,12 +3,10 @@ package server.api;
 import java.util.List;
 
 
-import commons.Quote;
+import commons.Event;
 
-import org.springframework.web.bind.annotation.GetMapping;
-
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import server.database.EventRepository;
 
@@ -21,19 +19,37 @@ public class EventController {
 
 
     /**
-     * ewa
-     * @param repo ewa
+     * EventController constructor
+     * @param repo a Event Repository to store the events
      */
     public EventController(EventRepository repo) {
         this.repo = repo;
     }
 
     /**
-     * ewa
-     * @return awe
+     * Get methode to get all the events on the server
+     * @return returns a list of all events on the server
      */
     @GetMapping(path = { "", "/" })
-    public List<Quote> getAll() {
+    public List<Event> getAll() {
         return repo.findAll();
+    }
+
+    /**
+     * A post method to add and event to the repository
+     * @param event an event in the requestBody to add to the repository
+     * @return the event if succesfully made
+     */
+    @PostMapping(path = { "", "/" })
+    public ResponseEntity<Event> add(@RequestBody Event event) {
+
+//        if (quote.person == null || isNullOrEmpty(quote.person.firstName)
+//                || isNullOrEmpty(quote.person.lastName)
+//                || isNullOrEmpty(quote.quote)) {
+//            return ResponseEntity.badRequest().build();
+//        }
+
+        Event saved = repo.save(event);
+        return ResponseEntity.ok(saved);
     }
 }
