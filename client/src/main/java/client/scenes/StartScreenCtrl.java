@@ -1,27 +1,29 @@
 package client.scenes;
 
 import client.utils.ConfigInterface;
-import client.utils.LanguageCell;
-
+import client.utils.LanguageComboBox;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Properties;
+import java.util.ResourceBundle;
 
 public class StartScreenCtrl implements Initializable {
 
     private ConfigInterface config;
 
     @FXML
-    private ComboBox<String> languages;
+    private LanguageComboBox languages;
 
     @FXML
     private TextField newEventTitle;
@@ -47,12 +49,11 @@ public class StartScreenCtrl implements Initializable {
     @FXML
     private ListView<HBox> recentEvents;
 
-    /**
-     *
-     * @param config
-     */
+    private final MainCtrl mainCtrl;
+
     @Inject
-    public StartScreenCtrl(ConfigInterface config) {
+    public StartScreenCtrl(MainCtrl mainCtrl, ConfigInterface config) {
+        this.mainCtrl = mainCtrl;
         this.config = config;
     }
 
@@ -63,16 +64,6 @@ public class StartScreenCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        File languagesFolder = new File(String.valueOf(Path.of("client",
-                "src", "main", "resources", "languages")));
-        List<String> languageNames = Arrays.stream(Objects
-                .requireNonNull(languagesFolder.listFiles()))
-                .map(File::getName)
-                .filter(name -> !name.equals("template.properties"))
-                .map(filename -> filename.substring(0, 2)).toList();
-        languages.getItems().addAll(languageNames);
-        languages.setCellFactory(param -> new LanguageCell(config));
-        languages.setButtonCell(new LanguageCell(config));
         String language = config.getProperty("language");
         if (language == null) {
             language = "en";
@@ -82,16 +73,39 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
-     * Refreshes labels to the newly selected language.
+     * Changes language
      */
-    public void refreshLanguage() {
-        Properties languageConfig = new Properties();
+    public void changeLanguage() {
         String language = languages.getValue();
         try {
             config.setProperty("language", language);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.refreshLanguage();
+    }
+    /**
+     * Refreshes labels to the newly selected language.
+     */
+    public void refreshLanguage() {
+        String language = config.getProperty("language");
+        Properties languageConfig = getLanguageConfig(language);
+        newEventTitle.setPromptText(languageConfig.getProperty("newEventTitle"));
+        createNewEventLabel.setText(languageConfig.getProperty("createNewEventLabel"));
+        joinEventLabel.setText(languageConfig.getProperty("joinEventLabel"));
+        recentEventsLabel.setText(languageConfig.getProperty("recentEventsLabel"));
+        createEventButton.setText(languageConfig.getProperty("createEventButton"));
+        eventInvite.setPromptText(languageConfig.getProperty("eventInvite"));
+        joinEventButton.setText(languageConfig.getProperty("joinEventButton"));
+    }
+
+    /**
+     * Getter for the language file.
+     * @param language - target language.
+     * @return - Properties containing the strings in the specified language.
+     */
+    private Properties getLanguageConfig (String language) {
+        Properties languageConfig = new Properties();
         try {
             languageConfig.load(new FileInputStream(
                     String.valueOf(Path.of("client", "src", "main",
@@ -106,13 +120,7 @@ public class StartScreenCtrl implements Initializable {
                 throw new RuntimeException(ex);
             }
         }
-        newEventTitle.setPromptText(languageConfig.getProperty("newEventTitle"));
-        createNewEventLabel.setText(languageConfig.getProperty("createNewEventLabel"));
-        joinEventLabel.setText(languageConfig.getProperty("joinEventLabel"));
-        recentEventsLabel.setText(languageConfig.getProperty("recentEventsLabel"));
-        createEventButton.setText(languageConfig.getProperty("createEventButton"));
-        eventInvite.setPromptText(languageConfig.getProperty("eventInvite"));
-        joinEventButton.setText(languageConfig.getProperty("joinEventButton"));
+        return languageConfig;
     }
 
 }
