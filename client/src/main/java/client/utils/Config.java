@@ -31,7 +31,7 @@ public class Config implements ConfigInterface {
      * Constructor for the config.
      * Creates the config file if it does not exist yet.
      */
-    public Config(InputStream inputStream, FileOutputStream outputStream) {
+    public Config(InputStream inputStream, OutputStream outputStream) {
         try {
             prop.load(inputStream);
         } catch (IOException e) {
