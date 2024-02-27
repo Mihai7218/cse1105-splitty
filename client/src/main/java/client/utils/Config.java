@@ -1,26 +1,39 @@
 package client.utils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class Config {
+public class Config implements ConfigInterface {
 
     private static final Properties prop = new Properties();
+
+    private final OutputStream outputStream;
+
+    /**
+     * Constructor for the config with a default file path.
+     */
+    public Config() throws FileNotFoundException {
+        this(new File(String.valueOf(Path.of("client", "config.properties"))));
+    }
+
+    /**
+     * Constructor for the config with specified file
+     * @param file - file that needs to be written to
+     * @throws FileNotFoundException - in case the file is not found
+     */
+    public Config(File file) throws FileNotFoundException {
+        this(new FileInputStream(file), new FileOutputStream(file));
+    }
 
     /**
      * Constructor for the config.
      * Creates the config file if it does not exist yet.
      */
-    public Config() {
-        File config = null;
+    public Config(InputStream inputStream, OutputStream outputStream) {
+        this.outputStream = outputStream;
         try {
-            config = new File(String.valueOf(Path.of("client", "src",
-                    "main", "resources", "config.properties")));
-            prop.load(new FileInputStream(config));
+            prop.load(inputStream);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -43,7 +56,6 @@ public class Config {
      */
     public void setProperty(String key, String value) throws IOException {
         prop.setProperty(key, value);
-        prop.store(new PrintWriter("client/src/main/resources/config.properties"),
-                "Splitty Configuration File");
+        prop.store(this.outputStream, "Splitty Configuration File");
     }
 }

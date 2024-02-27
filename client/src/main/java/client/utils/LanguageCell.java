@@ -18,13 +18,13 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     private static final Properties language = new Properties();
 
-    private final Config config;
+    private final ConfigInterface config;
 
     /**
      * Constructor for the LanguageCell.
      * @param config - config object
      */
-    public LanguageCell(Config config) {
+    public LanguageCell(ConfigInterface config) {
         this.config = config;
     }
 

@@ -1,6 +1,6 @@
 package client.scenes;
 
-import client.utils.Config;
+import client.utils.ConfigInterface;
 import client.utils.LanguageCell;
 
 import com.google.inject.Inject;
@@ -18,8 +18,7 @@ import java.util.*;
 
 public class StartScreenCtrl implements Initializable {
 
-    @Inject
-    Config config;
+    private ConfigInterface config;
 
     @FXML
     private ComboBox<String> languages;
@@ -48,7 +47,14 @@ public class StartScreenCtrl implements Initializable {
     @FXML
     private ListView<HBox> recentEvents;
 
-    private final Properties languageConfig = new Properties();
+    /**
+     *
+     * @param config
+     */
+    @Inject
+    public StartScreenCtrl(ConfigInterface config) {
+        this.config = config;
+    }
 
     /**
      * Initializes the start screen view
@@ -79,6 +85,7 @@ public class StartScreenCtrl implements Initializable {
      * Refreshes labels to the newly selected language.
      */
     public void refreshLanguage() {
+        Properties languageConfig = new Properties();
         String language = languages.getValue();
         try {
             config.setProperty("language", language);
