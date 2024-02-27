@@ -9,7 +9,7 @@ public class ParticipantPayment {
 
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
-    private Long id;
+    private long id;
 
     private double value;
     @ManyToOne
