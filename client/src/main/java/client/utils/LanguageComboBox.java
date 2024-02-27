@@ -4,9 +4,9 @@ import javafx.scene.control.ComboBox;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class LanguageComboBox extends ComboBox<String> {
 
@@ -30,8 +30,10 @@ public class LanguageComboBox extends ComboBox<String> {
     private static List<String> getLanguageCodes() {
         File languagesFolder = new File(String.valueOf(Path.of("client",
                 "src", "main", "resources", "languages")));
-        return Arrays.stream(Objects
-                        .requireNonNull(languagesFolder.listFiles()))
+        File[] languageFiles = languagesFolder.listFiles();
+        if (languageFiles == null)
+            return new ArrayList<>();
+        return Arrays.stream(languageFiles)
                 .map(File::getName)
                 .filter(name -> !name.equals("template.properties"))
                 .map(filename -> filename.substring(0, 2)).sorted().toList();

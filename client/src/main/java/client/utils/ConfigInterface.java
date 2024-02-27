@@ -22,5 +22,5 @@ public interface ConfigInterface {
      * @param value - value of the property
      * @throws IOException - if the file is not found
      */
-    void setProperty(String key, String value) throws IOException;
+    void setProperty(String key, String value);
 }

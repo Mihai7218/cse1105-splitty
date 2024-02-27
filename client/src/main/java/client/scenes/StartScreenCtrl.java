@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.Properties;
@@ -82,11 +83,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public void changeLanguage() {
         String language = languages.getValue();
-        try {
-            config.setProperty("language", language);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        config.setProperty("language", language);
         this.refreshLanguage();
     }
     /**
@@ -122,10 +119,60 @@ public class StartScreenCtrl implements Initializable {
                         String.valueOf(Path.of("client", "src", "main",
                                 "resources", "languages", "en.properties"))));
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                //defaults to strings with the name of the fields if English is not found
+                //(should only happen in testing)
+                config.setProperty("language", "default");
+                try {
+                    languageConfig.load(new StringReader("""
+                            language.name=DefaultName
+                            startScreen.newEventTitle=DefaultNewEventTitle
+                            startScreen.createNewEventLabel=DefaultCreateNewEventLabel
+                            startScreen.joinEventLabel=DefaultJoinEventLabel
+                            startScreen.recentEventsLabel=DefaultRecentEventsLabel
+                            startScreen.createEventButton=DefaultCreateEventButton
+                            startScreen.eventInvite=DefaultEventInvite
+                            startScreen.joinEventButton=DefaultJoinEventButton"""));
+                } catch (IOException exc) {
+                    throw new RuntimeException(exc);
+                }
             }
         }
         return languageConfig;
     }
 
+    void setLanguages(LanguageComboBox languages) {
+        this.languages = languages;
+    }
+
+    void setNewEventTitle(TextField newEventTitle) {
+        this.newEventTitle = newEventTitle;
+    }
+
+    void setCreateNewEventLabel(Label createNewEventLabel) {
+        this.createNewEventLabel = createNewEventLabel;
+    }
+
+    void setJoinEventLabel(Label joinEventLabel) {
+        this.joinEventLabel = joinEventLabel;
+    }
+
+    void setRecentEventsLabel(Label recentEventsLabel) {
+        this.recentEventsLabel = recentEventsLabel;
+    }
+
+    void setCreateEventButton(Button createEventButton) {
+        this.createEventButton = createEventButton;
+    }
+
+    void setEventInvite(TextField eventInvite) {
+        this.eventInvite = eventInvite;
+    }
+
+    void setJoinEventButton(Button joinEventButton) {
+        this.joinEventButton = joinEventButton;
+    }
+
+    void setRecentEvents(ListView<HBox> recentEvents) {
+        this.recentEvents = recentEvents;
+    }
 }
