@@ -51,6 +51,11 @@ public class StartScreenCtrl implements Initializable {
 
     private final MainCtrl mainCtrl;
 
+    /**
+     * Constructor for the StartScreenCtrl
+     * @param mainCtrl - main controller
+     * @param config - config
+     */
     @Inject
     public StartScreenCtrl(MainCtrl mainCtrl, ConfigInterface config) {
         this.mainCtrl = mainCtrl;
