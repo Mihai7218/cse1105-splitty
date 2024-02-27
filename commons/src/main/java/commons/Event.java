@@ -1,11 +1,7 @@
 package commons;
 
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.util.Date;
 import java.util.List;
@@ -18,8 +14,11 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int inviteCode;
     private String title;
+    @OneToMany
     private List<Expense> expensesList;
+    @OneToMany
     private List<Participant> participantsList;
+    @OneToMany
     private List<Tag> tagsList;
     private Date creationDate;
     private Date lastActivity;
