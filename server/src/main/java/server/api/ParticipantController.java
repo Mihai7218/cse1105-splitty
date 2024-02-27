@@ -9,7 +9,7 @@ import server.database.ParticipantRepository;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/events/{id}/participants")
+@RequestMapping("/api/events")
 public class ParticipantController {
 
     /*
@@ -24,30 +24,43 @@ public class ParticipantController {
         this.participantService = participantService;
     }
 
-    @GetMapping(path = { "", "/"})
-    public List<Participant> getParticipants(){
-        return participantService.getAllParticipants();
+    @GetMapping(path = { "/{eventId}/participants", "/{eventId}/participants/"})
+    public List<Participant> getParticipants(
+            @PathVariable("eventId") long eventId) {
+        return participantService.getAllParticipants(eventId);
     }
 
-    @PostMapping(path = {"", "/"})
-    public ResponseEntity<Participant> addParticipant(@RequestBody Participant participant){
-        return participantService.addParticipants(participant);
+    @GetMapping(path = {"/{eventId}/participants/{id}", "/{eventId}/participants/{id}/"})
+    public Participant getParticipant(
+            @PathVariable("eventId") long eventId,
+            @PathVariable("id") long id){
+        return participantService.getParticipant(eventId, id);
     }
 
-    @PutMapping(path = {"/{id}"})
+
+    @PostMapping(path = {"/{eventId}/participants", "/{eventId}/participants/"})
+    public ResponseEntity<Participant> addParticipant(
+            @PathVariable("eventId") long eventId,
+            @RequestBody Participant participant){
+        return participantService.addParticipant(eventId, participant);
+    }
+
+    @PutMapping(path = {"/{eventId}/participants/{id}"})
     public ResponseEntity<Participant> updateParticipant(
-            @PathVariable("id") Long id,
+            @PathVariable("eventId") long eventId,
+            @PathVariable("id") long id,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String iban,
             @RequestParam(required = false) String bic){
-        return participantService.updateParticipant(id, name, email, iban, bic);
+        return participantService.updateParticipant(eventId, id, name, email, iban, bic);
     }
 
-    @DeleteMapping(path = {"/id"})
+    @DeleteMapping(path = {"/{eventId}/participants/{id}"})
     public void deleteParticipant(
-            @PathVariable("id") Long id){
-        participantService.deleteParticipant(id);
+            @PathVariable("eventId") long eventId,
+            @PathVariable("id") long id){
+        participantService.deleteParticipant(eventId, id);
     }
 
 
