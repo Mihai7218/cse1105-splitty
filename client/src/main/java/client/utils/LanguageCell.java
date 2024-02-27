@@ -39,8 +39,13 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
             String languageName = getLanguageName(languageCode);
             setText(languageName);
             Image image = getImage(languageCode);
-            ImageView flag = new ImageView(image);
-            setGraphic(flag);
+            if (image == null) {
+                setGraphic(null);
+            }
+            else {
+                ImageView flag = new ImageView(image);
+                setGraphic(flag);
+            }
         }
     }
 
@@ -77,10 +82,9 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
                     String.valueOf(Path.of("client", "src", "main",
                             "resources", "languages", languageCode +".properties"))));
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return "Language not found";
         }
-        String languageName = language.getProperty("language.name");
-        return languageName;
+        return language.getProperty("language.name");
     }
 
     /**
