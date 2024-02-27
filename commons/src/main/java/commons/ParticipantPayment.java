@@ -11,7 +11,8 @@ public class ParticipantPayment {
     @GeneratedValue(strategy=GenerationType.AUTO)
     private long id;
 
-    private double value;
+
+    private double paymentAmount;
     @ManyToOne
     private Participant participant;
 
@@ -29,7 +30,7 @@ public class ParticipantPayment {
      */
     public ParticipantPayment(Participant participant, double value) {
         this.participant = participant;
-        this.value = value;
+        this.paymentAmount = value;
     }
 
     /**
@@ -44,8 +45,8 @@ public class ParticipantPayment {
      * retrieve the value associated with the transaction
      * @return double value for the amount owed
      */
-    public double getValue() {
-        return value;
+    public double getPaymentAmount() {
+        return paymentAmount;
     }
 
     /**
@@ -60,8 +61,8 @@ public class ParticipantPayment {
      * Setter for the value associated with the transaction
      * @param value double value for the amount owed
      */
-    public void setValue(double value) {
-        this.value = value;
+    public void setPaymentAmount(double value) {
+        this.paymentAmount = value;
     }
 
     /**
@@ -89,7 +90,7 @@ public class ParticipantPayment {
         }
         ParticipantPayment that = (ParticipantPayment) o;
         boolean participantEqual = Objects.equals(participant, that.participant);
-        boolean valueEqual = value == that.value;
+        boolean valueEqual = paymentAmount == that.paymentAmount;
 
         return  participantEqual && valueEqual;
 
@@ -101,7 +102,7 @@ public class ParticipantPayment {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(participant, value);
+        return Objects.hash(participant, paymentAmount);
     }
 
     /**
@@ -112,7 +113,7 @@ public class ParticipantPayment {
     public String toString() {
         return "ParticipantPayment{" +
                 "participant=" + participant +
-                ", value=" + value +
+                ", value=" + paymentAmount +
                 '}';
     }
 }
