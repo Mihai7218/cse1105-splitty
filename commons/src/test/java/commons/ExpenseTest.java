@@ -46,13 +46,13 @@ public class ExpenseTest {
 
     @Test
     void ConstructorTest(){
-        assertEquals(expense.amount, amount);
-        assertEquals(expense.currency, currency);
-        assertEquals(expense.title, title);
-        assertEquals(expense.description, description);
-        assertEquals(expense.date, date);
-        assertEquals(expense.tag, tag);
-        assertEquals(expense.payee, payee);
+        assertEquals(expense.getAmount(), amount);
+        assertEquals(expense.getCurrency(), currency);
+        assertEquals(expense.getTitle(), title);
+        assertEquals(expense.getDescription(), description);
+        assertEquals(expense.getDate(), date);
+        assertEquals(expense.getTag(), tag);
+        assertEquals(expense.getPayee(), payee);
         assertEquals(expense.getSplit(), split);
     }
 
