@@ -90,13 +90,13 @@ public class StartScreenCtrl implements Initializable {
     public void refreshLanguage() {
         String language = config.getProperty("language");
         Properties languageConfig = getLanguageConfig(language);
-        newEventTitle.setPromptText(languageConfig.getProperty("newEventTitle"));
-        createNewEventLabel.setText(languageConfig.getProperty("createNewEventLabel"));
-        joinEventLabel.setText(languageConfig.getProperty("joinEventLabel"));
-        recentEventsLabel.setText(languageConfig.getProperty("recentEventsLabel"));
-        createEventButton.setText(languageConfig.getProperty("createEventButton"));
-        eventInvite.setPromptText(languageConfig.getProperty("eventInvite"));
-        joinEventButton.setText(languageConfig.getProperty("joinEventButton"));
+        newEventTitle.setPromptText(languageConfig.getProperty("startScreen.newEventTitle"));
+        createNewEventLabel.setText(languageConfig.getProperty("startScreen.createNewEventLabel"));
+        joinEventLabel.setText(languageConfig.getProperty("startScreen.joinEventLabel"));
+        recentEventsLabel.setText(languageConfig.getProperty("startScreen.recentEventsLabel"));
+        createEventButton.setText(languageConfig.getProperty("startScreen.createEventButton"));
+        eventInvite.setPromptText(languageConfig.getProperty("startScreen.eventInvite"));
+        joinEventButton.setText(languageConfig.getProperty("startScreen.joinEventButton"));
     }
 
     /**

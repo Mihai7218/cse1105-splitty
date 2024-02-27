@@ -18,14 +18,10 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     private static final Properties language = new Properties();
 
-    private final ConfigInterface config;
-
     /**
      * Constructor for the LanguageCell.
-     * @param config - config object
      */
-    public LanguageCell(ConfigInterface config) {
-        this.config = config;
+    public LanguageCell() {
     }
 
     /**
@@ -40,30 +36,51 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
             setText(null);
             setGraphic(null);
         } else {
-            try {
-                language.load(new FileInputStream(
-                        String.valueOf(Path.of("client", "src", "main",
-                                "resources", "languages", languageCode+".properties"))));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            setText(language.getProperty("name"));
-            Image image = null;
-            String flagPath = String.valueOf(Path.of("flags", languageCode+".png"));
-            try {
-                image = new Image(flagPath);
-            }
-            catch (IllegalArgumentException e) {
-                try {
-                    downloadFlag(languageCode, flagPath);
-                    image = new Image(flagPath);
-                } catch (IOException | URISyntaxException ignored1) {
-                    e.printStackTrace();
-                }
-            }
+            String languageName = getLanguageName(languageCode);
+            setText(languageName);
+            Image image = getImage(languageCode);
             ImageView flag = new ImageView(image);
             setGraphic(flag);
         }
+    }
+
+    /**
+     * Gets the image of the country flag from the `resources/flags` folder.
+     * @param languageCode - ISO 639-1 code of the language
+     * @return - an Image object with the specified flag
+     */
+    private static Image getImage(String languageCode) {
+        Image image = null;
+        String flagPath = String.valueOf(Path.of("flags", languageCode +".png"));
+        try {
+            image = new Image(flagPath);
+        }
+        catch (IllegalArgumentException e) {
+            try {
+                downloadFlag(languageCode, flagPath);
+                image = new Image(flagPath);
+            } catch (IOException | URISyntaxException ignored1) {
+                e.printStackTrace();
+            }
+        }
+        return image;
+    }
+
+    /**
+     * Gets the name of the language from its config.
+     * @param languageCode - ISO 639-1 code of the language.
+     * @return - a String containing the name of the language.
+     */
+    private static String getLanguageName(String languageCode) {
+        try {
+            language.load(new FileInputStream(
+                    String.valueOf(Path.of("client", "src", "main",
+                            "resources", "languages", languageCode +".properties"))));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        String languageName = language.getProperty("language.name");
+        return languageName;
     }
 
     /**
