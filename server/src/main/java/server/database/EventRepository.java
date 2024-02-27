@@ -19,4 +19,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import commons.Quote;
 
-public interface SplittyRepository extends JpaRepository<Quote, Long> {}
+public interface EventRepository extends JpaRepository<Quote, Long> {}

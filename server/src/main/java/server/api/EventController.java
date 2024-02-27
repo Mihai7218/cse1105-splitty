@@ -10,21 +10,21 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import server.database.SplittyRepository;
+import server.database.EventRepository;
 
 @RestController
 @RequestMapping("/api/events")
 
-public class SplittyController {
+public class EventController {
 
-    private final SplittyRepository repo;
+    private final EventRepository repo;
 
 
     /**
      * ewa
      * @param repo ewa
      */
-    public SplittyController(SplittyRepository repo) {
+    public EventController(EventRepository repo) {
         this.repo = repo;
     }
 
