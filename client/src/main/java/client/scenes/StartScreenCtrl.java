@@ -140,38 +140,83 @@ public class StartScreenCtrl implements Initializable {
         return languageConfig;
     }
 
+    /**
+     * Setter for the language combo box.
+     * Package-access setter for testing purposes.
+     * @param languages - the language combo box.
+     */
     void setLanguages(LanguageComboBox languages) {
         this.languages = languages;
     }
 
+    /**
+     * Setter for the newEventTitle text field.
+     * Package-access setter for testing purposes.
+     * @param newEventTitle - newEventTitle text field.
+     */
     void setNewEventTitle(TextField newEventTitle) {
         this.newEventTitle = newEventTitle;
     }
 
+    /**
+     * Setter for the createNewEventLabel label.
+     * Package-access setter for testing purposes.
+     * @param createNewEventLabel - createNewEventLabel label.
+     */
     void setCreateNewEventLabel(Label createNewEventLabel) {
         this.createNewEventLabel = createNewEventLabel;
     }
 
+    /**
+     * Setter for the joinEventLabel label.
+     * Package-access setter for testing purposes.
+     * @param joinEventLabel - joinEventLabel label.
+     */
     void setJoinEventLabel(Label joinEventLabel) {
         this.joinEventLabel = joinEventLabel;
     }
 
+    /**
+     * Setter for the recentEventsLabel label.
+     * Package-access setter for testing purposes.
+     * @param recentEventsLabel - recentEventsLabel label.
+     */
     void setRecentEventsLabel(Label recentEventsLabel) {
         this.recentEventsLabel = recentEventsLabel;
     }
 
+    /**
+     * Setter for the createEventButton button.
+     * Package-access setter for testing purposes.
+     * @param createEventButton - createEventButton button.
+     */
     void setCreateEventButton(Button createEventButton) {
         this.createEventButton = createEventButton;
     }
 
+    /**
+     * Setter for the eventInvite text field.
+     * Package-access setter for testing purposes.
+     * @param eventInvite - eventInvite text field.
+     */
     void setEventInvite(TextField eventInvite) {
         this.eventInvite = eventInvite;
     }
 
+    /**
+     * Setter for the joinEventButton button.
+     * Package-access setter for testing purposes.
+     * @param joinEventButton - joinEventButton button.
+     */
     void setJoinEventButton(Button joinEventButton) {
         this.joinEventButton = joinEventButton;
     }
 
+    /**
+     * Setter for the recentEvents list view.
+     * Package-access setter for testing purposes.
+     * @param recentEvents - recentEvents list view.
+     */
     void setRecentEvents(ListView<HBox> recentEvents) {
         this.recentEvents = recentEvents;
     }
