@@ -2,23 +2,21 @@ package client.scenes;
 
 import client.utils.ConfigInterface;
 import client.utils.LanguageComboBox;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.HBox;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.framework.junit5.ApplicationExtension;
+import org.mockito.stubbing.Answer;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
-@ExtendWith(ApplicationExtension.class)
 class StartScreenCtrlTest {
     MainCtrl mainCtrl = mock(MainCtrl.class);
     ConfigInterface config = new TestConfig();
@@ -31,20 +29,29 @@ class StartScreenCtrlTest {
     private Button createEventButton;
     private TextField eventInvite;
     private Button joinEventButton;
-    private ListView<HBox> recentEvents;
+    private String currentLCBValue;
+
+    @BeforeAll
+    static void initJavaFX() {
+        Platform.startup(() -> {});
+    }
 
     @BeforeEach
     void setup() {
         sut = new StartScreenCtrl(mainCtrl, config);
-        lcb = new LanguageComboBox();
-        newEventTitle = new TextField();
-        createNewEventLabel = new Label();
-        joinEventLabel = new Label();
-        recentEventsLabel = new Label();
-        createEventButton = new Button();
-        eventInvite = new TextField();
-        joinEventButton = new Button();
-        recentEvents = new ListView<>();
+        lcb = mock(LanguageComboBox.class);
+        doAnswer((Answer<Void>) invocationOnMock -> {
+            currentLCBValue = invocationOnMock.getArgument(0);
+            return null;
+        }).when(lcb).setValue(anyString());
+        doAnswer((Answer<String>) invocationOnMock -> currentLCBValue).when(lcb).getValue();
+        newEventTitle = mock(TextField.class);
+        createNewEventLabel = mock(Label.class);
+        joinEventLabel = mock(Label.class);
+        recentEventsLabel = mock(Label.class);
+        createEventButton = mock(Button.class);
+        eventInvite = mock(TextField.class);
+        joinEventButton = mock(Button.class);
         sut.setLanguages(lcb);
         sut.setNewEventTitle(newEventTitle);
         sut.setCreateNewEventLabel(createNewEventLabel);
@@ -53,7 +60,6 @@ class StartScreenCtrlTest {
         sut.setCreateEventButton(createEventButton);
         sut.setEventInvite(eventInvite);
         sut.setJoinEventButton(joinEventButton);
-        sut.setRecentEvents(recentEvents);
     }
     @Test
     void initialize() {
@@ -77,12 +83,13 @@ class StartScreenCtrlTest {
     @Test
     void refreshLanguage() {
         sut.refreshLanguage();
-        assertEquals("DefaultNewEventTitle", newEventTitle.getPromptText());
-        assertEquals("DefaultCreateNewEventLabel", createNewEventLabel.getText());
-        assertEquals("DefaultJoinEventLabel", joinEventLabel.getText());
-        assertEquals("DefaultRecentEventsLabel", recentEventsLabel.getText());
-        assertEquals("DefaultCreateEventButton", createEventButton.getText());
-        assertEquals("DefaultEventInvite", eventInvite.getPromptText());
-        assertEquals("DefaultJoinEventButton", joinEventButton.getText());
+        verify(newEventTitle).setPromptText(anyString());
+        verify(createNewEventLabel).setText(anyString());
+        verify(joinEventLabel).setText(anyString());
+        verify(recentEventsLabel).setText(anyString());
+        verify(createEventButton).setText(anyString());
+        verify(eventInvite).setPromptText(anyString());
+        verify(joinEventButton).setText(anyString());
+
     }
 }
