@@ -1,6 +1,7 @@
 package client.utils;
 
 import javafx.application.Platform;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -10,9 +11,13 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 class LanguageCellTest {
 
     LanguageCell lc;
+
+    @BeforeAll
+    static void initJavaFX() {
+        Platform.startup(() -> {});
+    }
     @BeforeEach
     void start() {
-        Platform.startup(() -> {});
         lc = new LanguageCell();
     }
     @Test
