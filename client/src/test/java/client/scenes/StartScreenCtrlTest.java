@@ -7,12 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
-import javafx.stage.Stage;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
-import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -35,8 +33,8 @@ class StartScreenCtrlTest {
     private Button joinEventButton;
     private ListView<HBox> recentEvents;
 
-    @Start
-    void setup(Stage stage) {
+    @BeforeEach
+    void setup() {
         sut = new StartScreenCtrl(mainCtrl, config);
         lcb = new LanguageComboBox();
         newEventTitle = new TextField();
