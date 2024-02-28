@@ -14,7 +14,9 @@ class LanguageCellTest {
 
     @BeforeAll
     static void initJavaFX() {
-        Platform.startup(() -> {});
+        try {
+            Platform.startup(() -> {});
+        } catch (IllegalStateException ignored) {}
     }
     @BeforeEach
     void start() {
