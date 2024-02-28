@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
 import java.beans.Transient;
@@ -28,10 +29,10 @@ public class ParticipantService {
 
     public List<Participant> getAllParticipants(long eventId) {
         if(eventId < 0 || !eventRepository.existsById(eventId)){
-            throw new IllegalStateException("The event with id " + id + " does not exist.");
+            throw new IllegalStateException("The event with id " + eventId + " does not exist.");
         }
         // TODO
-        return eventRepository.findAll(eventId);
+        return eventRepository.findById(eventId).get().getParticipantsList();
     }
 
     public Participant getParticipant(long eventId, long id) {
