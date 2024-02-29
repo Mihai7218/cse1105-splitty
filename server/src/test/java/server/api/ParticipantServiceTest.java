@@ -19,6 +19,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
 
 class ParticipantServiceTest {
@@ -69,6 +70,18 @@ class ParticipantServiceTest {
     }
 
     @Test
+    public void getParticipantBadEventID(){
+        ResponseEntity<List<Participant>> result = participantService.getAllParticipants(1);
+        assertEquals(result.getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
+    public void getParticipantBadParticipantID(){
+        ResponseEntity<Participant> result = participantService.getParticipant(0,1);
+        assertEquals(result.getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
     public void getSingularParticipantTest(){
         Participant result = participantService.getParticipant(0, 0).getBody();
         assertEquals(result, baseParticipant);
@@ -88,6 +101,57 @@ class ParticipantServiceTest {
         HttpStatusCode status = result.getStatusCode();
         assertEquals(status, BAD_REQUEST);
         assertEquals(participantService.getAllParticipants(0).getBody().size(), 1);
+    }
+
+    @Test
+    public void updateParticipantValidTest(){
+        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, "Christina Smith",
+                "cmsmith@yahoo.com", "NL85ABNA5253446745", "AMUKGB7B");
+        assertEquals(participantService.getParticipant(0, 0).getBody().getName(), "Christina Smith");
+        assertEquals(participantService.getParticipant(0, 0).getBody().getEmail(), "cmsmith@yahoo.com");
+        assertEquals(participantService.getParticipant(0, 0).getBody().getIban(), "NL85ABNA5253446745");
+        assertEquals(participantService.getParticipant(0, 0).getBody().getBic(), "AMUKGB7B");
+        Participant updated = new Participant("Christina Smith", "cmsmith@yahoo.com", "NL85ABNA5253446745",
+                "AMUKGB7B");
+        assertEquals(updated, result.getBody());
+    }
+
+    @Test
+    public void deleteParticipant(){
+        ResponseEntity<Participant> result = participantService.deleteParticipant(0, 0);
+        assertEquals(baseParticipant, result.getBody());
+        assertEquals(participantService.getAllParticipants(0).getBody().size(), 0);
+    }
+
+    @Test
+    public void deleteParticipantInvalid(){
+        ResponseEntity<Participant> result = participantService.deleteParticipant(0,1);
+        assertEquals(result.getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
+    public void testIbanValidity(){
+        String v1 = "GB82WEST12345698765432";
+        String v2 = "DE89370400440532013000";
+        String v3 = "FR1420041010050500013M02606";
+        String v4 = "ES9121000418450200051332";
+        String v5 = "IT60X0542811101000000123456";
+
+        String i2 = "DE89370400440532013"; //(Too short)
+        String i3 = "FR1420041010050500013M026069"; //(Too long)
+        String i5 = "IT60X054281110100000012345"; //(Too short)
+
+        assertTrue(participantService.validateIban(v1));
+        assertTrue(participantService.validateIban(v2));
+        assertTrue(participantService.validateIban(v3));
+        assertTrue(participantService.validateIban(v4));
+        assertTrue(participantService.validateIban(v5));
+
+        assertFalse(participantService.validateIban(i2));
+        assertFalse(participantService.validateIban(i3));
+        assertFalse(participantService.validateIban(i5));
+
+
     }
 
     @Test
