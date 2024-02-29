@@ -166,7 +166,8 @@ public class ParticipantService {
      * @return boolean value if the string is a valid email
      */
     public static boolean validateEmail(String email) {
-        Pattern basic = Pattern.compile("^[\\w!#$%&’*+/=?{|}~^-]+(?:\\.[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+        Pattern basic = Pattern.compile("^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
+                "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
         return email != null && basic.matcher(email).matches();
 
     }
