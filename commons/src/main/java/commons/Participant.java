@@ -74,6 +74,13 @@ public class Participant {
         this.bic = bic;
     }
 
+    /**
+     * Getter for the id
+     * @return id value for the participant
+     */
+    public long getId() {
+        return id;
+    }
 
     /**
      * getter for the name attribute

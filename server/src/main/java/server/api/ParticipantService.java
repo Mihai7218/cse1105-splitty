@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
-import server.database.ParticipantRepository;
 
 import java.util.List;
 import java.util.Objects;
@@ -14,19 +13,15 @@ import java.util.regex.Pattern;
 
 @Service
 public class ParticipantService {
-    private final ParticipantRepository participantRepository;
     private final EventRepository eventRepository;
 
 
     /**
      * ParticipantService Constructor
-     * @param participantRepository the participant repository to store participants
      * @param eventRepository the event repository to retrieve events from
      */
     @Autowired
-    public ParticipantService(ParticipantRepository participantRepository,
-                              EventRepository eventRepository){
-        this.participantRepository = participantRepository;
+    public ParticipantService(EventRepository eventRepository){
         this.eventRepository = eventRepository;
     }
 
@@ -54,14 +49,14 @@ public class ParticipantService {
      */
     public ResponseEntity<Participant> getParticipant(long eventId, long id) {
         List<Participant> participants = getAllParticipants(eventId).getBody();
-        if(id < 0 || !participantRepository.existsById(id) || participants==null){
+        if(id < 0 || participants==null){
             return ResponseEntity.badRequest().build();
         }
-        int indexPos = participants.indexOf(participantRepository.getReferenceById(id));
-        if(indexPos == -1){
+        participants = participants.stream().filter(item -> item.getId()==id).toList();
+        if(participants.size() != 1 || participants.get(0) == null){
             return ResponseEntity.badRequest().build();
         }
-        return ResponseEntity.ok(participants.get(indexPos));
+        return ResponseEntity.ok(participants.get(0));
 
     }
 
@@ -73,23 +68,21 @@ public class ParticipantService {
      */
     public ResponseEntity<Participant> addParticipant(long eventId, Participant participant) {
         List<Participant> currentParticipants = getAllParticipants(eventId).getBody();
-
-        if(participant == null || participant.getName()==null ||
-                participant.getName().isEmpty()){
+        if(participant == null || currentParticipants == null){
             return ResponseEntity.badRequest().build();
         }
-        if(currentParticipants == null || currentParticipants.contains(participant)){
+        if(currentParticipants.contains(participant)
+            || currentParticipants.stream().anyMatch(item -> item.getId()==participant.getId())){
             return ResponseEntity.badRequest().build();
         }
 
-        if(!validateBic(participant.getBic()) || !validateEmail(participant.getEmail())
-            || !validateIban(participant.getIban())){
+        if(!validateBic(participant.getBic()) || !validateName(participant.getName()) ||
+                !validateEmail(participant.getEmail()) || !validateIban(participant.getIban())){
             return ResponseEntity.badRequest().build();
         }
 
         currentParticipants.add(participant);
-        Participant saved = participantRepository.save(participant);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(participant);
     }
 
     /**
@@ -109,44 +102,35 @@ public class ParticipantService {
         if(participant == null){
             return ResponseEntity.badRequest().build();
         }
-        if(name != null && !name.isEmpty()
-                && !Objects.equals(participant.getName(), name)){
+        if(validateName(name)){
             participant.setName(name);
         }
-        // TODO add more logic to update other fields
         if(validateEmail(email)){
             participant.setEmail(email);
         }
-
         if(validateIban(iban)){
             participant.setIban(iban);
         }
-
         if(validateBic(bic)){
             participant.setBic(bic);
         }
-
-        Participant saved = participantRepository.save(participant);
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(participant);
     }
 
     /**
      * Delete method to remove a participant from the event
      * @param eventId id of event participant is in
      * @param id id of the participant to delete
+     * @return participant if successfully removed
      */
-    public void deleteParticipant(long eventId, long id) {
-        List<Participant> participants = getAllParticipants(eventId).getBody();
-        boolean inRepo = participantRepository.existsById(id);
-        if(!inRepo || participants == null){
-            throw new IllegalStateException("Participant with id " + id +
-                    " does not exist.");
+    public ResponseEntity<Participant> deleteParticipant(long eventId, long id) {
+        List<Participant> participantList = getAllParticipants(eventId).getBody();
+        Participant participant = getParticipant(eventId, id).getBody();
+        if(participant == null){
+            return ResponseEntity.badRequest().build();
         }
-        boolean inEvent = participants.contains(participantRepository.getReferenceById(id));
-        if(!inEvent){
-            throw new IllegalStateException("Participant with id " + id + " is not in this event.");
-        }
-        participants.remove(participantRepository.getReferenceById(id));
+        participantList.remove(participant);
+        return ResponseEntity.ok(participant);
     }
 
     /**
@@ -157,6 +141,10 @@ public class ParticipantService {
     private static boolean validateBic(String bic) {
         String bicRegex = "^[A-Z]{4}[-]{0,1}[A-Z]{2}[-]{0,1}[A-Z0-9]{2}[-]{0,1}[0-9]{3}$";
         return bic != null && Pattern.compile(bicRegex).matcher(bic).matches();
+    }
+
+    private static boolean validateName(String name){
+        return name != null && !name.isEmpty();
     }
 
     /**
