@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 @Service
@@ -142,6 +141,11 @@ public class ParticipantService {
         return bic != null && Pattern.compile(bicRegex).matcher(bic).matches();
     }
 
+    /**
+     * Method to validate the name of the participant
+     * @param name string name to validate
+     * @return true if string is valid, false if not
+     */
     public static boolean validateName(String name){
         return name != null && !name.isEmpty();
     }
