@@ -26,7 +26,7 @@ public class Tag {
 
     /**
      * Getter for the id property of a tag
-     * @return
+     * @return returns the id of the Tag
      */
     public long getId() {
         return id;
