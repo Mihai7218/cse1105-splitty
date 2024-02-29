@@ -71,8 +71,7 @@ public class ParticipantService {
         if(participant == null || currentParticipants == null){
             return ResponseEntity.badRequest().build();
         }
-        if(currentParticipants.contains(participant)
-            || currentParticipants.stream().anyMatch(item -> item.getId()==participant.getId())){
+        if(currentParticipants.contains(participant)){
             return ResponseEntity.badRequest().build();
         }
 
@@ -138,12 +137,12 @@ public class ParticipantService {
      * @param bic the submitted bic string
      * @return boolean value if the string is a valid bic number
      */
-    private static boolean validateBic(String bic) {
-        String bicRegex = "^[A-Z]{4}[-]{0,1}[A-Z]{2}[-]{0,1}[A-Z0-9]{2}[-]{0,1}[0-9]{3}$";
+    public static boolean validateBic(String bic) {
+        String bicRegex = "^[A-Za-z]{6}[0-9A-Za-z]{2}([0-9A-Za-z]{3})?$";
         return bic != null && Pattern.compile(bicRegex).matcher(bic).matches();
     }
 
-    private static boolean validateName(String name){
+    public static boolean validateName(String name){
         return name != null && !name.isEmpty();
     }
 
@@ -152,8 +151,8 @@ public class ParticipantService {
      * @param iban the submitted iban string
      * @return boolean value if the string is a valid iban number
      */
-    private static boolean validateIban(String iban) {
-        String ibanRegex = "^[A-Z]{2}[0-9]{2}(?:[ ]?[0-9]{4}){4}(?:[ ]?[0-9]{1,2})?$";
+    public static boolean validateIban(String iban) {
+        String ibanRegex = "^[A-Z]{2}[0-9]{2}[A-Za-z0-9]{11,30}$";
         return iban != null && Pattern.compile(ibanRegex).matcher(iban).matches();
     }
 
@@ -162,10 +161,9 @@ public class ParticipantService {
      * @param email the submitted email string
      * @return boolean value if the string is a valid email
      */
-    private static boolean validateEmail(String email) {
-        String emailRegex = "^(?=.{1,64}@)[A-Za-z0-9_-]+(\\\\.[A-Za-z0-9_-]+)*@[^-][A-Za-z0-9-]+" +
-                "(\\\\.[A-Za-z0-9-]+)*(\\\\.[A-Za-z]{2,})$";
-        return email != null && Pattern.compile(emailRegex).matcher(email).matches();
+    public static boolean validateEmail(String email) {
+        Pattern basic = Pattern.compile("^[\\w!#$%&’*+/=?{|}~^-]+(?:\\.[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
+        return email != null && basic.matcher(email).matches();
 
     }
 }
