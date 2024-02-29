@@ -27,7 +27,7 @@ public class Event {
      * Empty constructor for object mapper
      */
     @SuppressWarnings("unused")
-    private Event() {
+    public Event() {
     }
 
     /**
