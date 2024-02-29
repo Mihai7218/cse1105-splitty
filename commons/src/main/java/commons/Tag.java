@@ -25,6 +25,22 @@ public class Tag {
     }
 
     /**
+     * Getter for the id property of a tag
+     * @return
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * modify the tag id for the testRepository
+     * @param id the id to set it to
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
      * Creates new tag
      * @param name name of the tag
      * @param color color the tag is displayed as

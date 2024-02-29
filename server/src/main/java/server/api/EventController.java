@@ -1,10 +1,7 @@
 package server.api;
 
 import java.sql.Timestamp;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 import commons.Event;
@@ -54,7 +51,7 @@ public class EventController {
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Event> add(@RequestBody Event event) {
 
-        if (Objects.equals(event.getTitle(), "")) {
+        if (event == null || event.getTitle() == null ||Objects.equals(event.getTitle(), "")) {
             return ResponseEntity.badRequest().build();
         }
         Tag tag1 = new Tag("food", "green");
@@ -64,10 +61,16 @@ public class EventController {
         tagRepo.save(tag2);
         tagRepo.save(tag3);
 
-        List<Tag> savedTags = event.getTagsList();
+        List<Tag> savedTags;
+        if (event.getTagsList() == null) {
+            savedTags = new ArrayList<>();
+        } else {
+            savedTags = event.getTagsList();
+        }
         savedTags.add(tag1);
         savedTags.add(tag2);
         savedTags.add(tag3);
+        event.setTagsList(savedTags);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
         event.setCreationDate(timestamp2);
