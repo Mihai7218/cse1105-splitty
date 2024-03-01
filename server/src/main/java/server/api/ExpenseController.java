@@ -39,6 +39,20 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses);
     }
 
+    @GetMapping(path = { "/api/events/{id}/expenses" })
+    public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
+        if (id < 0 || !eventRepo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        Event event = eventRepo.findById(id).get();
+        List<Expense> expenses = event.getExpensesList();
+        double totalExpense = 0.0;
+        for (Expense expense : expenses) {
+            totalExpense += expense.getAmount();
+        }
+        return ResponseEntity.ok(totalExpense);
+    }
+
     /***
      * @param expense an expense to be added to the repo
      * @return code OK when the expense has been added successfully, Bad Request
