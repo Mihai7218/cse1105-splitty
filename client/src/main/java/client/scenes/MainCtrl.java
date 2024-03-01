@@ -15,6 +15,8 @@
  */
 package client.scenes;
 
+import client.utils.LanguageManager;
+import com.google.inject.Inject;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -31,6 +33,17 @@ public class MainCtrl {
 
     private StartScreenCtrl startScreenCtrl;
     private Scene startScreen;
+
+    private LanguageManager languageManager;
+
+    /**
+     * Constructor for the MainCtrl
+     * @param languageManager - language manager
+     */
+    @Inject
+    public MainCtrl(LanguageManager languageManager) {
+        this.languageManager = languageManager;
+    }
 
     /**
      * Initialize the main controller with the primary stage,
@@ -67,7 +80,7 @@ public class MainCtrl {
      * Shows the start menu scene.
      */
     public void showStartMenu() {
-        primaryStage.setTitle("Splitty: Start Screen");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(startScreen);
     }
 

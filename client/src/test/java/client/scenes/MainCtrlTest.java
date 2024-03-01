@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.utils.LanguageManager;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -40,7 +41,7 @@ public class MainCtrlTest {
 
     @BeforeEach
     public void setup() {
-        sut = new MainCtrl();
+        sut = new MainCtrl(new LanguageManager());
         when(overview.getKey()).thenReturn(qoc);
         when(overview.getValue()).thenReturn(qos);
         when(startScreen.getKey()).thenReturn(ssc);
