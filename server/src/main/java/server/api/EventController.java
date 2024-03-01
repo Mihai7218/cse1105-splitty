@@ -36,7 +36,7 @@ public class EventController {
      * @return returns a list of all events on the server
      */
     @GetMapping(path = { "/{inviteCode}" })
-    public ResponseEntity<Event> getAll(@PathVariable("inviteCode") long inviteCode) {
+    public ResponseEntity<Event> get(@PathVariable("inviteCode") long inviteCode) {
         if (inviteCode < 0 || !repo.existsById(inviteCode)) {
             return ResponseEntity.badRequest().build();
         }

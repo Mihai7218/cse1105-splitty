@@ -63,14 +63,14 @@ public class EventControllerTest {
     @Test
     public void canGetData() {
         var actual = sut.add(new Event("dwa",null,null));
-        var actual2 = sut.getAll(0);
+        var actual2 = sut.get(0);
         assertEquals(OK, actual2.getStatusCode());
     }
 
     @Test
     public void cantGetData() {
         var actual = sut.add(new Event("dwa",null,null));
-        var actual2 = sut.getAll(1);
+        var actual2 = sut.get(1);
         assertEquals(BAD_REQUEST, actual2.getStatusCode());
     }
 
@@ -78,7 +78,7 @@ public class EventControllerTest {
     public void putTest() {
         var actual = sut.add(new Event("dwa",null,null));
         var actual2 = sut.change(0,new Event("das",null,null));
-        var actual3 = sut.getAll(1);
+        var actual3 = sut.get(1);
         assertEquals("das", actual3.getBody().getTitle());
     }
 
