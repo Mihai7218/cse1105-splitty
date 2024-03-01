@@ -43,6 +43,14 @@ public class Participant {
     }
 
     /**
+     * getter for id
+     * @param id long participant id value
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
      * Setter for the name attribute
      * @param name the value to set name to
      */

@@ -3,28 +3,23 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import server.database.EventRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 
 class ParticipantServiceTest {
 
-    public EventRepository eventRepository;
+    public TestEventRepository eventRepository;
+    public TestParticipantRepository participantRepository;
     public Participant valid;
     public Event baseEvent;
     public Participant invalid;
@@ -41,17 +36,9 @@ class ParticipantServiceTest {
     @BeforeEach
     public void init(){
         eventRepository = new TestEventRepository();
+        participantRepository = new TestParticipantRepository();
         participantService = new ParticipantService(
-                eventRepository);
-
-        participantList = new ArrayList<>();
-        participantList.add(baseParticipant);
-        creationDate = new Date(124, 4, 20);
-        lastActivity = new Date(124, 4, 25);
-
-        baseEvent = new Event(123, "Mock Event", new ArrayList<Expense>(),
-                participantList,new ArrayList<Tag>(),creationDate,lastActivity);
-        eventRepository.save(baseEvent);
+                eventRepository, participantRepository);
 
         valid = new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
@@ -59,6 +46,19 @@ class ParticipantServiceTest {
         invalid = new Participant("Jane Doe",
                 "janedoe.com","NL85RABO5253446745",
                 "HBUKGB4B");
+
+        participantList = new ArrayList<>();
+        participantRepository.save(baseParticipant);
+        participantRepository.save(valid);
+        participantList.add(baseParticipant);
+        participantList.add(valid);
+        creationDate = new Date(124, 4, 20);
+        lastActivity = new Date(124, 4, 25);
+
+        baseEvent = new Event(123, "Mock Event", new ArrayList<Expense>(),
+                participantList,new ArrayList<Tag>(),creationDate,lastActivity);
+        eventRepository.save(baseEvent);
+
 
     }
 
@@ -71,28 +71,33 @@ class ParticipantServiceTest {
 
     @Test
     public void getParticipantBadEventID(){
-        ResponseEntity<List<Participant>> result = participantService.getAllParticipants(1);
-        assertEquals(result.getStatusCode(), BAD_REQUEST);
+        ResponseEntity<List<Participant>> result = participantService.getAllParticipants(2);
+        assertEquals(result.getStatusCode(), NOT_FOUND);
     }
 
     @Test
     public void getParticipantBadParticipantID(){
-        ResponseEntity<Participant> result = participantService.getParticipant(0,1);
-        assertEquals(result.getStatusCode(), BAD_REQUEST);
+        ResponseEntity<Participant> result = participantService.getParticipant(0,3);
+        assertEquals(result.getStatusCode(), NOT_FOUND);
     }
 
     @Test
     public void getSingularParticipantTest(){
         Participant result = participantService.getParticipant(0, 0).getBody();
         assertEquals(result, baseParticipant);
+        Participant secondResult = participantService.getParticipant(0,1).getBody();
+        assertEquals(secondResult, valid);
     }
 
     @Test
     public void addValidParticipantTest(){
-        ResponseEntity<Participant> response = participantService.addParticipant(0, valid);
+        Participant three = new Participant("Ethan", "eyoung@gmail.com",
+                "NL85RABO5253446745", "HBUKGB4B");
+        ResponseEntity<Participant> response = participantService.addParticipant(0, three);
         Participant result = response.getBody();
-        assertEquals(result, valid);
-        assertEquals(participantService.getAllParticipants(0).getBody().size(), 2);
+        assertEquals(result, three);
+        assertEquals(participantService.getAllParticipants(0).getBody().size(), 3);
+        assertEquals(participantService.getParticipant(0,2).getBody(), three);
     }
 
     @Test
@@ -100,17 +105,17 @@ class ParticipantServiceTest {
         ResponseEntity<Participant> result = participantService.addParticipant(0, invalid);
         HttpStatusCode status = result.getStatusCode();
         assertEquals(status, BAD_REQUEST);
-        assertEquals(participantService.getAllParticipants(0).getBody().size(), 1);
+        assertEquals(participantService.getAllParticipants(0).getBody().size(), 2);
     }
 
     @Test
     public void updateParticipantValidTest(){
         ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, "Christina Smith",
                 "cmsmith@yahoo.com", "NL85ABNA5253446745", "AMUKGB7B");
-        assertEquals(participantService.getParticipant(0, 0).getBody().getName(), "Christina Smith");
-        assertEquals(participantService.getParticipant(0, 0).getBody().getEmail(), "cmsmith@yahoo.com");
-        assertEquals(participantService.getParticipant(0, 0).getBody().getIban(), "NL85ABNA5253446745");
-        assertEquals(participantService.getParticipant(0, 0).getBody().getBic(), "AMUKGB7B");
+        assertEquals(result.getBody().getName(), "Christina Smith");
+        assertEquals(result.getBody().getEmail(), "cmsmith@yahoo.com");
+        assertEquals(result.getBody().getIban(), "NL85ABNA5253446745");
+        assertEquals(result.getBody().getBic(), "AMUKGB7B");
         Participant updated = new Participant("Christina Smith", "cmsmith@yahoo.com", "NL85ABNA5253446745",
                 "AMUKGB7B");
         assertEquals(updated, result.getBody());
@@ -120,12 +125,13 @@ class ParticipantServiceTest {
     public void deleteParticipant(){
         ResponseEntity<Participant> result = participantService.deleteParticipant(0, 0);
         assertEquals(baseParticipant, result.getBody());
-        assertEquals(participantService.getAllParticipants(0).getBody().size(), 0);
+        assertEquals(participantService.getAllParticipants(0).getBody().size(), 1);
+        assertEquals(NOT_FOUND, participantService.getParticipant(0,0).getStatusCode());
     }
 
     @Test
     public void deleteParticipantInvalid(){
-        ResponseEntity<Participant> result = participantService.deleteParticipant(0,1);
+        ResponseEntity<Participant> result = participantService.deleteParticipant(0,2);
         assertEquals(result.getStatusCode(), BAD_REQUEST);
     }
 

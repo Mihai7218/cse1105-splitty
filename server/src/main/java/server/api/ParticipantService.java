@@ -6,22 +6,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
+import server.database.ParticipantRepository;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static org.springframework.http.HttpStatus.*;
+
 @Service
 public class ParticipantService {
     private final EventRepository eventRepository;
-
+    private final ParticipantRepository participantRepository;
 
     /**
      * ParticipantService Constructor
      * @param eventRepository the event repository to retrieve events from
      */
     @Autowired
-    public ParticipantService(EventRepository eventRepository){
+    public ParticipantService(EventRepository eventRepository,
+                              ParticipantRepository participantRepository){
         this.eventRepository = eventRepository;
+        this.participantRepository = participantRepository;
     }
 
     /**
@@ -30,9 +35,11 @@ public class ParticipantService {
      * @return list of participants if successfully retrieved
      */
     public ResponseEntity<List<Participant>> getAllParticipants(long eventId) {
-        if(eventId < 0 || !eventRepository.existsById(eventId)){
+        if(eventId < 0){
             return ResponseEntity.badRequest().build();
-        }else if(eventRepository.findById(eventId).isPresent()) {
+        }else if (!eventRepository.existsById(eventId)){
+            return ResponseEntity.notFound().build();
+        } else if(eventRepository.findById(eventId).isPresent()) {
             return ResponseEntity.ok(
                     eventRepository.findById(eventId).get().getParticipantsList());
         }else {
@@ -47,16 +54,19 @@ public class ParticipantService {
      * @return participant if succesfully retrieved
      */
     public ResponseEntity<Participant> getParticipant(long eventId, long id) {
+        if(!getAllParticipants(eventId).getStatusCode().equals(OK)){
+            return ResponseEntity.badRequest().build();
+        }
         List<Participant> participants = getAllParticipants(eventId).getBody();
         if(id < 0 || participants==null){
             return ResponseEntity.badRequest().build();
         }
-        participants = participants.stream().filter(item -> item.getId()==id).toList();
-        if(participants.size() != 1 || participants.get(0) == null){
-            return ResponseEntity.badRequest().build();
+        List<Participant> filtered =
+                participants.stream().filter(item -> item.getId()==id).toList();
+        if(filtered.size() != 1 || filtered.get(0) == null){
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(participants.get(0));
-
+        return ResponseEntity.ok(filtered.get(0));
     }
 
     /**
@@ -66,11 +76,14 @@ public class ParticipantService {
      * @return participant if successfully added to event
      */
     public ResponseEntity<Participant> addParticipant(long eventId, Participant participant) {
-        List<Participant> currentParticipants = getAllParticipants(eventId).getBody();
-        if(participant == null || currentParticipants == null){
+        if(getAllParticipants(eventId).getStatusCode().equals(BAD_REQUEST)){
             return ResponseEntity.badRequest().build();
+        }else if(getAllParticipants(eventId).getStatusCode().equals(NOT_FOUND)){
+            return ResponseEntity.notFound().build();
         }
-        if(currentParticipants.contains(participant)){
+        List<Participant> currentParticipants = getAllParticipants(eventId).getBody();
+        if(participant == null || currentParticipants == null
+            || currentParticipants.contains(participant)){
             return ResponseEntity.badRequest().build();
         }
 
@@ -79,6 +92,7 @@ public class ParticipantService {
             return ResponseEntity.badRequest().build();
         }
 
+        participantRepository.save(participant);
         currentParticipants.add(participant);
         return ResponseEntity.ok(participant);
     }
@@ -96,10 +110,11 @@ public class ParticipantService {
     @Transactional
     public ResponseEntity<Participant> updateParticipant(long eventId, long id, String name,
                                                          String email, String iban, String bic) {
-        Participant participant = getParticipant(eventId,id).getBody();
-        if(participant == null){
-            return ResponseEntity.badRequest().build();
+        if(!getParticipant(eventId, id).getStatusCode().equals(OK)
+            || getParticipant(eventId,id).getBody() == null){
+            return getParticipant(eventId,id);
         }
+        Participant participant = getParticipant(eventId,id).getBody();
         if(validateName(name)){
             participant.setName(name);
         }
@@ -112,6 +127,7 @@ public class ParticipantService {
         if(validateBic(bic)){
             participant.setBic(bic);
         }
+        participantRepository.save(participant);
         return ResponseEntity.ok(participant);
     }
 
@@ -122,12 +138,18 @@ public class ParticipantService {
      * @return participant if successfully removed
      */
     public ResponseEntity<Participant> deleteParticipant(long eventId, long id) {
+        if(getAllParticipants(eventId).getStatusCode().equals(BAD_REQUEST)
+            || getParticipant(eventId, id).getStatusCode().equals(NOT_FOUND)){
+            return ResponseEntity.badRequest().build();
+        }
         List<Participant> participantList = getAllParticipants(eventId).getBody();
         Participant participant = getParticipant(eventId, id).getBody();
-        if(participant == null){
+        if(participant == null || participantList == null){
             return ResponseEntity.badRequest().build();
         }
         participantList.remove(participant);
+        participantRepository.deleteById(id);
+        eventRepository.getReferenceById(eventId).setParticipantsList(participantList);
         return ResponseEntity.ok(participant);
     }
 
