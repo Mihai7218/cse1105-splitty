@@ -16,6 +16,7 @@
 package client.utils;
 
 import com.google.inject.Inject;
+import commons.Event;
 import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -36,6 +37,10 @@ public class ServerUtils {
     private final ConfigInterface config;
     private final String server;
 
+    /**
+     * Constructor for the ServerUtils
+     * @param config - config
+     */
     @Inject
     public ServerUtils(ConfigInterface config) {
         this.config = config;
@@ -86,5 +91,31 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
+    }
+
+    /**
+     * Method that sends a request to the server to create a new Event.
+     * @param e - the event to be created
+     * @return - the event that was created
+     */
+    public Event addEvent(Event e) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(e, APPLICATION_JSON), Event.class);
+    }
+
+    /**
+     * Method that gets the event from the server with the given id.
+     * @param i - id of the event.
+     * @return - the event with the given id from the server.
+     */
+    public Event getEvent(int i) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + i)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Event.class);
     }
 }

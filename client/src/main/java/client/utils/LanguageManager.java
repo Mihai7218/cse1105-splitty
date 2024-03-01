@@ -12,7 +12,6 @@ import java.util.ResourceBundle;
 
 public class LanguageManager extends SimpleMapProperty<String, Object> {
 
-    Locale locale = Locale.getDefault();
 
     /**
      * Constructor for the LanguageManager.
@@ -26,7 +25,7 @@ public class LanguageManager extends SimpleMapProperty<String, Object> {
      * @param locale - locale of the new language.
      */
     public void changeLanguage(Locale locale) {
-        this.locale = locale;
+        Locale.setDefault(locale);
         refresh();
     }
 
@@ -35,7 +34,7 @@ public class LanguageManager extends SimpleMapProperty<String, Object> {
      * from the ResourceBundle of the new language.
      */
     public void refresh() {
-        ResourceBundle rb = ResourceBundle.getBundle("client.languages", locale);
+        ResourceBundle rb = ResourceBundle.getBundle("client.languages", Locale.getDefault());
         var keys = rb.getKeys();
         while (keys.hasMoreElements()) {
             String key = keys.nextElement();
