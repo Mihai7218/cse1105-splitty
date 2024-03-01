@@ -1,12 +1,10 @@
 package server.api;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 
 import commons.*;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +17,10 @@ public class ExpenseController {
     private final EventRepository eventRepo;
     private final ExpenseRepository expenseRepo;
 
+    /***
+     * @param eventRepo the repo which stores the events
+     * @param expenseRepo the repo which stores the expenses
+     */
     public ExpenseController(EventRepository eventRepo, ExpenseRepository expenseRepo) {
         this.eventRepo = eventRepo;
         this.expenseRepo = expenseRepo;
@@ -29,7 +31,7 @@ public class ExpenseController {
      * Get method to get all the expenses associated with a certain event
      * @return returns a list of all expenses within a certain event
      */
-    @GetMapping(path = { "/api/events/{id}/expenses" })
+    @GetMapping(path = { "" })
     public ResponseEntity<List<Expense>> getAllExpenses(@PathVariable("id") long id) {
         if (id < 0 || !eventRepo.existsById(id)) {
             return ResponseEntity.badRequest().build();
@@ -39,7 +41,11 @@ public class ExpenseController {
         return ResponseEntity.ok(expenses);
     }
 
-    @GetMapping(path = { "/api/events/{id}/expenses" })
+    /***
+     * @param id the event of which we want to sum the total of expenses
+     * @return the sum of all expenses
+     */
+    @GetMapping(path = { "/total" })
     public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
         if (id < 0 || !eventRepo.existsById(id)) {
             return ResponseEntity.badRequest().build();
@@ -58,7 +64,7 @@ public class ExpenseController {
      * @return code OK when the expense has been added successfully, Bad Request
      * otherwise
      */
-    @PostMapping(path = {"/api/events/{id}/expenses"})
+    @PostMapping(path = {""})
     public ResponseEntity<Expense> add(@RequestBody Expense expense) {
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
@@ -74,7 +80,7 @@ public class ExpenseController {
      * @param expenseId the id of the expense to be updated
      * @return whether the title of the expense could be updated
      */
-    @PutMapping(path = {"/api/events/{eventId}/expenses/{expenseId}"})
+    @PutMapping(path = {"/{expenseId}/title"})
     public ResponseEntity<Void> changeTitle(@RequestBody String title,
                                             @PathVariable("expenseId") long expenseId){
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
@@ -94,7 +100,7 @@ public class ExpenseController {
      * @param expenseId the id of the expense to change the amount of
      * @return whether the amount could be changed
      */
-    @PutMapping(path = {"/api/events/{eventId}/expenses/{expenseId}"})
+    @PutMapping(path = {"/{expenseId}/amount"})
     public ResponseEntity<Void> changeAmount(@RequestBody double amount,
                                             @PathVariable("expenseId") long expenseId){
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
@@ -114,7 +120,7 @@ public class ExpenseController {
      * @param expenseId the ID of the expense to be updated
      * @return whether the payee could be updated
      */
-    @PutMapping(path = {"/api/events/{eventId}/expenses/{expenseId}"})
+    @PutMapping(path = {"/{expenseId}/payee"})
     public ResponseEntity<Void> changePayee(@RequestBody Participant payee,
                                              @PathVariable("expenseId") long expenseId){
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
@@ -133,7 +139,7 @@ public class ExpenseController {
      * @param expenseId ID of the expense to be deleted
      * @return whether the expense could be deleted from the event
      */
-    @DeleteMapping(path = {"/api/events/{id}/expenses/{expenseId}"})
+    @DeleteMapping(path = {"/{expenseId}"})
     public ResponseEntity<Void> deleteExpense(@PathVariable("expenseId") long expenseId){
 
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
