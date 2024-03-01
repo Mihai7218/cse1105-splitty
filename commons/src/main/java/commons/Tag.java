@@ -10,8 +10,8 @@ import java.util.Objects;
 public class Tag {
 
     @Id
-    public String name;
-    public String color;
+    private String name;
+    private String color;
 
     /**
      * Empty constructor for object mapper

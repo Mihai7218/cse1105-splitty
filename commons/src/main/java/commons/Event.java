@@ -1,31 +1,27 @@
 package commons;
 
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
 public class Event {
-
+    //TODO: change invite code into string
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-
-    public String invitecode;
-    public String title;
-    // TO DO: specify the list to be a list of expenses
-    public List<Expense> expensesList;
-    public List<Participant> participantsList;
-    public List<Tag> tagsList;
-    public Date creationdate;
-    public Date lastactivity;
+    private int inviteCode;
+    private String title;
+    @OneToMany
+    private List<Expense> expensesList;
+    @OneToMany
+    private List<Participant> participantsList;
+    @OneToMany
+    private List<Tag> tagsList;
+    private Date creationDate;
+    private Date lastActivity;
 
     /**
      * Empty constructor for object mapper
@@ -35,132 +31,126 @@ public class Event {
     }
 
     /**
-     * Constructor for an Event
-     * @param invitecode The invitecode of the event
+     * Constructor for an event
+     * @param inviteCode The inviteCode of the event
      * @param title The title of the event
-     * @param creationdate The creation date of the event
-     * @param lastactivity The last activity of the event
+     * @param expensesList The expenses of the event
+     * @param participantsList The participants of the event
+     * @param tagsList The tags of the event
+     * @param creationDate The creation date of the event
+     * @param lastActivity The last activity of the event
      */
-    public Event(String invitecode, String title, Date creationdate, Date lastactivity) {
-        this.invitecode = invitecode;
+    public Event(int inviteCode, String title, List<Expense> expensesList,
+                 List<Participant> participantsList,
+                 List<Tag> tagsList, Date creationDate, Date lastActivity) {
+        this.inviteCode = inviteCode;
         this.title = title;
-        this.expensesList = new ArrayList<>();
-        this.participantsList = new ArrayList<>();
-        this.tagsList = new ArrayList<>();
-        this.creationdate = creationdate;
-        this.lastactivity = lastactivity;
+        this.expensesList = expensesList;
+        this.participantsList = participantsList;
+        this.tagsList = tagsList;
+        this.creationDate = creationDate;
+        this.lastActivity = lastActivity;
     }
 
     /**
-     * Retrieves Event invitecode
-     * @return String for the Event invitecode
+     * @return returns the invite code of the event
      */
-    public String getInvitecode() {
-        return invitecode;
+    public int getInviteCode() {
+        return inviteCode;
     }
 
     /**
-     * Modifies the invitecode
-     * @param invitecode string for new Event invitecode
+     * @param inviteCode sets the invite code of the event
      */
-    public void setInvitecode(String invitecode) {
-        this.invitecode = invitecode;
+    public void setInviteCode(int inviteCode) {
+        this.inviteCode = inviteCode;
     }
 
     /**
-     * Retrieves Event title
-     * @return String for the Event title
+     * @return the title of the event
      */
     public String getTitle() {
         return title;
     }
 
     /**
-     * Modifies the title
-     * @param title String for new Event title
+     * @param title rename the event
      */
     public void setTitle(String title) {
         this.title = title;
     }
 
     /**
-     * Retrieves Event expensesList
-     * @return list of the expenses of the Event
+     * @return the list of expenses of the event
      */
     public List<Expense> getExpensesList() {
         return expensesList;
     }
 
     /**
-     * Changes the list to a different list
-     * @param expensesList List for new Event expenses list
+     * @param expensesList set the expenses list to a new list
+     *                     TODO: addExpense method
      */
     public void setExpensesList(List<Expense> expensesList) {
         this.expensesList = expensesList;
     }
 
     /**
-     * Retrieves Event participantsList
-     * @return list of the participants of the Event
+     * @return the list of participants of the event
      */
     public List<Participant> getParticipantsList() {
         return participantsList;
     }
 
     /**
-     * Changes the list to a different list
-     * @param participantsList List for new Event participant list
+     * @param participantsList set the list of participants of the event
+     *                         TODO: addParticipant method
      */
     public void setParticipantsList(List<Participant> participantsList) {
         this.participantsList = participantsList;
     }
 
     /**
-     * Retrieves Event tagsList
-     * @return list of the tags of the Event
+     * @return the tags of the event
      */
     public List<Tag> getTagsList() {
         return tagsList;
     }
 
     /**
-     * Changes the list to a different list
-     * @param tagsList List for new Event tags list
+     * @param tagsList change the list of tags of the event
+     *                 TODO: addTag method
      */
     public void setTagsList(List<Tag> tagsList) {
         this.tagsList = tagsList;
     }
 
     /**
-     * Retrieves Event creation date
-     * @return Date for the creation date of the Event
+     * @return the date the event was created
      */
-    public Date getCreationdate() {
-        return creationdate;
+    public Date getCreationDate() {
+        return creationDate;
     }
 
     /**
-     * Changes the creation date of the Event
-     * @param creationdate Date for the new creation date of the Event
+     * @param creationDate change/set the creation date of the event
      */
-    public void setCreationdate(Date creationdate) {
-        this.creationdate = creationdate;
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
     }
 
     /**
-     * Retrieves date of the last activity
-     * @return Date for the last activity of the Event
+     * @return the last time the event was managed
      */
-    public Date getLastactivity() {
-        return lastactivity;
+    public Date getLastActivity() {
+        return lastActivity;
     }
 
     /**
-     * Changes the last activity date of the Event
-     * @param lastactivity Date for the new last activity date of the Event
+     * @param lastActivity change/set the date the event was last managed
      */
-    public void setLastactivity(Date lastactivity) {
-        this.lastactivity = lastactivity;
+    public void setLastActivity(Date lastActivity) {
+        this.lastActivity = lastActivity;
     }
 
     /**
@@ -173,15 +163,14 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event that = (Event) o;
-        return Objects.equals(invitecode, that.invitecode) &&
+        return Objects.equals(inviteCode, that.inviteCode) &&
                 Objects.equals(title, that.title) &&
                 Objects.equals(expensesList, that.expensesList) &&
                 Objects.equals(participantsList, that.participantsList) &&
                 Objects.equals(tagsList, that.tagsList) &&
-                Objects.equals(creationdate, that.creationdate) &&
-                Objects.equals(lastactivity, that.lastactivity);
+                Objects.equals(creationDate, that.creationDate) &&
+                Objects.equals(lastActivity, that.lastActivity);
     }
-
 
     /**
      * Function to hash an Event
@@ -193,18 +182,19 @@ public class Event {
     }
 
     /**
-     * A toString methode to display a participant in a human-readable format
-     * @return returns a human-readable format of an Event
+     * A toString method to display an event in a human-readable format
+     * @return returns a human-readable format of an event
      */
     @Override
     public String toString() {
         return "Event{" +
-                "invitecode='" + invitecode + '\'' +
+                "inviteCode='" + inviteCode + '\'' +
                 ", title='" + title + '\'' +
-                ", expenses='" + expensesList + '\'' +
-                ", tags='" + tagsList + '\'' +
-                ", creationdate='" + creationdate + '\'' +
-                ", lastactivity='" + lastactivity + '\'' +
+                ", expenses='" + expensesList.toString() + '\'' +
+                ", participants='" + participantsList.toString() + '\'' +
+                ", tags='" + tagsList.toString() + '\'' +
+                ", creationDate='" + creationDate + '\'' +
+                ", lastActivity='" + lastActivity + '\'' +
                 '}';
     }
 }

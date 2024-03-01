@@ -1,11 +1,11 @@
-|  Key         | Value                                                     |
-|--------------|-----------------------------------------------------------|
-| Date:        | 27/02/2024                                                |
-| Time:        | 14:45 - 15:30                                             |
-| Location:    | DW PC1 Cubicle 6                                          |
-| Chair        | Stella Schultz                                            |
-| Minute Taker | Vlad Cioculeasa                                           |
-| Attendees:   | Azra Ocak, <br/>Philip Lekkerkerker,<br/>Zico Krassenburg |
+|  Key         | Value                                                                     |
+|--------------|---------------------------------------------------------------------------|
+| Date:        | 27/02/2024                                                                |
+| Time:        | 14:45 - 15:30                                                             |
+| Location:    | DW PC1 Cubicle 6                                                          |
+| Chair        | Stella Schultz                                                            |
+| Minute Taker | Vlad Cioculeasa                                                           |
+| Attendees:   | Azra Ocak, <br/>Philip Lekkerkerker,<br/>Zico Krassenburg,<br/>Mihai Bratu|
 ## Agenda Items:
 
 - Opening by chair (1 min)
