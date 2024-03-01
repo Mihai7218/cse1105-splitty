@@ -15,6 +15,7 @@
  */
 package client.utils;
 
+import com.google.inject.Inject;
 import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
@@ -32,7 +33,19 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
 
-    private static final String SERVER = "http://localhost:8080/";
+    private final ConfigInterface config;
+    private final String server;
+
+    @Inject
+    public ServerUtils(ConfigInterface config) {
+        this.config = config;
+        if (config.getProperty("server") != null)
+            server = config.getProperty("server");
+        else {
+            server = "http://localhost:8080";
+            config.setProperty("server", server);
+        }
+    }
 
     /**
      *
@@ -55,7 +68,7 @@ public class ServerUtils {
      */
     public List<Quote> getQuotes() {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Quote>>() {
@@ -69,7 +82,7 @@ public class ServerUtils {
      */
     public Quote addQuote(Quote quote) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(SERVER).path("api/quotes") //
+                .target(server).path("api/quotes") //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(quote, APPLICATION_JSON), Quote.class);
