@@ -29,7 +29,9 @@ public class StartScreenCtrl implements Initializable {
      * @param config - config
      */
     @Inject
-    public StartScreenCtrl(MainCtrl mainCtrl, ConfigInterface config, LanguageManager languageManager) {
+    public StartScreenCtrl(MainCtrl mainCtrl,
+                           ConfigInterface config,
+                           LanguageManager languageManager) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
@@ -59,6 +61,9 @@ public class StartScreenCtrl implements Initializable {
         this.refreshLanguage();
     }
 
+    /**
+     * Method that refreshes the language.
+     */
     private void refreshLanguage() {
         String language = config.getProperty("language");
         if (language == null) {
@@ -67,14 +72,26 @@ public class StartScreenCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+    /**
+     * Getter for the language manager observable map.
+     * @return - the language manager observable map.
+     */
     public ObservableMap<String, Object> getLanguageManager() {
         return languageManager.get();
     }
 
+    /**
+     * Getter for the language manager property.
+     * @return - the language manager property.
+     */
     public LanguageManager languageManagerProperty() {
         return languageManager;
     }
 
+    /**
+     * Setter for the language manager observable map.
+     * @param languageManager - the language manager observable map.
+     */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
         this.languageManager.set(languageManager);
     }

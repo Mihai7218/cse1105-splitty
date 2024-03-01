@@ -14,16 +14,26 @@ public class LanguageManager extends SimpleMapProperty<String, Object> {
 
     Locale locale = Locale.getDefault();
 
+    /**
+     * Constructor for the LanguageManager.
+     */
     public LanguageManager() {
         super(FXCollections.observableHashMap());
     }
 
+    /**
+     * Method that changes the currently selected language.
+     * @param locale - locale of the new language.
+     */
     public void changeLanguage(Locale locale) {
         this.locale = locale;
         refresh();
-        System.out.println("Finished Changing Language");
     }
 
+    /**
+     * Method that refreshes the MapProperty with the values
+     * from the ResourceBundle of the new language.
+     */
     public void refresh() {
         ResourceBundle rb = ResourceBundle.getBundle("client.languages", locale);
         var keys = rb.getKeys();
@@ -46,6 +56,11 @@ public class LanguageManager extends SimpleMapProperty<String, Object> {
         }
     }
 
+    /**
+     * Method that binds each key to the value in this map.
+     * @param key - the key to bind
+     * @return - a StringBinding of the key to the value in this map.
+     */
     public StringBinding bind(String key) {
         MapProperty<String, Object> map = this;
         String[] parts = key.split("\\.");
