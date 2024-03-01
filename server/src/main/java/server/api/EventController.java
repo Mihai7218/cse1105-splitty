@@ -116,8 +116,18 @@ public class EventController {
         }
 
         Event saved = repo.findById(inviteCode).get();
+
+        List<Tag> tmpTags = new ArrayList<>();
+        for(Tag tag : saved.getTagsList()) {
+            tmpTags.add(tag);
+        }
+        saved.getTagsList().removeAll(saved.getTagsList());
+        repo.save(saved);
+        for(Tag tag : tmpTags) {
+            tagRepo.deleteById(tag.getId());
+        }
         repo.deleteAllById(Collections.singleton(inviteCode));
-        return ResponseEntity.ok(saved);
+        return ResponseEntity.ok(null);
     }
 
 
