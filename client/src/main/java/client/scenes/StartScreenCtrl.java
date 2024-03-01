@@ -149,8 +149,10 @@ public class StartScreenCtrl implements Initializable {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.initModality(Modality.APPLICATION_MODAL);
             switch (ex.getResponse().getStatus()) {
-                case 500 -> alert.contentTextProperty().bind(languageManager.bind("startScreen.createEvent500"));
-                case 404 -> alert.contentTextProperty().bind(languageManager.bind("startScreen.createEvent404"));
+                case 500 -> alert.contentTextProperty()
+                        .bind(languageManager.bind("startScreen.createEvent500"));
+                case 404 -> alert.contentTextProperty()
+                        .bind(languageManager.bind("startScreen.createEvent404"));
             }
             alert.showAndWait();
             return;
@@ -190,9 +192,12 @@ public class StartScreenCtrl implements Initializable {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.initModality(Modality.APPLICATION_MODAL);
             switch (ex.getResponse().getStatus()) {
-                case 404 -> alert.contentTextProperty().bind(languageManager.bind("startScreen.joinEvent404"));
-                case 500 -> alert.contentTextProperty().bind(languageManager.bind("startScreen.joinEvent500"));
-                case 400 -> alert.contentTextProperty().bind(languageManager.bind("startScreen.joinEvent400"));
+                case 404 -> alert.contentTextProperty()
+                        .bind(languageManager.bind("startScreen.joinEvent404"));
+                case 500 -> alert.contentTextProperty()
+                        .bind(languageManager.bind("startScreen.joinEvent500"));
+                case 400 -> alert.contentTextProperty()
+                        .bind(languageManager.bind("startScreen.joinEvent400"));
             }
             alert.showAndWait();
             return;
