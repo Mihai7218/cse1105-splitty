@@ -29,13 +29,14 @@ public class LanguageComboBox extends ComboBox<String> {
      */
     private static List<String> getLanguageCodes() {
         File languagesFolder = new File(String.valueOf(Path.of("client",
-                "src", "main", "resources", "languages")));
+                "src", "main", "resources", "client")));
         File[] languageFiles = languagesFolder.listFiles();
         if (languageFiles == null)
             return new ArrayList<>();
         return Arrays.stream(languageFiles)
+                .filter(File::isFile)
                 .map(File::getName)
                 .filter(name -> !name.equals("template.properties"))
-                .map(filename -> filename.substring(0, 2)).sorted().toList();
+                .map(filename -> filename.substring(10, 12)).sorted().toList();
     }
 }

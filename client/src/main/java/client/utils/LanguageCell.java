@@ -80,7 +80,7 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
         try {
             language.load(new FileInputStream(
                     String.valueOf(Path.of("client", "src", "main",
-                            "resources", "languages", languageCode +".properties"))));
+                            "resources", "client", "languages_" + languageCode +".properties"))));
         } catch (IOException e) {
             return "Language not found";
         }

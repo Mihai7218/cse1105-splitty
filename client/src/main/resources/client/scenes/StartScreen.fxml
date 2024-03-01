@@ -19,16 +19,16 @@
          <children>
             <VBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
                <children>
-                  <Label fx:id="createNewEventLabel" text="Create New Event">
+                  <Label fx:id="createNewEventLabel" text="${controller.languageManager.startScreen.createNewEventLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
                      <children>
-                        <TextField fx:id="newEventTitle" promptText="Title..." />
+                        <TextField fx:id="newEventTitle" promptText="${controller.languageManager.startScreen.newEventTitle}" />
                         <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <Button id="joinButton" fx:id="createEventButton" mnemonicParsing="false" text="Create" />
+                        <Button id="joinButton" fx:id="createEventButton" mnemonicParsing="false" text="${controller.languageManager.startScreen.createEventButton}" />
                      </children>
                   </HBox>
                </children>
@@ -36,16 +36,16 @@
             <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
             <VBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
                <children>
-                  <Label fx:id="joinEventLabel" text="Join Event">
+                  <Label fx:id="joinEventLabel" text="${controller.languageManager.startScreen.joinEventLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
                      <children>
-                        <TextField fx:id="eventInvite" promptText="Invite code..." />
+                        <TextField fx:id="eventInvite" promptText="${controller.languageManager.startScreen.eventInvite}" />
                         <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <Button id="joinButton" fx:id="joinEventButton" mnemonicParsing="false" text="Join" />
+                        <Button id="joinButton" fx:id="joinEventButton" mnemonicParsing="false" text="${controller.languageManager.startScreen.joinEventButton}" />
                      </children>
                   </HBox>
                </children>
@@ -53,7 +53,7 @@
             <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label fx:id="recentEventsLabel" text="Recently viewed events:">
+                  <Label fx:id="recentEventsLabel" text="${controller.languageManager.startScreen.recentEventsLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
