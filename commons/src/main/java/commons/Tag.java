@@ -2,6 +2,8 @@
 package commons;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 import java.util.Objects;
@@ -10,6 +12,8 @@ import java.util.Objects;
 public class Tag {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
     private String name;
     private String color;
 
@@ -18,6 +22,22 @@ public class Tag {
      */
     @SuppressWarnings("unused")
     private Tag() {
+    }
+
+    /**
+     * Getter for the id property of a tag
+     * @return returns the id of the Tag
+     */
+    public long getId() {
+        return id;
+    }
+
+    /**
+     * modify the tag id for the testRepository
+     * @param id the id to set it to
+     */
+    public void setId(long id) {
+        this.id = id;
     }
 
     /**
