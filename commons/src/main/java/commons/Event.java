@@ -1,11 +1,7 @@
 package commons;
 
+import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,9 +16,11 @@ public class Event {
 
     public String invitecode;
     public String title;
-    // TO DO: specify the list to be a list of expenses
+    @OneToMany
     public List<Expense> expensesList;
+    @OneToMany
     public List<Participant> participantsList;
+    @OneToMany
     public List<Tag> tagsList;
     public Date creationdate;
     public Date lastactivity;
