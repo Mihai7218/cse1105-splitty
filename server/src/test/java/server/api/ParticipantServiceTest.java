@@ -55,9 +55,10 @@ class ParticipantServiceTest {
         creationDate = new Date(124, 4, 20);
         lastActivity = new Date(124, 4, 25);
 
-        baseEvent = new Event(123, "Mock Event", new ArrayList<Expense>(),
-                participantList,new ArrayList<Tag>(),creationDate,lastActivity);
+        baseEvent = new Event("Mock Event",creationDate,lastActivity);
         eventRepository.save(baseEvent);
+        eventRepository.getById(0L).setParticipantsList(participantList);
+
 
 
     }
