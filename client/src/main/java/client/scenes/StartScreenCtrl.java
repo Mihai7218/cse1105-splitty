@@ -26,7 +26,7 @@ public class StartScreenCtrl implements Initializable {
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
-    List<Event> recentEventsList;
+    List<Event> recentEventsList = new ArrayList<>();
     @FXML
     private LanguageComboBox languages;
     @FXML
@@ -140,9 +140,8 @@ public class StartScreenCtrl implements Initializable {
             alert.showAndWait();
             return;
         }
-        Event e = new Event(1, newEventTitle.getText(),
-                new ArrayList<>(), new ArrayList<>(), new ArrayList<>(),
-                Date.from(new Date().toInstant()), Date.from(new Date().toInstant()));
+        Date date = new Date();
+        Event e = new Event(newEventTitle.getText(), date, date);
         try {
             e = serverUtils.addEvent(e);
         } catch (WebApplicationException ex) {
@@ -158,7 +157,7 @@ public class StartScreenCtrl implements Initializable {
             return;
         }
         addRecentEvent(e);
-        mainCtrl.showOverview(); //should show the overview of the event
+        //TODO: redirect the user to the add/edit event scene
     }
 
     /**
@@ -188,21 +187,26 @@ public class StartScreenCtrl implements Initializable {
         try {
             e = serverUtils.getEvent(Integer.parseInt(eventInvite.getText()));
             addRecentEvent(e);
-        } catch (WebApplicationException ex) {
+        } catch (WebApplicationException | NumberFormatException ex) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.initModality(Modality.APPLICATION_MODAL);
-            switch (ex.getResponse().getStatus()) {
-                case 404 -> alert.contentTextProperty()
-                        .bind(languageManager.bind("startScreen.joinEvent404"));
-                case 500 -> alert.contentTextProperty()
-                        .bind(languageManager.bind("startScreen.joinEvent500"));
-                case 400 -> alert.contentTextProperty()
-                        .bind(languageManager.bind("startScreen.joinEvent400"));
+            if (ex instanceof NumberFormatException) {
+                alert.contentTextProperty().bind(languageManager.bind("startScreen.joinEvent400"));
+            } else {
+                WebApplicationException exp = (WebApplicationException) ex;
+                switch (exp.getResponse().getStatus()) {
+                    case 404 -> alert.contentTextProperty()
+                            .bind(languageManager.bind("startScreen.joinEvent404"));
+                    case 500 -> alert.contentTextProperty()
+                            .bind(languageManager.bind("startScreen.joinEvent500"));
+                    case 400 -> alert.contentTextProperty()
+                            .bind(languageManager.bind("startScreen.joinEvent400"));
+                }
             }
             alert.showAndWait();
             return;
         }
-        mainCtrl.showOverview(); //should show the overview of the specified event
+        //TODO: redirect the user to the overview of the event
     }
 
     /**
@@ -212,7 +216,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public void joinEventTextFieldHandler(KeyEvent e) {
         if (Objects.requireNonNull(e.getCode()) == KeyCode.ENTER) {
-            createEventButtonHandler();
+            joinEventButtonHandler();
         }
     }
 }
