@@ -41,7 +41,7 @@ public class Participant {
         this.iban = iban;
         this.bic = bic;
     }
-    
+
     /**
      * Setter for the name attribute
      * @param name the value to set name to
@@ -80,6 +80,14 @@ public class Participant {
      */
     public long getId() {
         return id;
+    }
+
+    /**
+     * sets the id of the participants
+     * @param id id value for participant
+     */
+    public void setId(long id) {
+        this.id = id;
     }
 
     /**
