@@ -85,7 +85,8 @@ public class OverviewCtrl {
      * Refreshes the items in the view.
      */
     public void refresh() {
-      //Should refresh the view with updated items from the event object. e.g. you add a participant then the list of participants should update in the view.
+      //Should refresh the view with updated items from the event object. e.g.
+        // you add a participant then the list of participants should update in the view.
     }
 
 }
