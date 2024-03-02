@@ -39,10 +39,11 @@ public class MainCtrl {
      * @param primaryStage primary stage of the controller.
      * @param overview     overview controller and scene
      * @param add          add quote controller and scene
-     * @param participant
+     * @param participant  participant controller and scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-                           Pair<AddQuoteCtrl, Parent> add, Pair<ParticipantCtrl, Parent> participant) {
+                           Pair<AddQuoteCtrl, Parent> add
+            , Pair<ParticipantCtrl, Parent> participant) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -75,6 +76,9 @@ public class MainCtrl {
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
     }
 
+    /**
+     * Shows the participant scene.
+     */
     public void showParticipant() {
         primaryStage.setTitle("Add/Edit Participant");
         primaryStage.setScene(participant);
