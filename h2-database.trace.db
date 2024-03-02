@@ -106,3 +106,15 @@ create table participant_payment (id bigint not null, value float(53) not null, 
 2024-02-27 15:47:36.658961+01:00 jdbc[3]: exception
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPANT_PAYMENT" not found; SQL statement:
 alter table if exists expense_split add constraint FK2bou7w3qce2mxjo2ohyu4l5i foreign key (split_id) references participant_payment [42102-224]
+2024-03-02 12:16:52.660613+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table participant_payment (id bigint not null, [*]value float(53) not null, participant_id bigint, primary key (id))"; expected "identifier"; SQL statement:
+create table participant_payment (id bigint not null, value float(53) not null, participant_id bigint, primary key (id)) [42001-224]
+2024-03-02 12:16:52.681613+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPANT_PAYMENT" not found; SQL statement:
+alter table if exists expense_split add constraint FK2bou7w3qce2mxjo2ohyu4l5i foreign key (split_id) references participant_payment [42102-224]
+2024-03-02 12:24:34.820123+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Syntax error in SQL statement "create table participant_payment (id bigint not null, [*]value float(53) not null, participant_id bigint, primary key (id))"; expected "identifier"; SQL statement:
+create table participant_payment (id bigint not null, value float(53) not null, participant_id bigint, primary key (id)) [42001-224]
+2024-03-02 12:24:34.842122+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "PARTICIPANT_PAYMENT" not found; SQL statement:
+alter table if exists expense_split add constraint FK2bou7w3qce2mxjo2ohyu4l5i foreign key (split_id) references participant_payment [42102-224]

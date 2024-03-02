@@ -8,19 +8,12 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddQuoteCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
       <TextField layoutX="47.0" layoutY="41.0" text="Hello" />
       <Button layoutX="298.0" layoutY="38.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="78.0" text="Button" />
       <Text layoutX="47.0" layoutY="101.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Participants" />
       <Text layoutX="47.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Expenses" />
-      <DropdownButton layoutX="47.0" layoutY="167.0" prefHeight="27.0" prefWidth="114.0">
-          <items>
-              <MenuItem text="John" />
-              <MenuItem text="Chris" />
-              <MenuItem text="Anna" />
-          </items>
-      </DropdownButton>
       <Button layoutX="285.0" layoutY="165.0" mnemonicParsing="false" text="Add Expense" />
       <TabPane layoutX="35.0" layoutY="206.0" prefHeight="129.0" prefWidth="349.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>

@@ -24,7 +24,11 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl overviewCtrl;
+    private QuoteOverviewCtrl quoteOverviewCtrl;
+    private Scene qouteoverview;
+
+    private OverviewCtrl overviewCtrl;
+
     private Scene overview;
 
     private AddQuoteCtrl addCtrl;
@@ -32,30 +36,34 @@ public class MainCtrl {
 
     /**
      * Initialize the main controller with the primary stage,
+     *
      * @param primaryStage primary stage of the controller.
-     * @param overview overview controller and scene
-     * @param add add quote controller and scene
+     * @param add          add quote controller and scene
+     * @param overview     overview controller and scene
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
+                           Pair<AddQuoteCtrl, Parent> add, Pair<OverviewCtrl, Parent> overview) {
         this.primaryStage = primaryStage;
+        this.quoteOverviewCtrl = qouteoverview.getKey();
+        this.qouteoverview = new Scene(qouteoverview.getValue());
+
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
-        showOverview();
+        showQouteOverview();
         primaryStage.show();
     }
 
     /**
      * Shows the overview scene.
      */
-    public void showOverview() {
+    public void showQouteOverview() {
         primaryStage.setTitle("Quotes: Overview");
-        primaryStage.setScene(overview);
-        overviewCtrl.refresh();
+        primaryStage.setScene(qouteoverview);
+        quoteOverviewCtrl.refresh();
     }
 
     /**
@@ -65,5 +73,13 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
+
+    /**
+     * Shows the Overview scene.
+     */
+    public void showOverview() {
+        primaryStage.setTitle("Overview");
+        primaryStage.setScene(overview);
     }
 }

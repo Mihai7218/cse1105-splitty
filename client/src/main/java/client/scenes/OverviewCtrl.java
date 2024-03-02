@@ -17,14 +17,8 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Person;
-import commons.Quote;
-import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import javafx.stage.Modality;
 
 public class OverviewCtrl {
 
@@ -34,14 +28,8 @@ public class OverviewCtrl {
     @FXML
     private TextField title;
 
-    @FXML
-    private TextField lastName;
-
-    @FXML
-    private TextField quote;
-
     /**
-     * Constructs a new AddQuoteCtrl object.
+     * Constructs a new OverviewCtrl object.
      * @param server ServerUtils object
      * @param mainCtrl MainCtrl object
      */
@@ -52,68 +40,4 @@ public class OverviewCtrl {
 
     }
 
-    /**
-     * Clears fields and returns to the overview
-     */
-    public void cancel() {
-        clearFields();
-        mainCtrl.showOverview();
-    }
-
-    /**
-     * Adds the new quote, then returns to the overview.
-     */
-    public void ok() {
-        try {
-            server.addQuote(getQuote());
-        } catch (WebApplicationException e) {
-
-            var alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.setContentText(e.getMessage());
-            alert.showAndWait();
-            return;
-        }
-
-        clearFields();
-        mainCtrl.showOverview();
-    }
-
-    /**
-     * Returns a new Quote object with the provided details.
-     * @return a Quote object with the details.
-     */
-    private Quote getQuote() {
-        var p = new Person(firstName.getText(), lastName.getText());
-        var q = quote.getText();
-        return new Quote(p, q);
-    }
-
-    /**
-     * Clears the fields.
-     */
-    private void clearFields() {
-        firstName.clear();
-        lastName.clear();
-        quote.clear();
-    }
-
-    /**
-     * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it submits the quote.
-     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
-     * @param e KeyEvent
-     */
-    public void keyPressed(KeyEvent e) {
-        switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
-            case ESCAPE:
-                cancel();
-                break;
-            default:
-                break;
-        }
-    }
 }
