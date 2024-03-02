@@ -3,6 +3,7 @@ package commons;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -32,22 +33,16 @@ public class Event {
 
     /**
      * Constructor for an event
-     * @param inviteCode The inviteCode of the event
      * @param title The title of the event
-     * @param expensesList The expenses of the event
-     * @param participantsList The participants of the event
-     * @param tagsList The tags of the event
      * @param creationDate The creation date of the event
      * @param lastActivity The last activity of the event
      */
-    public Event(int inviteCode, String title, List<Expense> expensesList,
-                 List<Participant> participantsList,
-                 List<Tag> tagsList, Date creationDate, Date lastActivity) {
-        this.inviteCode = inviteCode;
+    public Event(String title, Date creationDate, Date lastActivity) {
+        this.inviteCode = 0;
         this.title = title;
-        this.expensesList = expensesList;
-        this.participantsList = participantsList;
-        this.tagsList = tagsList;
+        this.expensesList = new ArrayList<>();
+        this.participantsList = new ArrayList<>();
+        this.tagsList = new ArrayList<>();
         this.creationDate = creationDate;
         this.lastActivity = lastActivity;
     }

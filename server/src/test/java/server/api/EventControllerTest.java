@@ -28,8 +28,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 public class EventControllerTest {
 
@@ -52,39 +51,39 @@ public class EventControllerTest {
 
     @Test
     public void cannotAddEmptyWithNullTitle() {
-        var actual = sut.add(new Event(1,null,null,null,null,null,null));
+        var actual = sut.add(new Event(null,null,null));
         assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
     @Test
     public void cannotAddEmptyWithEmptyTitle() {
-        var actual = sut.add(new Event(1,"",null,null,null,null,null));
+        var actual = sut.add(new Event("",null,null));
         assertEquals(BAD_REQUEST, actual.getStatusCode());
     }
     @Test
     public void canGetData() {
-        var actual = sut.add(new Event(0,"dwa",null,null,null,null,null));
-        var actual2 = sut.getAll(0);
+        var actual = sut.add(new Event("dwa",null,null));
+        var actual2 = sut.get(0);
         assertEquals(OK, actual2.getStatusCode());
     }
 
     @Test
     public void cantGetData() {
-        var actual = sut.add(new Event(0,"dwa",null,null,null,null,null));
-        var actual2 = sut.getAll(1);
-        assertEquals(BAD_REQUEST, actual2.getStatusCode());
+        var actual = sut.add(new Event("dwa",null,null));
+        var actual2 = sut.get(1);
+        assertEquals(NOT_FOUND, actual2.getStatusCode());
     }
 
     @Test
     public void putTest() {
-        var actual = sut.add(new Event(1,"dwa",null,null,null,null,null));
-        var actual2 = sut.change(0,new Event(0,"das",null,null,null,null,null));
-        var actual3 = sut.getAll(1);
+        var actual = sut.add(new Event("dwa",null,null));
+        var actual2 = sut.change(0,new Event("das",null,null));
+        var actual3 = sut.get(1);
         assertEquals("das", actual3.getBody().getTitle());
     }
 
     @Test
     public void deleteTest() {
-        var actual = sut.add(new Event(1,"dwa",null,null,null,null,null));
+        var actual = sut.add(new Event("dwa",null,null));
         var actual2 = sut.delete(0);
         assertEquals(OK, actual2.getStatusCode());
     }
@@ -92,16 +91,16 @@ public class EventControllerTest {
 
     @Test
     public void databaseIsUsed() {
-        sut.add(getEvent(1));
+        sut.add(getEvent("1"));
         repo.calledMethods.contains("save");
     }
 
-    private static Event getEvent(int q) {
+    private static Event getEvent(String q) {
         List<Tag> tags = new ArrayList<>();
         tags.add(new Tag("food", "green"));
         tags.add(new Tag("entrance fees", "blue"));
         tags.add(new Tag("travel", "red"));
-        return new Event(q,null,null,null,tags,null,null);
+        return new Event(q,null,null);
     }
 
 
