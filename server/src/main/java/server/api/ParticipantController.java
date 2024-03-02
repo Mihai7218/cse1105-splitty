@@ -91,10 +91,10 @@ public class ParticipantController {
      * @param id id of the participant to be removed
      */
     @DeleteMapping(path = {"/{eventId}/participants/{id}"})
-    public void deleteParticipant(
+    public ResponseEntity<Participant> deleteParticipant(
             @PathVariable("eventId") long eventId,
             @PathVariable("id") long id){
-        participantService.deleteParticipant(eventId, id);
+        return participantService.deleteParticipant(eventId, id);
     }
 
 
