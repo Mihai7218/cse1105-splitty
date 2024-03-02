@@ -18,6 +18,10 @@ public class TestParticipantRepository implements ParticipantRepository {
     public final List<String> calledMethods = new ArrayList<>();
     public final List<Participant> participants = new ArrayList<>();
 
+    /**
+     *
+     * @param name
+     */
     private void call(String name){
         calledMethods.add(name);
     }
@@ -182,7 +186,8 @@ public class TestParticipantRepository implements ParticipantRepository {
     /**
      *
      * @param example must not be {@literal null}.
-     * @param sort the {@link Sort} specification to sort the results by, may be {@link Sort#unsorted()}, must not be
+     * @param sort the {@link Sort} specification to sort the results by, may be
+     * {@link Sort#unsorted()}, must not be
      *          {@literal null}.
      * @return
      * @param <S>
@@ -195,7 +200,8 @@ public class TestParticipantRepository implements ParticipantRepository {
     /**
      *
      * @param example must not be {@literal null}.
-     * @param pageable the pageable to request a paged result, can be {@link Pageable#unpaged()}, must not be
+     * @param pageable the pageable to request a paged result, can be
+     * {@link Pageable#unpaged()}, must not be
      *          {@literal null}.
      * @return
      * @param <S>
@@ -207,7 +213,8 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     /**
      *
-     * @param example the {@link Example} to count instances for. Must not be {@literal null}.
+     * @param example the {@link Example} to count instances for.
+     *                Must not be {@literal null}.
      * @return
      * @param <S>
      */
@@ -218,7 +225,8 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     /**
      *
-     * @param example the {@link Example} to use for the existence check. Must not be {@literal null}.
+     * @param example the {@link Example} to use for the existence check.
+     *                Must not be {@literal null}.
      * @return
      * @param <S>
      */
@@ -236,13 +244,16 @@ public class TestParticipantRepository implements ParticipantRepository {
      * @param <R>
      */
     @Override
-    public <S extends Participant, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Participant, R> R findBy(
+            Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>,
+            R> queryFunction) {
         return null;
     }
 
     /**
      *
-     * @param entities must not be {@literal null} nor must it contain {@literal null}.
+     * @param entities must not be {@literal null} nor must it contain
+     * {@literal null}.
      * @return
      * @param <S>
      */
@@ -263,7 +274,8 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     /**
      *
-     * @param longs must not be {@literal null} nor contain any {@literal null} values.
+     * @param longs must not be {@literal null} nor contain
+     *              any {@literal null} values.
      * @return
      */
     @Override
@@ -306,7 +318,8 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     /**
      *
-     * @param longs must not be {@literal null}. Must not contain {@literal null} elements.
+     * @param longs must not be {@literal null}. Must not contain
+     * {@literal null} elements.
      */
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
@@ -315,7 +328,8 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     /**
      *
-     * @param entities must not be {@literal null}. Must not contain {@literal null} elements.
+     * @param entities must not be {@literal null}. Must not contain
+     * {@literal null} elements.
      */
     @Override
     public void deleteAll(Iterable<? extends Participant> entities) {
@@ -332,7 +346,8 @@ public class TestParticipantRepository implements ParticipantRepository {
 
     /**
      *
-     * @param sort the {@link Sort} specification to sort the results by, can be {@link Sort#unsorted()}, must not be
+     * @param sort the {@link Sort} specification to sort the results by, can be
+     * {@link Sort#unsorted()}, must not be
      *          {@literal null}.
      * @return
      */
@@ -342,8 +357,9 @@ public class TestParticipantRepository implements ParticipantRepository {
     }
 
     /**
-     * 
-     * @param pageable the pageable to request a paged result, can be {@link Pageable#unpaged()}, must not be
+     *
+     * @param pageable the pageable to request a paged result,
+     *                 can be {@link Pageable#unpaged()}, must not be
      *          {@literal null}.
      * @return
      */
