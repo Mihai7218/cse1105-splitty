@@ -30,14 +30,19 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    private ParticipantCtrl participantCtrl;
+    private Scene participant;
+
     /**
      * Initialize the main controller with the primary stage,
+     *
      * @param primaryStage primary stage of the controller.
-     * @param overview overview controller and scene
-     * @param add add quote controller and scene
+     * @param overview     overview controller and scene
+     * @param add          add quote controller and scene
+     * @param participant
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add) {
+                           Pair<AddQuoteCtrl, Parent> add, Pair<ParticipantCtrl, Parent> participant) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -45,7 +50,10 @@ public class MainCtrl {
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
-        showOverview();
+        this.participantCtrl = participant.getKey();
+        this.participant = new Scene(participant.getValue());
+
+        showParticipant();
         primaryStage.show();
     }
 
@@ -65,5 +73,11 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
+
+    public void showParticipant() {
+        primaryStage.setTitle("Add/Edit Participant");
+        primaryStage.setScene(participant);
+        add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 }
