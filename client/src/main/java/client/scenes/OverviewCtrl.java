@@ -18,16 +18,11 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Date;
-import java.util.ResourceBundle;
 
 public class OverviewCtrl {
 
