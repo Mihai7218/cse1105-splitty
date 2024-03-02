@@ -37,8 +37,10 @@ public class EventController {
      */
     @GetMapping(path = { "/{inviteCode}" })
     public ResponseEntity<Event> get(@PathVariable("inviteCode") long inviteCode) {
-        if (inviteCode < 0 || !repo.existsById(inviteCode)) {
+        if (inviteCode < 0) {
             return ResponseEntity.badRequest().build();
+        }if (!repo.existsById(inviteCode)) {
+            return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(repo.findById(inviteCode).get());
     }
@@ -89,8 +91,12 @@ public class EventController {
     public ResponseEntity<Event> change(@PathVariable("inviteCode") long inviteCode,
                                         @RequestBody Event event) {
 
-        if (Objects.equals(event.getTitle(), "") || inviteCode < 0
-                || !repo.existsById(inviteCode)) {
+        if (inviteCode < 0) {
+            return ResponseEntity.badRequest().build();
+        }if (!repo.existsById(inviteCode)) {
+            return ResponseEntity.notFound().build();
+        }
+        if (event == null || Objects.equals(event.getTitle(), "") || event.getTitle() == null) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -111,8 +117,10 @@ public class EventController {
     @DeleteMapping(path = {"/{inviteCode}" })
     public ResponseEntity<Event> delete(@PathVariable("inviteCode") long inviteCode) {
 
-        if (inviteCode < 0 || !repo.existsById(inviteCode)) {
+        if (inviteCode < 0) {
             return ResponseEntity.badRequest().build();
+        }if (!repo.existsById(inviteCode)) {
+            return ResponseEntity.notFound().build();
         }
 
         Event saved = repo.findById(inviteCode).get();

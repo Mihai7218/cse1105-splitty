@@ -28,8 +28,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 public class EventControllerTest {
 
@@ -71,7 +70,7 @@ public class EventControllerTest {
     public void cantGetData() {
         var actual = sut.add(new Event("dwa",null,null));
         var actual2 = sut.get(1);
-        assertEquals(BAD_REQUEST, actual2.getStatusCode());
+        assertEquals(NOT_FOUND, actual2.getStatusCode());
     }
 
     @Test
