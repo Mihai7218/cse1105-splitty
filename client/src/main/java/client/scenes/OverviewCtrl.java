@@ -17,16 +17,29 @@ package client.scenes;
 
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import commons.Event;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.ResourceBundle;
 
 public class OverviewCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
+    private Event event;
+
     @FXML
     private TextField title;
+    @FXML
+    private TextArea participants;
 
     /**
      * Constructs a new OverviewCtrl object.
@@ -37,7 +50,42 @@ public class OverviewCtrl {
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.event = new Event("","", new Date(),new Date());
+    }
 
+    /**
+     * Opens the addparticipant scene to be able to add participants to the event.
+     */
+    public void addParticipant(){
+        //Should show the add participant scene
+    }
+
+    /**
+     * Opens the addExpense scene to be able to add Expenses to the event.
+     */
+    public void addExpense(){
+        //Should show the add Expense scene
+    }
+
+    /**
+     * Opens the sendInvites scene to be able to send Invites to the other people.
+     */
+    public void sendInvites(){
+        //Should show the sendInvites scene
+    }
+
+    /**
+     * Change the title.
+     */
+    public void changeTitle() {
+       //Should update the title of the Event that is being added.
+    }
+
+    /**
+     * Refreshes the items in the view.
+     */
+    public void refresh() {
+      //Should refresh the view with updated items from the event object. e.g. you add a participant then the list of participants should update in the view.
     }
 
 }
