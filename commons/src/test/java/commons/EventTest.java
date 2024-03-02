@@ -24,15 +24,12 @@ class EventTest {
 
     @BeforeEach
     void setUp() {
-        List<Expense> expensesList = new ArrayList<>();
-        List<Participant> participantsList = new ArrayList<>();
-        List<Tag> tagsList = new ArrayList<>();
         creationDate = new Date(2024, 2, 15);
         lastActivity = new Date(2022, 3, 17);
 
-        event = new Event(1, "Test Event", expensesList, participantsList, tagsList, creationDate, lastActivity);
-        sameEvent = new Event(1, "Test Event", expensesList, participantsList, tagsList, creationDate, lastActivity);
-        differentEvent = new Event(2, "Different Event", new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), creationDate, lastActivity);
+        event = new Event("Test Event", creationDate, lastActivity);
+        sameEvent = new Event("Test Event", creationDate, lastActivity);
+        differentEvent = new Event("Different Event", creationDate, lastActivity);
     }
 
     /**
@@ -40,9 +37,9 @@ class EventTest {
      */
     @Test
     void getInviteCode() {
-        assertEquals(1, event.getInviteCode());
-        assertEquals(1, sameEvent.getInviteCode());
-        assertEquals(2, differentEvent.getInviteCode());
+        assertEquals(0, event.getInviteCode());
+        assertEquals(0, sameEvent.getInviteCode());
+        assertEquals(0, differentEvent.getInviteCode());
     }
 
     /**

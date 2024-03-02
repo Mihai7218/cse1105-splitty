@@ -15,20 +15,20 @@ class ParticipantPaymentTest {
     public void checkConstructor(){
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
         assertEquals(PP1.getParticipant(), PARTICIPANT);
-        assertEquals(PP1.getValue(), 20.00f);
+        assertEquals(PP1.getPaymentAmount(), 20.00f);
     }
 
     @Test
     public void checkValueGetter(){
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
-        assertEquals(PP1.getValue(), 20.00);
+        assertEquals(PP1.getPaymentAmount(), 20.00);
     }
 
     @Test
     public void checkValueSetter(){
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
-        PP1.setValue(15);
-        assertEquals(PP1.getValue(), 15.00);
+        PP1.setPaymentAmount(15);
+        assertEquals(PP1.getPaymentAmount(), 15.00);
     }
 
     @Test
