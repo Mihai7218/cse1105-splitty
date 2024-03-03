@@ -42,6 +42,14 @@ public class ParticipantPayment {
     }
 
     /**
+     * setter for the id for the participantPayment
+     * @param id the new id to change to
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
      * retrieve the value associated with the transaction
      * @return double value for the amount owed
      */
