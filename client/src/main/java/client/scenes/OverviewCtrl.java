@@ -45,7 +45,7 @@ public class OverviewCtrl {
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-        this.event = new Event("","", new Date(),new Date());
+        this.event = new Event("", new Date(),new Date());
     }
 
     /**
