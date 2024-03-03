@@ -34,7 +34,7 @@ public class ExpenseController {
     @GetMapping(path = { "" })
     public ResponseEntity<List<Expense>> getAllExpenses(@PathVariable("id") long id) {
         if (id < 0 || !eventRepo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(id).get();
         List<Expense> expenses = event.getExpensesList();
@@ -48,7 +48,7 @@ public class ExpenseController {
     @GetMapping(path = { "/total" })
     public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
         if (id < 0 || !eventRepo.existsById(id)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(id).get();
         List<Expense> expenses = event.getExpensesList();
@@ -69,7 +69,7 @@ public class ExpenseController {
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
                         expense.getAmount() == 0 || expense.getPayee() == null) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         expenseRepo.save(expense);
         return ResponseEntity.ok(expense);
@@ -84,10 +84,10 @@ public class ExpenseController {
     public ResponseEntity<Void> changeTitle(@RequestBody String title,
                                             @PathVariable("expenseId") long expenseId){
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         if (title == null || Objects.equals(title, "")) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setTitle(title);
@@ -104,10 +104,10 @@ public class ExpenseController {
     public ResponseEntity<Void> changeAmount(@RequestBody double amount,
                                             @PathVariable("expenseId") long expenseId){
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         if (amount <= 0.0) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setAmount(amount);
@@ -124,10 +124,10 @@ public class ExpenseController {
     public ResponseEntity<Void> changePayee(@RequestBody Participant payee,
                                              @PathVariable("expenseId") long expenseId){
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         if (payee == null || Objects.equals(payee.getName(), "")) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setPayee(payee);
@@ -143,7 +143,7 @@ public class ExpenseController {
     public ResponseEntity<Void> deleteExpense(@PathVariable("expenseId") long expenseId){
 
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.notFound().build();
         }
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
         return ResponseEntity.ok(null);
