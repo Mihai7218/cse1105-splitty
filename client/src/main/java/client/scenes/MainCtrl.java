@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
@@ -50,18 +51,19 @@ public class MainCtrl {
      * @param primaryStage primary stage of the controller.
      * @param overview overview controller and scene
      * @param add add quote controller and scene
+     * @param startScreen start screen controller and scene
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Scene> overview,
-            Pair<AddQuoteCtrl, Scene> add, Pair<StartScreenCtrl, Scene> startScreen) {
+    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
+            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl, Parent> startScreen) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
-        this.overview = overview.getValue();
+        this.overview = new Scene(overview.getValue());
 
         this.addCtrl = add.getKey();
-        this.add = add.getValue();
+        this.add = new Scene(add.getValue());
 
         this.startScreenCtrl = startScreen.getKey();
-        this.startScreen = startScreen.getValue();
+        this.startScreen = new Scene(startScreen.getValue());
 
         showStartMenu();
         primaryStage.show();

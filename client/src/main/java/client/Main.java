@@ -22,9 +22,7 @@ import client.scenes.StartScreenCtrl;
 import client.utils.Config;
 import com.google.inject.Injector;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.util.Pair;
 
 import static com.google.inject.Guice.createInjector;
 
@@ -53,10 +51,7 @@ public class Main extends Application {
         var startScreen = FXML.load(StartScreenCtrl.class, "client", "scenes", "StartScreen.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage,
-                new Pair<>(overview.getKey(), new Scene(overview.getValue())),
-                new Pair<>(add.getKey(), new Scene(add.getValue())),
-                new Pair<>(startScreen.getKey(), new Scene(startScreen.getValue())));
+        mainCtrl.initialize(primaryStage, overview, add, startScreen);
     }
 
     /**

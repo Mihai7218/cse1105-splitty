@@ -117,8 +117,15 @@ public class StartScreenCtrl implements Initializable {
      */
     public void addRecentEvent(Event event) {
         recentEventsList.addFirst(event);
-        if (recentEventsList.size() > 5) {
-            recentEventsList.remove(5);
+        int limit;
+        try {
+            limit = Integer.parseInt(config.getProperty("recentEventsLimit"));
+        } catch (NumberFormatException e) {
+            limit = 5;
+            config.setProperty("recentEventsLimit", "5");
+        }
+        while (recentEventsList.size() > limit) {
+            recentEventsList.removeLast();
         }
         StringBuilder sb = new StringBuilder();
         recentEventsList.stream()
