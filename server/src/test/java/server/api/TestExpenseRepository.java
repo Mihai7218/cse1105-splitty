@@ -19,57 +19,112 @@ public class TestExpenseRepository implements ExpenseRepository {
     public final List<Expense> expenses = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
 
+    /***
+     *
+     * @param name
+     */
     private void call(String name) {
         calledMethods.add(name);
     }
 
+    /***
+     *
+     *
+     * @param entities must not be {@literal null} nor must it contain {@literal null}.
+     * @return
+     * @param <S>
+     */
     @Override
     public <S extends Expense> List<S> saveAll(Iterable<S> entities) {
         return null;
     }
 
+    /***
+     *
+     * @return
+     */
     @Override
     public List<Expense> findAll() {
         calledMethods.add("findAll");
         return expenses;
     }
 
+    /***
+     *
+     * @param longs must not be {@literal null} nor contain any {@literal null} values.
+     * @return
+     */
     @Override
     public List<Expense> findAllById(Iterable<Long> longs) {
         return null;
     }
 
+    /***
+     *
+     */
     @Override
     public void flush() {
     }
 
+    /***
+     *
+     * @param entity entity to be saved. Must not be {@literal null}.
+     * @return
+     * @param <S>
+     */
     public <S extends Expense> S saveAndFlush(S entity) {
         return null;
     }
 
+    /***
+     *
+     * @param entities entities to be saved. Must not be {@literal null}.
+     * @return
+     * @param <S>
+     */
     @Override
     public <S extends Expense> List<S> saveAllAndFlush(Iterable<S> entities) {
         return null;
     }
 
+    /***
+     *
+     * @param entities entities to be deleted. Must not be {@literal null}.
+     */
     @Override
     public void deleteAllInBatch(Iterable<Expense> entities) {
     }
 
-
+    /***
+     *
+     * @param ids the ids of the entities to be deleted. Must not be {@literal null}.
+     */
     @Override
     public void deleteAllByIdInBatch(Iterable<Long> ids) {
     }
 
+    /***
+     *
+     */
     @Override
     public void deleteAllInBatch() {
     }
 
+    /***
+     *
+     * @param id must not be {@literal null}.
+     * @return
+     */
     @Override
     public Expense getOne(Long id) {
         return null;
     }
 
+    /***
+     *
+     * @param id must not be {@literal null}.
+     * @return
+     */
     @Override
     public Expense getById(Long id) {
         call("getById");
@@ -282,6 +337,13 @@ public class TestExpenseRepository implements ExpenseRepository {
         return null;
     }
 
+    /***
+     *
+     * @param sort the {@link Sort} specification to sort the results by,
+     *             can be {@link Sort#unsorted()}, must not be
+     *          {@literal null}.
+     * @return
+     */
     @Override
     public List<Expense> findAll(Sort sort) {
         return null;
