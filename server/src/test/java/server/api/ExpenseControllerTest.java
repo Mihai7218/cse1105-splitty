@@ -1,7 +1,6 @@
 package server.api;
 
 import org.junit.jupiter.api.BeforeEach;
-import server.database.ExpenseRepository;
 
 public class ExpenseControllerTest {
     private TestEventRepository eventRepo;
