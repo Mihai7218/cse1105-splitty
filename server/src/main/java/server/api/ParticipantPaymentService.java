@@ -96,7 +96,7 @@ public class ParticipantPaymentService {
             long eventId, long expenseId, ParticipantPayment participantPayment) {
         if(participantPayment == null) return ResponseEntity.badRequest().build();
         try{
-            Participant participant = participantRepository
+            participantRepository
                     .getReferenceById(participantPayment.getParticipant().getId());
         }catch(EntityNotFoundException e){
             return ResponseEntity.badRequest().build();
@@ -140,7 +140,6 @@ public class ParticipantPaymentService {
             return ResponseEntity.badRequest().build();
         old.setParticipant(participantPayment.getParticipant());
         old.setPaymentAmount(participantPayment.getPaymentAmount());
-        //participantPaymentRepository.save(old);
         return ResponseEntity.ok(old);
     }
 

@@ -108,26 +108,21 @@ public class ParticipantService {
      * @return participant if successfully added to event
      */
     @Transactional
-    public ResponseEntity<Participant> updateParticipant(long eventId, long id, String name,
-                                                         String email, String iban, String bic) {
+    public ResponseEntity<Participant> updateParticipant(long eventId,
+                                                         long id, Participant participant) {
         if(!getParticipant(eventId, id).getStatusCode().equals(OK)
             || getParticipant(eventId,id).getBody() == null){
             return getParticipant(eventId,id);
         }
-        Participant participant = getParticipant(eventId,id).getBody();
-        if(validateName(name)){
-            participant.setName(name);
+        Participant old = getParticipant(eventId,id).getBody();
+        if(!validateName(participant.getName()) || !validateEmail(participant.getEmail())
+                || !validateBic(participant.getBic()) || !validateIban(participant.getIban())){
+            return ResponseEntity.badRequest().build();
         }
-        if(validateEmail(email)){
-            participant.setEmail(email);
-        }
-        if(validateIban(iban)){
-            participant.setIban(iban);
-        }
-        if(validateBic(bic)){
-            participant.setBic(bic);
-        }
-        participantRepository.save(participant);
+        old.setName(participant.getName());
+        old.setBic(participant.getBic());
+        old.setIban(participant.getIban());
+        old.setEmail(participant.getEmail());
         return ResponseEntity.ok(participant);
     }
 

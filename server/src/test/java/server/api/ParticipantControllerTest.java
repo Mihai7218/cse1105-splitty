@@ -100,9 +100,9 @@ public class ParticipantControllerTest {
     public void updateParticipantTest(){
         participantRepository.flush();
         eventRepository.flush();
-        participantController.updateParticipant(0, 0, "Christina Smith",
-                "cmsmith@yahoo.com", "NL85ABNA5253446745", "AMUKGB7B");
-        assertEquals(participantRepository.calledMethods.size(), 1);
+        Participant p = new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B");
+        participantController.updateParticipant(0, 0, p);
         List<String> called = List.of("existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
@@ -110,6 +110,8 @@ public class ParticipantControllerTest {
                 "existsById", "findById","findById",
                 "existsById", "findById","findById");
         assertEquals(eventRepository.calledMethods, called);
+        assertEquals(participantRepository.participants.get(0).getName(), "Christina Smith");
+        assertEquals(participantRepository.participants.size(), 2);
         assertEquals(eventRepository.calledMethods.size(), 18);
     }
 
