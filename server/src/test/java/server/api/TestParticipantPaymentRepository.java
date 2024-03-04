@@ -308,8 +308,9 @@ public class TestParticipantPaymentRepository implements ParticipantPaymentRepos
      * @param aLong must not be {@literal null}.
      */
     @Override
-    public void deleteById(Long aLong) {
-
+    public void deleteById(Long id) {
+        ParticipantPayment toDelete = find(id).get();
+        participantPayments.remove(toDelete);
     }
 
     /**

@@ -105,6 +105,7 @@ public class ParticipantPaymentService {
             return getAllParticipantPayment(eventId,expenseId).getStatusCode()==BAD_REQUEST ?
                     ResponseEntity.badRequest().build() : ResponseEntity.notFound().build();
         }
+        if(participantPayment.getPaymentAmount() < 0) return ResponseEntity.badRequest().build();
         List<ParticipantPayment> participantPaymentList =
                 getAllParticipantPayment(eventId,expenseId).getBody();
         participantPaymentRepository.save(participantPayment);
@@ -135,10 +136,11 @@ public class ParticipantPaymentService {
             return ResponseEntity.badRequest().build();
         }
         ParticipantPayment old = searchResult.getBody();
-        if(old == null) return ResponseEntity.badRequest().build();
-        old.setParticipant(participant);
+        if(old == null || participantPayment.getPaymentAmount() < 0)
+            return ResponseEntity.badRequest().build();
+        old.setParticipant(participantPayment.getParticipant());
         old.setPaymentAmount(participantPayment.getPaymentAmount());
-        participantPaymentRepository.save(old);
+        //participantPaymentRepository.save(old);
         return ResponseEntity.ok(old);
     }
 
@@ -162,6 +164,7 @@ public class ParticipantPaymentService {
             return ResponseEntity.badRequest().build();
         List<ParticipantPayment> listForAll = resultFindAll.getBody();
         listForAll.remove(resultFindSpec.getBody());
+        participantPaymentRepository.deleteById(id);
         return ResponseEntity.ok(resultFindSpec.getBody());
     }
 }
