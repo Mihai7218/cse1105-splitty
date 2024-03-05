@@ -37,6 +37,9 @@ public class MainCtrl {
 
     private LanguageManager languageManager;
 
+    private ParticipantCtrl participantCtrl;
+    private Scene participant;
+
     /**
      * Constructor for the MainCtrl
      * @param languageManager - language manager
@@ -48,13 +51,16 @@ public class MainCtrl {
 
     /**
      * Initialize the main controller with the primary stage,
+     *
      * @param primaryStage primary stage of the controller.
-     * @param overview overview controller and scene
-     * @param add add quote controller and scene
-     * @param startScreen start screen controller and scene
+     * @param overview     overview controller and scene
+     * @param add          add quote controller and scene
+     * @param startScreen  start screen controller and scene
+     * @param participant
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
-            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl, Parent> startScreen) {
+                           Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
+                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant) {
         this.primaryStage = primaryStage;
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -64,6 +70,9 @@ public class MainCtrl {
 
         this.startScreenCtrl = startScreen.getKey();
         this.startScreen = new Scene(startScreen.getValue());
+
+        this.participantCtrl = participant.getKey();
+        this.participant = new Scene(participant.getValue());
 
         showStartMenu();
         primaryStage.show();
@@ -93,6 +102,15 @@ public class MainCtrl {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
         add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
+
+    /**
+     * Shows the add participant scene.
+     */
+    public void showParticipant() {
+        primaryStage.setTitle("Add Participant");
+        primaryStage.setScene(participant);
+        add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**
