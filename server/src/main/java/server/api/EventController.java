@@ -1,17 +1,12 @@
 package server.api;
 
-import java.sql.Timestamp;
 import java.util.*;
-
 
 import commons.Event;
 
-import commons.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import server.database.EventRepository;
-import server.database.TagRepository;
 
 @RestController
 @RequestMapping("/api/events")
