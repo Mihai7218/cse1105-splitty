@@ -83,6 +83,14 @@ public class Participant {
     }
 
     /**
+     * sets the id of the participants
+     * @param id id value for participant
+     */
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    /**
      * getter for the name attribute
      * @return the value of the name attribute
      */

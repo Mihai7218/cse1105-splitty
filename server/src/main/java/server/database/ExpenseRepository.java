@@ -13,23 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package client.scenes;
+package server.database;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import commons.Expense;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public class MainCtrlTest {
 
-    private MainCtrl sut;
-
-    @BeforeEach
-    public void setup() {
-        sut = new MainCtrl();
-    }
-
-    @Test
-    public void writeSomeTests() {
-        // TODO create replacement objects and write some tests
-        // sut.initialize(null, null, null);
-    }
-}
+public interface ExpenseRepository extends JpaRepository<Expense, Long> {}

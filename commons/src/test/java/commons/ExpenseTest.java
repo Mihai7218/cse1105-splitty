@@ -55,6 +55,44 @@ public class ExpenseTest {
         assertEquals(expense.getPayee(), payee);
         assertEquals(expense.getSplit(), split);
     }
+    @Test
+    void setAmountTest(){
+        expense.setAmount(30.24);
+        assertEquals(30.24, expense.getAmount());
+    }
+    @Test
+    void setCurrencyTest(){
+        expense.setCurrency("rupes");
+        assertEquals("rupes", expense.getCurrency());
+    }
+    @Test
+    void setTitleTest(){
+        expense.setTitle("Dinner");
+        assertEquals("Dinner", expense.getTitle());
+    }
+    @Test
+    void setDateTest(){
+        expense.setDate(new Date(2300));
+        assertEquals(new Date(2300), expense.getDate());
+    }
+    @Test
+    void setDescriptionTest(){
+        expense.setDescription("octopus with tuna");
+        assertEquals("octopus with tuna", expense.getDescription());
+    }
+    @Test
+    void setTagTest(){
+        Tag tag = new Tag("food", "green");
+        expense.setTag(tag);
+        assertEquals(tag, expense.getTag());
+    }
+    @Test
+    void setPayeeTest(){
+        Participant participant1 = new Participant("George", "george@gmail.com",
+                "NL27RABO2766662669", "RRRAAAA");
+        expense.setPayee(participant1);
+        assertEquals(participant1, expense.getPayee());
+    }
 
     @Test
     void EqualsTest(){
@@ -146,7 +184,7 @@ public class ExpenseTest {
     }
 //    @Test
 //    void toStringTest(){
-//        String s = "Expense{id="+expense.getId()+", amount=40.45, " +
+//        String s = "Expense{id="  +expense.getId()+", amount=40.45, " +
 //                "currency='Euro', title='Taxi', description='Ride back home', " +
 //                "date=Thu Jan 01 01:00:00 CET 1970, " +
 //                "split=[ParticipantPayment{participant=Participant{name='George', " +

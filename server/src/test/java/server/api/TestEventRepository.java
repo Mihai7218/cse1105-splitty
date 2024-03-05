@@ -91,7 +91,9 @@ public class TestEventRepository implements EventRepository {
     @Override
     public void flush() {
         // TODO Auto-generated method stub
-
+        while(calledMethods.size()>0){
+            calledMethods.remove(0);
+        }
     }
 
     /**
@@ -246,6 +248,7 @@ public class TestEventRepository implements EventRepository {
      */
     @Override
     public Optional<Event> findById(Long id) {
+        call("findById");
         for(Event event : events) {
             if (event.getInviteCode() == id) {
                 return Optional.of(event);
