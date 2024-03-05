@@ -164,6 +164,7 @@ public class StartScreenCtrl implements Initializable {
             return;
         }
         addRecentEvent(e);
+        mainCtrl.setEvent(e);
         mainCtrl.showOverview();
     }
 

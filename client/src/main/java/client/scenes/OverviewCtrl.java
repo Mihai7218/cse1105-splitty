@@ -19,15 +19,10 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 
-import java.net.URL;
-import java.util.Date;
-import java.util.ResourceBundle;
-
-public class OverviewCtrl implements Initializable{
+public class OverviewCtrl{
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -35,7 +30,7 @@ public class OverviewCtrl implements Initializable{
     private Event event;
 
     @FXML
-    private TextField title;
+    private Label title;
     @FXML
     private TextArea participants;
 
@@ -50,9 +45,14 @@ public class OverviewCtrl implements Initializable{
         this.server = server;
     }
 
-    @Override
-    public void initialize(URL url, ResourceBundle resourceBundle) {
-
+    /**
+     * Refreshes all shown items in the overview.
+     */
+    public void refresh() {
+         this.event = mainCtrl.getEvent();
+         if(this.event != null){
+             title.setText(event.getTitle());
+         }
     }
 
 
@@ -83,14 +83,6 @@ public class OverviewCtrl implements Initializable{
      */
     public void changeTitle() {
        //Should update the title of the Event that is being added.
-    }
-
-    /**
-     * Refreshes the items in the view.
-     */
-    public void refresh() {
-      //Should refresh the view with updated items from the event object. e.g.
-        // you add a participant then the list of participants should update in the view.
     }
 
 }

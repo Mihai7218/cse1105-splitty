@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -43,6 +44,8 @@ public class MainCtrl {
     private Scene overview;
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
+
+    private Event event;
 
     /**
      * Constructor for the MainCtrl
@@ -96,6 +99,8 @@ public class MainCtrl {
     public void showOverview() {
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(overview);
+        overviewCtrl.refresh();
+
     }
 
     /**
@@ -124,6 +129,9 @@ public class MainCtrl {
         add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
+    /**
+     * Shows the add expense scene.
+     */
     public void showAddExpense(){
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(addExpense);
@@ -190,5 +198,19 @@ public class MainCtrl {
      */
     Scene getStartScreen() {
         return startScreen;
+    }
+
+    /**
+     * Returns the current event of mainCtrl
+     */
+    public Event getEvent() {
+        return event;
+    }
+
+    /**
+     * Sets the current event of mainCtrl
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }

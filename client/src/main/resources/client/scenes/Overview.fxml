@@ -34,7 +34,7 @@
       <TextArea fx:id="participants" layoutX="47.0" layoutY="104.0" prefHeight="44.0" prefWidth="270.0" />
       <Label layoutX="47.0" layoutY="87.0" text="Participants" />
       <Label layoutX="47.0" layoutY="157.0" text="Expenses" />
-      <Label layoutX="47.0" layoutY="45.0" text="Title" />
+      <Label fx:id="title" layoutX="47.0" layoutY="45.0" text="Title" />
       <Button layoutX="278.0" layoutY="84.0" mnemonicParsing="false" onAction="#addParticipant" text="Add Participant" />
    </children>
 </AnchorPane>
