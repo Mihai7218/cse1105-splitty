@@ -61,14 +61,14 @@ public class OverviewCtrl{
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
-         this.event = mainCtrl.getEvent();
-         if(this.event != null){
-             title.setText(event.getTitle());
-             List<String> names = event.getParticipantsList().stream()
-                     .map(Participant::getName).collect(Collectors.toList());
-             participants.getItems().addAll(names);
-             expenseparticipants.getItems().addAll(names);
-         }
+        this.event = mainCtrl.getEvent();
+        if(this.event != null){
+            title.setText(event.getTitle());
+            List<String> names = event.getParticipantsList().stream()
+                    .map(Participant::getName).collect(Collectors.toList());
+            participants.getItems().addAll(names);
+            expenseparticipants.getItems().addAll(names);
+        }
     }
 
 
