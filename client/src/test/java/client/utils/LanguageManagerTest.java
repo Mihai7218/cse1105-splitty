@@ -8,10 +8,12 @@ import org.junit.jupiter.api.Test;
 import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 class LanguageManagerTest {
 
-    LanguageManager sut = new LanguageManager();
+    ConfigInterface config = mock(Config.class);
+    LanguageManager sut = new LanguageManager(config);
 
     @AfterEach
     void resetLocale() {
@@ -27,7 +29,7 @@ class LanguageManagerTest {
     @Test
     void refresh() {
         sut.refresh();
-        LanguageManager comparison = new LanguageManager();
+        LanguageManager comparison = new LanguageManager(config);
         comparison.put("hello", "world");
         comparison.put("value","test");
         comparison.put("why","not");

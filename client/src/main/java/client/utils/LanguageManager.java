@@ -1,5 +1,6 @@
 package client.utils;
 
+import com.google.inject.Inject;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.MapProperty;
@@ -12,12 +13,15 @@ import java.util.ResourceBundle;
 
 public class LanguageManager extends SimpleMapProperty<String, Object> {
 
+    private final ConfigInterface config;
 
     /**
      * Constructor for the LanguageManager.
      */
-    public LanguageManager() {
+    @Inject
+    public LanguageManager(ConfigInterface config) {
         super(FXCollections.observableHashMap());
+        this.config = config;
     }
 
     /**
@@ -26,6 +30,7 @@ public class LanguageManager extends SimpleMapProperty<String, Object> {
      */
     public void changeLanguage(Locale locale) {
         Locale.setDefault(locale);
+        config.setProperty("language", locale.getLanguage());
         refresh();
     }
 
