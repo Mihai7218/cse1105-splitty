@@ -1,5 +1,6 @@
-package client.scenes;
+package client.utils;
 
+import client.scenes.ParticipantCtrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
