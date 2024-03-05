@@ -15,17 +15,12 @@
  */
 package client;
 
-import client.scenes.StartScreenCtrl;
+import client.scenes.*;
 import client.utils.Config;
 import client.utils.LanguageManager;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
-
-import client.scenes.AddQuoteCtrl;
-import client.scenes.MainCtrl;
-import client.scenes.QuoteOverviewCtrl;
-import client.scenes.ParticipantCtrl;
 
 
 public class MyModule implements Module {
@@ -43,5 +38,6 @@ public class MyModule implements Module {
         binder.bind(LanguageManager.class).in(Scopes.SINGLETON);
         binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ParticipantCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(OverviewCtrl.class).in(Scopes.SINGLETON);
     }
 }

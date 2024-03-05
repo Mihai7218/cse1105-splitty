@@ -26,8 +26,8 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl overviewCtrl;
-    private Scene overview;
+    private QuoteOverviewCtrl qouteoverviewCtrl;
+    private Scene qouteoverview;
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
@@ -39,6 +39,8 @@ public class MainCtrl {
 
     private ParticipantCtrl participantCtrl;
     private Scene participant;
+    private OverviewCtrl overviewCtrl;
+    private Scene overview;
 
     /**
      * Constructor for the MainCtrl
@@ -52,18 +54,19 @@ public class MainCtrl {
     /**
      * Initialize the main controller with the primary stage,
      *
-     * @param primaryStage primary stage of the controller.
-     * @param overview     overview controller and scene
-     * @param add          add quote controller and scene
-     * @param startScreen  start screen controller and scene
+     * @param primaryStage           primary stage of the controller.
+     * @param overview               overview controller and scene
+     * @param add                    add quote controller and scene
+     * @param startScreen            start screen controller and scene
      * @param participant
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
+    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
-                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant) {
+                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant
+            , Pair<OverviewCtrl, Parent> overview) {
         this.primaryStage = primaryStage;
-        this.overviewCtrl = overview.getKey();
-        this.overview = new Scene(overview.getValue());
+        this.qouteoverviewCtrl = qouteoverview.getKey();
+        this.qouteoverview = new Scene(qouteoverview.getValue());
 
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
@@ -73,6 +76,9 @@ public class MainCtrl {
 
         this.participantCtrl = participant.getKey();
         this.participant = new Scene(participant.getValue());
+
+        this.overviewCtrl = overview.getKey();
+        this.overview = new Scene(overview.getValue());
 
         showStartMenu();
         primaryStage.show();
@@ -128,7 +134,7 @@ public class MainCtrl {
      * @return - overview controller.
      */
     QuoteOverviewCtrl getOverviewCtrl() {
-        return overviewCtrl;
+        return qouteoverviewCtrl;
     }
 
     /**
@@ -137,7 +143,7 @@ public class MainCtrl {
      * @return - overview scene.
      */
     Scene getOverview() {
-        return overview;
+        return qouteoverview;
     }
 
     /**
