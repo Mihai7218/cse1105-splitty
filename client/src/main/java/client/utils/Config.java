@@ -27,14 +27,6 @@ public class Config implements ConfigInterface {
         this.outputStream = new FileOutputStream(file);
     }
 
-    private static InputStream ignoreFileNotFoundException(File file) {
-        try{
-            return new FileInputStream(file);
-        }
-        catch (FileNotFoundException ignored) {}
-        return null;
-    }
-
     /**
      * Constructor for the config.
      * Creates the config file if it does not exist yet.
@@ -42,8 +34,24 @@ public class Config implements ConfigInterface {
     public Config(InputStream inputStream, OutputStream outputStream) {
         try {
             prop.load(inputStream);
-        } catch (Exception ignored) {}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (outputStream != null) this.outputStream = outputStream;
+    }
+
+    /**
+     * Method that returns null if the FileInputStream throws a FileNotFoundException.
+     * @param file - file that needs to be read
+     * @return - the FileInputStream of the file or null if the file is not found
+     */
+    private static InputStream ignoreFileNotFoundException(File file) {
+        try {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
