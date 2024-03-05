@@ -64,9 +64,9 @@ public class EventService {
         if (event == null || event.getTitle() == null || Objects.equals(event.getTitle(), "")) {
             return ResponseEntity.badRequest().build();
         }
-        Tag tag1 = new Tag("food", "green");
-        Tag tag2 = new Tag("entrance fees", "blue");
-        Tag tag3 = new Tag("travel", "red");
+        Tag tag1 = new Tag("food", "#93c47d");
+        Tag tag2 = new Tag("entrance fees", "#4a86e8");
+        Tag tag3 = new Tag("travel", "#e06666");
         tagRepository.save(tag1);
         tagRepository.save(tag2);
         tagRepository.save(tag3);
