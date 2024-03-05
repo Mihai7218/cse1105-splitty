@@ -41,6 +41,8 @@ public class MainCtrl {
     private Scene participant;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
+    private AddExpenseCtrl addExpenseCtrl;
+    private Scene addExpense;
 
     /**
      * Constructor for the MainCtrl
@@ -54,16 +56,17 @@ public class MainCtrl {
     /**
      * Initialize the main controller with the primary stage,
      *
-     * @param primaryStage           primary stage of the controller.
-     * @param overview               overview controller and scene
-     * @param add                    add quote controller and scene
-     * @param startScreen            start screen controller and scene
+     * @param primaryStage primary stage of the controller.
+     * @param add          add quote controller and scene
+     * @param startScreen  start screen controller and scene
      * @param participant
+     * @param overview     overview controller and scene
+     * @param addExpense
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
                            Parent> startScreen, Pair<ParticipantCtrl, Parent> participant
-            , Pair<OverviewCtrl, Parent> overview) {
+            , Pair<OverviewCtrl, Parent> overview, Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
@@ -80,6 +83,9 @@ public class MainCtrl {
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
+        this.addExpenseCtrl = addExpense.getKey();
+        this.addExpense = new Scene(addExpense.getValue());
+
         showStartMenu();
         primaryStage.show();
     }
@@ -88,9 +94,8 @@ public class MainCtrl {
      * Shows the overview scene.
      */
     public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(overview);
-        overviewCtrl.refresh();
     }
 
     /**
@@ -114,9 +119,14 @@ public class MainCtrl {
      * Shows the add participant scene.
      */
     public void showParticipant() {
-        primaryStage.setTitle("Add Participant");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(participant);
         add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
+    }
+
+    public void showAddExpense(){
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.setScene(addExpense);
     }
 
     /**

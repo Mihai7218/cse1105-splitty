@@ -19,12 +19,15 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
+import java.net.URL;
 import java.util.Date;
+import java.util.ResourceBundle;
 
-public class OverviewCtrl {
+public class OverviewCtrl implements Initializable{
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -45,21 +48,27 @@ public class OverviewCtrl {
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-        this.event = new Event("", new Date(),new Date());
     }
+
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    }
+
+
 
     /**
      * Opens the addparticipant scene to be able to add participants to the event.
      */
     public void addParticipant(){
-        //Should show the add participant scene
+        mainCtrl.showParticipant();
     }
 
     /**
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense(){
-        //Should show the add Expense scene
+        mainCtrl.showAddExpense();
     }
 
     /**
