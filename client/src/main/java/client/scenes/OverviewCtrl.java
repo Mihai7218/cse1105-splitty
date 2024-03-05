@@ -18,9 +18,15 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Participant;
 import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class OverviewCtrl{
 
@@ -32,7 +38,14 @@ public class OverviewCtrl{
     @FXML
     private Label title;
     @FXML
-    private TextArea participants;
+    private ListView participants;
+
+    @FXML
+    private ListView all;
+
+    @FXML
+    private ChoiceBox<String> expenseparticipants;
+
 
     /**
      * Constructs a new OverviewCtrl object.
@@ -52,6 +65,9 @@ public class OverviewCtrl{
          this.event = mainCtrl.getEvent();
          if(this.event != null){
              title.setText(event.getTitle());
+             List<String> names = event.getParticipantsList().stream().map(Participant::getName).collect(Collectors.toList());
+             participants.getItems().addAll(names);
+             expenseparticipants.getItems().addAll(names);
          }
     }
 
