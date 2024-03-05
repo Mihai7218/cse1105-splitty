@@ -43,14 +43,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
 
-        var qouteoverview = FXML.load(QuoteOverviewCtrl.class, "client",
-                "scenes", "QuoteOverview.fxml");
+        var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
         var startScreen = FXML.load(StartScreenCtrl.class, "client", "scenes", "StartScreen.fxml");
-        var overview = FXML.load(OverviewCtrl.class, "client", "scenes", "overview.fxml");
+        var participant = FXML.load(ParticipantCtrl.class, "client", "scenes", "Participant.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, qouteoverview, add, startScreen, overview);
+        mainCtrl.initialize(primaryStage, overview, add, startScreen, participant);
     }
 
     /**
