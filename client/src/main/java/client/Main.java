@@ -15,19 +15,16 @@
  */
 package client;
 
-import static com.google.inject.Guice.createInjector;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-
-import client.scenes.OverviewCtrl;
-import com.google.inject.Injector;
-
 import client.scenes.AddQuoteCtrl;
 import client.scenes.MainCtrl;
 import client.scenes.QuoteOverviewCtrl;
+import client.scenes.StartScreenCtrl;
+import client.utils.Config;
+import com.google.inject.Injector;
 import javafx.application.Application;
 import javafx.stage.Stage;
+
+import static com.google.inject.Guice.createInjector;
 
 public class Main extends Application {
 
@@ -37,27 +34,35 @@ public class Main extends Application {
     /**
      * Main method of the client.
      * @param args array of arguments passed to the method.
-     * @throws URISyntaxException may throw this
-     * @throws IOException may throw this
      */
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) {
         launch();
     }
 
     /**
      * Starts the primary stage.
      * @param primaryStage primary stage
-     * @throws IOException may throw this
      */
     @Override
-    public void start(Stage primaryStage) throws IOException {
+    public void start(Stage primaryStage) {
 
-        var qouteoverview =
-                FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
+        var overview = FXML.load(QuoteOverviewCtrl.class, "client", "scenes", "QuoteOverview.fxml");
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
-        var overview = FXML.load(OverviewCtrl.class, "client", "scenes", "Overview.fxml");
+        var startScreen = FXML.load(StartScreenCtrl.class, "client", "scenes", "StartScreen.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, qouteoverview, add, overview);
+        mainCtrl.initialize(primaryStage, overview, add, startScreen);
+    }
+
+    /**
+     * Method that runs when the application is terminated.
+     * Saves the config to file.
+     * @throws Exception -
+     */
+    @Override
+    public void stop() throws Exception {
+        var config = INJECTOR.getInstance(Config.class);
+        config.saveProperties();
+        super.stop();
     }
 }

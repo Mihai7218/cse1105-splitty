@@ -15,6 +15,8 @@
  */
 package client.scenes;
 
+import client.utils.LanguageManager;
+import com.google.inject.Inject;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -24,46 +26,64 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl quoteOverviewCtrl;
-    private Scene qouteoverview;
-
-    private OverviewCtrl overviewCtrl;
-
+    private QuoteOverviewCtrl overviewCtrl;
     private Scene overview;
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    private StartScreenCtrl startScreenCtrl;
+    private Scene startScreen;
+
+    private LanguageManager languageManager;
+
+    /**
+     * Constructor for the MainCtrl
+     * @param languageManager - language manager
+     */
+    @Inject
+    public MainCtrl(LanguageManager languageManager) {
+        this.languageManager = languageManager;
+    }
+
     /**
      * Initialize the main controller with the primary stage,
-     *
      * @param primaryStage primary stage of the controller.
-     * @param add          add quote controller and scene
-     * @param overview     overview controller and scene
+     * @param overview overview controller and scene
+     * @param add add quote controller and scene
+     * @param startScreen start screen controller and scene
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
-                           Pair<AddQuoteCtrl, Parent> add, Pair<OverviewCtrl, Parent> overview) {
+    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> overview,
+            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl, Parent> startScreen) {
         this.primaryStage = primaryStage;
-        this.quoteOverviewCtrl = qouteoverview.getKey();
-        this.qouteoverview = new Scene(qouteoverview.getValue());
-
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
 
-        showQouteOverview();
+        this.startScreenCtrl = startScreen.getKey();
+        this.startScreen = new Scene(startScreen.getValue());
+
+        showStartMenu();
         primaryStage.show();
     }
 
     /**
      * Shows the overview scene.
      */
-    public void showQouteOverview() {
+    public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
-        primaryStage.setScene(qouteoverview);
-        quoteOverviewCtrl.refresh();
+        primaryStage.setScene(overview);
+        overviewCtrl.refresh();
+    }
+
+    /**
+     * Shows the start menu scene.
+     */
+    public void showStartMenu() {
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.setScene(startScreen);
     }
 
     /**
@@ -76,11 +96,65 @@ public class MainCtrl {
     }
 
     /**
-     * Shows the Overview scene.
+     * Getter for the primary stage.
+     * Package-access getter for testing purposes.
+     * @return - primary stage.
      */
-    public void showOverview() {
-        primaryStage.setTitle("Overview");
-        primaryStage.setScene(overview);
+    Stage getPrimaryStage() {
+        return primaryStage;
+    }
 
+    /**
+     * Getter for the overview controller.
+     * Package-access getter for testing purposes.
+     * @return - overview controller.
+     */
+    QuoteOverviewCtrl getOverviewCtrl() {
+        return overviewCtrl;
+    }
+
+    /**
+     * Getter for the overview scene.
+     * Package-access getter for testing purposes.
+     * @return - overview scene.
+     */
+    Scene getOverview() {
+        return overview;
+    }
+
+    /**
+     * Getter for the add quote controller.
+     * Package-access getter for testing purposes.
+     * @return - add quote controller.
+     */
+    AddQuoteCtrl getAddCtrl() {
+        return addCtrl;
+    }
+
+    /**
+     * Getter for the add quote scene.
+     * Package-access getter for testing purposes.
+     * @return - add quote scene.
+     */
+    Scene getAdd() {
+        return add;
+    }
+
+    /**
+     * Getter for the start screen controller.
+     * Package-access getter for testing purposes.
+     * @return - start screen controller.
+     */
+    StartScreenCtrl getStartScreenCtrl() {
+        return startScreenCtrl;
+    }
+
+    /**
+     * Getter for the start screen scene.
+     * Package-access getter for testing purposes.
+     * @return - start screen scene.
+     */
+    Scene getStartScreen() {
+        return startScreen;
     }
 }
