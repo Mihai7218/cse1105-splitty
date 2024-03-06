@@ -90,7 +90,7 @@ public class MainCtrl {
     public void showOverview() {
         primaryStage.setTitle("Quotes: Overview");
         primaryStage.setScene(overview);
-        overviewCtrl.refresh();
+        if (overviewCtrl != null) overviewCtrl.refresh();
     }
 
     /**
@@ -107,7 +107,7 @@ public class MainCtrl {
     public void showAdd() {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
-        add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+        if (add != null) add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
     }
 
     /**
@@ -116,7 +116,7 @@ public class MainCtrl {
     public void showParticipant() {
         primaryStage.setTitle("Add Participant");
         primaryStage.setScene(participant);
-        add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
+        if (add != null) add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**
@@ -180,5 +180,9 @@ public class MainCtrl {
      */
     Scene getStartScreen() {
         return startScreen;
+    }
+
+    void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
     }
 }
