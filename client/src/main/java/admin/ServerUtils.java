@@ -33,7 +33,7 @@ import java.util.List;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
-    private final String server;
+    private String server;
 
     /**
      * Constructor for the ServerUtils
@@ -42,6 +42,14 @@ public class ServerUtils {
     @Inject
     public ServerUtils(String serverAddress) {
         server = serverAddress;
+    }
+
+    /**
+     * a
+      * @param server a
+     */
+    public void setServer(String server) {
+        this.server = server;
     }
 
     /**

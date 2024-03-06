@@ -12,12 +12,23 @@ public class AdminConsole {
 
     private ServerUtils serverUtils;
 
+    private String password;
+
     /**
      * Costructor for the AdminConsole class
      */
-    public AdminConsole(String serverAddress) {
+    public AdminConsole() {
         this.events = new ArrayList<>();
-        serverUtils = new ServerUtils(serverAddress);
+        serverUtils = new ServerUtils("");
+        password = "";
+    }
+
+    /**
+     * a
+     * @param password a
+     */
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     /**
@@ -27,13 +38,40 @@ public class AdminConsole {
     public static void main(String[] args) {
         Scanner userInput = new Scanner(System.in);
         System.out.println("Welcome to the admin console");
-        System.out.println("What is the address of the server?");
-        AdminConsole adminConsole = new AdminConsole(userInput.nextLine());
+        AdminConsole adminConsole = new AdminConsole();
+        setServerAddress(userInput, adminConsole);
         //AdminConsole adminConsole = new AdminConsole("http://localhost:8080");
-        signIn(userInput, adminConsole);
+        System.out.println("Succes :D");
+        showOptions(userInput, adminConsole);
 
 
+    }
 
+    /**
+     * adwa
+     */
+    private static void showOptions(Scanner userInput, AdminConsole adminConsole) {
+        System.out.println("What would you like to do?");
+        System.out.println("\t 1 - Show all events");
+        System.out.println("\t 2 - exit");
+        switch (userInput.nextInt()) {
+            case 1:
+                adminConsole.printEvents();
+                showOptions(userInput, adminConsole);
+                break;
+            default:
+                exit();
+        }
+    }
+
+    /**
+     *
+     */
+    private void printEvents() {
+        events = serverUtils.getEvents(password);
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
     }
 
     /**
@@ -42,9 +80,12 @@ public class AdminConsole {
      * @param adminConsole a
      */
     private static void signIn(Scanner userInput, AdminConsole adminConsole) {
-        String password = passwordCheck(userInput);
+        System.out.println("what is the password?");
+        //String password = userInput.next();
+        String password = "703788";
         try {
             adminConsole.events = adminConsole.serverUtils.getEvents(password);
+            adminConsole.setPassword(password);
         } catch (Exception e) {
             System.out.println("Password incorrect");
             System.out.println("1. for retry password");
@@ -56,9 +97,9 @@ public class AdminConsole {
                     signIn(userInput,adminConsole);
                     break;
                 case 2:
-                    setServerAddress(userInput);
+                    setServerAddress(userInput, adminConsole);
                     break;
-                case 3:
+                default:
                     exit();
                     break;
             }
@@ -66,10 +107,14 @@ public class AdminConsole {
     }
 
     /**
-     *
      * @param userInput
+     * @return a
      */
-    private static void setServerAddress(Scanner userInput) {
+    private static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
+        System.out.println("What is the address of the server?");
+        //adminConsole.serverUtils.setServer(userInput.next());
+        adminConsole.serverUtils.setServer("http://localhost:8080");
+        signIn(userInput, adminConsole);
     }
 
     /**
@@ -79,12 +124,4 @@ public class AdminConsole {
         System.exit(0);
     }
 
-    /**
-     * setup meny to ask for password
-     * @return user provided password
-     */
-    private static String passwordCheck(Scanner userInput) {
-        System.out.println("what is the password?");
-        return userInput.nextLine();
-    }
 }
