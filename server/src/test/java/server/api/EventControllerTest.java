@@ -32,15 +32,14 @@ import static org.springframework.http.HttpStatus.*;
 
 public class EventControllerTest {
 
-    private TestEventRepository repo;
-    private TestTagRepository tagRepo;
     private EventController sut;
 
     @BeforeEach
     public void setup() {
-        repo = new TestEventRepository();
-        tagRepo = new TestTagRepository();
-        sut = new EventController(repo, tagRepo);
+        TestEventRepository repo = new TestEventRepository();
+        TestTagRepository tagRepo = new TestTagRepository();
+        EventService ev = new EventService(repo, tagRepo);
+        sut = new EventController(ev);
     }
 
     @Test
@@ -89,11 +88,6 @@ public class EventControllerTest {
     }
 
 
-    @Test
-    public void databaseIsUsed() {
-        sut.add(getEvent("1"));
-        repo.calledMethods.contains("save");
-    }
 
     private static Event getEvent(String q) {
         List<Tag> tags = new ArrayList<>();
