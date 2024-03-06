@@ -24,8 +24,8 @@ public class AdminConsole {
     }
 
     /**
-     * a
-     * @param password a
+     * a setter to change the password value
+     * @param password value to set the password to
      */
     public void setPassword(String password) {
         this.password = password;
@@ -48,7 +48,9 @@ public class AdminConsole {
     }
 
     /**
-     * adwa
+     * show menu with options for user
+     * @param userInput scanner to read user input
+     * @param adminConsole the currently running admin console
      */
     private static void showOptions(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What would you like to do?");
@@ -65,7 +67,7 @@ public class AdminConsole {
     }
 
     /**
-     *
+     * Print all the events that are currently on the server
      */
     private void printEvents() {
         events = serverUtils.getEvents(password);
@@ -75,14 +77,14 @@ public class AdminConsole {
     }
 
     /**
-     * a
-     * @param userInput a
-     * @param adminConsole a
+     * Sign in to the server
+     * @param userInput scanner to read user input
+     * @param adminConsole the currently running admin console
      */
     private static void signIn(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("what is the password?");
-        //String password = userInput.next();
-        String password = "703788";
+        String password = userInput.next();
+        //password = "703788";
         try {
             adminConsole.events = adminConsole.serverUtils.getEvents(password);
             adminConsole.setPassword(password);
@@ -107,18 +109,19 @@ public class AdminConsole {
     }
 
     /**
-     * @param userInput
-     * @return a
+     * Set the serverAddress of the adminConsole
+     * @param userInput scanner to read user input
+     * @param adminConsole the current running admin console
      */
     private static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
-        //adminConsole.serverUtils.setServer(userInput.next());
-        adminConsole.serverUtils.setServer("http://localhost:8080");
+        adminConsole.serverUtils.setServer(userInput.next());
+        //adminConsole.serverUtils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
 
     /**
-     *
+     * exit the console Application
      */
     private static void exit() {
         System.exit(0);
