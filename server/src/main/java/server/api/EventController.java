@@ -38,9 +38,13 @@ public class EventController {
      * Get methode to get all the events on the server
      * @return returns a list of all events on the server
      */
-    @GetMapping(path = { "", "/" })
-    public ResponseEntity<List<Event>> get() {
-        return eventService.getAllEvents();
+    @GetMapping(path = { "/admin/{password}" })
+    public ResponseEntity<List<Event>> get(@PathVariable("password") String password) {
+        if (PasswordService.getPassword().equals(password)) {
+            return eventService.getAllEvents();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
