@@ -1,6 +1,7 @@
 package server.api;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ExpenseControllerTest {
     private ExpenseController ctrl;
@@ -11,5 +12,10 @@ public class ExpenseControllerTest {
         TestExpenseRepository expenseRepo = new TestExpenseRepository();
         ExpenseService serv = new ExpenseService(eventRepo, expenseRepo);
         ctrl = new ExpenseController(serv);
+    }
+
+    @Test
+    public void getAllExpensesOK(){
+
     }
 }

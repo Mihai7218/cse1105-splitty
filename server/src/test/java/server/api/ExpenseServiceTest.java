@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import commons.Expense;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
+import server.database.TagRepository;
 
 import java.util.List;
 
@@ -15,6 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ExpenseServiceTest {
     public EventRepository eventRepo;
     public ExpenseRepository expenseRepo;
+    public TagRepository tagRepo;
+    public EventService eventService;
     public ExpenseService expenseService;
     public Event event;
     public Expense expense1;
@@ -25,9 +28,12 @@ public class ExpenseServiceTest {
     public void setup(){
         eventRepo = new TestEventRepository();
         expenseRepo = new TestExpenseRepository();
+        tagRepo = new TestTagRepository();
         expenseService = new ExpenseService(eventRepo, expenseRepo);
+        eventService = new EventService(eventRepo, tagRepo);
 
         Event event = new Event("main", null, null);
+        eventService.addEvent(event);
 
         long eventId = event.getInviteCode();
 
