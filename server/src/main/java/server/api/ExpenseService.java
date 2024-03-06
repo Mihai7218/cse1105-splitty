@@ -4,8 +4,6 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
 
@@ -17,11 +15,21 @@ public class ExpenseService {
     private final EventRepository eventRepo;
     private final ExpenseRepository expenseRepo;
 
-    public ExpenseService(EventRepository eventRepo, ExpenseRepository expenserepo){
+    /**
+     * Constructor for the ExpenseService
+     * @param eventRepo the repo of events
+     * @param expenseRepo the repo of expenses
+     */
+    public ExpenseService(EventRepository eventRepo, ExpenseRepository expenseRepo){
         this.eventRepo = eventRepo;
-        this.expenseRepo = expenserepo;
+        this.expenseRepo = expenseRepo;
     }
 
+    /**
+     * Lists all expenses in a certain event
+     * @param id the id of the event to list all expenses of
+     * @return whether the expenses could be listed
+     */
     public ResponseEntity<List<Expense>> getAllExpenses(long id) {
         if (id < 0 || !eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -31,6 +39,11 @@ public class ExpenseService {
         return ResponseEntity.ok(expenses);
     }
 
+    /**
+     * Sums the total of all expenses within an event
+     * @param id the id of the event
+     * @return whether the total could be returned
+     */
     public ResponseEntity<Double> getTotal(long id) {
         if (id < 0 || !eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
@@ -44,7 +57,16 @@ public class ExpenseService {
         return ResponseEntity.ok(totalExpense);
     }
 
-    public ResponseEntity<Expense> add(Expense expense) {
+    /**
+     * Adds an expense to the event
+     * @param id the id of the event to be added to
+     * @param expense the expense to be added
+     * @return whether the expense could be added to the event
+     */
+    public ResponseEntity<Expense> add(long id, Expense expense) {
+        if (id < 0 || !eventRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
                 expense.getAmount() == 0 || expense.getPayee() == null) {
@@ -54,7 +76,16 @@ public class ExpenseService {
         return ResponseEntity.ok(expense);
     }
 
-    public ResponseEntity<Void> changeTitle(String title, long expenseId) {
+    /**
+     * @param title the new title of the expense
+     * @param expenseId the id of the expense to be edited
+     * @param id the id of the event which contains the expense
+     * @return whether the title could be changed
+     */
+    public ResponseEntity<Void> changeTitle(String title, long expenseId, long id) {
+        if (id < 0 || !eventRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
@@ -67,8 +98,17 @@ public class ExpenseService {
         return ResponseEntity.ok(null);
     }
 
+    /**
+     * @param amount the new amount of the expense
+     * @param expenseId the id of the expense to be edited
+     * @param id the id of the event
+     * @return whether the amount could be updated
+     */
     public ResponseEntity<Void> changeAmount(double amount,
-                                             long expenseId){
+                                             long expenseId, long id){
+        if (id < 0 || !eventRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
@@ -81,7 +121,17 @@ public class ExpenseService {
         return ResponseEntity.ok(null);
     }
 
-    public ResponseEntity<Void> changePayee(Participant payee, long expenseId){
+    /**
+     * @param payee the new payee of the expense
+     * @param expenseId the id of the expense to be edited
+     * @param id the id of the event
+     * @return whether the payee could be updated
+     */
+    public ResponseEntity<Void> changePayee(Participant payee, long expenseId,
+                                            long id){
+        if (id < 0 || !eventRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
@@ -94,8 +144,15 @@ public class ExpenseService {
         return ResponseEntity.ok(null);
     }
 
-    public ResponseEntity<Void> deleteExpense(long expenseId){
-
+    /**
+     * @param expenseId the id of the expense to be deleted
+     * @param id the id of the event
+     * @return whether the expense was deleted
+     */
+    public ResponseEntity<Void> deleteExpense(long expenseId, long id){
+        if (id < 0 || !eventRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
