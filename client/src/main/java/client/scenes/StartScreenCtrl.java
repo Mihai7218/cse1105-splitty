@@ -72,7 +72,7 @@ public class StartScreenCtrl implements Initializable {
      */
     public void changeLanguage() {
         String language = "";
-         if (languages != null) language = languages.getValue();
+        if (languages != null) language = languages.getValue();
         config.setProperty("language", language);
         this.refreshLanguage();
     }

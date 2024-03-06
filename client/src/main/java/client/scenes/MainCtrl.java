@@ -182,6 +182,10 @@ public class MainCtrl {
         return startScreen;
     }
 
+    /**
+     * Setter for the primary stage.
+     * @param primaryStage - the primary stage
+     */
     void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
     }
