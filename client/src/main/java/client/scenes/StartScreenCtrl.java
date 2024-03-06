@@ -63,7 +63,7 @@ public class StartScreenCtrl implements Initializable {
         if (language == null) {
             language = "en";
         }
-        languages.setValue(language);
+        if (languages != null) languages.setValue(language);
         this.refreshLanguage();
     }
 
@@ -71,7 +71,8 @@ public class StartScreenCtrl implements Initializable {
      * Changes language
      */
     public void changeLanguage() {
-        String language = languages.getValue();
+        String language = "";
+         if (languages != null) language = languages.getValue();
         config.setProperty("language", language);
         this.refreshLanguage();
     }
@@ -136,10 +137,18 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
+     *
+     * @param newEventTitle
+     */
+    public void setNewEventTitle(TextField newEventTitle) {
+        this.newEventTitle = newEventTitle;
+    }
+
+    /**
      * Method that creates a new event when the button "Create" is pressed.
      */
     public void createEventButtonHandler() {
-        if (newEventTitle.getText() == null
+        if (newEventTitle == null || newEventTitle.getText() == null
                 || newEventTitle.getText().isEmpty()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
@@ -225,5 +234,13 @@ public class StartScreenCtrl implements Initializable {
         if (Objects.requireNonNull(e.getCode()) == KeyCode.ENTER) {
             joinEventButtonHandler();
         }
+    }
+
+    /**
+     * Getter for the list of recent events.
+     * @return - the list of recent events.
+     */
+    public List<Event> getRecentEventsList() {
+        return recentEventsList;
     }
 }
