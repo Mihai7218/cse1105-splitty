@@ -3,7 +3,9 @@ package server.api;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
 
@@ -11,6 +13,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+@Service
 public class ExpenseService {
     private final EventRepository eventRepo;
     private final ExpenseRepository expenseRepo;
@@ -20,6 +23,7 @@ public class ExpenseService {
      * @param eventRepo the repo of events
      * @param expenseRepo the repo of expenses
      */
+    @Autowired
     public ExpenseService(EventRepository eventRepo, ExpenseRepository expenseRepo){
         this.eventRepo = eventRepo;
         this.expenseRepo = expenseRepo;

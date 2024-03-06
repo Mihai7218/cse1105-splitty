@@ -47,7 +47,7 @@ public class ExpenseController {
     @PostMapping(path = {""})
     public ResponseEntity<Expense> add(@PathVariable("id") long id,
                                        @RequestBody Expense expense) {
-        return expenseService.add(expense);
+        return expenseService.add(id, expense);
     }
 
     /**
