@@ -1,21 +1,21 @@
 package client.scenes;
 
+import client.utils.LanguageManager;
+import com.google.inject.Inject;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
 import commons.Tag;
-//import javafx.animation.FadeTransition;
-//import javafx.animation.PauseTransition;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+
 import java.net.URL;
-//import javafx.util.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-//import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -40,6 +40,18 @@ public class AddExpenseCtrl implements Initializable {
     private VBox namesContainer;
     @FXML
     private Label question;
+
+    private LanguageManager languageManager;
+
+    /**
+     * Constructor for an addExpense controller.
+     * @param languageManager - the language manager.
+     */
+    @Inject
+    public AddExpenseCtrl(LanguageManager languageManager) {
+        this.languageManager = languageManager;
+    }
+
     /**
      *
      * @param url
@@ -162,9 +174,9 @@ public class AddExpenseCtrl implements Initializable {
         if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null) {
             // Display an alert informing the user about missing input
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Incomplete Data");
-            alert.setContentText("Please fill in all fields.");
+            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
+            alert.headerTextProperty().bind(languageManager.bind("addExpense.incompleteHeader"));
+            alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
             alert.showAndWait();
             return;
         }
@@ -181,9 +193,9 @@ public class AddExpenseCtrl implements Initializable {
         } catch (NumberFormatException e) {
             // Display an alert informing the user about incorrect price format
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Incorrect Data Format");
-            alert.setContentText("Please enter a valid price.");
+            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
+            alert.headerTextProperty().bind(languageManager.bind("addExpense.invalidHeader"));
+            alert.contentTextProperty().bind(languageManager.bind("addExpense.invalidBody"));
             alert.showAndWait();
         }
     }
@@ -210,6 +222,30 @@ public class AddExpenseCtrl implements Initializable {
         title.clear();
         price.clear();
         date.setValue(null);
+    }
+
+    /**
+     * Getter for the language manager observable map.
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Setter for the language manager observable map.
+     * @param languageManager - the language manager observable map.
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the language manager property.
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
     }
 
 }
