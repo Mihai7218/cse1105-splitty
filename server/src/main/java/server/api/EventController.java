@@ -38,7 +38,7 @@ public class EventController {
      * Get methode to get all the events on the server
      * @return returns a list of all events on the server
      */
-    @GetMapping(path = { "/{inviteCode}" })
+    @GetMapping(path = { "", "/" })
     public ResponseEntity<List<Event>> get() {
         return eventService.getAllEvents();
     }
