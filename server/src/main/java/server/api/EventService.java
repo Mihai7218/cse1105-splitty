@@ -58,7 +58,7 @@ public class EventService {
     /**
      * A post method to add and event to the repository
      * @param event an event in the requestBody to add to the repository
-     * @return the event if succesfully made
+     * @return the event if successfully made
      */
     public ResponseEntity<Event> addEvent(Event event) {
         if (event == null || event.getTitle() == null || Objects.equals(event.getTitle(), "")) {
