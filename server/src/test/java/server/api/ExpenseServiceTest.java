@@ -12,6 +12,7 @@ import server.database.TagRepository;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ExpenseServiceTest {
     public EventRepository eventRepo;
@@ -23,6 +24,8 @@ public class ExpenseServiceTest {
     public Expense expense1;
     public Expense expense2;
     public Expense expense3;
+    public Participant payee;
+    public long eventId;
 
     @BeforeEach
     public void setup(){
@@ -32,14 +35,15 @@ public class ExpenseServiceTest {
         expenseService = new ExpenseService(eventRepo, expenseRepo);
         eventService = new EventService(eventRepo, tagRepo);
 
-        Event event = new Event("main", null, null);
+        event = new Event("main", null, null);
         eventService.addEvent(event);
 
-        long eventId = event.getInviteCode();
+        eventId = event.getInviteCode();
+        payee = new Participant("joe", null, null, null);
 
-        Expense expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, null, null);
-        Expense expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, null);
-        Expense expense3 = new Expense(600, "eur", "birthday", "cake", null, null, null, null);
+        expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, null, payee);
+        expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, payee);
+        expense3 = new Expense(600, "eur", "birthday", "cake", null, null, null, payee);
 
         expenseService.add(eventId, expense1);
         expenseService.add(eventId, expense2);
@@ -49,16 +53,14 @@ public class ExpenseServiceTest {
     //TODO: getAllExpensesTest where the invite code isnt valid/doesnt exist
     @Test
     public void getAllExpensesTest(){
-        long eventId = event.getInviteCode();
         List<Expense> expenseList = expenseService.getAllExpenses(eventId).getBody();
-        assertEquals(expenseList.size(), 3);
+        assertEquals(3, expenseList.size());
     }
 
 
     //TODO: getTotalTest where the invite code isnt valid/doesnt exist
     @Test
     public void getTotalTest(){
-        long eventId = event.getInviteCode();
         double total = expenseService.getTotal(eventId).getBody();
         assertEquals(total, 625.60);
     }
@@ -67,7 +69,6 @@ public class ExpenseServiceTest {
     //TODO: addTest where expense == null or title == null, id to add to doesnt exist/invalid
     @Test
     public void addTest(){
-        long eventId = event.getInviteCode();
         Expense expense4 = new Expense(60, "party", "drinks", null, null, null, null, null);
         expenseService.add(eventId, expense4);
         //there should be 4 expenses in the event now
@@ -78,8 +79,6 @@ public class ExpenseServiceTest {
     // title is empty
     @Test
     public void changeTitleTest(){
-        long eventId = event.getInviteCode();
-
         long expenseId1 = expense1.getId();
         expenseService.changeTitle("food", expenseId1, eventId);
         assertEquals("food", expense1.getTitle());
@@ -97,8 +96,6 @@ public class ExpenseServiceTest {
     // exist/amnt <= 0.0
     @Test
     public void changeAmountTest(){
-        long eventId = event.getInviteCode();
-
         long expenseId1 = expense1.getId();
         expenseService.changeAmount(300, expenseId1, eventId);
         assertEquals(300, expense1.getAmount());
@@ -116,7 +113,6 @@ public class ExpenseServiceTest {
     // payee == null/doesnt have a name
     @Test
     public void changePayeeTest(){
-        long eventId = event.getInviteCode();
         long expenseId = expense1.getId();
         Participant part = new Participant("joe", null, null, null);
         expenseService.changePayee(part, expenseId, eventId);
@@ -126,7 +122,6 @@ public class ExpenseServiceTest {
     //TODO: event/expense doesnt exist/invalid ids
     @Test
     public void deleteExpenseTest(){
-        long eventId = event.getInviteCode();
         long expenseId = expense1.getId();
         assertEquals(expense1, expenseService.deleteExpense(expenseId, eventId).getBody());
         assertEquals(2, expenseService.getAllExpenses(eventId).getBody().size());

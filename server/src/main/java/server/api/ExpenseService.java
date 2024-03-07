@@ -76,6 +76,13 @@ public class ExpenseService {
                 expense.getAmount() == 0 || expense.getPayee() == null) {
             return ResponseEntity.notFound().build();
         }
+
+        Event event = eventRepo.findById(id).get();
+        List<Expense> expenseList = event.getExpensesList();
+        expenseList.add(expense);
+        event.setExpensesList(expenseList);
+        eventRepo.save(event);
+
         expenseRepo.save(expense);
         return ResponseEntity.ok(expense);
     }
