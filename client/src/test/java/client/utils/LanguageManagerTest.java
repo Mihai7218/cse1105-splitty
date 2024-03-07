@@ -2,10 +2,14 @@ package client.utils;
 
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.SimpleMapProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.Locale;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -31,7 +35,8 @@ class LanguageManagerTest {
         sut.refresh();
         LanguageManager comparison = new LanguageManager(config);
         comparison.put("hello", "world");
-        comparison.put("value","test");
+        comparison.put("big", new SimpleMapProperty<>(FXCollections.observableHashMap()));
+        ((Map<String, Object>) comparison.get("big")).put("small", "test");
         comparison.put("why","not");
         assertEquals(comparison, sut);
     }
@@ -39,10 +44,9 @@ class LanguageManagerTest {
     @Test
     void bind() {
         sut.put("hello", "world");
-        sut.put("value","test");
         sut.put("why","not");
-        StringBinding sb = sut.bind("hello");
-        StringBinding cp = Bindings.valueAt(sut, "hello").asString();
+        StringBinding sb = sut.bind("big.small");
+        StringBinding cp = Bindings.valueAt((ObservableMap<String, Object>) sut.get("big"), "small").asString();
         assertEquals(cp.get(), sb.get());
     }
 }
