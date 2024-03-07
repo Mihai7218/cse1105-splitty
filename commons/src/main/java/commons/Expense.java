@@ -61,6 +61,11 @@ public class Expense {
     public long getId() {
         return id;
     }
+
+    /**
+     * Setter for the ID
+     * @param id id to set the id to
+     */
     public void setId(int id) {
         this.id = id;
     }
