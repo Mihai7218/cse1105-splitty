@@ -33,6 +33,7 @@ public class StartScreenCtrl implements Initializable {
     private TextField newEventTitle;
     @FXML
     private TextField eventInvite;
+    private Alert alert;
 
     /**
      * Constructor for the StartScreenCtrl
@@ -43,11 +44,13 @@ public class StartScreenCtrl implements Initializable {
     public StartScreenCtrl(MainCtrl mainCtrl,
                            ConfigInterface config,
                            LanguageManager languageManager,
-                           ServerUtils serverUtils) {
+                           ServerUtils serverUtils,
+                           Alert alert) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
+        this.alert = alert;
     }
 
     /**
@@ -148,11 +151,7 @@ public class StartScreenCtrl implements Initializable {
     public void createEventButtonHandler() {
         if (newEventTitle == null || newEventTitle.getText() == null
                 || newEventTitle.getText().isEmpty()) {
-            var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
-            var alertButton = alert.getDialogPane().lookupButton(ButtonType.OK);
-            alertButton.setId("okAlertButton");
-            alert.initModality(Modality.APPLICATION_MODAL);
             alert.show();
             return;
         }
@@ -161,7 +160,7 @@ public class StartScreenCtrl implements Initializable {
         try {
             e = serverUtils.addEvent(e);
         } catch (WebApplicationException ex) {
-            var alert = new Alert(Alert.AlertType.WARNING);
+            alert = new Alert(Alert.AlertType.WARNING);
             alert.initModality(Modality.APPLICATION_MODAL);
             switch (ex.getResponse().getStatus()) {
                 case 500 -> alert.contentTextProperty()

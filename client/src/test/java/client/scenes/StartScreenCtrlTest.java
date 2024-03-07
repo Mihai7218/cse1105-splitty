@@ -5,13 +5,15 @@ import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import commons.Event;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
@@ -20,8 +22,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
@@ -42,15 +43,20 @@ class StartScreenCtrlTest {
     ServerUtils serverUtils;
     StartScreenCtrl sut;
     TextField textField;
+    Alert alert;
+    StringProperty sp;
 
     @Start
     void setUp(Stage stage) {
         mainCtrl = mock(MainCtrl.class);
-        textField = new TextField();
+        textField = mock(TextField.class);
         config = new TestConfig();
         languageManager = mock(LanguageManager.class);
         serverUtils = mock(ServerUtils.class);
-        sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils);
+        alert = mock(Alert.class);
+        sp = new SimpleStringProperty("Hello");
+        when(alert.contentTextProperty()).thenReturn(sp);
+        sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils, alert);
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         sut.setNewEventTitle(textField);
         when(languageManager.get()).thenReturn(observableMap);
@@ -104,10 +110,10 @@ class StartScreenCtrlTest {
     }
 
     @Test
-    void createEventButtonHandlerNullText(FxRobot robot) {
-        robot.interact(() -> sut.createEventButtonHandler());
-        robot.clickOn("#okAlertButton");
-
+    void createEventButtonHandlerNullText() {
+        sut.createEventButtonHandler();
+        verify(alert).show();
+        assertTrue(sp.isBound());
         verify(serverUtils, never()).addEvent(any());
     }
 }
