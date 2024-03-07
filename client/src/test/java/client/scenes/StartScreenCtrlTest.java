@@ -30,6 +30,8 @@ class StartScreenCtrlTest {
     static {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
+        System.setProperty("glass.platform", "Monocle");
+        System.setProperty("monocle.platform", "Headless");
         System.setProperty("prism.order", "sw");
         System.setProperty("prism.text", "t2k");
     }
