@@ -65,6 +65,8 @@ public class StartScreenCtrl implements Initializable {
         if (language == null) {
             language = "en";
         }
+        alert.titleProperty().bind(languageManager.bind("commons.warning"));
+        alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
     }

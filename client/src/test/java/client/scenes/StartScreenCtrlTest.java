@@ -29,7 +29,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
@@ -66,7 +67,10 @@ class StartScreenCtrlTest {
         languageComboBox = mock(LanguageComboBox.class);
         alert = mock(Alert.class);
         sp = new SimpleStringProperty("Hello");
+        when(languageManager.bind(anyString())).thenReturn(Bindings.createStringBinding(() -> ""));
         when(alert.contentTextProperty()).thenReturn(sp);
+        when(alert.titleProperty()).thenReturn(sp);
+        when(alert.headerTextProperty()).thenReturn(sp);
         sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils, alert);
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         sut.setNewEventTitle(createTextField);
