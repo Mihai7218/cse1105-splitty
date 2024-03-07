@@ -166,6 +166,11 @@ public class ExpenseService {
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
+        Event event = eventRepo.findById(id).get();
+        Expense expense = expenseRepo.findById(expenseId).get();
+        List<Expense> expenseList = event.getExpensesList();
+        expenseList.remove(expense);
+        event.setExpensesList(expenseList);
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
         return ResponseEntity.ok(null);
     }

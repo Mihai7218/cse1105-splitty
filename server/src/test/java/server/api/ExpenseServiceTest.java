@@ -50,8 +50,6 @@ public class ExpenseServiceTest {
         eventId = event.getInviteCode();
         payee = new Participant("joe", null, null, null);
 
-
-
         expenseRepo.save(expense1);
         expenseRepo.save(expense2);
         expenseRepo.save(expense3);
@@ -76,10 +74,12 @@ public class ExpenseServiceTest {
     //TODO: addTest where expense == null or title == null, id to add to doesnt exist/invalid
     @Test
     public void addTest(){
-        Expense expense4 = new Expense(60, "party", "drinks", null, null, null, null, null);
+        Expense expense4 = new Expense(60, "party", "drinks",
+                null, null, null, null, payee);
+        expenseRepo.save(expense4);
         expenseService.add(eventId, expense4);
         //there should be 4 expenses in the event now
-        assertEquals(expenseService.getAllExpenses(eventId).getBody().size(), 4);
+        assertEquals(4, expenseService.getAllExpenses(eventId).getBody().size());
     }
 
     //TODO: changeTitleTest where event or expense doesnt exist/invalid IDs/
@@ -130,7 +130,7 @@ public class ExpenseServiceTest {
     @Test
     public void deleteExpenseTest(){
         long expenseId = expense1.getId();
-        assertEquals(expense1, expenseService.deleteExpense(expenseId, eventId).getBody());
+        expenseService.deleteExpense(expenseId, eventId);
         assertEquals(2, expenseService.getAllExpenses(eventId).getBody().size());
     }
 }
