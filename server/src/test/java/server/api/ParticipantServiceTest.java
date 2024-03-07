@@ -111,8 +111,9 @@ class ParticipantServiceTest {
 
     @Test
     public void updateParticipantValidTest(){
-        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, "Christina Smith",
-                "cmsmith@yahoo.com", "NL85ABNA5253446745", "AMUKGB7B");
+        Participant p = new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B");
+        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, p);
         assertEquals(result.getBody().getName(), "Christina Smith");
         assertEquals(result.getBody().getEmail(), "cmsmith@yahoo.com");
         assertEquals(result.getBody().getIban(), "NL85ABNA5253446745");
@@ -120,6 +121,20 @@ class ParticipantServiceTest {
         Participant updated = new Participant("Christina Smith", "cmsmith@yahoo.com", "NL85ABNA5253446745",
                 "AMUKGB7B");
         assertEquals(updated, result.getBody());
+    }
+
+    @Test
+    public void updateInvalidParticipantTest(){
+        Participant p = new Participant("Christina Smith", "cmsmith.com",
+                "NL85A6745", "AMUKGB7B");
+        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, p);
+        assertEquals(result.getStatusCode(), BAD_REQUEST);
+        assertEquals(participantRepository.participants.get(0).getName(), "Chris Smith");
+        assertEquals(participantRepository.participants.get(0).getEmail(), "chrismsmith@gmail.com");
+        assertEquals(participantRepository.participants.get(0).getIban(), "NL85RABO5253446745");
+        assertEquals(participantRepository.participants.get(0).getBic(), "HBUKGB4B");
+
+        assertEquals(baseParticipant, participantRepository.participants.get(0));
     }
 
     @Test
