@@ -36,14 +36,21 @@ public class ExpenseServiceTest {
         eventService = new EventService(eventRepo, tagRepo);
 
         event = new Event("main", null, null);
+
+        expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, null, payee);
+        expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, payee);
+        expense3 = new Expense(600, "eur", "birthday", "cake", null, null, null, payee);
+
+        event.getExpensesList().add(expense1);
+        event.getExpensesList().add(expense2);
+        event.getExpensesList().add(expense3);
+
         eventRepo.save(event);
 
         eventId = event.getInviteCode();
         payee = new Participant("joe", null, null, null);
 
-        expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, null, payee);
-        expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, payee);
-        expense3 = new Expense(600, "eur", "birthday", "cake", null, null, null, payee);
+
 
         expenseRepo.save(expense1);
         expenseRepo.save(expense2);
