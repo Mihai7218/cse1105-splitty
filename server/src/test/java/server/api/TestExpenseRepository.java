@@ -113,7 +113,9 @@ public class TestExpenseRepository implements ExpenseRepository {
      * @return
      */
     private Optional<Expense> find(Long id) {
-        return expenses.stream().filter(q -> q.getId() == id).findFirst();
+        return expenses.stream().
+                filter(q -> q.getId() == id).
+                findFirst();
     }
 
     /**
@@ -133,7 +135,8 @@ public class TestExpenseRepository implements ExpenseRepository {
      * @param <S>
      */
     @Override
-    public <S extends Expense> Optional<S> findOne(Example<S> example) {
+    public <S extends Expense> Optional<S>
+    findOne(Example<S> example) {
         return Optional.empty();
     }
 
@@ -144,7 +147,8 @@ public class TestExpenseRepository implements ExpenseRepository {
      * @param <S>
      */
     @Override
-    public <S extends Expense> List<S> findAll(Example<S> example) {
+    public <S extends Expense> List<S>
+    findAll(Example<S> example) {
         return null;
     }
 
@@ -172,7 +176,8 @@ public class TestExpenseRepository implements ExpenseRepository {
      * @param <S>
      */
     @Override
-    public <S extends Expense> Page<S> findAll(Example<S> example, Pageable pageable) {
+    public <S extends Expense> Page<S> findAll(Example<S> example,
+                                               Pageable pageable) {
         return null;
     }
 
@@ -237,7 +242,8 @@ public class TestExpenseRepository implements ExpenseRepository {
      * @param <S>
      */
     @Override
-    public <S extends Expense> List<S> saveAll(Iterable<S> entities) {
+    public <S extends Expense> List<S>
+    saveAll(Iterable<S> entities) {
         return null;
     }
 
