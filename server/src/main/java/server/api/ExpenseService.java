@@ -81,9 +81,8 @@ public class ExpenseService {
         List<Expense> expenseList = event.getExpensesList();
         expenseList.add(expense);
         event.setExpensesList(expenseList);
-        eventRepo.save(event);
-
         expenseRepo.save(expense);
+        eventRepo.save(event);
         return ResponseEntity.ok(expense);
     }
 

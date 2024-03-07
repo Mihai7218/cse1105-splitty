@@ -61,6 +61,9 @@ public class Expense {
     public long getId() {
         return id;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * Getter for the list of ParticipantPayments

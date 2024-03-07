@@ -36,7 +36,7 @@ public class ExpenseServiceTest {
         eventService = new EventService(eventRepo, tagRepo);
 
         event = new Event("main", null, null);
-        eventService.addEvent(event);
+        eventRepo.save(event);
 
         eventId = event.getInviteCode();
         payee = new Participant("joe", null, null, null);
@@ -45,9 +45,9 @@ public class ExpenseServiceTest {
         expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, payee);
         expense3 = new Expense(600, "eur", "birthday", "cake", null, null, null, payee);
 
-        expenseService.add(eventId, expense1);
-        expenseService.add(eventId, expense2);
-        expenseService.add(eventId, expense3);
+        expenseRepo.save(expense1);
+        expenseRepo.save(expense2);
+        expenseRepo.save(expense3);
     }
 
     //TODO: getAllExpensesTest where the invite code isnt valid/doesnt exist
