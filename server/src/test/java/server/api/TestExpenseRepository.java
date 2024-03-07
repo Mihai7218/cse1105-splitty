@@ -18,7 +18,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     public final List<String> calledMethods = new ArrayList<>();
 
     /**
-     *
      * @param name
      */
     private void call(String name) {
@@ -30,16 +29,15 @@ public class TestExpenseRepository implements ExpenseRepository {
      */
     @Override
     public void flush() {
-        while(calledMethods.size()>0){
+        while (calledMethods.size() > 0) {
             calledMethods.remove(0);
         }
     }
 
     /**
-     *
      * @param entity entity to be saved. Must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> S saveAndFlush(S entity) {
@@ -47,11 +45,10 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param entities entities to be saved.
      *                 Must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> List<S> saveAllAndFlush(Iterable<S> entities) {
@@ -59,7 +56,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param entities entities to be deleted.
      *                 Must not be {@literal null}.
      */
@@ -69,7 +65,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param longs the ids of the entities to be deleted.
      *              Must not be {@literal null}.
      */
@@ -87,7 +82,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param aLong must not be {@literal null}.
      * @return
      */
@@ -97,7 +91,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param id must not be {@literal null}.
      * @return
      */
@@ -108,7 +101,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -119,7 +111,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param aLong must not be {@literal null}.
      * @return
      */
@@ -129,37 +120,32 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param example must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
-    public <S extends Expense> Optional<S>
-    findOne(Example<S> example) {
+    public <S extends Expense> Optional<S> findOne(Example<S> example) {
         return Optional.empty();
     }
 
     /**
-     *
      * @param example must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
-    public <S extends Expense> List<S>
-    findAll(Example<S> example) {
+    public <S extends Expense> List<S> findAll(Example<S> example) {
         return null;
     }
 
     /**
-     *
      * @param example must not be {@literal null}.
-     * @param sort the {@link Sort} specification to sort the
-     *             results by, may be {@link Sort#unsorted()}, must not be
-     *          {@literal null}.
-     * @return
+     * @param sort    the {@link Sort} specification to sort the
+     *                results by, may be {@link Sort#unsorted()}, must not be
+     *                {@literal null}.
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> List<S> findAll(Example<S> example, Sort sort) {
@@ -167,13 +153,12 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
-     * @param example must not be {@literal null}.
+     * @param example  must not be {@literal null}.
      * @param pageable the pageable to request a paged result,
      *                 can be {@link Pageable#unpaged()}, must not be
-     *          {@literal null}.
-     * @return
+     *                 {@literal null}.
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> Page<S> findAll(Example<S> example,
@@ -182,11 +167,10 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param example the {@link Example} to count instances
      *                for. Must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> long count(Example<S> example) {
@@ -194,11 +178,10 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param example the {@link Example} to use for the
      *                existence check. Must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> boolean exists(Example<S> example) {
@@ -206,25 +189,23 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
-     * @param example must not be {@literal null}.
+     * @param example       must not be {@literal null}.
      * @param queryFunction the query function defining projection,
      *                      sorting, and the result type
-     * @return
      * @param <S>
      * @param <R>
+     * @return
      */
     @Override
     public <S extends Expense, R> R findBy(Example<S> example,
-                                           Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+           Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 
     /**
-     *
      * @param entity must not be {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Expense> S save(S entity) {
@@ -235,27 +216,24 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param entities must not be {@literal null} nor must it
      *                 contain {@literal null}.
-     * @return
      * @param <S>
+     * @return
      */
     @Override
-    public <S extends Expense> List<S>
-    saveAll(Iterable<S> entities) {
+    public <S extends Expense> List<S> saveAll(Iterable<S> entities) {
         return null;
     }
 
     /**
-     *
      * @param id must not be {@literal null}.
      * @return
      */
     @Override
     public Optional<Expense> findById(Long id) {
         call("findById");
-        for(Expense expense : expenses) {
+        for (Expense expense : expenses) {
             if (expense.getId() == id) {
                 return Optional.of(expense);
             }
@@ -264,7 +242,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param id must not be {@literal null}.
      * @return
      */
@@ -275,7 +252,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -285,9 +261,8 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param longs must not be {@literal null} nor contain any
-     * {@literal null} values.
+     *              {@literal null} values.
      * @return
      */
     @Override
@@ -296,7 +271,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -305,7 +279,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param aLong must not be {@literal null}.
      */
     @Override
@@ -314,7 +287,6 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param entity must not be {@literal null}.
      */
     @Override
@@ -323,9 +295,8 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param longs must not be {@literal null}. Must not contain
-     * {@literal null} elements.
+     *              {@literal null} elements.
      */
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
@@ -333,9 +304,8 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param entities must not be {@literal null}. Must not contain
-     * {@literal null} elements.
+     *                 {@literal null} elements.
      */
     @Override
     public void deleteAll(Iterable<? extends Expense> entities) {
@@ -351,10 +321,9 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param sort the {@link Sort} specification to sort the results by,
      *             can be {@link Sort#unsorted()}, must not be
-     *          {@literal null}.
+     *             {@literal null}.
      * @return
      */
     @Override
@@ -363,10 +332,9 @@ public class TestExpenseRepository implements ExpenseRepository {
     }
 
     /**
-     *
      * @param pageable the pageable to request a paged result,
      *                 can be {@link Pageable#unpaged()}, must not be
-     *          {@literal null}.
+     *                 {@literal null}.
      * @return
      */
     @Override
