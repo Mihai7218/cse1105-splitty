@@ -236,6 +236,11 @@ public class TestEventRepository implements EventRepository {
     @Override
     public <S extends Event> S save(S entity) {
         call("save");
+        if (existsById((long)entity.getInviteCode())) {
+            if (getById((long)entity.getInviteCode()).getTitle().equals(entity.getTitle())) {
+                return entity;
+            }
+        }
         entity.setInviteCode(events.size());
         events.add(entity);
         return entity;

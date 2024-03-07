@@ -88,7 +88,7 @@ class EventServiceTest {
     @Test
     public void deleteEvent(){
         assertEquals(event1, eventService.deleteEvent(0).getBody());
-        assertEquals(4, eventService.getAllEvents().getBody().size());
+        assertEquals(3, eventService.getAllEvents().getBody().size());
     }
 
     @Test

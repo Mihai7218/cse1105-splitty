@@ -76,7 +76,6 @@ public class ExpenseServiceTest {
     public void addTest(){
         Expense expense4 = new Expense(60, "party", "drinks",
                 null, null, null, null, payee);
-        expenseRepo.save(expense4);
         expenseService.add(eventId, expense4);
         //there should be 4 expenses in the event now
         assertEquals(4, expenseService.getAllExpenses(eventId).getBody().size());
