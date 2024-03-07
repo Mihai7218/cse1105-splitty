@@ -10,9 +10,7 @@ import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
@@ -152,8 +150,10 @@ public class StartScreenCtrl implements Initializable {
                 || newEventTitle.getText().isEmpty()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
+            var alertButton = alert.getDialogPane().lookupButton(ButtonType.OK);
+            alertButton.setId("okAlertButton");
             alert.initModality(Modality.APPLICATION_MODAL);
-            alert.showAndWait();
+            alert.show();
             return;
         }
         Date date = new Date();

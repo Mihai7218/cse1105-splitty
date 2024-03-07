@@ -4,10 +4,16 @@ import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import commons.Event;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import org.junit.jupiter.api.BeforeEach;
+import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.testfx.api.FxRobot;
+import org.testfx.framework.junit5.ApplicationExtension;
+import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
 import java.util.List;
@@ -18,7 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(ApplicationExtension.class)
 class StartScreenCtrlTest {
+
+    static {
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
+    }
 
     MainCtrl mainCtrl;
     ConfigInterface config;
@@ -26,21 +40,26 @@ class StartScreenCtrlTest {
     LanguageManager languageManager;
     ServerUtils serverUtils;
     StartScreenCtrl sut;
+    TextField textField;
 
-    @BeforeEach
-    void setUp() {
+    @Start
+    void setUp(Stage stage) {
         mainCtrl = mock(MainCtrl.class);
+        textField = new TextField();
         config = new TestConfig();
         languageManager = mock(LanguageManager.class);
         serverUtils = mock(ServerUtils.class);
         sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils);
+        sut.initialize(mock(URL.class), mock(ResourceBundle.class));
+        sut.setNewEventTitle(textField);
         when(languageManager.get()).thenReturn(observableMap);
+        when(languageManager.bind(anyString())).thenReturn(Bindings.createStringBinding(() -> "Hello World"));
     }
 
     @Test
     void initializeLanguageNotSet() {
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
-        verify(languageManager).changeLanguage(Locale.ENGLISH);
+        verify(languageManager, times(2)).changeLanguage(Locale.ENGLISH);
     }
     @Test
     void initializeLanguageSet() {
@@ -53,7 +72,7 @@ class StartScreenCtrlTest {
     void changeLanguage() {
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         assertNull(config.getProperty("language"));
-        verify(languageManager).changeLanguage(Locale.ENGLISH);
+        verify(languageManager, times(2)).changeLanguage(Locale.ENGLISH);
     }
 
     @Test
@@ -81,5 +100,13 @@ class StartScreenCtrlTest {
         assertEquals("42", config.getProperty("recentEvents"));
         assertEquals("5", config.getProperty("recentEventsLimit"));
         assertEquals(List.of(event), sut.getRecentEventsList());
+    }
+
+    @Test
+    void createEventButtonHandlerNullText(FxRobot robot) {
+        robot.interact(() -> sut.createEventButtonHandler());
+        robot.clickOn("#okAlertButton");
+
+        verify(serverUtils, never()).addEvent(any());
     }
 }
