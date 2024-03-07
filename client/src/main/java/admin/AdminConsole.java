@@ -91,7 +91,6 @@ public class AdminConsole {
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         String formattedDateTime = now.format(timeFormat);
         path += "\\Splitty-Dump-" + formattedDateTime + ".json";
-        //path = "C:\\Users\\kalku\\Documents\\GitLab\\oopp-team-22\\Splitty-Dump-" + formattedDateTime + ".json";
         FileWriter ewa = null;
         try {
             ewa = new FileWriter(new File(path));
@@ -123,7 +122,7 @@ public class AdminConsole {
     private static void signIn(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("what is the password?");
         String password = userInput.next();
-        password = "902087";
+        //password = "902087";
         try {
             adminConsole.events = adminConsole.serverUtils.getEvents(password);
             adminConsole.setPassword(password);
@@ -156,7 +155,7 @@ public class AdminConsole {
     private static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
         adminConsole.serverUtils.setServer(userInput.next());
-        adminConsole.serverUtils.setServer("http://localhost:8080");
+        //adminConsole.serverUtils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
 
