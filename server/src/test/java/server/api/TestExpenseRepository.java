@@ -1,6 +1,5 @@
 package server.api;
 
-import commons.Event;
 import commons.Expense;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -18,6 +17,10 @@ public class TestExpenseRepository implements ExpenseRepository {
     public final List<Expense> expenses = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
 
+    /**
+     *
+     * @param name
+     */
     private void call(String name) {
         calledMethods.add(name);
     }
@@ -45,7 +48,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param entities entities to be saved. Must not be {@literal null}.
+     * @param entities entities to be saved.
+     *                 Must not be {@literal null}.
      * @return
      * @param <S>
      */
@@ -56,7 +60,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param entities entities to be deleted. Must not be {@literal null}.
+     * @param entities entities to be deleted.
+     *                 Must not be {@literal null}.
      */
     @Override
     public void deleteAllInBatch(Iterable<Expense> entities) {
@@ -65,7 +70,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param longs the ids of the entities to be deleted. Must not be {@literal null}.
+     * @param longs the ids of the entities to be deleted.
+     *              Must not be {@literal null}.
      */
     @Override
     public void deleteAllByIdInBatch(Iterable<Long> longs) {
@@ -145,7 +151,8 @@ public class TestExpenseRepository implements ExpenseRepository {
     /**
      *
      * @param example must not be {@literal null}.
-     * @param sort the {@link Sort} specification to sort the results by, may be {@link Sort#unsorted()}, must not be
+     * @param sort the {@link Sort} specification to sort the
+     *             results by, may be {@link Sort#unsorted()}, must not be
      *          {@literal null}.
      * @return
      * @param <S>
@@ -158,7 +165,8 @@ public class TestExpenseRepository implements ExpenseRepository {
     /**
      *
      * @param example must not be {@literal null}.
-     * @param pageable the pageable to request a paged result, can be {@link Pageable#unpaged()}, must not be
+     * @param pageable the pageable to request a paged result,
+     *                 can be {@link Pageable#unpaged()}, must not be
      *          {@literal null}.
      * @return
      * @param <S>
@@ -170,7 +178,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param example the {@link Example} to count instances for. Must not be {@literal null}.
+     * @param example the {@link Example} to count instances
+     *                for. Must not be {@literal null}.
      * @return
      * @param <S>
      */
@@ -181,7 +190,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param example the {@link Example} to use for the existence check. Must not be {@literal null}.
+     * @param example the {@link Example} to use for the
+     *                existence check. Must not be {@literal null}.
      * @return
      * @param <S>
      */
@@ -193,13 +203,15 @@ public class TestExpenseRepository implements ExpenseRepository {
     /**
      *
      * @param example must not be {@literal null}.
-     * @param queryFunction the query function defining projection, sorting, and the result type
+     * @param queryFunction the query function defining projection,
+     *                      sorting, and the result type
      * @return
      * @param <S>
      * @param <R>
      */
     @Override
-    public <S extends Expense, R> R findBy(Example<S> example, Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
+    public <S extends Expense, R> R findBy(Example<S> example,
+                                           Function<FluentQuery.FetchableFluentQuery<S>, R> queryFunction) {
         return null;
     }
 
@@ -219,7 +231,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param entities must not be {@literal null} nor must it contain {@literal null}.
+     * @param entities must not be {@literal null} nor must it
+     *                 contain {@literal null}.
      * @return
      * @param <S>
      */
@@ -267,7 +280,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param longs must not be {@literal null} nor contain any {@literal null} values.
+     * @param longs must not be {@literal null} nor contain any
+     * {@literal null} values.
      * @return
      */
     @Override
@@ -304,7 +318,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param longs must not be {@literal null}. Must not contain {@literal null} elements.
+     * @param longs must not be {@literal null}. Must not contain
+     * {@literal null} elements.
      */
     @Override
     public void deleteAllById(Iterable<? extends Long> longs) {
@@ -313,7 +328,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param entities must not be {@literal null}. Must not contain {@literal null} elements.
+     * @param entities must not be {@literal null}. Must not contain
+     * {@literal null} elements.
      */
     @Override
     public void deleteAll(Iterable<? extends Expense> entities) {
@@ -330,7 +346,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param sort the {@link Sort} specification to sort the results by, can be {@link Sort#unsorted()}, must not be
+     * @param sort the {@link Sort} specification to sort the results by,
+     *             can be {@link Sort#unsorted()}, must not be
      *          {@literal null}.
      * @return
      */
@@ -341,7 +358,8 @@ public class TestExpenseRepository implements ExpenseRepository {
 
     /**
      *
-     * @param pageable the pageable to request a paged result, can be {@link Pageable#unpaged()}, must not be
+     * @param pageable the pageable to request a paged result,
+     *                 can be {@link Pageable#unpaged()}, must not be
      *          {@literal null}.
      * @return
      */
