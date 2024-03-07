@@ -1,8 +1,15 @@
 package admin;
 
 import commons.Event;
+import org.json.JSONArray;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Scanner;
 
@@ -25,6 +32,7 @@ public class AdminConsole {
 
     /**
      * a setter to change the password value
+     *
      * @param password value to set the password to
      */
     public void setPassword(String password) {
@@ -33,6 +41,7 @@ public class AdminConsole {
 
     /**
      * Main methode with the console application
+     *
      * @param args starting arguments
      */
     public static void main(String[] args) {
@@ -49,20 +58,50 @@ public class AdminConsole {
 
     /**
      * show menu with options for user
-     * @param userInput scanner to read user input
+     *
+     * @param userInput    scanner to read user input
      * @param adminConsole the currently running admin console
      */
     private static void showOptions(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What would you like to do?");
         System.out.println("\t 1 - Show all events");
-        System.out.println("\t 2 - exit");
+        System.out.println("\t 2 - Dump database to json file");
+        System.out.println("\t 3 - exit");
         switch (userInput.nextInt()) {
             case 1:
                 adminConsole.printEvents();
                 showOptions(userInput, adminConsole);
                 break;
+            case 2:
+                adminConsole.getDump(userInput);
+                showOptions(userInput, adminConsole);
+                break;
             default:
                 exit();
+        }
+    }
+
+    /**
+     * Method to dump the database to a json as backup
+     * @param userInput input from the user
+     */
+    private void getDump(Scanner userInput) {
+        System.out.println("Where do you want to save the dump? Give the folder");
+        String path = userInput.next();
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+        String formattedDateTime = now.format(timeFormat);
+        path += "\\Splitty-Dump-" + formattedDateTime + ".json";
+        //path = "C:\\Users\\kalku\\Documents\\GitLab\\oopp-team-22\\Splitty-Dump-" + formattedDateTime + ".json";
+        FileWriter ewa = null;
+        try {
+            ewa = new FileWriter(new File(path));
+            events = serverUtils.getEvents(password);
+            JSONArray jsonArray = new JSONArray(events);
+            ewa.append(jsonArray.toString());
+            ewa.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -78,13 +117,14 @@ public class AdminConsole {
 
     /**
      * Sign in to the server
-     * @param userInput scanner to read user input
+     *
+     * @param userInput    scanner to read user input
      * @param adminConsole the currently running admin console
      */
     private static void signIn(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("what is the password?");
         String password = userInput.next();
-        //password = "703788";
+        password = "902087";
         try {
             adminConsole.events = adminConsole.serverUtils.getEvents(password);
             adminConsole.setPassword(password);
@@ -96,7 +136,7 @@ public class AdminConsole {
             switch (userInput.nextInt()) {
                 case 1:
                     System.out.println("retry password");
-                    signIn(userInput,adminConsole);
+                    signIn(userInput, adminConsole);
                     break;
                 case 2:
                     setServerAddress(userInput, adminConsole);
@@ -110,13 +150,14 @@ public class AdminConsole {
 
     /**
      * Set the serverAddress of the adminConsole
-     * @param userInput scanner to read user input
+     *
+     * @param userInput    scanner to read user input
      * @param adminConsole the current running admin console
      */
     private static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
         adminConsole.serverUtils.setServer(userInput.next());
-        //adminConsole.serverUtils.setServer("http://localhost:8080");
+        adminConsole.serverUtils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
 
