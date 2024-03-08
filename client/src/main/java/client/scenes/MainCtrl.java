@@ -133,7 +133,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - overview controller.
      */
-    QuoteOverviewCtrl getOverviewCtrl() {
+    QuoteOverviewCtrl getQuoteOverviewCtrl() {
         return qouteoverviewCtrl;
     }
 
@@ -142,8 +142,26 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - overview scene.
      */
-    Scene getOverview() {
+    Scene getQuoteOverview() {
         return qouteoverview;
+    }
+
+    /**
+     * Getter for the overview controller.
+     * Package-access getter for testing purposes.
+     * @return - overview controller.
+     */
+    OverviewCtrl getOverviewCtrl() {
+        return overviewCtrl;
+    }
+
+    /**
+     * Getter for the overview scene.
+     * Package-access getter for testing purposes.
+     * @return - overview scene.
+     */
+    Scene getOverview() {
+        return overview;
     }
 
     /**
@@ -180,6 +198,24 @@ public class MainCtrl {
      */
     Scene getStartScreen() {
         return startScreen;
+    }
+
+    /**
+     * Getter for the add participant controller.
+     * Package-access getter for testing purposes.
+     * @return - add participant controller.
+     */
+    ParticipantCtrl getParticipantCtrl() {
+        return participantCtrl;
+    }
+
+    /**
+     * Getter for the add participant scene.
+     * Package-access getter for testing purposes.
+     * @return - add participant scene.
+     */
+    Scene getParticipant() {
+        return participant;
     }
 
     /**
