@@ -78,6 +78,12 @@ public class TagController {
         return tagService.changeColor(inviteCode, tagId, newColor);
     }
 
+    /***
+     * Deletes a tag from an event/the repo
+     * @param inviteCode the event to delete from
+     * @param tagId the id of the tag
+     * @return whether the tag was deleted or not
+     */
     @DeleteMapping(path = {"/{inviteCode}/tags/{tagId}"})
     public ResponseEntity<Tag> deleteTagFromEvent(@PathVariable("inviteCode") long inviteCode,
                                                   @PathVariable("tagId") long tagId){

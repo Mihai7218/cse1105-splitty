@@ -127,8 +127,8 @@ public class TagService {
     /**
      * Deletes a tag from an event
      *
-     * @param inviteCode the inv.code of the event to delete the tag from
-     * @param tagId      the id of the tag to be deleted
+     * @param inviteCode the inviteCode of the event to delete the tag from
+     * @param tagId the id of the tag to be deleted
      * @return whether the tag was successfully deleted
      * TODO: check if we need to delete tag specifically from event or from repo is fine
      */
