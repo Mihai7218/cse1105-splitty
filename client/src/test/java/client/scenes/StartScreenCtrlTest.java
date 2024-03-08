@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.framework.junit5.Stop;
 
 import java.net.URL;
 import java.util.Date;
@@ -342,5 +343,9 @@ class StartScreenCtrlTest {
         verify(alert).show();
         assertTrue(sp.isBound());
         verify(serverUtils, never()).addEvent(any());
+    }
+
+    @Stop
+    void stop() {
     }
 }

@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.framework.junit5.Stop;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -111,5 +112,9 @@ class MainCtrlTest {
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
+    }
+
+    @Stop
+    void stop() {
     }
 }
