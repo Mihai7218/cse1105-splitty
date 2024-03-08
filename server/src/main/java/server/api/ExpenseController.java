@@ -95,7 +95,7 @@ public class ExpenseController {
      * @return whether the expense was deleted
      */
     @DeleteMapping(path = {"/{expenseId}"})
-    public ResponseEntity<Void> deleteExpense(@PathVariable("expenseId") long expenseId,
+    public ResponseEntity<Expense> deleteExpense(@PathVariable("expenseId") long expenseId,
                                               @PathVariable("id") long id){
         return expenseService.deleteExpense(expenseId, id);
     }

@@ -74,9 +74,15 @@ public class ExpenseService {
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
                 expense.getAmount() == 0 || expense.getPayee() == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
+
+        Event event = eventRepo.findById(id).get();
+        List<Expense> expenseList = event.getExpensesList();
+        expenseList.add(expense);
+        event.setExpensesList(expenseList);
         expenseRepo.save(expense);
+        eventRepo.save(event);
         return ResponseEntity.ok(expense);
     }
 
@@ -94,7 +100,7 @@ public class ExpenseService {
             return ResponseEntity.notFound().build();
         }
         if (title == null || Objects.equals(title, "")) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setTitle(title);
@@ -117,7 +123,7 @@ public class ExpenseService {
             return ResponseEntity.notFound().build();
         }
         if (amount <= 0.0) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setAmount(amount);
@@ -139,8 +145,9 @@ public class ExpenseService {
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
-        if (payee == null || Objects.equals(payee.getName(), "")) {
-            return ResponseEntity.notFound().build();
+        if (payee == null || Objects.equals(payee.getName(), "")
+                || Objects.equals(payee.getName(), null)) {
+            return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setPayee(payee);
@@ -153,14 +160,19 @@ public class ExpenseService {
      * @param id the id of the event
      * @return whether the expense was deleted
      */
-    public ResponseEntity<Void> deleteExpense(long expenseId, long id){
+    public ResponseEntity<Expense> deleteExpense(long expenseId, long id){
         if (id < 0 || !eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
+        Event event = eventRepo.findById(id).get();
+        Expense expense = expenseRepo.findById(expenseId).get();
+        List<Expense> expenseList = event.getExpensesList();
+        expenseList.remove(expense);
+        event.setExpensesList(expenseList);
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(expense);
     }
 }

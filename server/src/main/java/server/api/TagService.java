@@ -21,10 +21,11 @@ public class TagService {
 
     /**
      * Constructor of the tagservice
+     *
      * @param eventRepo The repository in which the events are stored
      */
     @Autowired
-    public TagService(EventRepository eventRepo, TagRepository tagRepo){
+    public TagService(EventRepository eventRepo, TagRepository tagRepo) {
         this.eventRepo = eventRepo;
         this.tagRepo = tagRepo;
     }
@@ -32,11 +33,12 @@ public class TagService {
     /**
      * Returns all expenses within an event which have been tagged with
      * a certain tag
+     *
      * @param inviteCode of the event which contains the expenses
      * @param tagName the name of the tag to search for
      * @return the list of all expenses with this tag
      */
-    public ResponseEntity<List<Expense>> getAllExpensesWithTag(long inviteCode, String tagName){
+    public ResponseEntity<List<Expense>> getAllExpensesWithTag(long inviteCode, String tagName) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -53,6 +55,7 @@ public class TagService {
 
     /**
      * Adds a new tag to an event
+     *
      * @param inviteCode the invite code of the event to add the tag to
      * @param tag the tag to be added
      * @return whether the tag could be added to the event
@@ -73,9 +76,10 @@ public class TagService {
 
     /**
      * Changes the name of a tag
+     *
      * @param inviteCode the inviteCode of the event with which the tag is associated
-     * @param tagId the id of the tag itself
-     * @param newName the new name of the tag after change
+     * @param tagId      the id of the tag itself
+     * @param newName    the new name of the tag after change
      * @return whether the tagname was changed
      */
     public ResponseEntity<Tag> changeName(long inviteCode, long tagId, String newName) {
@@ -86,7 +90,7 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
-        if (newName == null || Objects.equals(newName, "")){
+        if (newName == null || Objects.equals(newName, "")) {
             return ResponseEntity.badRequest().build();
         }
         Tag change = tagRepo.findById(tagId).get();
@@ -97,9 +101,10 @@ public class TagService {
 
     /**
      * Changes the colorcode of a tag
+     *
      * @param inviteCode the invitecode of the event with which the tag is associated
-     * @param tagId the id of the tag itself
-     * @param newColor the new colorcode of the tag
+     * @param tagId      the id of the tag itself
+     * @param newColor   the new colorcode of the tag
      * @return whether the color of the tag was updated
      */
     public ResponseEntity<Tag> changeColor(long inviteCode, long tagId, String newColor) {
@@ -110,7 +115,7 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
-        if (newColor == null || Objects.equals(newColor, "")){
+        if (newColor == null || Objects.equals(newColor, "")) {
             return ResponseEntity.badRequest().build();
         }
         Tag change = tagRepo.findById(tagId).get();
@@ -121,8 +126,9 @@ public class TagService {
 
     /**
      * Deletes a tag from an event
+     *
      * @param inviteCode the inv.code of the event to delete the tag from
-     * @param tagId the id of the tag to be deleted
+     * @param tagId      the id of the tag to be deleted
      * @return whether the tag was successfully deleted
      * TODO: check if we need to delete tag specifically from event or from repo is fine
      */
