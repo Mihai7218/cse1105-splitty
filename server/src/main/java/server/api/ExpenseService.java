@@ -145,8 +145,9 @@ public class ExpenseService {
         if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
-        if (payee == null || Objects.equals(payee.getName(), "")) {
-            return ResponseEntity.notFound().build();
+        if (payee == null || Objects.equals(payee.getName(), "")
+                || Objects.equals(payee.getName(), null)) {
+            return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setPayee(payee);

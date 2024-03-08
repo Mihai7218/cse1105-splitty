@@ -249,7 +249,6 @@ public class ExpenseServiceTest {
 
     /***
      * Tests for the changePayee method
-     * TODO: changePayeeTest where event/expense doesnt exist/invalid ids, payee == null/doesnt have a name
      */
 
     @Test
@@ -259,7 +258,48 @@ public class ExpenseServiceTest {
         expenseService.changePayee(part, expenseId, eventId);
         assertEquals(part, expense1.getPayee());
     }
-
+    @Test
+    public void changePayeeNull(){
+        Participant part = null;
+        ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeNoNamer(){
+        Participant part = new Participant("", null, null, null);
+        ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeNullNamer(){
+        Participant part = new Participant(null, null, null, null);
+        ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeExpenseInvalid(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = expenseService.changePayee(part, -100, eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeExpenseDoesntExist(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = expenseService.changePayee(part, 100, eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeEventInvalid(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), -100);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeEventDoesntExist(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), 100);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
     //TODO: event/expense doesnt exist/invalid ids
     @Test
     public void deleteExpenseTest(){
