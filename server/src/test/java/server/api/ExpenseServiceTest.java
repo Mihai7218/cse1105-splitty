@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import commons.Expense;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
 import server.database.TagRepository;
@@ -13,6 +15,8 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class ExpenseServiceTest {
     public EventRepository eventRepo;
@@ -55,23 +59,51 @@ public class ExpenseServiceTest {
         expenseRepo.save(expense3);
     }
 
-    //TODO: getAllExpensesTest where the invite code isnt valid/doesnt exist
+    /***
+     * Tests for the getAllExpenses method
+     */
     @Test
     public void getAllExpensesTest(){
         List<Expense> expenseList = expenseService.getAllExpenses(eventId).getBody();
         assertEquals(3, expenseList.size());
     }
 
+    @Test
+    public void getAllExpensesInvalid(){
+        ResponseEntity<List<Expense>> res = expenseService.getAllExpenses(-90);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
 
-    //TODO: getTotalTest where the invite code isnt valid/doesnt exist
+    @Test
+    public void getAllExpensesNonexistent(){
+        ResponseEntity<List<Expense>> res = expenseService.getAllExpenses(90);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+
+    /***
+     * Tests for the getTotal method
+     */
     @Test
     public void getTotalTest(){
         double total = expenseService.getTotal(eventId).getBody();
         assertEquals(total, 625.60);
     }
 
+    @Test
+    public void getTotalTestInvalid(){
+        ResponseEntity<Double> res = expenseService.getTotal(-20);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
 
-    //TODO: addTest where expense == null or title == null, id to add to doesnt exist/invalid
+    @Test
+    public void getTotalTestNonexistent(){
+        ResponseEntity<Double> res = expenseService.getTotal(20);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+
+    /***
+     * Tests for the add method
+     */
     @Test
     public void addTest(){
         Expense expense4 = new Expense(60, "party", "drinks",
@@ -80,9 +112,51 @@ public class ExpenseServiceTest {
         //there should be 4 expenses in the event now
         assertEquals(4, expenseService.getAllExpenses(eventId).getBody().size());
     }
+    @Test
+    public void addTestNull(){
+        Expense expense4 = null;
+        ResponseEntity<Expense> res = expenseService.add(eventId, expense4);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addTestNoTitle(){
+        Expense expense4 = new Expense(60, "party", null,
+                null, null, null, null, payee);
+        ResponseEntity<Expense> res = expenseService.add(eventId, expense4);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addTestNoPayee(){
+        Expense expense4 = new Expense(60, "party", null,
+                null, null, null, null, null);
+        ResponseEntity<Expense> res = expenseService.add(eventId, expense4);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addTestFree(){
+        Expense expense4 = new Expense(0, "party", null,
+                null, null, null, null, payee);
+        ResponseEntity<Expense> res = expenseService.add(eventId, expense4);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addTestEventInvalid(){
+        Expense expense4 = new Expense(60, "party", "drinks",
+                null, null, null, null, payee);;
+        ResponseEntity<Expense> res = expenseService.add(-30, expense4);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void addTestEventDoesntExist(){
+        Expense expense4 = new Expense(60, "party", "drinks",
+                null, null, null, null, payee);;
+        ResponseEntity<Expense> res = expenseService.add(100, expense4);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
 
-    //TODO: changeTitleTest where event or expense doesnt exist/invalid IDs/
-    // title is empty
+    /***
+     * Tests for the changeTitle method
+     */
     @Test
     public void changeTitleTest(){
         long expenseId1 = expense1.getId();
@@ -97,9 +171,42 @@ public class ExpenseServiceTest {
         expenseService.changeTitle("concert", expenseId3, eventId);
         assertEquals("concert", expense3.getTitle());
     }
+    @Test
+    public void changeTitleEventInvalid() {
+        long expenseId1 = expense1.getId();
+        ResponseEntity<Void> res = expenseService.changeTitle("food", expenseId1, -60);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changeTitleEventDoesntExist() {
+        long expenseId1 = expense1.getId();
+        ResponseEntity<Void> res = expenseService.changeTitle("food", expenseId1, 100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changeTitleExpenseDoesntExist() {
+        ResponseEntity<Void> res = expenseService.changeTitle("food", 100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changeTitleExpenseInvalid() {
+        ResponseEntity<Void> res = expenseService.changeTitle("food", -100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changeTitleExpenseNoTitle() {
+        ResponseEntity<Void> res = expenseService.changeTitle("", expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changeTitleExpenseNullTitle() {
+        ResponseEntity<Void> res = expenseService.changeTitle("", expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
 
-    //TODO: changeAmountTest where event/expense doesnt/invalid IDs/
-    // exist/amnt <= 0.0
+    /***
+     * Tests for the addAmount method
+     */
     @Test
     public void changeAmountTest(){
         long expenseId1 = expense1.getId();
@@ -114,8 +221,33 @@ public class ExpenseServiceTest {
         expenseService.changeAmount(75.30, expenseId3, eventId);
         assertEquals(75.30, expense3.getAmount());
     }
+    @Test
+    public void changeAmountExpenseDoesntExist() {
+        ResponseEntity<Void> res = expenseService.changeAmount(300, 20, eventId);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountExpenseInvalid() {
+        ResponseEntity<Void> res = expenseService.changeAmount(300, -20, eventId);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountEventInvalid() {
+        ResponseEntity<Void> res = expenseService.changeAmount(300, expense1.getId(), -100);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountEventDoesntExist() {
+        ResponseEntity<Void> res = expenseService.changeAmount(300, expense1.getId(), 100);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountLessThanZero() {
+        ResponseEntity<Void> res = expenseService.changeAmount(-20, expense1.getId(), eventId);
+        assertEquals(res.getStatusCode(), BAD_REQUEST);
+    }
 
-    //TODO: changePayeeTest where event/expense doesnt exist/invalid ids
+        //TODO: changePayeeTest where event/expense doesnt exist/invalid ids
     // payee == null/doesnt have a name
     @Test
     public void changePayeeTest(){

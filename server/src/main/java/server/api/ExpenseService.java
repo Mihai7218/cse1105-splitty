@@ -74,7 +74,7 @@ public class ExpenseService {
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
                 expense.getAmount() == 0 || expense.getPayee() == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
 
         Event event = eventRepo.findById(id).get();
@@ -100,7 +100,7 @@ public class ExpenseService {
             return ResponseEntity.notFound().build();
         }
         if (title == null || Objects.equals(title, "")) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setTitle(title);
@@ -123,7 +123,7 @@ public class ExpenseService {
             return ResponseEntity.notFound().build();
         }
         if (amount <= 0.0) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setAmount(amount);
