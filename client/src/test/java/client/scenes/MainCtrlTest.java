@@ -26,11 +26,9 @@ class MainCtrlTest {
     String titleKey;
     StringProperty sp;
     StringBinding sb;
-    Stage actualStage;
 
     @Start
-    void setUp(Stage actualStage) {
-        this.actualStage = actualStage;
+    void setUp(Stage ignored) {
         languageManager = mock(LanguageManager.class);
         sut = new MainCtrl(languageManager);
         stage = mock(Stage.class);
