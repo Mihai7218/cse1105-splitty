@@ -68,21 +68,15 @@ public class ParticipantController {
      * Put method to update a participant in an event
      * @param eventId id of the event the participant is in
      * @param id id of participant to update
-     * @param name value to change name to
-     * @param email value to change email to
-     * @param iban value to change iban to
-     * @param bic value to change bic to
+     * @param participant the participant to change to
      * @return the participant after it is updated or badrequest
      */
     @PutMapping(path = {"/{eventId}/participants/{id}"})
     public ResponseEntity<Participant> updateParticipant(
             @PathVariable("eventId") long eventId,
             @PathVariable("id") long id,
-            @RequestParam(required = false) String name,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) String iban,
-            @RequestParam(required = false) String bic){
-        return participantService.updateParticipant(eventId, id, name, email, iban, bic);
+            @RequestBody Participant participant){
+        return participantService.updateParticipant(eventId, id,participant);
     }
 
     /**
