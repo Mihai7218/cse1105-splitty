@@ -247,8 +247,11 @@ public class ExpenseServiceTest {
         assertEquals(res.getStatusCode(), BAD_REQUEST);
     }
 
-        //TODO: changePayeeTest where event/expense doesnt exist/invalid ids
-    // payee == null/doesnt have a name
+    /***
+     * Tests for the changePayee method
+     * TODO: changePayeeTest where event/expense doesnt exist/invalid ids, payee == null/doesnt have a name
+     */
+
     @Test
     public void changePayeeTest(){
         long expenseId = expense1.getId();
