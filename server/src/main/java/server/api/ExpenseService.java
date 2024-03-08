@@ -160,7 +160,7 @@ public class ExpenseService {
      * @param id the id of the event
      * @return whether the expense was deleted
      */
-    public ResponseEntity<Void> deleteExpense(long expenseId, long id){
+    public ResponseEntity<Expense> deleteExpense(long expenseId, long id){
         if (id < 0 || !eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
@@ -173,6 +173,6 @@ public class ExpenseService {
         expenseList.remove(expense);
         event.setExpensesList(expenseList);
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(expense);
     }
 }

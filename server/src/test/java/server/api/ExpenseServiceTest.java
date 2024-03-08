@@ -142,14 +142,14 @@ public class ExpenseServiceTest {
     @Test
     public void addTestEventInvalid(){
         Expense expense4 = new Expense(60, "party", "drinks",
-                null, null, null, null, payee);;
+                null, null, null, null, payee);
         ResponseEntity<Expense> res = expenseService.add(-30, expense4);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void addTestEventDoesntExist(){
         Expense expense4 = new Expense(60, "party", "drinks",
-                null, null, null, null, payee);;
+                null, null, null, null, payee);
         ResponseEntity<Expense> res = expenseService.add(100, expense4);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
@@ -312,22 +312,22 @@ public class ExpenseServiceTest {
     }
     @Test
     public void deleteExpenseDoesntExistTest(){
-        ResponseEntity<Void> res = expenseService.deleteExpense(100, eventId);
+        ResponseEntity<Expense> res = expenseService.deleteExpense(100, eventId);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void deleteExpenseInvalidTest(){
-        ResponseEntity<Void> res = expenseService.deleteExpense(-100, eventId);
+        ResponseEntity<Expense> res = expenseService.deleteExpense(-100, eventId);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void deleteEventInvalidTest(){
-        ResponseEntity<Void> res = expenseService.deleteExpense(expense1.getId(), -100);
+        ResponseEntity<Expense> res = expenseService.deleteExpense(expense1.getId(), -100);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void deleteEventDoesntExistTest(){
-        ResponseEntity<Void> res = expenseService.deleteExpense(expense1.getId(), 100);
+        ResponseEntity<Expense> res = expenseService.deleteExpense(expense1.getId(), 100);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
 
