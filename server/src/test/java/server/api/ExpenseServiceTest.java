@@ -280,31 +280,55 @@ public class ExpenseServiceTest {
     public void changePayeeExpenseInvalid(){
         Participant part = new Participant("joe", null, null, null);
         ResponseEntity<Void> res = expenseService.changePayee(part, -100, eventId);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void changePayeeExpenseDoesntExist(){
         Participant part = new Participant("joe", null, null, null);
         ResponseEntity<Void> res = expenseService.changePayee(part, 100, eventId);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void changePayeeEventInvalid(){
         Participant part = new Participant("joe", null, null, null);
         ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), -100);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void changePayeeEventDoesntExist(){
         Participant part = new Participant("joe", null, null, null);
         ResponseEntity<Void> res = expenseService.changePayee(part, expense1.getId(), 100);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        assertEquals(NOT_FOUND, res.getStatusCode());
     }
-    //TODO: event/expense doesnt exist/invalid ids
+
+    /***
+     * Tests for the deleteExpense method
+     */
     @Test
     public void deleteExpenseTest(){
         long expenseId = expense1.getId();
         expenseService.deleteExpense(expenseId, eventId);
         assertEquals(2, expenseService.getAllExpenses(eventId).getBody().size());
     }
+    @Test
+    public void deleteExpenseDoesntExistTest(){
+        ResponseEntity<Void> res = expenseService.deleteExpense(100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void deleteExpenseInvalidTest(){
+        ResponseEntity<Void> res = expenseService.deleteExpense(-100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void deleteEventInvalidTest(){
+        ResponseEntity<Void> res = expenseService.deleteExpense(expense1.getId(), -100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void deleteEventDoesntExistTest(){
+        ResponseEntity<Void> res = expenseService.deleteExpense(expense1.getId(), 100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+
 }
