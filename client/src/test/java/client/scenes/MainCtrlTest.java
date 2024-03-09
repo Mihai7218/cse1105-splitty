@@ -18,6 +18,8 @@ import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
 class MainCtrlTest {
+
+    //Needed for the tests to run headless.
     static {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
@@ -36,8 +38,6 @@ class MainCtrlTest {
 
     @Start
     void setUp(Stage ignored) {
-//    @BeforeEach
-//    void setUp() {
         languageManager = mock(LanguageManager.class);
         sut = new MainCtrl(languageManager);
         stage = mock(Stage.class);
@@ -56,6 +56,9 @@ class MainCtrlTest {
         sut.setPrimaryStage(stage);
     }
 
+    /**
+     * Tests that the title of the stage was changed and that there was a scene set.
+     */
     @Test
     void showOverview() {
         sut.showOverview();
@@ -63,6 +66,11 @@ class MainCtrlTest {
         verify(stage).setScene(any());
     }
 
+    /**
+     * Tests that the title of the stage was bound to "startScreen.windowTitle",
+     * the value of that stringBinding is "Test", there was a call to setScene on the stage,
+     * and that there was a call to stage.titleProperty().
+     */
     @Test
     void showStartMenu() {
         sut.showStartMenu();
@@ -72,6 +80,9 @@ class MainCtrlTest {
         verify(stage).titleProperty();
     }
 
+    /**
+     * Tests that the title of the stage was changed and that there was a scene set.
+     */
     @Test
     void showAdd() {
         sut.showAdd();
@@ -79,6 +90,9 @@ class MainCtrlTest {
         verify(stage).setScene(any());
     }
 
+    /**
+     * Tests that the title of the stage was changed and that there was a scene set.
+     */
     @Test
     void showParticipant() {
         sut.showParticipant();
@@ -86,11 +100,18 @@ class MainCtrlTest {
         verify(stage).setScene(any());
     }
 
+    /**
+     * Tests that the stage that was set is returned when calling the getter for it.
+     */
     @Test
     void getPrimaryStage() {
         assertEquals(stage, sut.getPrimaryStage());
     }
 
+    /**
+     * First, this method sets up mocks and spies of the parameters of the initialize method.
+     * Then it calls that method, followed by testing whether the values were set in the MainCtrl.
+     */
     @Test
     void initialize() {
         QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);

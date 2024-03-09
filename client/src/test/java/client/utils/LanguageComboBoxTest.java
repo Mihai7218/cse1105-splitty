@@ -19,6 +19,11 @@ class LanguageComboBoxTest {
     void setUp(Stage stage) {
         sut = new LanguageComboBox();
     }
+
+    /**
+     * Tests that the language combo box is initialized as an empty list
+     * when the language files are not found.
+     */
     @Test
     void testLanguageCodesNullList() {
         assertEquals(List.of(), sut.getItems().stream().sorted().toList());

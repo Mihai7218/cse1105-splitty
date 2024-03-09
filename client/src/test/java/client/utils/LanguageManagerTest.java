@@ -24,12 +24,18 @@ class LanguageManagerTest {
         sut.changeLanguage(Locale.ENGLISH);
     }
 
+    /**
+     * Tests that the locale is changed.
+     */
     @Test
     void changeLanguage() {
         sut.changeLanguage(Locale.CANADA_FRENCH);
         assertEquals(Locale.CANADA_FRENCH, Locale.getDefault());
     }
 
+    /**
+     * Tests that the config is read properly.
+     */
     @Test
     void refresh() {
         sut.refresh();
@@ -41,6 +47,9 @@ class LanguageManagerTest {
         assertEquals(comparison, sut);
     }
 
+    /**
+     * Tests that a string is bound when the method is called and that its value is correct.
+     */
     @Test
     void bind() {
         sut.put("hello", "world");

@@ -36,6 +36,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(ApplicationExtension.class)
 class StartScreenCtrlTest {
 
+    //Needed for the tests to run headless.
     static {
         System.setProperty("testfx.robot", "glass");
         System.setProperty("testfx.headless", "true");
@@ -80,12 +81,20 @@ class StartScreenCtrlTest {
         when(languageManager.bind(anyString())).thenReturn(Bindings.createStringBinding(() -> "Hello World"));
     }
 
+    /**
+     * Tests that, when there is a call to initialize and there is no set language,
+     * it defaults to English.
+     */
     @Test
     void initializeLanguageNotSet() {
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
 
         verify(languageManager, times(2)).changeLanguage(Locale.ENGLISH);
     }
+
+    /**
+     * Tests that, when a language is set in the config, it uses that language in the initialize method.
+     */
     @Test
     void initializeLanguageSet() {
         config.setProperty("language", "fr");
@@ -95,7 +104,10 @@ class StartScreenCtrlTest {
         verify(languageManager).changeLanguage(Locale.FRENCH);
     }
 
-
+    /**
+     * Tests that, when the languageComboBox is mocked to return a specific language,
+     * a call to change language will set the language to the one specified.
+     */
     @Test
     void changeLanguage() {
         when(languageComboBox.getValue()).thenReturn("nl");
@@ -106,11 +118,17 @@ class StartScreenCtrlTest {
         verify(languageManager).changeLanguage(Locale.of("nl"));
     }
 
+    /**
+     * Tests the getter of the languageManager.
+     */
     @Test
     void getLanguageManager() {
         assertEquals(observableMap, sut.getLanguageManager());
     }
 
+    /**
+     * Tests the setter of the languageManager.
+     */
     @Test
     void setLanguageManager() {
         ObservableMap om2 = FXCollections.observableHashMap();
@@ -120,11 +138,17 @@ class StartScreenCtrlTest {
         verify(languageManager).set(om2);
     }
 
+    /**
+     * Tests the languageManager is returned when calling sut.languageManagerProperty().
+     */
     @Test
     void languageManagerProperty() {
         assertEquals(languageManager, sut.languageManagerProperty());
     }
 
+    /**
+     * Tests that, when a recent event is added, the config and the list of recent events is updated
+     */
     @Test
     void addRecentEvent() {
         Event event = new Event();
@@ -137,6 +161,9 @@ class StartScreenCtrlTest {
         assertEquals(List.of(event), sut.getRecentEventsList());
     }
 
+    /**
+     * Tests that, when the limit is reached, events are removed from the list.
+     */
     @Test
     void recentEventsSizeLimit() {
         Event event = new Event();
@@ -152,6 +179,9 @@ class StartScreenCtrlTest {
         assertEquals(List.of(event, filler, filler, filler, filler), sut.getRecentEventsList());
     }
 
+    /**
+     * Tests that the limit set in the config is respected.
+     */
     @Test
     void recentEventsSizeLimitSetTo1() {
         config.setProperty("recentEventsLimit", "1");
@@ -168,6 +198,10 @@ class StartScreenCtrlTest {
         assertEquals(List.of(event), sut.getRecentEventsList());
     }
 
+    /**
+     * Tests that the alert is shown when the text field has no text
+     * and that there is no call to add the event to the serverUtils.
+     */
     @Test
     void createEventButtonHandlerNullText() {
         sut.createEventButtonHandler();
@@ -177,6 +211,10 @@ class StartScreenCtrlTest {
         verify(serverUtils, never()).addEvent(any());
     }
 
+    /**
+     * Tests that the alert is shown when the text field is empty
+     * and that there is no call to add the event to the serverUtils.
+     */
     @Test
     void createEventButtonHandlerEmptyText() {
         when(createTextField.getText()).thenReturn("");
@@ -188,6 +226,10 @@ class StartScreenCtrlTest {
         verify(serverUtils, never()).addEvent(any());
     }
 
+    /**
+     * Tests that, when the text field contains valid text, it sends the event to the server
+     * and that the event is added to the recent events list.
+     */
     @Test
     void createEventButtonHandlerSuccess() {
         when(createTextField.getText()).thenReturn("Hello, World!");
@@ -200,6 +242,10 @@ class StartScreenCtrlTest {
         assertEquals(fakeReturnedEvent, sut.getRecentEventsList().getFirst());
     }
 
+    /**
+     * Tests that, when the server returns 404 Not Found, the corresponding alert is shown
+     * and that the event is not added to the list of recent events.
+     */
     @Test
     void createEventButtonHandler404() {
         when(createTextField.getText()).thenReturn("Hello, World!");
@@ -215,6 +261,10 @@ class StartScreenCtrlTest {
         assertTrue(sut.getRecentEventsList().isEmpty());
     }
 
+    /**
+     * Tests that, when the server returns 500 Internal Server Error, the corresponding alert is shown
+     * and that the event is not added to the list of recent events.
+     */
     @Test
     void createEventButtonHandler500() {
         when(createTextField.getText()).thenReturn("Hello, World!");
@@ -230,6 +280,9 @@ class StartScreenCtrlTest {
         assertTrue(sut.getRecentEventsList().isEmpty());
     }
 
+    /**
+     * Tests that there is a call to the createEventButtonHandler when the key pressed is ENTER.
+     */
     @Test
     void createEventTextFieldHandlerEnter() {
         KeyEvent ke = mock(KeyEvent.class);
@@ -242,6 +295,10 @@ class StartScreenCtrlTest {
         verify(serverUtils, never()).addEvent(any());
     }
 
+    /**
+     * Tests that the alert is shown when the text field has no text
+     * and that there is no call to get the event.
+     */
     @Test
     void joinEventButtonHandlerEmpty() {
         sut.joinEventButtonHandler();
@@ -251,6 +308,11 @@ class StartScreenCtrlTest {
         verify(serverUtils, never()).getEvent(anyInt());
     }
 
+
+    /**
+     * Tests that the alert is shown when the text field is empty
+     * and that there is no call to get the event.
+     */
     @Test
     void joinEventButtonHandlerEmptyText() {
         when(joinTextField.getText()).thenReturn("");
@@ -262,6 +324,10 @@ class StartScreenCtrlTest {
         verify(serverUtils, never()).getEvent(anyInt());
     }
 
+    /**
+     * Tests that, when the text field contains valid text, it gets the event from the server
+     * and that the event is added to the recent events list.
+     */
     @Test
     void joinEventButtonHandlerSuccess() {
         when(joinTextField.getText()).thenReturn("1");
@@ -274,6 +340,10 @@ class StartScreenCtrlTest {
         assertEquals(fakeReturnedEvent, sut.getRecentEventsList().getFirst());
     }
 
+    /**
+     * Tests that, when the server returns 404 Not Found, the corresponding alert is shown
+     * and that the event is not added to the list of recent events.
+     */
     @Test
     void joinEventButtonHandler404() {
         when(joinTextField.getText()).thenReturn("1");
@@ -289,6 +359,10 @@ class StartScreenCtrlTest {
         assertTrue(sut.getRecentEventsList().isEmpty());
     }
 
+    /**
+     * Tests that, when the server returns 500 Internal Server Error, the corresponding alert is shown
+     * and that the event is not added to the list of recent events.
+     */
     @Test
     void joinEventButtonHandler500() {
         when(joinTextField.getText()).thenReturn("1");
@@ -304,6 +378,10 @@ class StartScreenCtrlTest {
         assertTrue(sut.getRecentEventsList().isEmpty());
     }
 
+    /**
+     * Tests that, when the server returns 400 Bad Request, the corresponding alert is shown
+     * and that the event is not added to the list of recent events.
+     */
     @Test
     void joinEventButtonHandler400() {
         when(joinTextField.getText()).thenReturn("1");
@@ -319,6 +397,10 @@ class StartScreenCtrlTest {
         assertTrue(sut.getRecentEventsList().isEmpty());
     }
 
+    /**
+     * Tests that, when the text field does not contain a number, there is no call to get the event from the server,
+     * the corresponding alert is shown, and the event is not added to the list of recent events.
+     */
     @Test
     void joinEventButtonHandlerNFE() {
         when(joinTextField.getText()).thenReturn("this should throw a NumberFormatException");
@@ -332,6 +414,9 @@ class StartScreenCtrlTest {
         assertTrue(sut.getRecentEventsList().isEmpty());
     }
 
+    /**
+     * Tests that there is a call to the createEventButtonHandler when the key pressed is ENTER.
+     */
     @Test
     void joinEventTextFieldHandlerEnter() {
         KeyEvent ke = mock(KeyEvent.class);
