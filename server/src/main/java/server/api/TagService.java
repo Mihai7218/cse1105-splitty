@@ -37,6 +37,7 @@ public class TagService {
      * @param inviteCode of the event which contains the expenses
      * @param tagName the name of the tag to search for
      * @return the list of all expenses with this tag
+     * TODO: do we want this to return an empty list when the tagName doesn't exist? with SC200
      */
     public ResponseEntity<List<Expense>> getAllExpensesWithTag(long inviteCode, String tagName) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||

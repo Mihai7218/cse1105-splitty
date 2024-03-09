@@ -13,6 +13,8 @@ import server.database.TagRepository;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 public class TagServiceTest {
     public TestEventRepository eventRepo;
@@ -50,6 +52,10 @@ public class TagServiceTest {
         event1.getExpensesList().add(expense2);
         event2.getExpensesList().add(expense1);
 
+        event1.getTagsList().add(tag1);
+        event1.getTagsList().add(tag2);
+        event2.getTagsList().add(tag2);
+
         eventRepo.save(event1);
         eventRepo.save(event2);
 
@@ -69,6 +75,81 @@ public class TagServiceTest {
     public void getAllExpensesWithTagTest2(){
         ResponseEntity<List<Expense>> res = tagService.getAllExpensesWithTag(0, "picnic");
         assertEquals(0, res.getBody().size());
+    }
+    @Test
+    public void getAllExpensesWithTagTestInvalid(){
+        ResponseEntity<List<Expense>> res = tagService.getAllExpensesWithTag(-10, "picnic");
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void getAllExpensesWithTagTestDoesntExist(){
+        ResponseEntity<List<Expense>> res = tagService.getAllExpensesWithTag(10, "picnic");
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void getAllExpensesWithTagTestDoesntExist2(){
+        ResponseEntity<List<Expense>> res = tagService.getAllExpensesWithTag(1, "fishing");
+        assertEquals(0, res.getBody().size());
+    }
+
+    /***
+     * Tests for the getTagsFromEvent method
+     */
+    @Test
+    public void getTagsFromEventTest(){
+        ResponseEntity<List<Tag>> res = tagService.getTagsFromEvent(0);
+        assertEquals(2, res.getBody().size());
+        ResponseEntity<List<Tag>> res2 = tagService.getTagsFromEvent(1);
+        assertEquals(1, res2.getBody().size());
+    }
+    @Test
+    public void getTagsFromEventTestDoesntExist() {
+        ResponseEntity<List<Tag>> res = tagService.getTagsFromEvent(10);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void getTagsFromEventTestInvalid() {
+        ResponseEntity<List<Tag>> res = tagService.getTagsFromEvent(-10);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    /***
+     * Tests for the addTag method
+     */
+    @Test
+    public void addNewToEventTest(){
+        Tag tester = new Tag("cool", "#000000");
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        assertEquals(3, event1.getTagsList().size());
+    }
+    @Test
+    public void addNewToEventTestNull(){
+        Tag tester = null;
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addNewToEventTestNoName(){
+        Tag tester = new Tag("", "#000000");
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addNewToEventTestNullName(){
+        Tag tester = new Tag(null, "#000000");
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void addNewToEventTestDNE(){
+        Tag tester = new Tag("cool", "#000000");
+        ResponseEntity<Tag> res = tagService.addNewToEvent(10, tester);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void addNewToEventTestInvalid(){
+        Tag tester = new Tag("cool", "#000000");
+        ResponseEntity<Tag> res = tagService.addNewToEvent(-10, tester);
+        assertEquals(NOT_FOUND, res.getStatusCode());
     }
 
 }
