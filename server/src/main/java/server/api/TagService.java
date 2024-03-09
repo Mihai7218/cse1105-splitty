@@ -54,6 +54,20 @@ public class TagService {
     }
 
     /**
+     * Returns all the tags associated with an event
+     * @param inviteCode the invite code of the event
+     * @return the list of tags or status code
+     */
+    public ResponseEntity<List<Tag>> getTagsFromEvent(long inviteCode){
+        if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
+                eventRepo.findById(inviteCode).get().getExpensesList() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        List<Tag> res = eventRepo.findById(inviteCode).get().getTagsList();
+        return ResponseEntity.ok(res);
+    }
+
+    /**
      * Adds a new tag to an event
      *
      * @param inviteCode the invite code of the event to add the tag to

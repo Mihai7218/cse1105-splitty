@@ -37,6 +37,16 @@ public class TagController {
         return tagService.getAllExpensesWithTag(inviteCode, tagName);
     }
 
+    /**
+     * Gets all tags associated with an Event
+     * @param inviteCode the inviteCode of the event to get the tag from
+     * @return whether the tags could be retrieved or not
+     */
+    @GetMapping(path = {"/{inviteCode}/tags"})
+    public ResponseEntity<List<Tag>> getTagsFromEvent(@PathVariable("inviteCode") long inviteCode){
+        return tagService.getTagsFromEvent(inviteCode);
+    }
+
 
     /**
      * Adds a new tag to an event
