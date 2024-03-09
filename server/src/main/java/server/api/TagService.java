@@ -70,6 +70,13 @@ public class TagService {
                 Objects.equals(tag.getName(), "")) {
             return ResponseEntity.badRequest().build();
         }
+        Event event = eventRepo.findById(inviteCode).get();
+        //Add tag to the list of tags of the event
+        List<Tag> tagList = event.getTagsList();
+        tagList.add(tag);
+        event.setTagsList(tagList);
+        //Save both in their respective repos
+        eventRepo.save(event);
         tagRepo.save(tag);
         return ResponseEntity.ok(tag);
     }
