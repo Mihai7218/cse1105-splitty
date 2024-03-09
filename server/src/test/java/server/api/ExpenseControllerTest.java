@@ -191,5 +191,131 @@ public class ExpenseControllerTest {
         ResponseEntity<Void> res = ctrl.changeTitle("", expense1.getId(), eventId);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
-    
+
+    /***
+     * Tests for the addAmount method
+     */
+    @Test
+    public void changeAmountTest(){
+        long expenseId1 = expense1.getId();
+        ctrl.changeAmount(300, expenseId1, eventId);
+        assertEquals(300, expense1.getAmount());
+
+        long expenseId2 = expense2.getId();
+        ctrl.changeAmount(50, expenseId2, eventId);
+        assertEquals(50, expense2.getAmount());
+
+        long expenseId3 = expense3.getId();
+        ctrl.changeAmount(75.30, expenseId3, eventId);
+        assertEquals(75.30, expense3.getAmount());
+    }
+    @Test
+    public void changeAmountExpenseDoesntExist() {
+        ResponseEntity<Void> res = ctrl.changeAmount(300, 20, eventId);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountExpenseInvalid() {
+        ResponseEntity<Void> res = ctrl.changeAmount(300, -20, eventId);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountEventInvalid() {
+        ResponseEntity<Void> res = ctrl.changeAmount(300, expense1.getId(), -100);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountEventDoesntExist() {
+        ResponseEntity<Void> res = ctrl.changeAmount(300, expense1.getId(), 100);
+        assertEquals(res.getStatusCode(), NOT_FOUND);
+    }
+    @Test
+    public void changeAmountLessThanZero() {
+        ResponseEntity<Void> res = ctrl.changeAmount(-20, expense1.getId(), eventId);
+        assertEquals(res.getStatusCode(), BAD_REQUEST);
+    }
+
+    /***
+     * Tests for the changePayee method
+     */
+
+    @Test
+    public void changePayeeTest(){
+        long expenseId = expense1.getId();
+        Participant part = new Participant("joe", null, null, null);
+        ctrl.changePayee(part, expenseId, eventId);
+        assertEquals(part, expense1.getPayee());
+    }
+    @Test
+    public void changePayeeNull(){
+        Participant part = null;
+        ResponseEntity<Void> res = ctrl.changePayee(part, expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeNoNamer(){
+        Participant part = new Participant("", null, null, null);
+        ResponseEntity<Void> res = ctrl.changePayee(part, expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeNullNamer(){
+        Participant part = new Participant(null, null, null, null);
+        ResponseEntity<Void> res = ctrl.changePayee(part, expense1.getId(), eventId);
+        assertEquals(BAD_REQUEST, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeExpenseInvalid(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = ctrl.changePayee(part, -100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeExpenseDoesntExist(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = ctrl.changePayee(part, 100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeEventInvalid(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = ctrl.changePayee(part, expense1.getId(), -100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void changePayeeEventDoesntExist(){
+        Participant part = new Participant("joe", null, null, null);
+        ResponseEntity<Void> res = ctrl.changePayee(part, expense1.getId(), 100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    /***
+     * Tests for the deleteExpense method
+     */
+    @Test
+    public void deleteExpenseTest(){
+        long expenseId = expense1.getId();
+        ctrl.deleteExpense(expenseId, eventId);
+        assertEquals(2, ctrl.getAllExpenses(eventId).getBody().size());
+    }
+    @Test
+    public void deleteExpenseDoesntExistTest(){
+        ResponseEntity<Expense> res = ctrl.deleteExpense(100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void deleteExpenseInvalidTest(){
+        ResponseEntity<Expense> res = ctrl.deleteExpense(-100, eventId);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void deleteEventInvalidTest(){
+        ResponseEntity<Expense> res = ctrl.deleteExpense(expense1.getId(), -100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+    @Test
+    public void deleteEventDoesntExistTest(){
+        ResponseEntity<Expense> res = ctrl.deleteExpense(expense1.getId(), 100);
+        assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+
 }
