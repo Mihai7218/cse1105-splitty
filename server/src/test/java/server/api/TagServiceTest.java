@@ -113,7 +113,7 @@ public class TagServiceTest {
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     /***
-     * Tests for the addTag method
+     * Tests for the addNewToEvent method
      */
     @Test
     public void addNewToEventTest(){
