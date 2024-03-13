@@ -60,11 +60,12 @@ public class MainCtrl {
      * Initialize the main controller with the primary stage,
      *
      * @param primaryStage primary stage of the controller.
+     * @param qouteoverview qoute overview controller and scene
      * @param add          add quote controller and scene
      * @param startScreen  start screen controller and scene
-     * @param participant
+     * @param participant participant controller and scene
      * @param overview     overview controller and scene
-     * @param addExpense
+     * @param addExpense addExpense controller and scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,

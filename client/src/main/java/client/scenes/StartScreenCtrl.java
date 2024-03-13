@@ -212,8 +212,9 @@ public class StartScreenCtrl implements Initializable {
                 }
             }
             alert.showAndWait();
+            return;
         }
-        //TODO: redirect the user to the overview of the event
+        mainCtrl.setEvent(e);
         mainCtrl.showOverview();
     }
 
