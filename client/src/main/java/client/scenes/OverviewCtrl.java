@@ -20,12 +20,12 @@ import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
 import javafx.fxml.FXML;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OverviewCtrl{
 
@@ -45,6 +45,12 @@ public class OverviewCtrl{
     @FXML
     private ChoiceBox<String> expenseparticipants;
 
+    @FXML
+    private Button addparticipant;
+
+    @FXML
+    private Button editparticipant;
+
 
     /**
      * Constructs a new OverviewCtrl object.
@@ -61,11 +67,13 @@ public class OverviewCtrl{
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
+        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
+        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         this.event = mainCtrl.getEvent();
         if(this.event != null){
             title.setText(event.getTitle());
             List<String> names = event.getParticipantsList().stream()
-                    .map(Participant::getName).collect(Collectors.toList());
+                    .map(Participant::getName).toList();
             participants.getItems().addAll(names);
             expenseparticipants.getItems().addAll(names);
         }
@@ -78,6 +86,7 @@ public class OverviewCtrl{
      */
     public void addParticipant(){
         mainCtrl.showParticipant();
+        refresh();
     }
 
     /**
@@ -85,6 +94,15 @@ public class OverviewCtrl{
      */
     public void addExpense(){
         mainCtrl.showAddExpense();
+        refresh();
+    }
+
+    /**
+     * Goes back to the startMenu.
+     */
+    public void startMenu(){
+        mainCtrl.showStartMenu();
+        refresh();
     }
 
     /**
@@ -95,10 +113,28 @@ public class OverviewCtrl{
     }
 
     /**
+     * Settles the debts of the event.
+     */
+    public void settleDebts(){
+        //Should show the sendInvites scene
+    }
+
+    /**
      * Change the title.
      */
     public void changeTitle() {
-       //Should update the title of the Event that is being added.
+        TextField changable = new TextField(title.getText());
+        title.setGraphic(changable);
+        title.setText("");
+        changable.requestFocus();
+        changable.setOnKeyReleased(e -> {
+            if (e.getCode().equals(KeyCode.ENTER)) {
+                title.setGraphic(null);
+                title.setText(changable.getText());
+                mainCtrl.getEvent().setTitle(changable.getText());
+                event.setTitle(changable.getText());
+            }
+        });
     }
 
 }
