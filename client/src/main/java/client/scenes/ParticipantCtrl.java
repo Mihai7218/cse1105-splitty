@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Participant;
@@ -40,6 +41,7 @@ public class ParticipantCtrl {
 
     @FXML
     private TextField bic;
+    private final LanguageManager languageManager;
 
 
     /**
@@ -48,9 +50,10 @@ public class ParticipantCtrl {
      * @param mainCtrl MainCtrl object
      */
     @Inject
-    public ParticipantCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public ParticipantCtrl(ServerUtils server, MainCtrl mainCtrl, LanguageManager languageManager) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.languageManager = languageManager;
     }
 
     /**
@@ -66,6 +69,15 @@ public class ParticipantCtrl {
      * When the ok button is pressed the new Participant is stored on the server.
      */
     public void ok() {
+        if (name.getText().isEmpty()
+                || email.getText().isEmpty() || iban.getText().isEmpty()
+                || bic.getText().isEmpty()){
+            var alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            return;
+        }
         try {
             mainCtrl.getEvent().getParticipantsList().add(getParticipant());
         } catch (WebApplicationException e) {
