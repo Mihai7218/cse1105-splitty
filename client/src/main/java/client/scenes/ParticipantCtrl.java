@@ -43,7 +43,7 @@ public class ParticipantCtrl {
 
 
     /**
-     * Constructs a new AddQuoteCtrl object.
+     * Constructs a new ParticipantCtrl object.
      * @param server ServerUtils object
      * @param mainCtrl MainCtrl object
      */

@@ -119,15 +119,15 @@ public class OverviewCtrl{
      * Change the title.
      */
     public void changeTitle() {
-        TextField changable = new TextField(title.getText());
-        title.setGraphic(changable);
+        TextField changeable = new TextField(title.getText());
+        title.setGraphic(changeable);
         title.setText("");
-        changable.requestFocus();
-        changable.setOnKeyReleased(e -> {
+        changeable.requestFocus();
+        changeable.setOnKeyReleased(e -> {
             if (e.getCode().equals(KeyCode.ENTER)) {
                 title.setGraphic(null);
-                title.setText(changable.getText());
-                mainCtrl.getEvent().setTitle(changable.getText());
+                title.setText(changeable.getText());
+                mainCtrl.getEvent().setTitle(changeable.getText());
             }
         });
     }
