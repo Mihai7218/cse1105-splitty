@@ -127,7 +127,6 @@ public class MainCtrl {
     public void showParticipant() {
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(participant);
-        add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**

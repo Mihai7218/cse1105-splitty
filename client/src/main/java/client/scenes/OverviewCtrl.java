@@ -32,8 +32,6 @@ public class OverviewCtrl{
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    private Event event;
-
     @FXML
     private Label title;
     @FXML
@@ -69,8 +67,9 @@ public class OverviewCtrl{
     public void refresh() {
         addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
         editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
-        this.event = mainCtrl.getEvent();
-        if(this.event != null){
+        Event event = mainCtrl.getEvent();
+        clearFields();
+        if(event != null){
             title.setText(event.getTitle());
             List<String> names = event.getParticipantsList().stream()
                     .map(Participant::getName).toList();
@@ -86,7 +85,6 @@ public class OverviewCtrl{
      */
     public void addParticipant(){
         mainCtrl.showParticipant();
-        refresh();
     }
 
     /**
@@ -94,7 +92,6 @@ public class OverviewCtrl{
      */
     public void addExpense(){
         mainCtrl.showAddExpense();
-        refresh();
     }
 
     /**
@@ -102,7 +99,6 @@ public class OverviewCtrl{
      */
     public void startMenu(){
         mainCtrl.showStartMenu();
-        refresh();
     }
 
     /**
@@ -132,9 +128,21 @@ public class OverviewCtrl{
                 title.setGraphic(null);
                 title.setText(changable.getText());
                 mainCtrl.getEvent().setTitle(changable.getText());
-                event.setTitle(changable.getText());
             }
         });
+    }
+
+    /**
+     * Clears all the fields
+     */
+    private void clearFields() {
+        if(participants!=null){
+            participants.getItems().clear();
+        }
+        if(expenseparticipants!=null){
+            expenseparticipants.getItems().clear();
+        }
+
     }
 
 }

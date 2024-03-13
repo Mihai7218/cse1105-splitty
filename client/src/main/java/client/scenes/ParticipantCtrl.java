@@ -18,16 +18,16 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Participant;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
+import javafx.stage.Modality;
 
 public class ParticipantCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-
-    private Participant participant;
 
     @FXML
     private TextField name;
@@ -51,7 +51,6 @@ public class ParticipantCtrl {
     public ParticipantCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-        this.participant = new Participant("","","","");
     }
 
     /**
@@ -67,16 +66,16 @@ public class ParticipantCtrl {
      * When the ok button is pressed the new Participant is stored on the server.
      */
     public void ok() {
-//        try {
-//            server.addQuote(getQuote());
-//        } catch (WebApplicationException e) {
-//
-//            var alert = new Alert(Alert.AlertType.ERROR);
-//            alert.initModality(Modality.APPLICATION_MODAL);
-//            alert.setContentText(e.getMessage());
-//            alert.showAndWait();
-//            return;
-//        }
+        try {
+            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
+        } catch (WebApplicationException e) {
+
+            var alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+            return;
+        }
 
         clearFields();
         mainCtrl.showOverview();
@@ -94,29 +93,19 @@ public class ParticipantCtrl {
      * Clears all the text fields
      */
     private void clearFields() {
-        name.clear();
-        email.clear();
-        iban.clear();
-        bic.clear();
-    }
-
-    /**
-     * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it submits the quote.
-     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
-     * @param e KeyEvent
-     */
-    public void keyPressed(KeyEvent e) {
-        switch (e.getCode()) {
-            case ENTER:
-                ok();
-                break;
-            case ESCAPE:
-                abort();
-                break;
-            default:
-                break;
+        if(name!=null){
+            name.clear();
+        }
+        if(email!=null){
+            email.clear();
+        }
+        if(iban!=null){
+            iban.clear();
+        }
+        if(bic!=null){
+            bic.clear();
         }
     }
+
 
 }
