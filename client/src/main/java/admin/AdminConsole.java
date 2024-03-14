@@ -100,16 +100,24 @@ public class AdminConsole {
         path += "\\Splitty-Dump-" + formattedDateTime + ".json";
         FileWriter ewa = null;
         try {
-            ewa = new FileWriter(new File(path));
-            updateEvents();
-            JSONArray jsonArray = new JSONArray(events);
-            ewa.append(jsonArray.toString());
+            ewa = new FileWriter(path);
+            ewa.append(eventsToJson());
             ewa.flush();
             System.out.println("Fill has been succesfully saved to " + path);
         } catch (IOException e) {
             System.out.println("Something went wrong");
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Genereate a json String with the event List
+     * @return json string with event list
+     */
+    public String eventsToJson() {
+        updateEvents();
+        JSONArray jsonArray = new JSONArray(events);
+        return jsonArray.toString();
     }
 
     /**
