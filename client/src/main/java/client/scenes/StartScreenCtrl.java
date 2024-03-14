@@ -15,7 +15,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.stage.Modality;
 
 import java.net.URL;
 import java.util.*;
@@ -35,6 +34,7 @@ public class StartScreenCtrl implements Initializable {
     private TextField newEventTitle;
     @FXML
     private TextField eventInvite;
+    private Alert alert;
 
     /**
      * Constructor for the StartScreenCtrl
@@ -45,11 +45,13 @@ public class StartScreenCtrl implements Initializable {
     public StartScreenCtrl(MainCtrl mainCtrl,
                            ConfigInterface config,
                            LanguageManager languageManager,
-                           ServerUtils serverUtils) {
+                           ServerUtils serverUtils,
+                           Alert alert) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
+        this.alert = alert;
     }
 
     /**
@@ -63,7 +65,9 @@ public class StartScreenCtrl implements Initializable {
         if (language == null) {
             language = "en";
         }
-        languages.setValue(language);
+        alert.titleProperty().bind(languageManager.bind("commons.warning"));
+        alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
+        if (languages != null) languages.setValue(language);
         this.refreshLanguage();
     }
 
@@ -71,7 +75,8 @@ public class StartScreenCtrl implements Initializable {
      * Changes language
      */
     public void changeLanguage() {
-        String language = languages.getValue();
+        String language = "";
+        if (languages != null) language = languages.getValue();
         config.setProperty("language", language);
         this.refreshLanguage();
     }
@@ -136,15 +141,21 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
+     *
+     * @param newEventTitle
+     */
+    public void setNewEventTitle(TextField newEventTitle) {
+        this.newEventTitle = newEventTitle;
+    }
+
+    /**
      * Method that creates a new event when the button "Create" is pressed.
      */
     public void createEventButtonHandler() {
-        if (newEventTitle.getText() == null
+        if (newEventTitle == null || newEventTitle.getText() == null
                 || newEventTitle.getText().isEmpty()) {
-            var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.showAndWait();
+            alert.show();
             return;
         }
         Date date = new Date();
@@ -152,15 +163,13 @@ public class StartScreenCtrl implements Initializable {
         try {
             e = serverUtils.addEvent(e);
         } catch (WebApplicationException ex) {
-            var alert = new Alert(Alert.AlertType.WARNING);
-            alert.initModality(Modality.APPLICATION_MODAL);
             switch (ex.getResponse().getStatus()) {
                 case 500 -> alert.contentTextProperty()
                         .bind(languageManager.bind("startScreen.createEvent500"));
                 case 404 -> alert.contentTextProperty()
                         .bind(languageManager.bind("startScreen.createEvent404"));
             }
-            alert.showAndWait();
+            alert.show();
             return;
         }
         addRecentEvent(e);
@@ -182,12 +191,10 @@ public class StartScreenCtrl implements Initializable {
      * Method that loads the event with the specified invite code when the button "Join" is pressed.
      */
     public void joinEventButtonHandler() {
-        if (eventInvite.getText() == null
+        if (eventInvite.getText() == null || eventInvite.getText() == null
                 || eventInvite.getText().isEmpty()) {
-            var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("startScreen.joinEventEmpty"));
-            alert.initModality(Modality.APPLICATION_MODAL);
-            alert.showAndWait();
+            alert.show();
             return;
         }
         Event e;
@@ -195,8 +202,6 @@ public class StartScreenCtrl implements Initializable {
             e = serverUtils.getEvent(Integer.parseInt(eventInvite.getText()));
             addRecentEvent(e);
         } catch (WebApplicationException | NumberFormatException ex) {
-            var alert = new Alert(Alert.AlertType.WARNING);
-            alert.initModality(Modality.APPLICATION_MODAL);
             if (ex instanceof NumberFormatException) {
                 alert.contentTextProperty().bind(languageManager.bind("startScreen.joinEvent400"));
             } else {
@@ -210,7 +215,7 @@ public class StartScreenCtrl implements Initializable {
                             .bind(languageManager.bind("startScreen.joinEvent400"));
                 }
             }
-            alert.showAndWait();
+            alert.show();
             return;
         }
         //TODO: redirect the user to the overview of the event
@@ -225,5 +230,29 @@ public class StartScreenCtrl implements Initializable {
         if (Objects.requireNonNull(e.getCode()) == KeyCode.ENTER) {
             joinEventButtonHandler();
         }
+    }
+
+    /**
+     * Getter for the list of recent events.
+     * @return - the list of recent events.
+     */
+    public List<Event> getRecentEventsList() {
+        return recentEventsList;
+    }
+
+    /**
+     * Setter for the event invite text field.
+     * @param eventInvite - the text field for the invite code.
+     */
+    void setEventInvite(TextField eventInvite) {
+        this.eventInvite = eventInvite;
+    }
+
+    /**
+     * Setter for the language combo box.
+     * @param languages - the language combo box.
+     */
+    public void setLanguages(LanguageComboBox languages) {
+        this.languages = languages;
     }
 }
