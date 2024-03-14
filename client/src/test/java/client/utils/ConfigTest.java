@@ -18,17 +18,28 @@ class ConfigTest {
     void setup() {
         config = new Config(bais, baos);
     }
+
+    /**
+     * Tests the getter.
+     */
     @Test
     void getProperty() {
         assertEquals("fr", config.getProperty("language"));
     }
 
+    /**
+     * Tests the setter.
+     */
     @Test
     void setProperty() {
         config.setProperty("language", "en");
         assertEquals("en", config.getProperty("language"));
     }
 
+    /**
+     * Tests the save properties method.
+     * @throws IOException thrown by the saveProperties() method.
+     */
     @Test
     void saveProperties() throws IOException {
         config.saveProperties();
