@@ -81,6 +81,13 @@ public class AdminConsole {
     }
 
     /**
+     * Methode to update/download the event list from the server
+     */
+    public void updateEvents() {
+        events = serverUtils.getEvents(password);
+    }
+
+    /**
      * Method to dump the database to a json as backup
      * @param userInput input from the user
      */
@@ -94,11 +101,13 @@ public class AdminConsole {
         FileWriter ewa = null;
         try {
             ewa = new FileWriter(new File(path));
-            events = serverUtils.getEvents(password);
+            updateEvents();
             JSONArray jsonArray = new JSONArray(events);
             ewa.append(jsonArray.toString());
             ewa.flush();
+            System.out.println("Fill has been succesfully saved to " + path);
         } catch (IOException e) {
+            System.out.println("Something went wrong");
             throw new RuntimeException(e);
         }
     }
@@ -107,7 +116,7 @@ public class AdminConsole {
      * Print all the events that are currently on the server
      */
     private void printEvents() {
-        events = serverUtils.getEvents(password);
+        updateEvents();
         for (Event event : events) {
             System.out.println(event.toString());
         }
