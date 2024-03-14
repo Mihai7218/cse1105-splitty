@@ -60,7 +60,7 @@ public class ExpenseControllerTest {
     @Test
     public void getAllExpensesInvalid(){
         ResponseEntity<List<Expense>> res = ctrl.getAllExpenses(-90);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
+        assertEquals(res.getStatusCode(), BAD_REQUEST);
     }
 
     @Test
@@ -81,7 +81,7 @@ public class ExpenseControllerTest {
     @Test
     public void getTotalTestInvalid(){
         ResponseEntity<Double> res = ctrl.getTotal(-20);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
+        assertEquals(res.getStatusCode(), BAD_REQUEST);
     }
 
     @Test
@@ -133,7 +133,7 @@ public class ExpenseControllerTest {
         Expense expense4 = new Expense(60, "party", "drinks",
                 null, null, null, null, payee);
         ResponseEntity<Expense> res = ctrl.add(-30, expense4);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void addTestEventDoesntExist(){
@@ -163,7 +163,7 @@ public class ExpenseControllerTest {
     public void changeTitleEventInvalid() {
         long expenseId1 = expense1.getId();
         ResponseEntity<Void> res = ctrl.changeTitle("food", expenseId1, -60);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changeTitleEventDoesntExist() {
@@ -179,7 +179,7 @@ public class ExpenseControllerTest {
     @Test
     public void changeTitleExpenseInvalid() {
         ResponseEntity<Void> res = ctrl.changeTitle("food", -100, eventId);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changeTitleExpenseNoTitle() {
@@ -217,12 +217,12 @@ public class ExpenseControllerTest {
     @Test
     public void changeAmountExpenseInvalid() {
         ResponseEntity<Void> res = ctrl.changeAmount(300, -20, eventId);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
+        assertEquals(res.getStatusCode(), BAD_REQUEST);
     }
     @Test
     public void changeAmountEventInvalid() {
         ResponseEntity<Void> res = ctrl.changeAmount(300, expense1.getId(), -100);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
+        assertEquals(res.getStatusCode(), BAD_REQUEST);
     }
     @Test
     public void changeAmountEventDoesntExist() {
@@ -268,7 +268,7 @@ public class ExpenseControllerTest {
     public void changePayeeExpenseInvalid(){
         Participant part = new Participant("joe", null, null, null);
         ResponseEntity<Void> res = ctrl.changePayee(part, -100, eventId);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changePayeeExpenseDoesntExist(){
@@ -280,7 +280,7 @@ public class ExpenseControllerTest {
     public void changePayeeEventInvalid(){
         Participant part = new Participant("joe", null, null, null);
         ResponseEntity<Void> res = ctrl.changePayee(part, expense1.getId(), -100);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changePayeeEventDoesntExist(){
@@ -305,12 +305,12 @@ public class ExpenseControllerTest {
     @Test
     public void deleteExpenseInvalidTest(){
         ResponseEntity<Expense> res = ctrl.deleteExpense(-100, eventId);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void deleteEventInvalidTest(){
         ResponseEntity<Expense> res = ctrl.deleteExpense(expense1.getId(), -100);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void deleteEventDoesntExistTest(){

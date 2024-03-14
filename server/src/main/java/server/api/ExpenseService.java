@@ -35,7 +35,10 @@ public class ExpenseService {
      * @return whether the expenses could be listed
      */
     public ResponseEntity<List<Expense>> getAllExpenses(long id) {
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)){
             return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(id).get();
@@ -49,7 +52,10 @@ public class ExpenseService {
      * @return whether the total could be returned
      */
     public ResponseEntity<Double> getTotal(long id) {
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)){
             return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(id).get();
@@ -68,7 +74,10 @@ public class ExpenseService {
      * @return whether the expense could be added to the event
      */
     public ResponseEntity<Expense> add(long id, Expense expense) {
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
         if (expense == null || expense.getTitle() == null ||
@@ -93,10 +102,16 @@ public class ExpenseService {
      * @return whether the title could be changed
      */
     public ResponseEntity<Void> changeTitle(String title, long expenseId, long id) {
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
+        if (expenseId < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
         if (title == null || Objects.equals(title, "")) {
@@ -116,10 +131,16 @@ public class ExpenseService {
      */
     public ResponseEntity<Void> changeAmount(double amount,
                                              long expenseId, long id){
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
+        if (expenseId < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
         if (amount <= 0.0) {
@@ -139,10 +160,16 @@ public class ExpenseService {
      */
     public ResponseEntity<Void> changePayee(Participant payee, long expenseId,
                                             long id){
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
+        if (expenseId < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
         if (payee == null || Objects.equals(payee.getName(), "")
@@ -161,10 +188,16 @@ public class ExpenseService {
      * @return whether the expense was deleted
      */
     public ResponseEntity<Expense> deleteExpense(long expenseId, long id){
-        if (id < 0 || !eventRepo.existsById(id)) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)) {
             return ResponseEntity.notFound().build();
         }
-        if (expenseId < 0 || !expenseRepo.existsById(expenseId)) {
+        if (expenseId < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(id).get();
