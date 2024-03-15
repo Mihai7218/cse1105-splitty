@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
 import org.json.JSONArray;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;

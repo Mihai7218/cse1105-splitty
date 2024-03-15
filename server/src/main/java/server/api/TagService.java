@@ -165,4 +165,39 @@ public class TagService {
         tagRepo.deleteAllById(Collections.singleton(tagId));
         return ResponseEntity.ok(null);
     }
+
+
+
+    /**
+     * Method to check if the imported tag is valid
+     * @param tag tag being imported
+     * @return tag if it is valid or error code if not
+     */
+    public ResponseEntity<Tag> validateTag(Tag tag) {
+        if(tag == null || tag.getName() == null
+                || tag.getColor() == null
+                || Objects.equals(tag.getName(), "")
+                || Objects.equals(tag.getColor(), "")
+                || tagRepo.existsById((long)tag.getId())){
+            return ResponseEntity.badRequest().build();
+        }
+        List<Tag> allTags = tagRepo.findAll();
+        for(Tag t: allTags){
+            if(t.equals(tag)){
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        return ResponseEntity.ok(tag);
+    }
+
+    /**
+     * Method to add an tag to the repository from a JSON import
+     * @param tag tag to be added to the tagRepository
+     * @return the tag in a ResponseEntity
+     */
+    public ResponseEntity<Tag> addCreatedTag(Tag tag) {
+        return ResponseEntity.ok(tagRepo.save(tag));
+    }
+
+
 }
