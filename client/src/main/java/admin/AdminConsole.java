@@ -1,5 +1,8 @@
 package admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
 import org.json.JSONArray;
 
@@ -8,9 +11,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class AdminConsole {
 
@@ -163,6 +164,92 @@ public class AdminConsole {
         }
     }
 
+
+    /**
+     * Imports JSON Event data
+     * @param userInput scanner containing the JSON event data
+     */
+    public void importWithJson(Scanner userInput){
+        String json = userInput.nextLine();
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            List<Event> event = objectMapper.readValue(json, new TypeReference<List<Event>>() {});
+            serverUtils.setEvents(event, password);
+        } catch (JsonProcessingException e) {
+            System.out.println("Unable to import event. ");
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Prints out all events in alphabetical order
+     */
+    public void orderByTitleAsc(){
+        events = serverUtils.getEvents(password);
+        Collections.sort(events, Comparator.comparing(Event::getTitle));
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * prints out all events in reverse alphabetical order
+     */
+    public void orderByTitleDesc(){
+        events = serverUtils.getEvents(password);
+        Collections.sort(events, Comparator.comparing(Event::getTitle));
+        Collections.reverse(events);
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * Prints out all events by creation date, newest to oldest
+     */
+    public void orderByCreationRecent(){
+        events = serverUtils.getEvents(password);
+        events.sort(Comparator.comparing(Event::getCreationDate));
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * Prints out all events by creation date, oldest to newest
+     */
+    public void orderByCreationOld(){
+        events = serverUtils.getEvents(password);
+        events.sort(Comparator.comparing(Event::getCreationDate));
+        Collections.reverse(events);
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * prints out all events by last activity date, newest to oldest
+     */
+    public void orderByActivityRecent(){
+        events = serverUtils.getEvents(password);
+        events.sort(Comparator.comparing(Event::getLastActivity));
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * Prints out all events by activity date oldest to newest
+     */
+    public void orderByActivityOld(){
+        events = serverUtils.getEvents(password);
+        events.sort(Comparator.comparing(Event::getLastActivity));
+        Collections.reverse(events);
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
     /**
      * Set the serverAddress of the adminConsole
      *
@@ -183,4 +270,11 @@ public class AdminConsole {
         System.exit(0);
     }
 
+    /**
+     * Getter for the list of events (for testing)
+     * @return list of events
+     */
+    public List<Event> getEvents() {
+        return events;
+    }
 }
