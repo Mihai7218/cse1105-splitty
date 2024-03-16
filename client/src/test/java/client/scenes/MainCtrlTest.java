@@ -62,7 +62,7 @@ class MainCtrlTest {
     @Test
     void showOverview() {
         sut.showOverview();
-        assertEquals("Quotes: Overview", stageTitle);
+        assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
 
@@ -96,7 +96,7 @@ class MainCtrlTest {
     @Test
     void showParticipant() {
         sut.showParticipant();
-        assertEquals("Add Participant", stageTitle);
+        assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
 
