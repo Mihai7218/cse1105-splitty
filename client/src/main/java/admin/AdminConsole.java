@@ -92,14 +92,15 @@ public class AdminConsole {
      * @param userInput    scanner to read user input
      * @param adminConsole the currently running admin console
      */
-    private static void showOptions(Scanner userInput, AdminConsole adminConsole) {
+    public static void showOptions(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What would you like to do?");
         System.out.println("\t 1 - Show all events");
         System.out.println("\t 2 - Dump database to json file");
         System.out.println("\t 3 - exit");
         switch (userInput.nextInt()) {
             case 1:
-                adminConsole.printEvents();
+                adminConsole.updateEvents();
+                System.out.println(adminConsole.printEvents());
                 showOptions(userInput, adminConsole);
                 break;
             case 2:
@@ -122,7 +123,7 @@ public class AdminConsole {
      * Method to dump the database to a json as backup
      * @param userInput input from the user
      */
-    private void getDump(Scanner userInput) {
+    public void getDump(Scanner userInput) {
         System.out.println("Where do you want to save the dump? Give the folder");
         String path = userInput.next();
         LocalDateTime now = LocalDateTime.now();
@@ -154,11 +155,13 @@ public class AdminConsole {
     /**
      * Print all the events that are currently on the server
      */
-    private void printEvents() {
-        updateEvents();
+    public String printEvents() {
+        String res = "";
+
         for (Event event : events) {
-            System.out.println(event.toString());
+            res += event.toString();
         }
+        return res;
     }
 
     /**
@@ -167,7 +170,7 @@ public class AdminConsole {
      * @param userInput    scanner to read user input
      * @param adminConsole the currently running admin console
      */
-    private static void signIn(Scanner userInput, AdminConsole adminConsole) {
+    public static void signIn(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("what is the password?");
         String password = userInput.next();
         //password = "902087";
@@ -200,7 +203,7 @@ public class AdminConsole {
      * @param userInput    scanner to read user input
      * @param adminConsole the current running admin console
      */
-    private static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
+    public static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
         adminConsole.serverUtils.setServer(userInput.next());
         //adminConsole.serverUtils.setServer("http://localhost:8080");
@@ -210,7 +213,7 @@ public class AdminConsole {
     /**
      * exit the console Application
      */
-    private static void exit() {
+    public static void exit() {
         System.exit(0);
     }
 
