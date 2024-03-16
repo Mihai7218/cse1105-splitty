@@ -20,6 +20,38 @@ public class AdminConsole {
     private String password;
 
     /**
+     * setter for the event variable
+     * @param events the list of events to set the events to set the variable to
+     */
+    public void setEvents(List<Event> events) {
+        this.events = events;
+    }
+
+    /**
+     * return the events variable
+     * @return return the events that are currently in the system
+     */
+    public List<Event> getEvents() {
+        return events;
+    }
+
+    /**
+     * Return the ServerUtils that are stored in the adminconsole
+     * @return the stored ServerUtils
+     */
+    public ServerUtils getServerUtils() {
+        return serverUtils;
+    }
+
+    /**
+     * Return the password that is saved on the adminConsole
+     * @return the saved password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
      * Costructor for the AdminConsole class
      */
     public AdminConsole() {
