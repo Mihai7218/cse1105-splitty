@@ -126,7 +126,14 @@ public class MainCtrl {
     public void showParticipant() {
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(participant);
-        if (add != null) add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
+    }
+
+    /**
+     * Shows the add expense scene.
+     */
+    public void showAddExpense() {
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.setScene(addExpense);
     }
 
     /**
@@ -234,5 +241,20 @@ public class MainCtrl {
      */
     void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    /**
+     * Getter for the event.
+     */
+    public Event getEvent() {
+        return event;
+    }
+
+    /**
+     * Setter for the event.
+     * @param event - the event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }
