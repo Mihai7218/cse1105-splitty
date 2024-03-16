@@ -23,7 +23,7 @@ public class Config implements ConfigInterface {
      * @throws FileNotFoundException - in case the file is not found
      */
     public Config(File file) throws FileNotFoundException {
-        this(new FileInputStream(file), null);
+        this(ignoreFileNotFoundException(file), null);
         this.outputStream = new FileOutputStream(file);
     }
 
@@ -34,10 +34,24 @@ public class Config implements ConfigInterface {
     public Config(InputStream inputStream, OutputStream outputStream) {
         try {
             prop.load(inputStream);
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         if (outputStream != null) this.outputStream = outputStream;
+    }
+
+    /**
+     * Method that returns null if the FileInputStream throws a FileNotFoundException.
+     * @param file - file that needs to be read
+     * @return - the FileInputStream of the file or null if the file is not found
+     */
+    private static InputStream ignoreFileNotFoundException(File file) {
+        try {
+            return new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**

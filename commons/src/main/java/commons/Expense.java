@@ -63,6 +63,14 @@ public class Expense {
     }
 
     /**
+     * Setter for the ID
+     * @param id id to set the id to
+     */
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    /**
      * Getter for the list of ParticipantPayments
      * @return the list of ParticipantPayments
      */
