@@ -91,8 +91,9 @@ public class TagService {
         tagList.add(tag);
         event.setTagsList(tagList);
         //Save both in their respective repos
-        eventRepo.save(event);
         tagRepo.save(tag);
+        eventRepo.save(event);
+
         return ResponseEntity.ok(tag);
     }
 
