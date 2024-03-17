@@ -91,18 +91,17 @@ public class AdminConsole {
      *
      * @param userInput    scanner to read user input
      * @param adminConsole the currently running admin console
+     * TODO: delete an event (API call), change toString method of event
      */
     public static void showOptions(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What would you like to do?");
-        System.out.println("\t 1 - Show all events");
+        System.out.println("\t 1 - Show events in the database");
         System.out.println("\t 2 - Dump database to json file");
         System.out.println("\t 3 - Import events from json file");
         System.out.println("\t 4 - exit");
         switch (userInput.nextInt()) {
             case 1:
-                adminConsole.updateEvents();
-                System.out.println(adminConsole.printEvents());
-                showOptions(userInput, adminConsole);
+                printerMenu(userInput, adminConsole);
                 break;
             case 2:
                 adminConsole.getDump(userInput);
@@ -116,6 +115,67 @@ public class AdminConsole {
             default:
                 exit();
         }
+    }
+
+    /**
+     * @param userInput scanner to read user selected option from
+     * @param adminConsole the current admin console
+     */
+    public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
+        System.out.println("What would you like to do?");
+        //Calls printEvents(); => update toString of Events!!
+        System.out.println("\t 1 - Show all events in the database");
+        System.out.println("\t 2 - Show all events ordered by title (ASC)");
+        System.out.println("\t 3 - Show all events ordered by title (DESC)");
+        System.out.println("\t 4 - Show all events ordered by creation date (NEWEST)");
+        System.out.println("\t 5 - Show all events ordered by creation date (OLDEST)");
+        System.out.println("\t 6 - Show all events ordered by activity (RECENT)");
+        System.out.println("\t 7 - Show all events ordered by activity (LAST)");
+        System.out.println("\t 8 - Return to main menu");
+        System.out.println("\t 9 - exit");
+        switch (userInput.nextInt()){
+            case 1:
+                adminConsole.updateEvents();
+                adminConsole.printEvents();
+                showOptions(userInput, adminConsole);
+                break;
+            case 2:
+                adminConsole.updateEvents();
+                adminConsole.orderByTitleAsc();
+                showOptions(userInput, adminConsole);
+                break;
+            case 3:
+                adminConsole.updateEvents();
+                adminConsole.orderByTitleDesc();
+                showOptions(userInput, adminConsole);
+                break;
+            case 4:
+                adminConsole.updateEvents();
+                adminConsole.orderByCreationRecent();
+                showOptions(userInput, adminConsole);
+                break;
+            case 5:
+                adminConsole.updateEvents();
+                adminConsole.orderByCreationOld();
+                showOptions(userInput, adminConsole);
+                break;
+            case 6:
+                adminConsole.updateEvents();
+                adminConsole.orderByActivityRecent();
+                showOptions(userInput, adminConsole);
+                break;
+            case 7:
+                adminConsole.updateEvents();
+                adminConsole.orderByActivityOld();
+                showOptions(userInput, adminConsole);
+                break;
+            case 8:
+                showOptions(userInput, adminConsole);
+            case 9:
+                exit();
+        }
+
+
     }
 
     /**
@@ -189,14 +249,12 @@ public class AdminConsole {
 
     /**
      * Print all the events that are currently on the server
+     * TODO: edit
      */
-    public String printEvents() {
-        String res = "";
-
+    public void printEvents() {
         for (Event event : events) {
-            res += event.toString();
+            System.out.println(event.toString());
         }
-        return res;
     }
 
     /**

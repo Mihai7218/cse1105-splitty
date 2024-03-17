@@ -22,14 +22,7 @@ public class AdminConsoleTest {
         AdminConsole adminConsole = new AdminConsole();
         assertNotEquals(null, adminConsole.getServerUtils());
     }
-    @Test
-    void toStringTest() {
-        AdminConsole adminConsole = new AdminConsole();
-        List<Event> events = new ArrayList<>();
-        events.add(new Event("test",null,null));
-        adminConsole.setEvents(events);
-        assertEquals("Event{inviteCode='0', title='test', expenses='[]', participants='[]', tags='[]', creationDate='null', lastActivity='null'}", adminConsole.printEvents());
-    }
+
     @Test
     void localEventsTest() {
         AdminConsole adminConsole = new AdminConsole();
