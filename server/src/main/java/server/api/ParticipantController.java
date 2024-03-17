@@ -92,4 +92,23 @@ public class ParticipantController {
     }
 
 
+
+    /**
+     * Endpoint to add participant from json import as admin
+     * @param password password for admin access
+     * @param participant the participant to add
+     * @return participant if added successfully
+     */
+    @PostMapping(path = {"/admin/{password}"})
+    public ResponseEntity<Participant> addPriorParticipant(
+            @PathVariable("password") String password,
+            @RequestBody Participant participant){
+        if (PasswordService.getPassword().equals(password)) {
+            return participantService.addPriorParticipant(participant);
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
 }
