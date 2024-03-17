@@ -136,22 +136,22 @@ public class ServerUtils {
      * @param events list of events from JSON import
      * @param password admin password string to allow endpoint access
      */
-    public void setEvents(List<Event> events, String password){
-        if(events==null || events.isEmpty()){
+    public void setEvents(Event events, String password){
+        if(events==null){
             System.out.println("Error - empty import.");
             return;
         }
-        for(Event e: events){
 
-            ClientBuilder.newClient(new ClientConfig()) //
-                    .target(server).path("api/events/admin/" + password )//
-                    .request(APPLICATION_JSON) //
-                    .accept(APPLICATION_JSON) //
-                    .post(Entity.entity(e, APPLICATION_JSON), Event.class);
-            setParticipants(e.getParticipantsList(), password);
-            setExpenses(e.getExpensesList(), password);
-            setTags(e.getTagsList(), password);
-        }
+
+        ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/admin/" + password )//
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(events, APPLICATION_JSON), Event.class);
+        setParticipants(events.getParticipantsList(), password);
+        setExpenses(events.getExpensesList(), password);
+        setTags(events.getTagsList(), password);
+
     }
 
     /**

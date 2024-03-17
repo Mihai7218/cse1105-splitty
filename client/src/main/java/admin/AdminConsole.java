@@ -1,10 +1,11 @@
 package admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import commons.Event;
 import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -97,7 +98,8 @@ public class AdminConsole {
         System.out.println("What would you like to do?");
         System.out.println("\t 1 - Show all events");
         System.out.println("\t 2 - Dump database to json file");
-        System.out.println("\t 3 - exit");
+        System.out.println("\t 3 - Import events from json file");
+        System.out.println("\t 4 - exit");
         switch (userInput.nextInt()) {
             case 1:
                 adminConsole.updateEvents();
@@ -107,6 +109,11 @@ public class AdminConsole {
             case 2:
                 adminConsole.getDump(userInput);
                 showOptions(userInput, adminConsole);
+                break;
+            case 3:
+                Event event = adminConsole.importWithJson(new Scanner(System.in));
+                if(event == null) break;
+                adminConsole.setNewEvents(event);
                 break;
             default:
                 exit();
@@ -143,6 +150,8 @@ public class AdminConsole {
         }
     }
 
+
+
     /**
      * Genereate a json String with the event List
      * @return json string with event list
@@ -151,6 +160,33 @@ public class AdminConsole {
         updateEvents();
         JSONArray jsonArray = new JSONArray(events);
         return jsonArray.toString();
+    }
+
+
+    /**
+     * Genereate a json String with the event List
+     * @return json string with event list
+     */
+    public List<String> eventToJson() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> eventsAsJson = new ArrayList<>();
+
+//        StringBuilder output = new StringBuilder();
+//        output.append("[");
+//        int counter = 0;
+        for(Event e : events){
+            String s = mapper.writeValueAsString(e);
+            eventsAsJson.add(s);
+//            Event temp = e;
+//            JSONObject jo = new JSONObject(temp);
+//            output.append(jo.toString());
+//            if(!(counter == events.size() - 1))
+//                output.append(",");
+//            counter++;
+        }
+        return eventsAsJson;
+//        output.append("]");
+//        return output.toString();
     }
 
     /**
@@ -203,16 +239,36 @@ public class AdminConsole {
      * Imports JSON Event data
      * @param userInput scanner containing the JSON event data
      */
-    public void importWithJson(Scanner userInput){
-        String json = userInput.nextLine();
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            List<Event> event = objectMapper.readValue(json, new TypeReference<List<Event>>() {});
-            serverUtils.setEvents(event, password);
-        } catch (JsonProcessingException e) {
-            System.out.println("Unable to import event. ");
-            throw new RuntimeException(e);
+    public Event importWithJson(Scanner userInput){
+        System.out.println("Enter your json text for the event you would like to add: ");
+        String json;
+        try{
+            json = userInput.nextLine();
+        } catch ( NoSuchElementException e ){
+            System.out.println("Unable to import empty event. ");
+            return null;
         }
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.setDateFormat(new StdDateFormat());
+        if(json.isEmpty()){
+            System.out.println("Unable to import empty event. ");
+            return null;
+        }
+        try {
+            Event event = objectMapper.readValue(json, Event.class);
+            return event;
+        } catch (JsonProcessingException | JSONException e) {
+            System.out.println("Unable to import event. ");
+            return null;
+        }
+    }
+
+    /**
+     * Method to add imported events to the server
+     * @param event the event to be added/validated
+     */
+    public void setNewEvents(Event event){
+        serverUtils.setEvents(event, password);
     }
 
     /**
