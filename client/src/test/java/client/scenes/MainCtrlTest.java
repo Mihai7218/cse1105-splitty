@@ -128,6 +128,7 @@ class MainCtrlTest {
         AddExpenseCtrl addExpenseCtrl = mock(AddExpenseCtrl.class);
         Parent addExpense = spy(Parent.class);
 
+        
         sut.initialize(stage,
                 new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),

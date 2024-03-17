@@ -82,11 +82,15 @@ public class MainCtrl {
         this.overview = new Scene(overview.getValue());
 
         this.addExpense = new Scene(addExpense.getValue());
-       showAddExpense();
+        showAddExpense();
 
         //showStartMenu();
         primaryStage.show();
     }
+
+    /**
+     * shows AddExpense scene
+     */
     public void showAddExpense(){
         primaryStage.setTitle("Add/Edit Expense");
         primaryStage.setScene(addExpense);
