@@ -41,6 +41,7 @@ public class MainCtrl {
     private Scene participant;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
+    private Scene addExpense;
 
     /**
      * Constructor for the MainCtrl
@@ -63,7 +64,7 @@ public class MainCtrl {
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
                            Parent> startScreen, Pair<ParticipantCtrl, Parent> participant
-            , Pair<OverviewCtrl, Parent> overview) {
+            , Pair<OverviewCtrl, Parent> overview, Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
@@ -80,8 +81,19 @@ public class MainCtrl {
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
-        showStartMenu();
+        this.addExpense = new Scene(addExpense.getValue());
+        showAddExpense();
+
+        //showStartMenu();
         primaryStage.show();
+    }
+
+    /**
+     * shows AddExpense scene
+     */
+    public void showAddExpense(){
+        primaryStage.setTitle("Add/Edit Expense");
+        primaryStage.setScene(addExpense);
     }
 
     /**
