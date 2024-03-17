@@ -124,15 +124,7 @@ public class AdminConsole {
     public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("What would you like to do?");
         //Calls printEvents(); => update toString of Events!!
-        System.out.println("\t 1 - Show all events in the database");
-        System.out.println("\t 2 - Show all events ordered by title (ASC)");
-        System.out.println("\t 3 - Show all events ordered by title (DESC)");
-        System.out.println("\t 4 - Show all events ordered by creation date (NEWEST)");
-        System.out.println("\t 5 - Show all events ordered by creation date (OLDEST)");
-        System.out.println("\t 6 - Show all events ordered by activity (RECENT)");
-        System.out.println("\t 7 - Show all events ordered by activity (LAST)");
-        System.out.println("\t 8 - Return to main menu");
-        System.out.println("\t 9 - exit");
+        printerMenuPrintText();
         switch (userInput.nextInt()){
             case 1:
                 adminConsole.updateEvents();
@@ -176,6 +168,23 @@ public class AdminConsole {
         }
 
 
+    }
+
+    /**
+     * Just prints the text for the printerMenu
+     * Otherwise the method is too long
+     */
+    public static void printerMenuPrintText(){
+        System.out.println("""
+                        \t 1 - Show all events in the database
+                        \t 2 - Show all events ordered by title (ASC)
+                        \t 3 - Show all events ordered by title (DESC)
+                        \t 4 - Show all events ordered by creation date (NEWEST)
+                        \t 5 - Show all events ordered by creation date (OLDEST)
+                        \t 6 - Show all events ordered by activity (RECENT)
+                        \t 7 - Show all events ordered by activity (LAST)
+                        \t 8 - Return to main menu
+                        \t 9 - exit""");
     }
 
     /**
