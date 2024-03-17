@@ -215,4 +215,7 @@ public class ServerUtils {
         }
     }
 
+    public String getServer() {
+        return server;
+    }
 }

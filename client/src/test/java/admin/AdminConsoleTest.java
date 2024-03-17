@@ -20,7 +20,7 @@ public class AdminConsoleTest {
     @Test
     void initialisationTest() {
         AdminConsole adminConsole = new AdminConsole();
-        assertNotEquals(null, adminConsole.getServerUtils());
+        assertNotEquals(null, adminConsole.getUtils());
     }
 
     @Test

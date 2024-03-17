@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import commons.Event;
 import org.json.JSONArray;
 import org.json.JSONException;
+import server.api.EventController;
+
 
 import java.io.FileWriter;
 import java.io.IOException;
@@ -17,9 +19,10 @@ public class AdminConsole {
 
     private List<Event> events;
 
-    private ServerUtils serverUtils;
+    private ServerUtils utils;
 
     private String password;
+    private static EventController ctrl;
 
     /**
      * setter for the event variable
@@ -41,8 +44,8 @@ public class AdminConsole {
      * Return the ServerUtils that are stored in the adminconsole
      * @return the stored ServerUtils
      */
-    public ServerUtils getServerUtils() {
-        return serverUtils;
+    public ServerUtils getUtils() {
+        return utils;
     }
 
     /**
@@ -58,7 +61,7 @@ public class AdminConsole {
      */
     public AdminConsole() {
         this.events = new ArrayList<>();
-        serverUtils = new ServerUtils("");
+        utils = new ServerUtils("");
         password = "";
     }
 
@@ -91,14 +94,14 @@ public class AdminConsole {
      *
      * @param userInput    scanner to read user input
      * @param adminConsole the currently running admin console
-     * TODO: delete an event (API call), change toString method of event
      */
     public static void showOptions(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What would you like to do?");
         System.out.println("\t 1 - Show events in the database");
         System.out.println("\t 2 - Dump database to json file");
         System.out.println("\t 3 - Import events from json file");
-        System.out.println("\t 4 - exit");
+        System.out.println("\t 4 - Delete an event from the database");
+        System.out.println("\t 5 - exit");
         switch (userInput.nextInt()) {
             case 1:
                 printerMenu(userInput, adminConsole);
@@ -111,6 +114,9 @@ public class AdminConsole {
                 Event event = adminConsole.importWithJson(new Scanner(System.in));
                 if(event == null) break;
                 adminConsole.setNewEvents(event);
+                break;
+            case 4:
+                deleteEventMenu(userInput, adminConsole);
                 break;
             default:
                 exit();
@@ -187,10 +193,21 @@ public class AdminConsole {
     }
 
     /**
+     * @param userInput the scanner for the userInput
+     * @param adminConsole the currently running adminConsole
+     *                     TODO: fix this implementation
+     */
+    public static void deleteEventMenu(Scanner userInput, AdminConsole adminConsole){
+        System.out.println("Please enter the inviteCode of the " +
+                "Event you would like to delete from the database:");
+        int invCode = userInput.nextInt();
+        ctrl.delete(invCode);
+    }
+    /**
      * Methode to update/download the event list from the server
      */
     public void updateEvents() {
-        events = serverUtils.getEvents(password);
+        events = utils.getEvents(password);
     }
 
     /**
@@ -277,7 +294,7 @@ public class AdminConsole {
         String password = userInput.next();
         //password = "902087";
         try {
-            adminConsole.events = adminConsole.serverUtils.getEvents(password);
+            adminConsole.events = adminConsole.utils.getEvents(password);
             adminConsole.setPassword(password);
         } catch (Exception e) {
             System.out.println("Password incorrect");
@@ -333,7 +350,7 @@ public class AdminConsole {
      * @param event the event to be added/validated
      */
     public void setNewEvents(Event event){
-        serverUtils.setEvents(event, password);
+        utils.setEvents(event, password);
     }
 
     /**
@@ -419,7 +436,7 @@ public class AdminConsole {
      */
     public static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
-        adminConsole.serverUtils.setServer(userInput.next());
+        adminConsole.utils.setServer(userInput.next());
         //adminConsole.serverUtils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
