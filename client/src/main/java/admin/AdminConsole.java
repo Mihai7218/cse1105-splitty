@@ -123,7 +123,6 @@ public class AdminConsole {
      */
     public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("What would you like to do?");
-        //Calls printEvents(); => update toString of Events!!
         printerMenuPrintText();
         switch (userInput.nextInt()){
             case 1:
@@ -257,10 +256,11 @@ public class AdminConsole {
     }
 
     /**
-     * Print all the events that are currently on the server
-     * TODO: edit
+     * Prints all events on the server
      */
     public void printEvents() {
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -341,6 +341,8 @@ public class AdminConsole {
      */
     public void orderByTitleAsc(){
         Collections.sort(events, Comparator.comparing(Event::getTitle));
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -352,6 +354,8 @@ public class AdminConsole {
     public void orderByTitleDesc(){
         Collections.sort(events, Comparator.comparing(Event::getTitle));
         Collections.reverse(events);
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -362,6 +366,8 @@ public class AdminConsole {
      */
     public void orderByCreationRecent(){
         events.sort(Comparator.comparing(Event::getCreationDate));
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -373,6 +379,8 @@ public class AdminConsole {
     public void orderByCreationOld(){
         events.sort(Comparator.comparing(Event::getCreationDate));
         Collections.reverse(events);
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -383,6 +391,8 @@ public class AdminConsole {
      */
     public void orderByActivityRecent(){
         events.sort(Comparator.comparing(Event::getLastActivity));
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -394,6 +404,8 @@ public class AdminConsole {
     public void orderByActivityOld(){
         events.sort(Comparator.comparing(Event::getLastActivity));
         Collections.reverse(events);
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
