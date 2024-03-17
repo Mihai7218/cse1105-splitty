@@ -219,7 +219,6 @@ public class AdminConsole {
      * Prints out all events in alphabetical order
      */
     public void orderByTitleAsc(){
-        events = serverUtils.getEvents(password);
         Collections.sort(events, Comparator.comparing(Event::getTitle));
         for (Event event : events) {
             System.out.println(event.toString());
@@ -230,7 +229,6 @@ public class AdminConsole {
      * prints out all events in reverse alphabetical order
      */
     public void orderByTitleDesc(){
-        events = serverUtils.getEvents(password);
         Collections.sort(events, Comparator.comparing(Event::getTitle));
         Collections.reverse(events);
         for (Event event : events) {
@@ -242,7 +240,6 @@ public class AdminConsole {
      * Prints out all events by creation date, newest to oldest
      */
     public void orderByCreationRecent(){
-        events = serverUtils.getEvents(password);
         events.sort(Comparator.comparing(Event::getCreationDate));
         for (Event event : events) {
             System.out.println(event.toString());
@@ -253,7 +250,6 @@ public class AdminConsole {
      * Prints out all events by creation date, oldest to newest
      */
     public void orderByCreationOld(){
-        events = serverUtils.getEvents(password);
         events.sort(Comparator.comparing(Event::getCreationDate));
         Collections.reverse(events);
         for (Event event : events) {
@@ -265,7 +261,6 @@ public class AdminConsole {
      * prints out all events by last activity date, newest to oldest
      */
     public void orderByActivityRecent(){
-        events = serverUtils.getEvents(password);
         events.sort(Comparator.comparing(Event::getLastActivity));
         for (Event event : events) {
             System.out.println(event.toString());
@@ -276,7 +271,6 @@ public class AdminConsole {
      * Prints out all events by activity date oldest to newest
      */
     public void orderByActivityOld(){
-        events = serverUtils.getEvents(password);
         events.sort(Comparator.comparing(Event::getLastActivity));
         Collections.reverse(events);
         for (Event event : events) {
@@ -304,11 +298,4 @@ public class AdminConsole {
         System.exit(0);
     }
 
-    /**
-     * Getter for the list of events (for testing)
-     * @return list of events
-     */
-    public List<Event> getEvents() {
-        return events;
-    }
 }
