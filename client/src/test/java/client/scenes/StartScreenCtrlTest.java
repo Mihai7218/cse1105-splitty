@@ -126,6 +126,23 @@ class StartScreenCtrlTest {
     }
 
     /**
+     * Tests that the initialize method adds the events
+     * from the config to the list of recent events.
+     */
+    @Test
+    void initializeWithRecentEvents() {
+        config.setProperty("recentEvents", "1");
+        Event event = new Event("1", new Date(), new Date());
+        when(serverUtils.getEvent(1)).thenReturn(event);
+
+        sut.initialize(mock(URL.class), mock(ResourceBundle.class));
+
+        verify(languageManager, times(2)).changeLanguage(Locale.ENGLISH);
+        assertEquals(event, eventsList.getFirst());
+    }
+
+
+    /**
      * Tests the getter of the languageManager.
      */
     @Test
@@ -434,5 +451,20 @@ class StartScreenCtrlTest {
         verify(alert).show();
         assertTrue(sp.isBound());
         verify(serverUtils, never()).addEvent(any());
+    }
+
+    /**
+     * Tests the removeRecentEvent method.
+     */
+    @Test
+    void removeRecentEvent() {
+        Event event = new Event("1", new Date(), new Date());
+        eventsList.add(event);
+
+        sut.removeRecentEvent(event);
+
+        assertTrue(eventsList.isEmpty());
+        verify(recentEvents).refresh();
+        assertEquals("", config.getProperty("recentEvents"));
     }
 }
