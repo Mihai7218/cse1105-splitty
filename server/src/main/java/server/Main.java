@@ -18,6 +18,7 @@ package server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import server.api.PasswordService;
 
 @SpringBootApplication(scanBasePackages = {"server", "api"})
 @EntityScan(basePackages = { "commons", "server" })
@@ -28,6 +29,9 @@ public class Main {
      * @param args array of String args
      */
     public static void main(String[] args) {
+        int password = (int)(Math.random() * 999999);
+        PasswordService.setPassword(String.valueOf(password));
         SpringApplication.run(Main.class, args);
+        System.out.println("The admin Password is: " + PasswordService.getPassword());
     }
 }
