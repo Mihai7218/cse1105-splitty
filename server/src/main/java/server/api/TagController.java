@@ -95,10 +95,10 @@ public class TagController {
     /**
      * Post method to allow an admin to upload new tags
      * @param password string password
-     * @param tags the list of tags to be added
+     * @param tag the list of tags to be added
      * @return the list of tags if succesfully added
      */
-    @PostMapping(path = {"/admin/{password}"})
+    @PostMapping(path = {"/admin/tag/{password}"})
     public ResponseEntity <Tag> addJsonImport(@PathVariable("password") String password,
                                               @RequestBody Tag tag){
         if (PasswordService.getPassword().equals(password)) {
