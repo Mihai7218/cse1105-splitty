@@ -7,6 +7,8 @@ import commons.Event;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -111,9 +113,9 @@ public class AdminConsole {
                 showOptions(userInput, adminConsole);
                 break;
             case 3:
-                Event event = adminConsole.importWithJson(new Scanner(System.in));
-                if(event == null) break;
-                adminConsole.setNewEvents(event);
+                List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
+                if(importedEvents == null || importedEvents.isEmpty()) break;
+                for(Event e: importedEvents) adminConsole.setNewEvents(e);
                 break;
             default:
                 exit();
@@ -167,26 +169,15 @@ public class AdminConsole {
      * Genereate a json String with the event List
      * @return json string with event list
      */
-    public List<String> eventToJson() throws JsonProcessingException {
+    public List<String> exportListOfEvents() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<String> eventsAsJson = new ArrayList<>();
 
-//        StringBuilder output = new StringBuilder();
-//        output.append("[");
-//        int counter = 0;
         for(Event e : events){
             String s = mapper.writeValueAsString(e);
             eventsAsJson.add(s);
-//            Event temp = e;
-//            JSONObject jo = new JSONObject(temp);
-//            output.append(jo.toString());
-//            if(!(counter == events.size() - 1))
-//                output.append(",");
-//            counter++;
         }
         return eventsAsJson;
-//        output.append("]");
-//        return output.toString();
     }
 
     /**
@@ -234,33 +225,48 @@ public class AdminConsole {
         }
     }
 
+    /**
+     * Method to accept a filepath from a user to import JSON data
+     */
+    public List<Event> readFromFile(Scanner inputScanner) {
+        System.out.println("Enter the filepath containing" +
+                " the JSON for the event you would like to add: ");
+        Scanner fileScan = inputScanner;
+        try {
+            File file = new File(fileScan.nextLine());
+            Scanner textScan = new Scanner(file);
+            return importWithJson(textScan);
+        }catch (FileNotFoundException f){
+            System.out.println("Unable to locate the requested file. ");
+            return null;
+        }catch (NoSuchElementException e){
+            System.out.println("Unable to locate the requested file (empty filepath). ");
+            return null;
+        }
+    }
 
     /**
      * Imports JSON Event data
-     * @param userInput scanner containing the JSON event data
+     * @param textInput scanner containing the JSON event data
      */
-    public Event importWithJson(Scanner userInput){
-        System.out.println("Enter your json text for the event you would like to add: ");
-        String json;
-        try{
-            json = userInput.nextLine();
-        } catch ( NoSuchElementException e ){
-            System.out.println("Unable to import empty event. ");
-            return null;
+    public List<Event> importWithJson(Scanner textInput){
+        List<Event> events = new ArrayList<>();
+        while(textInput.hasNext()) {
+            String json =  textInput.nextLine();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.setDateFormat(new StdDateFormat());
+            if (json.isEmpty()) {
+                System.out.println("Unable to import empty event. ");
+            }
+            try {
+                Event event = objectMapper.readValue(json, Event.class);
+                events.add(event);
+            } catch (JsonProcessingException | JSONException e) {
+                System.out.println("Unable to import event. ");
+            }
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new StdDateFormat());
-        if(json.isEmpty()){
-            System.out.println("Unable to import empty event. ");
-            return null;
-        }
-        try {
-            Event event = objectMapper.readValue(json, Event.class);
-            return event;
-        } catch (JsonProcessingException | JSONException e) {
-            System.out.println("Unable to import event. ");
-            return null;
-        }
+        return events;
     }
 
     /**

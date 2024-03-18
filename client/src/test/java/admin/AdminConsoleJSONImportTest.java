@@ -43,28 +43,57 @@ class AdminConsoleJSONImportTest {
         ac.getEvents().add(event2);
         ac.getEvents().add(event3);
         comparison = new ArrayList<>();
-        json = ac.eventToJson();
+        json = ac.exportListOfEvents();
 
     }
 
     @Test
     public void tryOneDumpJSON(){
         Scanner s = new Scanner(json.get(0));
-        Event events = ac.importWithJson(s);
-        assertEquals(ac.getEvents().get(0), events);
+        List<Event> events = ac.importWithJson(s);
+        assertEquals(ac.getEvents().get(0), events.get(0));
     }
 
     @Test
     public void tryEmptyDumpJSON(){
         String empty = "";
         Scanner s = new Scanner(empty);
-        assertEquals(null, ac.importWithJson(s));
+        assertEquals(0, ac.importWithJson(s).size());
     }
 
     @Test
     public void invalidJSON(){
         String invalidJSON = "{\"inviteCode\"::0,\"expensesList\":[],\"participantsList\":[],\"tagsList\":[],\"creationDate\":61570191600000,\"lastActivity\":61666959600000}";
         Scanner s = new Scanner(invalidJSON);
-        assertEquals(null, ac.importWithJson(s));
+        assertEquals(0, ac.importWithJson(s).size());
+    }
+
+    @Test
+    public void importMultipleJSON(){
+        StringBuilder multEvents = new StringBuilder();
+        for(String s : json){
+            multEvents.append(s);
+            multEvents.append("\n");
+        }
+        Scanner s = new Scanner(multEvents.toString());
+        List<Event> imports = ac.importWithJson(s);
+        assertEquals(3, imports.size());
+        assertEquals(event1,imports.get(0));
+        assertEquals(event2,imports.get(1));
+        assertEquals(event3,imports.get(2));
+    }
+
+    @Test
+    public void testEmptyFilepath(){
+        String filePath = "";
+        Scanner s = new Scanner(filePath);
+        assertEquals(null, ac.readFromFile(s));
+    }
+
+    @Test
+    public void testInvalidFilepath(){
+        String filePath = "notAFile";
+        Scanner s = new Scanner(filePath);
+        assertEquals(null, ac.readFromFile(s));
     }
 }
