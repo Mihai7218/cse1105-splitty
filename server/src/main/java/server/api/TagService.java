@@ -112,7 +112,9 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
-        if (tag == null || Objects.equals(tag.getName(), "") || Objects.equals(tag.getColor(), "")) {
+        if (tag == null
+                || Objects.equals(tag.getName(), "")
+                || Objects.equals(tag.getColor(), "")) {
             return ResponseEntity.badRequest().build();
         }
         Tag change = tagRepo.findById(tagId).get();

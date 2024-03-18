@@ -72,6 +72,10 @@ public class StartScreenCtrl implements Initializable {
         this.refreshLanguage();
     }
 
+    /**
+     * Method that returns a list containing the recent events from the config file.
+     * @return - the list of recent events.
+     */
     private List<Event> getRecentEventsFromConfig() {
         String eventString = config.getProperty("recentEvents");
         if (eventString == null) return new ArrayList<>();
@@ -148,12 +152,19 @@ public class StartScreenCtrl implements Initializable {
         refreshConfig();
     }
 
+    /**
+     * Method that removes an event from the list of recent events.
+     * @param event - the event to be removed.
+     */
     public void removeRecentEvent(Event event) {
         recentEvents.getItems().remove(event);
         recentEvents.refresh();
         refreshConfig();
     }
 
+    /**
+     * Method that updates the config file to store the recentEvents
+     */
     private void refreshConfig() {
         if (recentEvents.getItems().isEmpty()) {
             this.config.setProperty("recentEvents", "");
@@ -275,6 +286,10 @@ public class StartScreenCtrl implements Initializable {
         this.languages = languages;
     }
 
+    /**
+     * Method that gets the ListView of recent events.
+     * @return - the ListView of recent events.
+     */
     public ListView<Event> getRecentEvents() {
         return recentEvents;
     }

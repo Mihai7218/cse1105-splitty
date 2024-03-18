@@ -229,6 +229,10 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
     }
 
+    /**
+     * Setter for the event that is loaded.
+     * @param item - the event
+     */
     public void setEvent(Event item) {
         this.event = item;
     }
