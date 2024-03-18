@@ -1,5 +1,6 @@
-package client.scenes;
+package client.utils;
 
+import client.scenes.MainCtrl;
 import commons.Event;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

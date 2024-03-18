@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageComboBox;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import jakarta.ws.rs.WebApplicationException;
@@ -293,6 +290,11 @@ public class StartScreenCtrl implements Initializable {
     public ListView<Event> getRecentEvents() {
         return recentEvents;
     }
+
+    /**
+     * Setter for the recent events ListView.
+     * @param list - the recent events ListView.
+     */
     void setRecentEvents(ListView<Event> list) {
         this.recentEvents = list;
     }

@@ -190,7 +190,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - start screen controller.
      */
-    StartScreenCtrl getStartScreenCtrl() {
+    public StartScreenCtrl getStartScreenCtrl() {
         return startScreenCtrl;
     }
 
