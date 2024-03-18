@@ -2,15 +2,16 @@ package admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import commons.Event;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -87,7 +88,6 @@ public class AdminConsole {
         System.out.println("Succes :D");
         showOptions(userInput, adminConsole);
 
-
     }
 
     /**
@@ -109,6 +109,7 @@ public class AdminConsole {
                 showOptions(userInput, adminConsole);
                 break;
             case 2:
+                adminConsole.updateEvents();
                 adminConsole.getDump(userInput);
                 showOptions(userInput, adminConsole);
                 break;
@@ -159,7 +160,6 @@ public class AdminConsole {
      * @return json string with event list
      */
     public String eventsToJson() {
-        updateEvents();
         JSONArray jsonArray = new JSONArray(events);
         return jsonArray.toString();
     }
@@ -251,21 +251,49 @@ public class AdminConsole {
      */
     public List<Event> importWithJson(Scanner textInput){
         List<Event> events = new ArrayList<>();
+        String alles = "";
         while(textInput.hasNext()) {
-            String json =  textInput.nextLine();
+            alles += textInput.nextLine();
+        }
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(alles);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
 
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.setDateFormat(new StdDateFormat());
-            if (json.isEmpty()) {
-                System.out.println("Unable to import empty event. ");
-            }
+        for (Object object : jsonArray) {
             try {
-                Event event = objectMapper.readValue(json, Event.class);
-                events.add(event);
-            } catch (JsonProcessingException | JSONException e) {
-                System.out.println("Unable to import event. ");
+                JSONObject tmpEvent = (JSONObject) object;
+                ObjectMapper objectMapper = new ObjectMapper();
+                SimpleDateFormat creationDateFormat = new
+                        SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+                objectMapper.setDateFormat(creationDateFormat);
+                try {
+                    Event event = objectMapper.readValue(tmpEvent.toString(), Event.class);
+                    events.add(event);
+                } catch (JsonProcessingException | JSONException e) {
+                    System.out.println("Unable to import event. ");
+                }
+            } catch (Exception e) {
+                System.out.println("Error");
             }
         }
+//        while(textInput.hasNext()) {
+//            String json =  textInput.nextLine();
+//
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            objectMapper.setDateFormat(new StdDateFormat());
+//            if (json.isEmpty()) {
+//                System.out.println("Unable to import empty event. ");
+//            }
+//            try {
+//                Event event = objectMapper.readValue(json, Event.class);
+//                events.add(event);
+//            } catch (JsonProcessingException | JSONException e) {
+//                System.out.println("Unable to import event. ");
+//            }
+//        }
         return events;
     }
 

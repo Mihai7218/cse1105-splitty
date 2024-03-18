@@ -25,7 +25,7 @@ class AdminConsoleJSONImportTest {
     Event event3;
     List<Event> comparison;
     AdminConsole ac;
-    List<String> json;
+    String json;
     @BeforeEach
     public void init() throws JsonProcessingException {
         ac = new AdminConsole();
@@ -43,13 +43,13 @@ class AdminConsoleJSONImportTest {
         ac.getEvents().add(event2);
         ac.getEvents().add(event3);
         comparison = new ArrayList<>();
-        json = ac.exportListOfEvents();
+        json = ac.eventsToJson();
 
     }
 
     @Test
     public void tryOneDumpJSON(){
-        Scanner s = new Scanner(json.get(0));
+        Scanner s = new Scanner(json);
         List<Event> events = ac.importWithJson(s);
         assertEquals(ac.getEvents().get(0), events.get(0));
     }
@@ -71,11 +71,7 @@ class AdminConsoleJSONImportTest {
     @Test
     public void importMultipleJSON(){
         StringBuilder multEvents = new StringBuilder();
-        for(String s : json){
-            multEvents.append(s);
-            multEvents.append("\n");
-        }
-        Scanner s = new Scanner(multEvents.toString());
+        Scanner s = new Scanner(json);
         List<Event> imports = ac.importWithJson(s);
         assertEquals(3, imports.size());
         assertEquals(event1,imports.get(0));
