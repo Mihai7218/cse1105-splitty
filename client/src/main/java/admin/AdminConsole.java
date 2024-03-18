@@ -2,7 +2,6 @@ package admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import commons.Event;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -261,7 +260,8 @@ public class AdminConsole {
             try {
                 JSONObject tmpEvent = (JSONObject) object;
                 ObjectMapper objectMapper = new ObjectMapper();
-                SimpleDateFormat creationDateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+                SimpleDateFormat creationDateFormat = new
+                        SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
                 objectMapper.setDateFormat(creationDateFormat);
                 try {
                     Event event = objectMapper.readValue(tmpEvent.toString(), Event.class);
