@@ -251,14 +251,15 @@ public class AdminConsole {
      */
     public List<Event> importWithJson(Scanner textInput){
         List<Event> events = new ArrayList<>();
-        String alles = "";
+        String completeJson = "";
         while(textInput.hasNext()) {
-            alles += textInput.nextLine();
+            completeJson += textInput.nextLine();
         }
         JSONArray jsonArray = null;
         try {
-            jsonArray = new JSONArray(alles);
+            jsonArray = new JSONArray(completeJson);
         } catch (Exception e) {
+            System.out.println("Unable to import JSON events. ");
             return new ArrayList<>();
         }
 
@@ -273,27 +274,12 @@ public class AdminConsole {
                     Event event = objectMapper.readValue(tmpEvent.toString(), Event.class);
                     events.add(event);
                 } catch (JsonProcessingException | JSONException e) {
-                    System.out.println("Unable to import event. ");
+                    System.out.println("Unable to import event. {Error with JSON formatting.} ");
                 }
             } catch (Exception e) {
-                System.out.println("Error");
+                System.out.println("Error importing event. ");
             }
         }
-//        while(textInput.hasNext()) {
-//            String json =  textInput.nextLine();
-//
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.setDateFormat(new StdDateFormat());
-//            if (json.isEmpty()) {
-//                System.out.println("Unable to import empty event. ");
-//            }
-//            try {
-//                Event event = objectMapper.readValue(json, Event.class);
-//                events.add(event);
-//            } catch (JsonProcessingException | JSONException e) {
-//                System.out.println("Unable to import event. ");
-//            }
-//        }
         return events;
     }
 
