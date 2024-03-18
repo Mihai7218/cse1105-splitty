@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -41,6 +42,8 @@ public class MainCtrl {
     private Scene participant;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
+
+    private Event event;
 
     /**
      * Constructor for the MainCtrl
@@ -224,5 +227,9 @@ public class MainCtrl {
      */
     void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    public void setEvent(Event item) {
+        this.event = item;
     }
 }
