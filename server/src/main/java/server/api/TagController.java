@@ -74,19 +74,7 @@ public class TagController {
         return tagService.changeName(inviteCode, tagId, newName);
     }
 
-    /**
-     * Changes the colorcode of a tag
-     * @param inviteCode the invitecode of the event with which the tag is associated
-     * @param tagId the id of the tag itself
-     * @param newColor the new colorcode of the tag
-     * @return whether the color of the tag was updated
-     */
-    @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
-    public ResponseEntity<Tag> changeColor(@PathVariable("inviteCode") long inviteCode,
-                                           @PathVariable("tagId") long tagId,
-                                           @RequestBody String newColor){
-        return tagService.changeColor(inviteCode, tagId, newColor);
-    }
+
 
     /***
      * Deletes a tag from an event/the repo
