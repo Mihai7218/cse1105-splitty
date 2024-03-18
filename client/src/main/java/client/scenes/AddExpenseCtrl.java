@@ -8,11 +8,15 @@ import commons.ParticipantPayment;
 import commons.Tag;
 //import javafx.animation.FadeTransition;
 //import javafx.animation.PauseTransition;
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
+
 import java.net.URL;
 //import javafx.util.Duration;
 import java.time.LocalDate;
@@ -30,7 +34,7 @@ public class AddExpenseCtrl implements Initializable {
     private String[] names = {"John", "Chris", "Anna", "David"};
     @FXML
     private ChoiceBox<String> currency;
-    private String[] currencies = {"USD","EUR","CHF"};
+    private String[] currencies = {"USD", "EUR", "CHF"};
     private Tag[] tags = new Tag[3];
     @FXML
     private ComboBox<String> expenseType;
@@ -43,29 +47,11 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private Label question;
 
-    private final ServerUtils server;
-    private final MainCtrl mainCtrl;
-
     /**
-     * Constructs a new AddExpense object.
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
-     */
-    @Inject
-    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
-        this.server = server;
-    }
-
-    /**
-     *
-     * @param url
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
-     *
-     * @param resourceBundle
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param url            The location used to resolve relative paths for the root object, or
+     *                       {@code null} if the location is not known.
+     * @param resourceBundle The resources used to localize the root object, or {@code null} if
+     *                       the root object was not localized.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -75,10 +61,10 @@ public class AddExpenseCtrl implements Initializable {
         Tag food = new Tag("food", "yellow");
         Tag transport = new Tag("transport", "green");
         Tag admissionFees = new Tag("admission fees", "blue");
-        tags[0]= food;
-        tags[1]= transport;
-        tags[2]= admissionFees;
-        for(Tag tag: tags){
+        tags[0] = food;
+        tags[1] = transport;
+        tags[2] = admissionFees;
+        for (Tag tag : tags) {
             expenseType.getItems().add(tag.toString());
         }
         chooseOne();
@@ -115,17 +101,21 @@ public class AddExpenseCtrl implements Initializable {
     /**
      * checks if all boxes are selected
      */
-    public void checkAllSelected(){
-        // Check if all individual name checkboxes are selected
+    public void checkAllSelected() {
         boolean allSelected = true;
+        boolean atLeastOneSelected = false; // Flag to check if at least one checkbox is selected
+
         for (Node node : namesContainer.getChildren()) {
-            if (node instanceof CheckBox) {
-                CheckBox checkBox = (CheckBox) node;
-                if (!checkBox.isSelected()) {
-                    allSelected = false;
-                    break;
-                }
+            CheckBox checkBox = (CheckBox) node;
+            if (checkBox.isSelected()) {
+                atLeastOneSelected = true;
+            } else {
+                allSelected = false;
             }
+        }
+
+        if (!atLeastOneSelected) {
+            allSelected = false; // No checkbox is selected
         }
 
         // If all names are selected, clear the VBox and auto-select the "everyone" checkbox
@@ -133,29 +123,36 @@ public class AddExpenseCtrl implements Initializable {
             namesContainer.getChildren().clear();
             everyone.setSelected(true);
             only.setSelected(false);
-            //showQuestion();
-        } else {
+            showQuestion();
+        } else if (atLeastOneSelected){
             everyone.setSelected(false); // Deselect "everyone" if not all names are selected
         }
     }
-//    public void showQuestion(){
-//        question.setVisible(true);
-//        PauseTransition delay = new PauseTransition(Duration.seconds(3));
-//        delay.setOnFinished(event -> {
-//            // Start the fade-out animation after 3 seconds
-//            fadeOUT.setNode(question);
-//            fadeOUT.setFromValue(1.0);
-//            fadeOUT.setToValue(0.0);
-//            fadeOUT.setCycleCount(1);
-//            fadeOUT.setAutoReverse(false);
-//            fadeOUT.play(); // Start the FadeTransition animation
-//        });
-//        delay.play(); // Start the PauseTransition
-//    }
-//    private FadeTransition fadeOUT = new FadeTransition(
-//            Duration.seconds(3)
-//    );
-    // have to fix this, not necessary but adds a little bit of fun
+
+    /**
+     *
+     */
+    public void showQuestion() {
+        question.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), question);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), question);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> question.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
 
     @FXML
     private TextField title;
@@ -169,7 +166,7 @@ public class AddExpenseCtrl implements Initializable {
      */
 
     @FXML
-    private void addExpense() {
+    public void addExpense() {
         // Gather data from input fields
         String expenseTitle = title.getText();
         String expensePriceText = price.getText();
@@ -206,10 +203,10 @@ public class AddExpenseCtrl implements Initializable {
     }
 
     /**
-     *  Method to create a new Expense object
+     * Method to create a new Expense object
      */
 
-    private Expense createExpense(String title, double price, LocalDate date) {
+    public Expense createExpense(String title, double price, LocalDate date) {
         List<ParticipantPayment> participantPayments = new ArrayList<>();
         Tag tag = new Tag(expenseType.getValue(), "default");
         Participant payee = new Participant(this.payee.getValue(), "mail.com", "23", "24");
@@ -221,20 +218,219 @@ public class AddExpenseCtrl implements Initializable {
     }
 
     /**
-     *  Method to clear input fields
+     * Method to clear input fields
      */
-    private void clearFields() {
+    public void clearFields() {
         title.clear();
         price.clear();
         date.setValue(null);
     }
 
     /**
-     * When the abort button is pressed it goes back to the overview
+     *
+     * @return
      */
-    public void abort() {
-        clearFields();
-        mainCtrl.showOverview();
+    public ChoiceBox<String> getPayee() {
+        return payee;
     }
 
+    /**
+     *
+     * @return
+     */
+    public String[] getNames() {
+        return names;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ChoiceBox<String> getCurrency() {
+        return currency;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String[] getCurrencies() {
+        return currencies;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Tag[] getTags() {
+        return tags;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ComboBox<String> getExpenseType() {
+        return expenseType;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public CheckBox getEveryone() {
+        return everyone;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public CheckBox getOnly() {
+        return only;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public VBox getNamesContainer() {
+        return namesContainer;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Label getQuestion() {
+        return question;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public TextField getTitle() {
+        return title;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public TextField getPrice() {
+        return price;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public DatePicker getDate() {
+        return date;
+    }
+
+    /**
+     *
+     * @param namesContainer
+     */
+    public void setNamesContainer(VBox namesContainer) {
+        this.namesContainer = namesContainer;
+    }
+
+    /**
+     *
+     * @param question
+     */
+    public void setQuestion(Label question) {
+        this.question = question;
+    }
+
+    /**
+     *
+     * @param title
+     */
+    public void setTitle(TextField title) {
+        this.title = title;
+    }
+
+    /**
+     *
+     * @param price
+     */
+    public void setPrice(TextField price) {
+        this.price = price;
+    }
+
+    /**
+     *
+     * @param date
+     */
+    public void setDate(DatePicker date) {
+        this.date = date;
+    }
+
+    /**
+     *
+     * @param payee
+     */
+    public void setPayee(ChoiceBox<String> payee) {
+        this.payee = payee;
+    }
+
+    /**
+     *
+     * @param names
+     */
+    public void setNames(String[] names) {
+        this.names = names;
+    }
+
+    /**
+     *
+     * @param currency
+     */
+    public void setCurrency(ChoiceBox<String> currency) {
+        this.currency = currency;
+    }
+
+    /**
+     *
+     * @param currencies
+     */
+    public void setCurrencies(String[] currencies) {
+        this.currencies = currencies;
+    }
+
+    /**
+     *
+     * @param tags
+     */
+    public void setTags(Tag[] tags) {
+        this.tags = tags;
+    }
+
+    /**
+     *
+     * @param expenseType
+     */
+    public void setExpenseType(ComboBox<String> expenseType) {
+        this.expenseType = expenseType;
+    }
+
+    /**
+     *
+     * @param everyone
+     */
+    public void setEveryone(CheckBox everyone) {
+        this.everyone = everyone;
+    }
+
+    /**
+     *
+     * @param only
+     */
+    public void setOnly(CheckBox only) {
+        this.only = only;
+    }
 }

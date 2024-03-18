@@ -95,6 +95,14 @@ public class MainCtrl {
     }
 
     /**
+     * shows AddExpense scene
+     */
+    public void showAddExpense(){
+        primaryStage.setTitle("Add/Edit Expense");
+        primaryStage.setScene(addExpense);
+    }
+
+    /**
      * Shows the overview scene.
      */
     public void showOverview() {
