@@ -255,7 +255,13 @@ public class AdminConsole {
         while(textInput.hasNext()) {
             alles += textInput.nextLine();
         }
-        JSONArray jsonArray = new JSONArray(alles);
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(alles);
+        } catch (Exception e) {
+            return new ArrayList<>();
+        }
+
         for (Object object : jsonArray) {
             try {
                 JSONObject tmpEvent = (JSONObject) object;
