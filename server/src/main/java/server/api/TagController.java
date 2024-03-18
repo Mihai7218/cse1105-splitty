@@ -64,29 +64,29 @@ public class TagController {
      * Changes the name of a tag
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId the id of the tag itself
-     * @param newName the new name of the tag after change
-     * @return whether the tagname was changed
+     * @param tag the new tag after change
+     * @return whether the tag was changed
      */
     @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
-    public ResponseEntity<Tag> changeName(@PathVariable("inviteCode") long inviteCode,
+    public ResponseEntity<Tag> changeTag(@PathVariable("inviteCode") long inviteCode,
                                           @PathVariable("tagId") long tagId,
-                                          @RequestBody String newName){
-        return tagService.changeName(inviteCode, tagId, newName);
+                                          @RequestBody Tag tag){
+        return tagService.changeTag(inviteCode, tagId, tag);
     }
 
-    /**
-     * Changes the colorcode of a tag
-     * @param inviteCode the invitecode of the event with which the tag is associated
-     * @param tagId the id of the tag itself
-     * @param newColor the new colorcode of the tag
-     * @return whether the color of the tag was updated
-     */
-    @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
-    public ResponseEntity<Tag> changeColor(@PathVariable("inviteCode") long inviteCode,
-                                           @PathVariable("tagId") long tagId,
-                                           @RequestBody String newColor){
-        return tagService.changeColor(inviteCode, tagId, newColor);
-    }
+//    /**
+//     * Changes the colorcode of a tag
+//     * @param inviteCode the invitecode of the event with which the tag is associated
+//     * @param tagId the id of the tag itself
+//     * @param newColor the new colorcode of the tag
+//     * @return whether the color of the tag was updated
+//     */
+//    @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
+//    public ResponseEntity<Tag> changeColor(@PathVariable("inviteCode") long inviteCode,
+//                                           @PathVariable("tagId") long tagId,
+//                                           @RequestBody String newColor){
+//        return tagService.changeColor(inviteCode, tagId, newColor);
+//    }
 
     /***
      * Deletes a tag from an event/the repo

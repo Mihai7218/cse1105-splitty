@@ -101,10 +101,10 @@ public class TagService {
      *
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId      the id of the tag itself
-     * @param newName    the new name of the tag after change
+     * @param tag    the new tag after change
      * @return whether the tagName was changed
      */
-    public ResponseEntity<Tag> changeName(long inviteCode, long tagId, String newName) {
+    public ResponseEntity<Tag> changeTag(long inviteCode, long tagId, Tag tag) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -112,11 +112,12 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
-        if (newName == null || Objects.equals(newName, "")) {
+        if (tag == null || Objects.equals(tag.getName(), "") || Objects.equals(tag.getColor(), "")) {
             return ResponseEntity.badRequest().build();
         }
         Tag change = tagRepo.findById(tagId).get();
-        change.setName(newName);
+        change.setName(tag.getName());
+        change.setColor(tag.getColor());
         tagRepo.save(change);
         return ResponseEntity.ok(null);
     }
