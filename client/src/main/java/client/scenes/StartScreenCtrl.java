@@ -293,4 +293,7 @@ public class StartScreenCtrl implements Initializable {
     public ListView<Event> getRecentEvents() {
         return recentEvents;
     }
+    void setRecentEvents(ListView<Event> list) {
+        this.recentEvents = list;
+    }
 }

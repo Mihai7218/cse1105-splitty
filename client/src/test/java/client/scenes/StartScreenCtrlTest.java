@@ -11,8 +11,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -56,6 +58,8 @@ class StartScreenCtrlTest {
     Alert alert;
     StringProperty sp;
     LanguageComboBox languageComboBox;
+    ListView<Event> recentEvents;
+    ObservableList<Event> eventsList = FXCollections.observableArrayList();
 
     @Start
     void setUp(Stage stage) {
@@ -67,12 +71,15 @@ class StartScreenCtrlTest {
         serverUtils = mock(ServerUtils.class);
         languageComboBox = mock(LanguageComboBox.class);
         alert = mock(Alert.class);
+        recentEvents = mock(ListView.class);
+        when(recentEvents.getItems()).thenReturn(eventsList);
         sp = new SimpleStringProperty("Hello");
         when(languageManager.bind(anyString())).thenReturn(Bindings.createStringBinding(() -> ""));
         when(alert.contentTextProperty()).thenReturn(sp);
         when(alert.titleProperty()).thenReturn(sp);
         when(alert.headerTextProperty()).thenReturn(sp);
         sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils, alert);
+        sut.setRecentEvents(recentEvents);
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         sut.setNewEventTitle(createTextField);
         sut.setEventInvite(joinTextField);
@@ -158,7 +165,7 @@ class StartScreenCtrlTest {
 
         assertEquals("42", config.getProperty("recentEvents"));
         assertEquals("5", config.getProperty("recentEventsLimit"));
-        assertEquals(List.of(event), sut.getRecentEventsList());
+        assertEquals(List.of(event), sut.getRecentEvents().getItems());
     }
 
     /**
@@ -170,13 +177,13 @@ class StartScreenCtrlTest {
         event.setInviteCode(42);
         Event filler = new Event();
         filler.setInviteCode(43);
-        Stream.iterate(0, x -> x + 1).limit(10).forEach(x -> sut.getRecentEventsList().add(filler));
+        Stream.iterate(0, x -> x + 1).limit(10).forEach(x -> sut.getRecentEvents().getItems().add(filler));
 
         sut.addRecentEvent(event);
 
         assertEquals("42,43,43,43,43", config.getProperty("recentEvents"));
         assertEquals("5", config.getProperty("recentEventsLimit"));
-        assertEquals(List.of(event, filler, filler, filler, filler), sut.getRecentEventsList());
+        assertEquals(List.of(event, filler, filler, filler, filler), sut.getRecentEvents().getItems());
     }
 
     /**
@@ -189,13 +196,13 @@ class StartScreenCtrlTest {
         event.setInviteCode(42);
         Event filler = new Event();
         filler.setInviteCode(43);
-        Stream.iterate(0, x -> x + 1).limit(10).forEach(x -> sut.getRecentEventsList().add(filler));
+        Stream.iterate(0, x -> x + 1).limit(10).forEach(x -> sut.getRecentEvents().getItems().add(filler));
 
         sut.addRecentEvent(event);
 
         assertEquals("42", config.getProperty("recentEvents"));
         assertEquals("1", config.getProperty("recentEventsLimit"));
-        assertEquals(List.of(event), sut.getRecentEventsList());
+        assertEquals(List.of(event), sut.getRecentEvents().getItems());
     }
 
     /**
@@ -239,7 +246,7 @@ class StartScreenCtrlTest {
         sut.createEventButtonHandler();
 
         verify(serverUtils).addEvent(any());
-        assertEquals(fakeReturnedEvent, sut.getRecentEventsList().getFirst());
+        assertEquals(fakeReturnedEvent, sut.getRecentEvents().getItems().getFirst());
     }
 
     /**
@@ -258,7 +265,7 @@ class StartScreenCtrlTest {
         verify(alert).show();
         verify(serverUtils).addEvent(any());
         assertEquals("404", sp.get());
-        assertTrue(sut.getRecentEventsList().isEmpty());
+        assertTrue(sut.getRecentEvents().getItems().isEmpty());
     }
 
     /**
@@ -277,7 +284,7 @@ class StartScreenCtrlTest {
         verify(alert).show();
         verify(serverUtils).addEvent(any());
         assertEquals("500", sp.get());
-        assertTrue(sut.getRecentEventsList().isEmpty());
+        assertTrue(sut.getRecentEvents().getItems().isEmpty());
     }
 
     /**
@@ -337,7 +344,7 @@ class StartScreenCtrlTest {
         sut.joinEventButtonHandler();
 
         verify(serverUtils).getEvent(1);
-        assertEquals(fakeReturnedEvent, sut.getRecentEventsList().getFirst());
+        assertEquals(fakeReturnedEvent, sut.getRecentEvents().getItems().getFirst());
     }
 
     /**
@@ -356,7 +363,7 @@ class StartScreenCtrlTest {
         verify(alert).show();
         verify(serverUtils).getEvent(1);
         assertEquals("404", sp.get());
-        assertTrue(sut.getRecentEventsList().isEmpty());
+        assertTrue(sut.getRecentEvents().getItems().isEmpty());
     }
 
     /**
@@ -375,7 +382,7 @@ class StartScreenCtrlTest {
         verify(alert).show();
         verify(serverUtils).getEvent(1);
         assertEquals("500", sp.get());
-        assertTrue(sut.getRecentEventsList().isEmpty());
+        assertTrue(sut.getRecentEvents().getItems().isEmpty());
     }
 
     /**
@@ -394,7 +401,7 @@ class StartScreenCtrlTest {
         verify(alert).show();
         verify(serverUtils).getEvent(1);
         assertEquals("400", sp.get());
-        assertTrue(sut.getRecentEventsList().isEmpty());
+        assertTrue(sut.getRecentEvents().getItems().isEmpty());
     }
 
     /**
@@ -411,7 +418,7 @@ class StartScreenCtrlTest {
         verify(alert).show();
         verify(serverUtils, never()).getEvent(anyInt());
         assertEquals("NFE", sp.get());
-        assertTrue(sut.getRecentEventsList().isEmpty());
+        assertTrue(sut.getRecentEvents().getItems().isEmpty());
     }
 
     /**
