@@ -47,6 +47,20 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private Label question;
 
+    private final ServerUtils server;
+    private final MainCtrl mainCtrl;
+
+    /**
+     * Constructs a new AddExpenseCtrl object.
+     * @param server ServerUtils object
+     * @param mainCtrl MainCtrl object
+     */
+    @Inject
+    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+        this.server = server;
+    }
+
     /**
      * @param url            The location used to resolve relative paths for the root object, or
      *                       {@code null} if the location is not known.
@@ -224,6 +238,14 @@ public class AddExpenseCtrl implements Initializable {
         title.clear();
         price.clear();
         date.setValue(null);
+    }
+
+    /**
+     * When the abort button is pressed it goes back to the overview
+     */
+    public void abort() {
+        clearFields();
+        mainCtrl.showOverview();
     }
 
     /**
