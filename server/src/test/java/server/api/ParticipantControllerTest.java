@@ -88,12 +88,12 @@ public class ParticipantControllerTest {
         Participant three = new Participant("Ethan", "eyoung@gmail.com",
                 "NL85RABO5253446745", "HBUKGB4B");
         participantController.addParticipant(0, three);
-        List<String> called = List.of("existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById");
+        List<String> called = List.of("existsById", "findById", "findById",
+                "existsById", "findById", "findById",
+                "existsById", "findById", "findById","findById", "save", "existsById", "getById");
         assertEquals(eventRepository.calledMethods, called);
         assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 9);
+        assertEquals(eventRepository.calledMethods.size(), 13);
     }
 
     @Test
@@ -108,11 +108,13 @@ public class ParticipantControllerTest {
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
-                "existsById", "findById","findById");
+                "existsById", "findById","findById",
+                "findById", "save", "existsById",
+                "getById");
         assertEquals(eventRepository.calledMethods, called);
         assertEquals(participantRepository.participants.get(0).getName(), "Christina Smith");
         assertEquals(participantRepository.participants.size(), 2);
-        assertEquals(eventRepository.calledMethods.size(), 18);
+        assertEquals(eventRepository.calledMethods.size(), 22);
     }
 
     @Test
@@ -121,14 +123,15 @@ public class ParticipantControllerTest {
         eventRepository.flush();
         participantController.deleteParticipant(0,0);
         assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 19);
+        assertEquals(eventRepository.calledMethods.size(), 23);
         List<String> called = List.of("existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
-                "getReferenceById");
+                "findById", "save", "existsById",
+                "getById", "getReferenceById");
         assertEquals(eventRepository.calledMethods, called);
 
     }
