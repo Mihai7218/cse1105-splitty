@@ -9,10 +9,8 @@ import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.TagRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.sql.Timestamp;
+import java.util.*;
 
 @Service
 public class TagService {
@@ -91,8 +89,12 @@ public class TagService {
         tagList.add(tag);
         event.setTagsList(tagList);
         //Save both in their respective repos
-        eventRepo.save(event);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event.setLastActivity(timestamp2);
         tagRepo.save(tag);
+        eventRepo.save(event);
+
         return ResponseEntity.ok(tag);
     }
 
@@ -115,6 +117,11 @@ public class TagService {
         if (newName == null || Objects.equals(newName, "")) {
             return ResponseEntity.badRequest().build();
         }
+        Event event = eventRepo.findById(inviteCode).get();
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event.setLastActivity(timestamp2);
+        eventRepo.save(event);
         Tag change = tagRepo.findById(tagId).get();
         change.setName(newName);
         tagRepo.save(change);
@@ -162,6 +169,13 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
+        Event event = eventRepo.findById(inviteCode).get();
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event.setLastActivity(timestamp2);
+        Optional<Tag> test = tagRepo.findById(tagId);
+        event.getTagsList().remove(test.get());
+        eventRepo.save(event);
         tagRepo.deleteAllById(Collections.singleton(tagId));
         return ResponseEntity.ok(null);
     }

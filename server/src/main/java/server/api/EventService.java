@@ -79,8 +79,8 @@ public class EventService {
         event.setTagsList(savedTags);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setCreationDate(timestamp2);
         event.setLastActivity(timestamp2);
+        event.setCreationDate(timestamp2);
         eventRepository.save(event);
 
         return ResponseEntity.ok(event);
