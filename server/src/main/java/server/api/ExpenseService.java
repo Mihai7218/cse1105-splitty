@@ -219,8 +219,7 @@ public class ExpenseService {
         if(expense == null || expense.getAmount()<0
                 || expense.getTitle() == null
                 || Objects.equals(expense.getTitle(), "")
-                || expense.getPayee() == null
-                || expenseRepo.existsById((long)expense.getId())){
+                || expense.getPayee() == null){
             return ResponseEntity.badRequest().build();
         }
         List<Expense> allExpenses = expenseRepo.findAll();

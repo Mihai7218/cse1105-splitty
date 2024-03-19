@@ -148,9 +148,9 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(events, APPLICATION_JSON), Event.class);
-        setParticipants(events.getParticipantsList(), password);
-        setExpenses(events.getExpensesList(), password);
-        setTags(events.getTagsList(), password);
+        setParticipants(events.getParticipantsList(), password, events);
+        setExpenses(events.getExpensesList(), password, events);
+        setTags(events.getTagsList(), password, events);
 
     }
 
@@ -159,7 +159,7 @@ public class ServerUtils {
      * @param participants list of participnats in JSON import
      * @param password admin password to allow endpoint access
      */
-    public void setParticipants(List<Participant> participants, String password){
+    public void setParticipants(List<Participant> participants, String password, Event e){
         for(Participant p: participants){
             ClientBuilder.newClient(new ClientConfig())
                     .target(server).path("api/events/admin/participants/" + password )
@@ -174,14 +174,14 @@ public class ServerUtils {
      * @param expenses list of expenses from the imported event
      * @param password admin password to allow access to endpoints
      */
-    public void setExpenses(List<Expense> expenses, String password){
+    public void setExpenses(List<Expense> expenses, String password, Event event){
         for(Expense e: expenses){
             ClientBuilder.newClient(new ClientConfig())
-                    .target(server).path("api/events/admin/" + password )
+                    .target(server).path("api/events" + event.getInviteCode() + "/admin/" + password )
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(e, APPLICATION_JSON), Expense.class);
-            setParticipantPayment(e.getSplit(),password);
+            setParticipantPayment(e.getSplit(),password, event);
         }
     }
 
@@ -190,7 +190,8 @@ public class ServerUtils {
      * @param participantPayment list of participantPayments from the imported event
      * @param password admin password to allow access to endpoints
      */
-    public void setParticipantPayment(List<ParticipantPayment> participantPayment, String password){
+    public void setParticipantPayment(List<ParticipantPayment> participantPayment, String password,
+                                      Event e){
         for(ParticipantPayment p: participantPayment){
             ClientBuilder.newClient(new ClientConfig())
                     .target(server).path("api/events/admin/participantPayment/" + password )
@@ -205,7 +206,7 @@ public class ServerUtils {
      * @param tags list of tags associated with event
      * @param password admin password to allow access to endpoints
      */
-    public void setTags(List<Tag> tags, String password){
+    public void setTags(List<Tag> tags, String password, Event e){
         for(Tag t: tags){
             ClientBuilder.newClient(new ClientConfig())
                     .target(server).path("api/events/admin/tag/" + password)

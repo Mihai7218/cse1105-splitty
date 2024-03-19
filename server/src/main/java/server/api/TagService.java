@@ -178,16 +178,15 @@ public class TagService {
         if(tag == null || tag.getName() == null
                 || tag.getColor() == null
                 || Objects.equals(tag.getName(), "")
-                || Objects.equals(tag.getColor(), "")
-                || tagRepo.existsById((long)tag.getId())){
+                || Objects.equals(tag.getColor(), "")){
             return ResponseEntity.badRequest().build();
         }
-        List<Tag> allTags = tagRepo.findAll();
-        for(Tag t: allTags){
-            if(t.equals(tag)){
-                return ResponseEntity.badRequest().build();
-            }
-        }
+//        List<Tag> allTags = tagRepo.findAll();
+//        for(Tag t: allTags){
+//            if(t.equals(tag)){
+//                return ResponseEntity.badRequest().build();
+//            }
+//        }
         return ResponseEntity.ok(tag);
     }
 
