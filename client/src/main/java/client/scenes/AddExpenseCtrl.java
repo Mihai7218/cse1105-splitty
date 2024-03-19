@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
+import javafx.collections.ObservableMap;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.StackPane;
@@ -44,7 +45,6 @@ public class AddExpenseCtrl implements Initializable {
     // fx:controller="com.example.tutorial.addCtrl"
     @FXML
     private ChoiceBox<String> payee;
-    private String[] names = {"John", "Chris", "Anna", "David"};
     private List<Participant> participantsList;
     @FXML
     private ChoiceBox<String> currency;
@@ -399,14 +399,6 @@ public class AddExpenseCtrl implements Initializable {
      *
      * @return
      */
-    public String[] getNames() {
-        return names;
-    }
-
-    /**
-     *
-     * @return
-     */
     public ChoiceBox<String> getCurrency() {
         return currency;
     }
@@ -541,14 +533,6 @@ public class AddExpenseCtrl implements Initializable {
 
     /**
      *
-     * @param names
-     */
-    public void setNames(String[] names) {
-        this.names = names;
-    }
-
-    /**
-     *
      * @param currency
      */
     public void setCurrency(ChoiceBox<String> currency) {
@@ -593,5 +577,30 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void setOnly(CheckBox only) {
         this.only = only;
+    }
+
+
+    public void setParticipantsList(List<Participant> participantsList) {
+        this.participantsList = participantsList;
+    }
+
+    public void setScrollNames(ScrollPane scrollNames) {
+        this.scrollNames = scrollNames;
+    }
+
+    public void setAddTag(Button addTag) {
+        this.addTag = addTag;
+    }
+
+    public void setNewTag(TextField newTag) {
+        this.newTag = newTag;
+    }
+
+    public void setInstructions(Label instructions) {
+        this.instructions = instructions;
+    }
+
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
     }
 }
