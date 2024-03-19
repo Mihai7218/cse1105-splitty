@@ -177,7 +177,8 @@ public class ServerUtils {
     public void setExpenses(List<Expense> expenses, String password, Event event){
         for(Expense e: expenses){
             ClientBuilder.newClient(new ClientConfig())
-                    .target(server).path("api/events" + event.getInviteCode() + "/admin/" + password )
+                    .target(server).path("api/events" + event.getInviteCode() +
+                            "/admin/" + password )
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(e, APPLICATION_JSON), Expense.class);
