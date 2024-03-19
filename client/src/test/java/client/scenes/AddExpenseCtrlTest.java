@@ -1,29 +1,18 @@
 package client.scenes;
 
+import client.utils.LanguageManager;
 import client.utils.ServerUtils;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.DatePicker;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,13 +48,15 @@ public class AddExpenseCtrlTest {
     ObservableList oc = FXCollections.observableArrayList();
     ObservableList ot = FXCollections.observableArrayList();
     ObservableList noc = FXCollections.observableArrayList();
+    LanguageManager languageManager;
 
 
     @Start
     void setUp(Stage stage) {
         mainCtrl = mock(MainCtrl.class);
         serverUtils = mock(ServerUtils.class);
-        sut = new AddExpenseCtrl(serverUtils,mainCtrl);
+        languageManager = mock(LanguageManager.class);
+        sut = new AddExpenseCtrl(languageManager, serverUtils, mainCtrl);
         payee = mock(ChoiceBox.class);
         currency = mock(ChoiceBox.class);
         expenseType = mock(ComboBox.class);
