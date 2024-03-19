@@ -173,7 +173,8 @@ public class StartScreenCtrl implements Initializable {
             return;
         }
         addRecentEvent(e);
-        //TODO: redirect the user to the add/edit event scene
+        mainCtrl.setEvent(e);
+        mainCtrl.showOverview();
     }
 
     /**
@@ -218,7 +219,8 @@ public class StartScreenCtrl implements Initializable {
             alert.show();
             return;
         }
-        //TODO: redirect the user to the overview of the event
+        mainCtrl.setEvent(e);
+        mainCtrl.showOverview();
     }
 
     /**

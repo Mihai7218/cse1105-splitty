@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtils;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -40,6 +41,9 @@ public class AddExpenseCtrlTest {
         System.setProperty("prism.text", "t2k");
         System.setProperty("java.awt.headless","true");
     }
+
+    MainCtrl mainCtrl;
+    ServerUtils serverUtils;
     AddExpenseCtrl sut;
     ChoiceBox<String> payee;
     ChoiceBox<String> currency;
@@ -59,7 +63,9 @@ public class AddExpenseCtrlTest {
 
     @Start
     void setUp(Stage stage) {
-        sut = new AddExpenseCtrl();
+        mainCtrl = mock(MainCtrl.class);
+        serverUtils = mock(ServerUtils.class);
+        sut = new AddExpenseCtrl(serverUtils,mainCtrl);
         payee = mock(ChoiceBox.class);
         currency = mock(ChoiceBox.class);
         expenseType = mock(ComboBox.class);
