@@ -1,29 +1,42 @@
 package client.scenes;
 
+import client.utils.ConfigInterface;
+import client.utils.LanguageManager;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ComboBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
 import commons.Tag;
-//import javafx.animation.FadeTransition;
-//import javafx.animation.PauseTransition;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import javafx.util.StringConverter;
 
+import java.awt.*;
 import java.net.URL;
 //import javafx.util.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-//import java.util.Date;
+
 import java.util.List;
 import java.util.ResourceBundle;
+
 
 public class AddExpenseCtrl implements Initializable {
 
@@ -32,12 +45,13 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private ChoiceBox<String> payee;
     private String[] names = {"John", "Chris", "Anna", "David"};
+    private List<Participant> participantsList;
     @FXML
     private ChoiceBox<String> currency;
     private String[] currencies = {"USD", "EUR", "CHF"};
-    private Tag[] tags = new Tag[3];
+    private ArrayList<Tag> tags = new ArrayList<>();
     @FXML
-    private ComboBox<String> expenseType;
+    private ComboBox<Tag> expenseType;
     @FXML
     private CheckBox everyone;
     @FXML
@@ -46,19 +60,41 @@ public class AddExpenseCtrl implements Initializable {
     private VBox namesContainer;
     @FXML
     private Label question;
+    @FXML
+    private ScrollPane scrollNames;
+    @FXML
+    private Button addTag;
+    @FXML
+    private TextField newTag;
+    @FXML
+    private Label instructions;
 
-    private final ServerUtils server;
+    private final ServerUtils serverUtils;
+    private final ConfigInterface config;
     private final MainCtrl mainCtrl;
+    private final LanguageManager languageManager;
+    private final Alert alert;
 
     /**
-     * Constructs a new AddExpenseCtrl object.
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
+     *
+     * @param mainCtrl
+     * @param config
+     * @param languageManager
+     * @param serverUtils
+     * @param alert
      */
     @Inject
-    public AddExpenseCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public AddExpenseCtrl(MainCtrl mainCtrl,
+                           ConfigInterface config,
+                           LanguageManager languageManager,
+                           ServerUtils serverUtils,
+                           Alert alert) {
         this.mainCtrl = mainCtrl;
-        this.server = server;
+        this.config = config;
+        this.languageManager = languageManager;
+        this.serverUtils = serverUtils;
+        this.alert = alert;
+        //System.out.println(mainCtrl.getEvent());
     }
 
     /**
@@ -70,20 +106,66 @@ public class AddExpenseCtrl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         question.setVisible(false);
-        payee.getItems().addAll(names);
+        scrollNames.setVisible(false);
+        instructions.setVisible(false);
+        newTag.setVisible(false);
+        //payee.getItems().addAll(names);
         currency.getItems().addAll(currencies);
-        Tag food = new Tag("food", "yellow");
-        Tag transport = new Tag("transport", "green");
-        Tag admissionFees = new Tag("admission fees", "blue");
-        tags[0] = food;
-        tags[1] = transport;
-        tags[2] = admissionFees;
+        Tag food = new Tag("food", "green");
+        Tag entranceFees = new Tag("entrance fees", "red");
+        Tag travel = new Tag("travel", "blue");
+        tags.add(food);
+        tags.add(entranceFees);
+        tags.add(travel);
         for (Tag tag : tags) {
-            expenseType.getItems().add(tag.toString());
+            expenseType.getItems().add(tag);
         }
-        chooseOne();
+        expenseType.setCellFactory(param -> new ListCell<>() {
+            private final Rectangle rectangle = new Rectangle(100, 20);
+
+            @Override
+            protected void updateItem(Tag item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    rectangle.setFill(javafx.scene.paint.Paint.valueOf(item.getColor()));
+                    //setText(item.getName());
+                    StackPane stackPane = new StackPane(rectangle, new Text(item.getName()));
+                    setGraphic(stackPane);
+                }
+            }
+        });
+        expenseType.setConverter(new StringConverter<Tag>() {
+            @Override
+            public String toString(Tag tag) {
+                if (tag == null) {
+                    return null;
+                } else {
+                    return tag.getName();
+                }
+            }
+
+            @Override
+            public Tag fromString(String string) {
+                // Not needed for ComboBox
+                return null;
+            }
+        });
     }
 
+    /**
+     *
+     */
+    public void loadParticipants(){
+        participantsList = mainCtrl.getEvent().getParticipantsList();
+        if(payee.getItems().isEmpty()) {
+            for (Participant participant : participantsList) {
+                payee.getItems().add(participant.getName());
+            }
+        }
+    }
     /**
      * makes only one of the two checkboxes regarding the split be selected
      * not both at once
@@ -91,6 +173,7 @@ public class AddExpenseCtrl implements Initializable {
     public void chooseOne() {
         everyone.setOnAction(event -> {
             if (everyone.isSelected()) {
+                scrollNames.setVisible(false);
                 only.setSelected(false);
                 namesContainer.getChildren().clear();
                 // Clear the checkboxes if "everyone" is selected
@@ -100,8 +183,10 @@ public class AddExpenseCtrl implements Initializable {
         only.setOnAction(event -> {
             if (only.isSelected()) {
                 everyone.setSelected(false);
+                scrollNames.setVisible(true);
                 namesContainer.getChildren().clear(); // Clear the checkboxes before adding new ones
-                for (String name : names) {
+                for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
+                    String name = participant.getName();
                     CheckBox checkBox = new CheckBox(name);
                     namesContainer.getChildren().add(checkBox);
                 }
@@ -110,6 +195,51 @@ public class AddExpenseCtrl implements Initializable {
                 // Clear the checkboxes if "only" is deselected
             }
         });
+    }
+
+    /**
+     * lets the user add a new tag to the already existing list
+     */
+    public void addTag(){
+        showInstructions();
+        newTag.setVisible(true);
+        newTag.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                String tag = newTag.getText().trim();
+                // Add text to the ArrayList if it's not empty
+                if (!tag.isEmpty()) {
+                    //tags.add(new Tag(tag, "black"));
+                    expenseType.getItems().add(new Tag(tag,"yellow"));
+                }
+                // Clear the text field
+                newTag.clear();
+                newTag.setVisible(false);
+            }
+        });
+    }
+
+    /**
+     * tell the user how to add the new tag
+     */
+    public void showInstructions(){
+        instructions.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), instructions);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), instructions);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> instructions.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
     }
 
     /**
@@ -137,8 +267,10 @@ public class AddExpenseCtrl implements Initializable {
             namesContainer.getChildren().clear();
             everyone.setSelected(true);
             only.setSelected(false);
+            scrollNames.setVisible(false);
             showQuestion();
         } else if (atLeastOneSelected){
+            scrollNames.setVisible(true);
             everyone.setSelected(false); // Deselect "everyone" if not all names are selected
         }
     }
@@ -203,6 +335,8 @@ public class AddExpenseCtrl implements Initializable {
 
             // Create a new Expense object
             Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
+            mainCtrl.getEvent().addExpense(newExpense);
+            mainCtrl.showOverview();
 
             // Optionally, clear input fields after adding the expense
             clearFields();
@@ -222,11 +356,16 @@ public class AddExpenseCtrl implements Initializable {
 
     public Expense createExpense(String title, double price, LocalDate date) {
         List<ParticipantPayment> participantPayments = new ArrayList<>();
-        Tag tag = new Tag(expenseType.getValue(), "default");
-        Participant payee = new Participant(this.payee.getValue(), "mail.com", "23", "24");
+        Tag tag = expenseType.getValue();
+        Participant actualPayee = null;
+        for(Participant p: mainCtrl.getEvent().getParticipantsList()){
+            if(p.getName().equals(payee.getValue())){
+                actualPayee = p;
+            }
+        }
 
         Expense expense = new Expense(price, currency.getValue(), title, "testing",
-                java.sql.Date.valueOf(date), participantPayments, tag, payee);
+                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
 
         return expense;
     }
@@ -284,7 +423,7 @@ public class AddExpenseCtrl implements Initializable {
      *
      * @return
      */
-    public Tag[] getTags() {
+    public ArrayList<Tag> getTags() {
         return tags;
     }
 
@@ -292,7 +431,7 @@ public class AddExpenseCtrl implements Initializable {
      *
      * @return
      */
-    public ComboBox<String> getExpenseType() {
+    public ComboBox<Tag> getExpenseType() {
         return expenseType;
     }
 
@@ -428,7 +567,7 @@ public class AddExpenseCtrl implements Initializable {
      *
      * @param tags
      */
-    public void setTags(Tag[] tags) {
+    public void setTags(ArrayList<Tag> tags) {
         this.tags = tags;
     }
 
@@ -436,7 +575,7 @@ public class AddExpenseCtrl implements Initializable {
      *
      * @param expenseType
      */
-    public void setExpenseType(ComboBox<String> expenseType) {
+    public void setExpenseType(ComboBox<Tag> expenseType) {
         this.expenseType = expenseType;
     }
 
