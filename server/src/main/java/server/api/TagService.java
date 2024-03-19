@@ -185,7 +185,7 @@ public class TagService {
     }
 
     /**
-     * Method to add an tag to the repository from a JSON import
+     * Method to add a tag to the repository from a JSON import
      * @param tag tag to be added to the tagRepository
      * @return the tag in a ResponseEntity
      */

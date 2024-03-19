@@ -157,12 +157,7 @@ public class EventService {
                 return ResponseEntity.badRequest().build();
             }
         }
-        List<Tag> tags = event.getTagsList();
-        if(!tags.contains(new Tag("food","#93c47d"))
-                || !tags.contains(new Tag("entrance fees", "#4a86e8"))
-                || !tags.contains(new Tag("travel", "#e06666"))){
-            return ResponseEntity.badRequest().build();
-        }
+
         return ResponseEntity.ok(event);
     }
 
