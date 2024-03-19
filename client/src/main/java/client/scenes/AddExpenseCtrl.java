@@ -2,7 +2,6 @@ package client.scenes;
 
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
-import javafx.collections.ObservableMap;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.StackPane;
@@ -580,27 +579,36 @@ public class AddExpenseCtrl implements Initializable {
     }
 
 
-    public void setParticipantsList(List<Participant> participantsList) {
-        this.participantsList = participantsList;
-    }
-
+    /**
+     *
+     * @param scrollNames
+     */
     public void setScrollNames(ScrollPane scrollNames) {
         this.scrollNames = scrollNames;
     }
 
+    /**
+     *
+     * @param addTag
+     */
     public void setAddTag(Button addTag) {
         this.addTag = addTag;
     }
 
+    /**
+     *
+     * @param newTag
+     */
     public void setNewTag(TextField newTag) {
         this.newTag = newTag;
     }
 
+    /**
+     *
+     * @param instructions
+     */
     public void setInstructions(Label instructions) {
         this.instructions = instructions;
     }
 
-    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
-        this.languageManager.set(languageManager);
-    }
 }
