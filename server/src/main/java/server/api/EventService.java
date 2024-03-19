@@ -218,8 +218,7 @@ public class EventService {
     private ResponseEntity<Double> validateDebt(Long eventId, Long participantId) {
         if(eventId<0 || participantId<0){
             return ResponseEntity.badRequest().build();
-        }else if(!eventRepository.existsById(eventId)
-                || !eventRepository.existsById(participantId)){
+        }else if(!eventRepository.existsById(eventId)){
             return ResponseEntity.notFound().build();
         }
         if(eventRepository.findById(eventId).isEmpty()){
