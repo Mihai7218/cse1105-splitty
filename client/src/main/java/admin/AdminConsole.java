@@ -1,15 +1,20 @@
 package admin;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
 import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class AdminConsole {
 
@@ -83,7 +88,6 @@ public class AdminConsole {
         System.out.println("Succes :D");
         showOptions(userInput, adminConsole);
 
-
     }
 
     /**
@@ -96,7 +100,8 @@ public class AdminConsole {
         System.out.println("What would you like to do?");
         System.out.println("\t 1 - Show all events");
         System.out.println("\t 2 - Dump database to json file");
-        System.out.println("\t 3 - exit");
+        System.out.println("\t 3 - Import events from json file");
+        System.out.println("\t 4 - exit");
         switch (userInput.nextInt()) {
             case 1:
                 adminConsole.updateEvents();
@@ -104,8 +109,14 @@ public class AdminConsole {
                 showOptions(userInput, adminConsole);
                 break;
             case 2:
+                adminConsole.updateEvents();
                 adminConsole.getDump(userInput);
                 showOptions(userInput, adminConsole);
+                break;
+            case 3:
+                List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
+                if(importedEvents == null || importedEvents.isEmpty()) break;
+                for(Event e: importedEvents) adminConsole.setNewEvents(e);
                 break;
             default:
                 exit();
@@ -142,14 +153,31 @@ public class AdminConsole {
         }
     }
 
+
+
     /**
      * Genereate a json String with the event List
      * @return json string with event list
      */
     public String eventsToJson() {
-        updateEvents();
         JSONArray jsonArray = new JSONArray(events);
         return jsonArray.toString();
+    }
+
+
+    /**
+     * Genereate a json String with the event List
+     * @return json string with event list
+     */
+    public List<String> exportListOfEvents() throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<String> eventsAsJson = new ArrayList<>();
+
+        for(Event e : events){
+            String s = mapper.writeValueAsString(e);
+            eventsAsJson.add(s);
+        }
+        return eventsAsJson;
     }
 
     /**
@@ -194,6 +222,135 @@ public class AdminConsole {
                     exit();
                     break;
             }
+        }
+    }
+
+    /**
+     * Method to accept a filepath from a user to import JSON data
+     */
+    public List<Event> readFromFile(Scanner inputScanner) {
+        System.out.println("Enter the filepath containing" +
+                " the JSON for the event you would like to add: ");
+        Scanner fileScan = inputScanner;
+        try {
+            File file = new File(fileScan.nextLine());
+            Scanner textScan = new Scanner(file);
+            return importWithJson(textScan);
+        }catch (FileNotFoundException f){
+            System.out.println("Unable to locate the requested file. ");
+            return null;
+        }catch (NoSuchElementException e){
+            System.out.println("Unable to locate the requested file (empty filepath). ");
+            return null;
+        }
+    }
+
+    /**
+     * Imports JSON Event data
+     * @param textInput scanner containing the JSON event data
+     */
+    public List<Event> importWithJson(Scanner textInput){
+        List<Event> events = new ArrayList<>();
+        String completeJson = "";
+        while(textInput.hasNext()) {
+            completeJson += textInput.nextLine();
+        }
+        JSONArray jsonArray = null;
+        try {
+            jsonArray = new JSONArray(completeJson);
+        } catch (Exception e) {
+            System.out.println("Unable to import JSON events. ");
+            return new ArrayList<>();
+        }
+
+        for (Object object : jsonArray) {
+            try {
+                JSONObject tmpEvent = (JSONObject) object;
+                ObjectMapper objectMapper = new ObjectMapper();
+                SimpleDateFormat creationDateFormat = new
+                        SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+                objectMapper.setDateFormat(creationDateFormat);
+                try {
+                    Event event = objectMapper.readValue(tmpEvent.toString(), Event.class);
+                    events.add(event);
+                } catch (JsonProcessingException | JSONException e) {
+                    System.out.println("Unable to import event. {Error with JSON formatting.} ");
+                }
+            } catch (Exception e) {
+                System.out.println("Error importing event. ");
+            }
+        }
+        return events;
+    }
+
+    /**
+     * Method to add imported events to the server
+     * @param event the event to be added/validated
+     */
+    public void setNewEvents(Event event){
+        serverUtils.setEvents(event, password);
+    }
+
+    /**
+     * Prints out all events in alphabetical order
+     */
+    public void orderByTitleAsc(){
+        Collections.sort(events, Comparator.comparing(Event::getTitle));
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * prints out all events in reverse alphabetical order
+     */
+    public void orderByTitleDesc(){
+        Collections.sort(events, Comparator.comparing(Event::getTitle));
+        Collections.reverse(events);
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * Prints out all events by creation date, newest to oldest
+     */
+    public void orderByCreationRecent(){
+        events.sort(Comparator.comparing(Event::getCreationDate));
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * Prints out all events by creation date, oldest to newest
+     */
+    public void orderByCreationOld(){
+        events.sort(Comparator.comparing(Event::getCreationDate));
+        Collections.reverse(events);
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * prints out all events by last activity date, newest to oldest
+     */
+    public void orderByActivityRecent(){
+        events.sort(Comparator.comparing(Event::getLastActivity));
+        for (Event event : events) {
+            System.out.println(event.toString());
+        }
+    }
+
+    /**
+     * Prints out all events by activity date oldest to newest
+     */
+    public void orderByActivityOld(){
+        events.sort(Comparator.comparing(Event::getLastActivity));
+        Collections.reverse(events);
+        for (Event event : events) {
+            System.out.println(event.toString());
         }
     }
 

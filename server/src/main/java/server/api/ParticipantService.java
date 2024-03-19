@@ -101,10 +101,6 @@ public class ParticipantService {
      * Put method that validates the values in the participant to be changed
      * @param eventId id of the event the participant is in
      * @param id id of the participant to be retrieved
-     * @param name the new name to replace the participants name with
-     * @param email the new email to replace the participants email with
-     * @param iban the new iban to replace the participants iban with
-     * @param bic the new bic to replace the participants bic with
      * @return participant if successfully added to event
      */
     @Transactional
@@ -188,4 +184,23 @@ public class ParticipantService {
         return email != null && basic.matcher(email).matches();
 
     }
+
+
+
+    /**
+     * Method to add a participant from a JSOn import
+     * @param participant the participant to be imported
+     * @return participant if added successfully
+     */
+    public ResponseEntity<Participant> addPriorParticipant(Participant participant) {
+        if(participant==null || !validateBic(participant.getBic())
+                || !validateIban(participant.getIban()) ||!validateEmail(participant.getEmail())
+                || !validateName(participant.getName())){
+            return ResponseEntity.badRequest().build();
+        }else{
+            participantRepository.save(participant);
+            return  ResponseEntity.ok(participant);
+        }
+    }
+
 }
