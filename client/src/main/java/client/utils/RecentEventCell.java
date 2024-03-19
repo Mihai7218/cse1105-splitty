@@ -26,6 +26,7 @@ public class RecentEventCell extends ListCell<Event> {
         open = new Button();
         open.setText("↗");
         open.setOnAction(param -> {
+            mainCtrl.getStartScreenCtrl().addRecentEvent(this.getItem());
             mainCtrl.setEvent(this.getItem());
             mainCtrl.showOverview();
         });
