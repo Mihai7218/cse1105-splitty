@@ -58,7 +58,7 @@ public class EventService {
     /**
      * A post method to add and event to the repository
      * @param event an event in the requestBody to add to the repository
-     * @return the event if succesfully made
+     * @return the event if successfully made
      */
     public ResponseEntity<Event> addEvent(Event event) {
         if (event == null || event.getTitle() == null || Objects.equals(event.getTitle(), "")) {
@@ -138,4 +138,44 @@ public class EventService {
         eventRepository.deleteAllById(Collections.singleton(inviteCode));
         return ResponseEntity.ok(saved);
     }
+
+
+    /**
+     * Method to check if the imported event is valid
+     * @param event event being imported
+     * @return event if it is valid or error code if not
+     */
+    public ResponseEntity<Event> validateEvent(Event event) {
+        if(event == null || event.getInviteCode()<0
+                || Objects.equals(event.getTitle(), "")
+                || event.getTitle() == null
+                || eventRepository.existsById((long)event.getInviteCode())){
+            return ResponseEntity.badRequest().build();
+        }
+        List<Event> allEvents = eventRepository.findAll();
+        for(Event e: allEvents){
+            if(e.equals(event)){
+                return ResponseEntity.badRequest().build();
+            }
+        }
+        List<Tag> tags = event.getTagsList();
+        if(!tags.contains(new Tag("food","#93c47d"))
+                || !tags.contains(new Tag("entrance fees", "#4a86e8"))
+                || !tags.contains(new Tag("travel", "#e06666"))){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(event);
+    }
+
+    /**
+     * Method to add an event to the repository from a JSON import
+     * @param event event to be added to the eventRepository
+     * @return the event in a ResponseEntity
+     */
+    public ResponseEntity<Event> addCreatedEvent(Event event) {
+        return ResponseEntity.ok(eventRepository.save(event));
+    }
+
+
+
 }

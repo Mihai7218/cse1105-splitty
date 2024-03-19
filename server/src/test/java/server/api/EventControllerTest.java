@@ -76,7 +76,7 @@ public class EventControllerTest {
     public void putTest() {
         var actual = sut.add(new Event("dwa",null,null));
         var actual2 = sut.change(0,new Event("das",null,null));
-        var actual3 = sut.get(1);
+        var actual3 = sut.get(0);
         assertEquals("das", actual3.getBody().getTitle());
     }
 

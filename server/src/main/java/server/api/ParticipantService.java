@@ -101,33 +101,24 @@ public class ParticipantService {
      * Put method that validates the values in the participant to be changed
      * @param eventId id of the event the participant is in
      * @param id id of the participant to be retrieved
-     * @param name the new name to replace the participants name with
-     * @param email the new email to replace the participants email with
-     * @param iban the new iban to replace the participants iban with
-     * @param bic the new bic to replace the participants bic with
      * @return participant if successfully added to event
      */
     @Transactional
-    public ResponseEntity<Participant> updateParticipant(long eventId, long id, String name,
-                                                         String email, String iban, String bic) {
+    public ResponseEntity<Participant> updateParticipant(long eventId,
+                                                         long id, Participant participant) {
         if(!getParticipant(eventId, id).getStatusCode().equals(OK)
             || getParticipant(eventId,id).getBody() == null){
             return getParticipant(eventId,id);
         }
-        Participant participant = getParticipant(eventId,id).getBody();
-        if(validateName(name)){
-            participant.setName(name);
+        Participant old = getParticipant(eventId,id).getBody();
+        if(!validateName(participant.getName()) || !validateEmail(participant.getEmail())
+                || !validateBic(participant.getBic()) || !validateIban(participant.getIban())){
+            return ResponseEntity.badRequest().build();
         }
-        if(validateEmail(email)){
-            participant.setEmail(email);
-        }
-        if(validateIban(iban)){
-            participant.setIban(iban);
-        }
-        if(validateBic(bic)){
-            participant.setBic(bic);
-        }
-        participantRepository.save(participant);
+        old.setName(participant.getName());
+        old.setBic(participant.getBic());
+        old.setIban(participant.getIban());
+        old.setEmail(participant.getEmail());
         return ResponseEntity.ok(participant);
     }
 
@@ -193,4 +184,23 @@ public class ParticipantService {
         return email != null && basic.matcher(email).matches();
 
     }
+
+
+
+    /**
+     * Method to add a participant from a JSOn import
+     * @param participant the participant to be imported
+     * @return participant if added successfully
+     */
+    public ResponseEntity<Participant> addPriorParticipant(Participant participant) {
+        if(participant==null || !validateBic(participant.getBic())
+                || !validateIban(participant.getIban()) ||!validateEmail(participant.getEmail())
+                || !validateName(participant.getName())){
+            return ResponseEntity.badRequest().build();
+        }else{
+            participantRepository.save(participant);
+            return  ResponseEntity.ok(participant);
+        }
+    }
+
 }

@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="572.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
+<AnchorPane prefHeight="572.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
     <children>
         <ChoiceBox fx:id="payee" layoutX="198.0" layoutY="81.0" prefWidth="150.0" />
         <Label fx:id="mainLabel" alignment="TOP_CENTER" layoutY="14.0" prefHeight="41.0" prefWidth="328.0" text="${controller.languageManager.addExpense.mainLabel}" textAlignment="CENTER">
@@ -58,7 +58,7 @@
         </Label>
         <ComboBox fx:id="expenseType" layoutX="222.0" layoutY="459.0" prefWidth="150.0" />
         <Pane layoutX="69.0" layoutY="376.0" prefHeight="81.0" prefWidth="126.0" />
-        <Button layoutX="390.0" layoutY="508.0" mnemonicParsing="false" text="${controller.languageManager.addExpense.abortButton}">
+        <Button layoutX="390.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
             <font>
                 <Font size="19.0" />
             </font>
@@ -76,4 +76,3 @@
         </Label>
     </children>
 </AnchorPane>
-

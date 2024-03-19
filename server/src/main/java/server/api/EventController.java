@@ -7,6 +7,9 @@ import commons.Event;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
+
+
 
 @RestController
 @RequestMapping("/api/events")
@@ -38,9 +41,13 @@ public class EventController {
      * Get methode to get all the events on the server
      * @return returns a list of all events on the server
      */
-    @GetMapping(path = { "/{inviteCode}" })
-    public ResponseEntity<List<Event>> get() {
-        return eventService.getAllEvents();
+    @GetMapping(path = { "/admin/{password}" })
+    public ResponseEntity<List<Event>> get(@PathVariable("password") String password) {
+        if (PasswordService.getPassword().equals(password)) {
+            return eventService.getAllEvents();
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
@@ -74,6 +81,29 @@ public class EventController {
     public ResponseEntity<Event> delete(@PathVariable("inviteCode") long inviteCode) {
         return eventService.deleteEvent(inviteCode);
     }
+
+    /**
+     * Post method to allow an admin to upload new events
+     * @param password string password
+     * @param event the list of events to be added
+     * @return the list of events if succesfully added
+     */
+    @PostMapping(path = {"/admin/{password}"})
+    public ResponseEntity<Event> addJsonImport(@PathVariable("password") String password,
+                                               @RequestBody  Event event){
+        if (PasswordService.getPassword().equals(password)) {
+            if(eventService.validateEvent(event).getStatusCode().equals(OK)){
+                eventService.addCreatedEvent(event);
+                return ResponseEntity.ok(event);
+            }else{
+                return ResponseEntity.badRequest().build();
+            }
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
 
 
 

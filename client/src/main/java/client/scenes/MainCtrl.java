@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -41,6 +42,10 @@ public class MainCtrl {
     private Scene participant;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
+    private AddExpenseCtrl addExpenseCtrl;
+    private Scene addExpense;
+
+    private Event event;
 
     /**
      * Constructor for the MainCtrl
@@ -54,16 +59,18 @@ public class MainCtrl {
     /**
      * Initialize the main controller with the primary stage,
      *
-     * @param primaryStage           primary stage of the controller.
-     * @param overview               overview controller and scene
-     * @param add                    add quote controller and scene
-     * @param startScreen            start screen controller and scene
-     * @param participant
+     * @param primaryStage primary stage of the controller.
+     * @param qouteoverview qoute overview controller and scene
+     * @param add          add quote controller and scene
+     * @param startScreen  start screen controller and scene
+     * @param participant participant controller and scene
+     * @param overview     overview controller and scene
+     * @param addExpense addExpense controller and scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
                            Parent> startScreen, Pair<ParticipantCtrl, Parent> participant
-            , Pair<OverviewCtrl, Parent> overview) {
+            , Pair<OverviewCtrl, Parent> overview, Pair<AddExpenseCtrl, Parent> addExpense) {
         this.primaryStage = primaryStage;
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
@@ -80,17 +87,28 @@ public class MainCtrl {
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
+        this.addExpenseCtrl = addExpense.getKey();
+        this.addExpense = new Scene(addExpense.getValue());
+
         showStartMenu();
         primaryStage.show();
+    }
+
+    /**
+     * shows AddExpense scene
+     */
+    public void showAddExpense(){
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.setScene(addExpense);
     }
 
     /**
      * Shows the overview scene.
      */
     public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(overview);
-        overviewCtrl.refresh();
+        if (overviewCtrl != null) overviewCtrl.refresh();
     }
 
     /**
@@ -107,16 +125,15 @@ public class MainCtrl {
     public void showAdd() {
         primaryStage.setTitle("Quotes: Adding Quote");
         primaryStage.setScene(add);
-        add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+        if (add != null) add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
     }
 
     /**
      * Shows the add participant scene.
      */
     public void showParticipant() {
-        primaryStage.setTitle("Add Participant");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(participant);
-        add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**
@@ -133,7 +150,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - overview controller.
      */
-    QuoteOverviewCtrl getOverviewCtrl() {
+    QuoteOverviewCtrl getQuoteOverviewCtrl() {
         return qouteoverviewCtrl;
     }
 
@@ -142,8 +159,26 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - overview scene.
      */
-    Scene getOverview() {
+    Scene getQuoteOverview() {
         return qouteoverview;
+    }
+
+    /**
+     * Getter for the overview controller.
+     * Package-access getter for testing purposes.
+     * @return - overview controller.
+     */
+    OverviewCtrl getOverviewCtrl() {
+        return overviewCtrl;
+    }
+
+    /**
+     * Getter for the overview scene.
+     * Package-access getter for testing purposes.
+     * @return - overview scene.
+     */
+    Scene getOverview() {
+        return overview;
     }
 
     /**
@@ -180,5 +215,46 @@ public class MainCtrl {
      */
     Scene getStartScreen() {
         return startScreen;
+    }
+
+    /**
+     * Getter for the add participant controller.
+     * Package-access getter for testing purposes.
+     * @return - add participant controller.
+     */
+    ParticipantCtrl getParticipantCtrl() {
+        return participantCtrl;
+    }
+
+    /**
+     * Getter for the add participant scene.
+     * Package-access getter for testing purposes.
+     * @return - add participant scene.
+     */
+    Scene getParticipant() {
+        return participant;
+    }
+
+    /**
+     * Setter for the primary stage.
+     * @param primaryStage - the primary stage
+     */
+    void setPrimaryStage(Stage primaryStage) {
+        this.primaryStage = primaryStage;
+    }
+
+    /**
+     * Getter for the event.
+     */
+    public Event getEvent() {
+        return event;
+    }
+
+    /**
+     * Setter for the event.
+     * @param event - the event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }
