@@ -5,6 +5,8 @@ import commons.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.util.List;
 
 //TODO: add endpoints for specific expense within an event if necessary
@@ -74,20 +76,6 @@ public class TagController {
         return tagService.changeTag(inviteCode, tagId, tag);
     }
 
-//    /**
-//     * Changes the colorcode of a tag
-//     * @param inviteCode the invitecode of the event with which the tag is associated
-//     * @param tagId the id of the tag itself
-//     * @param newColor the new colorcode of the tag
-//     * @return whether the color of the tag was updated
-//     */
-//    @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
-//    public ResponseEntity<Tag> changeColor(@PathVariable("inviteCode") long inviteCode,
-//                                           @PathVariable("tagId") long tagId,
-//                                           @RequestBody String newColor){
-//        return tagService.changeColor(inviteCode, tagId, newColor);
-//    }
-
     /***
      * Deletes a tag from an event/the repo
      * @param inviteCode the event to delete from
@@ -99,5 +87,33 @@ public class TagController {
                                                   @PathVariable("tagId") long tagId){
         return tagService.deleteTagFromEvent(inviteCode, tagId);
     }
+
+
+
+    /**
+     * Post method to allow an admin to upload new tags
+     * @param password string password
+     * @param tag the list of tags to be added
+     * @return the list of tags if succesfully added
+     */
+    @PostMapping(path = {"/admin/tag/{password}"})
+    public ResponseEntity <Tag> addJsonImport(@PathVariable("password") String password,
+                                              @RequestBody Tag tag){
+        if (PasswordService.getPassword().equals(password)) {
+
+            if(tagService.validateTag(tag).getStatusCode().equals(OK)){
+                tagService.addCreatedTag(tag);
+                return ResponseEntity.ok(tag);
+
+            }else{
+                return ResponseEntity.badRequest().build();
+
+            }
+
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 
 }
