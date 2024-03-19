@@ -222,12 +222,6 @@ public class ExpenseService {
                 || expense.getPayee() == null){
             return ResponseEntity.badRequest().build();
         }
-        List<Expense> allExpenses = expenseRepo.findAll();
-        for(Expense e: allExpenses){
-            if(e.equals(expense)){
-                return ResponseEntity.badRequest().build();
-            }
-        }
         return ResponseEntity.ok(expense);
     }
 

@@ -178,12 +178,6 @@ public class ParticipantPaymentService {
                 || p.getPaymentAmount() < 0){
             return ResponseEntity.badRequest().build();
         }
-        List<ParticipantPayment> allParticipantPayments = participantPaymentRepository.findAll();
-        for(ParticipantPayment pp: allParticipantPayments){
-            if(pp.equals(p)){
-                return ResponseEntity.badRequest().build();
-            }
-        }
         return ResponseEntity.ok(p);
     }
 
