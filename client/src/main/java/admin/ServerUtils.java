@@ -130,6 +130,17 @@ public class ServerUtils {
                 .get(Event.class);
     }
 
+    /**
+     * @param i the invite code of the event to be deleted
+     *          TODO: check for correctness
+     */
+    public Event deleteEvent(int i) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + i)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(Event.class);
+    }
 
     /**
      * Method to add events from a JSON import file

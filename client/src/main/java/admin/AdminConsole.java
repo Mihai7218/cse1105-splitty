@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
 import org.json.JSONArray;
 import org.json.JSONException;
-import server.api.EventController;
 import org.json.JSONObject;
 
 import java.io.File;
@@ -24,7 +23,6 @@ public class AdminConsole {
     private ServerUtils utils;
 
     private String password;
-    private static EventController ctrl;
 
     /**
      * setter for the event variable
@@ -119,7 +117,7 @@ public class AdminConsole {
                 for(Event e: importedEvents) adminConsole.setNewEvents(e);
                 break;
             case 4:
-                deleteEventMenu(userInput, adminConsole);
+                adminConsole.deleteEventMenu(userInput, adminConsole);
                 break;
             default:
                 exit();
@@ -200,10 +198,11 @@ public class AdminConsole {
      * @param adminConsole the currently running adminConsole
      *                     TODO: fix this implementation
      */
-    public static void deleteEventMenu(Scanner userInput, AdminConsole adminConsole){
+    public void deleteEventMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("Please enter the inviteCode of the " +
                 "Event you would like to delete from the database:");
         int invCode = userInput.nextInt();
+        Event event = utils.deleteEvent(invCode);
     }
     /**
      * Methode to update/download the event list from the server
