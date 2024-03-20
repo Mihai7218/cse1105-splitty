@@ -2,15 +2,17 @@ package admin;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import commons.Event;
 import org.json.JSONArray;
 import org.json.JSONException;
 import server.api.EventController;
+import org.json.JSONObject;
 
-
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -107,13 +109,14 @@ public class AdminConsole {
                 printerMenu(userInput, adminConsole);
                 break;
             case 2:
+                adminConsole.updateEvents();
                 adminConsole.getDump(userInput);
                 showOptions(userInput, adminConsole);
                 break;
             case 3:
-                Event event = adminConsole.importWithJson(new Scanner(System.in));
-                if(event == null) break;
-                adminConsole.setNewEvents(event);
+                List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
+                if(importedEvents == null || importedEvents.isEmpty()) break;
+                for(Event e: importedEvents) adminConsole.setNewEvents(e);
                 break;
             case 4:
                 deleteEventMenu(userInput, adminConsole);
@@ -201,7 +204,6 @@ public class AdminConsole {
         System.out.println("Please enter the inviteCode of the " +
                 "Event you would like to delete from the database:");
         int invCode = userInput.nextInt();
-        ctrl.delete(invCode);
     }
     /**
      * Methode to update/download the event list from the server
@@ -240,7 +242,6 @@ public class AdminConsole {
      * @return json string with event list
      */
     public String eventsToJson() {
-        updateEvents();
         JSONArray jsonArray = new JSONArray(events);
         return jsonArray.toString();
     }
@@ -250,26 +251,15 @@ public class AdminConsole {
      * Genereate a json String with the event List
      * @return json string with event list
      */
-    public List<String> eventToJson() throws JsonProcessingException {
+    public List<String> exportListOfEvents() throws JsonProcessingException {
         ObjectMapper mapper = new ObjectMapper();
         List<String> eventsAsJson = new ArrayList<>();
 
-//        StringBuilder output = new StringBuilder();
-//        output.append("[");
-//        int counter = 0;
         for(Event e : events){
             String s = mapper.writeValueAsString(e);
             eventsAsJson.add(s);
-//            Event temp = e;
-//            JSONObject jo = new JSONObject(temp);
-//            output.append(jo.toString());
-//            if(!(counter == events.size() - 1))
-//                output.append(",");
-//            counter++;
         }
         return eventsAsJson;
-//        output.append("]");
-//        return output.toString();
     }
 
     /**
@@ -316,33 +306,62 @@ public class AdminConsole {
         }
     }
 
+    /**
+     * Method to accept a filepath from a user to import JSON data
+     */
+    public List<Event> readFromFile(Scanner inputScanner) {
+        System.out.println("Enter the filepath containing" +
+                " the JSON for the event you would like to add: ");
+        Scanner fileScan = inputScanner;
+        try {
+            File file = new File(fileScan.nextLine());
+            Scanner textScan = new Scanner(file);
+            return importWithJson(textScan);
+        }catch (FileNotFoundException f){
+            System.out.println("Unable to locate the requested file. ");
+            return null;
+        }catch (NoSuchElementException e){
+            System.out.println("Unable to locate the requested file (empty filepath). ");
+            return null;
+        }
+    }
 
     /**
      * Imports JSON Event data
-     * @param userInput scanner containing the JSON event data
+     * @param textInput scanner containing the JSON event data
      */
-    public Event importWithJson(Scanner userInput){
-        System.out.println("Enter your json text for the event you would like to add: ");
-        String json;
-        try{
-            json = userInput.nextLine();
-        } catch ( NoSuchElementException e ){
-            System.out.println("Unable to import empty event. ");
-            return null;
+    public List<Event> importWithJson(Scanner textInput){
+        List<Event> events = new ArrayList<>();
+        String completeJson = "";
+        while(textInput.hasNext()) {
+            completeJson += textInput.nextLine();
         }
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setDateFormat(new StdDateFormat());
-        if(json.isEmpty()){
-            System.out.println("Unable to import empty event. ");
-            return null;
-        }
+        JSONArray jsonArray = null;
         try {
-            Event event = objectMapper.readValue(json, Event.class);
-            return event;
-        } catch (JsonProcessingException | JSONException e) {
-            System.out.println("Unable to import event. ");
-            return null;
+            jsonArray = new JSONArray(completeJson);
+        } catch (Exception e) {
+            System.out.println("Unable to import JSON events. ");
+            return new ArrayList<>();
         }
+
+        for (Object object : jsonArray) {
+            try {
+                JSONObject tmpEvent = (JSONObject) object;
+                ObjectMapper objectMapper = new ObjectMapper();
+                SimpleDateFormat creationDateFormat = new
+                        SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+                objectMapper.setDateFormat(creationDateFormat);
+                try {
+                    Event event = objectMapper.readValue(tmpEvent.toString(), Event.class);
+                    events.add(event);
+                } catch (JsonProcessingException | JSONException e) {
+                    System.out.println("Unable to import event. {Error with JSON formatting.} ");
+                }
+            } catch (Exception e) {
+                System.out.println("Error importing event. ");
+            }
+        }
+        return events;
     }
 
     /**

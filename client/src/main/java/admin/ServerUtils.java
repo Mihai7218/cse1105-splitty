@@ -162,7 +162,7 @@ public class ServerUtils {
     public void setParticipants(List<Participant> participants, String password){
         for(Participant p: participants){
             ClientBuilder.newClient(new ClientConfig())
-                    .target(server).path("api/events/admin/" + password )
+                    .target(server).path("api/events/admin/participants/" + password )
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(p, APPLICATION_JSON), Participant.class);
@@ -193,7 +193,7 @@ public class ServerUtils {
     public void setParticipantPayment(List<ParticipantPayment> participantPayment, String password){
         for(ParticipantPayment p: participantPayment){
             ClientBuilder.newClient(new ClientConfig())
-                    .target(server).path("api/events/admin/" + password )
+                    .target(server).path("api/events/admin/participantPayment/" + password )
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(p, APPLICATION_JSON), ParticipantPayment.class);
@@ -208,7 +208,7 @@ public class ServerUtils {
     public void setTags(List<Tag> tags, String password){
         for(Tag t: tags){
             ClientBuilder.newClient(new ClientConfig())
-                    .target(server).path("api/events/admin/" + password)
+                    .target(server).path("api/events/admin/tag/" + password)
                     .request(APPLICATION_JSON)
                     .accept(APPLICATION_JSON)
                     .post(Entity.entity(t, APPLICATION_JSON), Tag.class);

@@ -8,16 +8,16 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="267.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantCtrl">
    <children>
-      <Button layoutX="420.0" layoutY="227.0" mnemonicParsing="false" onAction="#ok" text="Ok" />
-      <Button layoutX="348.0" layoutY="227.0" mnemonicParsing="false" onAction="#abort" text="Cancel" />
-      <TextField fx:id="firstName" layoutX="109.0" layoutY="76.0" prefHeight="26.0" prefWidth="346.0" />
-      <TextField fx:id="lastName" layoutX="109.0" layoutY="150.0" prefHeight="26.0" prefWidth="346.0" />
-      <TextField fx:id="quote" layoutX="109.0" layoutY="113.0" prefHeight="26.0" prefWidth="345.0" />
+      <Button defaultButton="true" layoutX="420.0" layoutY="227.0" mnemonicParsing="false" onAction="#ok" text="Ok" />
+      <Button cancelButton="true" layoutX="348.0" layoutY="227.0" mnemonicParsing="false" onAction="#abort" text="Cancel" />
+      <TextField fx:id="name" layoutX="109.0" layoutY="76.0" prefHeight="26.0" prefWidth="346.0" />
+      <TextField fx:id="iban" layoutX="109.0" layoutY="150.0" prefHeight="26.0" prefWidth="346.0" />
+      <TextField fx:id="email" layoutX="109.0" layoutY="113.0" prefHeight="26.0" prefWidth="345.0" />
       <Label layoutX="28.0" layoutY="154.0" text="IBAN" />
       <Label layoutX="28.0" layoutY="81.0" text="Name" />
       <Label layoutX="28.0" layoutY="118.0" text="Email" />
       <Label layoutX="28.0" layoutY="191.0" text="BIC" />
-      <TextField fx:id="lastName1" layoutX="109.0" layoutY="187.0" prefHeight="26.0" prefWidth="346.0" />
+      <TextField fx:id="bic" layoutX="109.0" layoutY="187.0" prefHeight="26.0" prefWidth="346.0" />
       <Label layoutX="28.0" layoutY="21.0" text="Add/Edit Participant">
          <font>
             <Font size="24.0" />

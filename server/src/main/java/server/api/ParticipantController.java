@@ -99,7 +99,7 @@ public class ParticipantController {
      * @param participant the participant to add
      * @return participant if added successfully
      */
-    @PostMapping(path = {"/admin/{password}"})
+    @PostMapping(path = {"/admin/participants/{password}"})
     public ResponseEntity<Participant> addPriorParticipant(
             @PathVariable("password") String password,
             @RequestBody Participant participant){

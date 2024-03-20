@@ -113,7 +113,7 @@ public class ParticipantPaymentController {
      * @param participantPayments the list of participantPayments to be added
      * @return the list of participantPayments if succesfully added
      */
-    @PostMapping(path = {"/admin/{password}"})
+    @PostMapping(path = {"/admin/participantPayment/{password}"})
     public ResponseEntity<ParticipantPayment> addJsonImport(
             @PathVariable("password") String password,
             @RequestBody ParticipantPayment participantPayments){
