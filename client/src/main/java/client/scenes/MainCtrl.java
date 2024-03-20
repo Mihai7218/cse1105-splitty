@@ -98,7 +98,7 @@ public class MainCtrl {
      * shows AddExpense scene
      */
     public void showAddExpense(){
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("addExpense.windowTitle"));
         primaryStage.setScene(addExpense);
     }
 
