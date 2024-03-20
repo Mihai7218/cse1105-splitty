@@ -71,7 +71,8 @@ public class OverviewCtrl implements Initializable {
      * @param mainCtrl MainCtrl object
      */
     @Inject
-    public OverviewCtrl(LanguageManager languageManager, ConfigInterface config, ServerUtils server, MainCtrl mainCtrl) {
+    public OverviewCtrl(LanguageManager languageManager, ConfigInterface config,
+                        ServerUtils server, MainCtrl mainCtrl) {
         this.languageManager = languageManager;
         this.config = config;
         this.mainCtrl = mainCtrl;
@@ -209,6 +210,12 @@ public class OverviewCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+    /**
+     * Initialize method for the Overview scene.
+     * Sets the language currently in the config file as the selected one.
+     * @param url - URL object
+     * @param resourceBundle - ResourceBundle object
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String language = config.getProperty("language");
