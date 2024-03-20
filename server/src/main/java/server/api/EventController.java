@@ -103,6 +103,17 @@ public class EventController {
         }
     }
 
+    /**
+     * Endpoint to access and calculated the debts for a certain participant
+     * @param eventId id of the event the particpant is in
+     * @param participantId id of the participant
+     * @return amount that is owed if calculable
+     */
+    @GetMapping(path = {"/{invitecode}/debts/{participantId}"})
+    public ResponseEntity<Double> getDebts(@PathVariable("invitecode") Long eventId,
+                                           @PathVariable("participantId") Long participantId){
+        return eventService.getDebts(eventId, participantId);
+    }
 
 
 
