@@ -106,7 +106,7 @@ public class MainCtrl {
      * Shows the overview scene.
      */
     public void showOverview() {
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("overview.windowTitle"));
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
     }
