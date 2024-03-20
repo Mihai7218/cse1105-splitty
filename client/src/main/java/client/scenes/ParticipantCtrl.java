@@ -75,7 +75,8 @@ public class ParticipantCtrl {
                 || email.getText().isEmpty() || iban.getText().isEmpty()
                 || bic.getText().isEmpty()){
             var alert = new Alert(Alert.AlertType.WARNING);
-            alert.contentTextProperty().bind(languageManager.bind("addParticipant.createEventEmpty"));
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addParticipant.emptyFields"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
