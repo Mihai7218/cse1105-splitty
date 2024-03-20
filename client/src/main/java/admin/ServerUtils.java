@@ -215,6 +215,9 @@ public class ServerUtils {
         }
     }
 
+    /**
+     * @return the current server
+     */
     public String getServer() {
         return server;
     }
