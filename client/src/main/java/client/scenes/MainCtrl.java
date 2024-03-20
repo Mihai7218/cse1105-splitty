@@ -132,7 +132,7 @@ public class MainCtrl {
      * Shows the add participant scene.
      */
     public void showParticipant() {
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("addParticipant.windowTitle"));
         primaryStage.setScene(participant);
     }
 

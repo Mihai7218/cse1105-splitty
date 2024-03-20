@@ -20,6 +20,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Participant;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
@@ -48,6 +49,7 @@ public class ParticipantCtrl {
      * Constructs a new ParticipantCtrl object.
      * @param server ServerUtils object
      * @param mainCtrl MainCtrl object
+     * @param languageManager LanguageManager object
      */
     @Inject
     public ParticipantCtrl(ServerUtils server, MainCtrl mainCtrl, LanguageManager languageManager) {
@@ -73,7 +75,7 @@ public class ParticipantCtrl {
                 || email.getText().isEmpty() || iban.getText().isEmpty()
                 || bic.getText().isEmpty()){
             var alert = new Alert(Alert.AlertType.WARNING);
-            alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
+            alert.contentTextProperty().bind(languageManager.bind("addParticipant.createEventEmpty"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
@@ -119,5 +121,27 @@ public class ParticipantCtrl {
         }
     }
 
+    /**
+     * Getter for the language manager observable map.
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
 
+    /**
+     * Setter for the language manager observable map.
+     * @param languageManager - the language manager observable map.
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the language manager property.
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
+    }
 }
