@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageComboBox;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import jakarta.ws.rs.WebApplicationException;
@@ -25,7 +22,6 @@ public class StartScreenCtrl implements Initializable {
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
-    List<Event> recentEventsList = new ArrayList<>();
     @FXML
     private LanguageComboBox languages;
     @FXML
@@ -67,8 +63,24 @@ public class StartScreenCtrl implements Initializable {
         }
         alert.titleProperty().bind(languageManager.bind("commons.warning"));
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
+        recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
+        recentEvents.getItems().addAll(getRecentEventsFromConfig());
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
+    }
+
+    /**
+     * Method that returns a list containing the recent events from the config file.
+     * @return - the list of recent events.
+     */
+    private List<Event> getRecentEventsFromConfig() {
+        String eventString = config.getProperty("recentEvents");
+        if (eventString == null) return new ArrayList<>();
+        List<Event> events = new ArrayList<>();
+        for (String s : eventString.split(",")) {
+            events.add(serverUtils.getEvent(Integer.parseInt(s)));
+        }
+        return events;
     }
 
     /**
@@ -121,7 +133,8 @@ public class StartScreenCtrl implements Initializable {
      * @param event - the event to be added.
      */
     public void addRecentEvent(Event event) {
-        recentEventsList.addFirst(event);
+        recentEvents.getItems().remove(event);
+        recentEvents.getItems().addFirst(event);
         int limit;
         try {
             limit = Integer.parseInt(config.getProperty("recentEventsLimit"));
@@ -129,11 +142,33 @@ public class StartScreenCtrl implements Initializable {
             limit = 5;
             config.setProperty("recentEventsLimit", "5");
         }
-        while (recentEventsList.size() > limit) {
-            recentEventsList.removeLast();
+        while (recentEvents.getItems().size() > limit) {
+            recentEvents.getItems().removeLast();
+        }
+        recentEvents.refresh();
+        refreshConfig();
+    }
+
+    /**
+     * Method that removes an event from the list of recent events.
+     * @param event - the event to be removed.
+     */
+    public void removeRecentEvent(Event event) {
+        recentEvents.getItems().remove(event);
+        recentEvents.refresh();
+        refreshConfig();
+    }
+
+    /**
+     * Method that updates the config file to store the recentEvents
+     */
+    private void refreshConfig() {
+        if (recentEvents.getItems().isEmpty()) {
+            this.config.setProperty("recentEvents", "");
+            return;
         }
         StringBuilder sb = new StringBuilder();
-        recentEventsList.stream()
+        recentEvents.getItems().stream()
                 .map(x -> Integer.toString(x.getInviteCode()))
                 .forEach(x -> sb.append(x).append(","));
         sb.deleteCharAt(sb.length() - 1);
@@ -235,14 +270,6 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
-     * Getter for the list of recent events.
-     * @return - the list of recent events.
-     */
-    public List<Event> getRecentEventsList() {
-        return recentEventsList;
-    }
-
-    /**
      * Setter for the event invite text field.
      * @param eventInvite - the text field for the invite code.
      */
@@ -256,5 +283,21 @@ public class StartScreenCtrl implements Initializable {
      */
     public void setLanguages(LanguageComboBox languages) {
         this.languages = languages;
+    }
+
+    /**
+     * Method that gets the ListView of recent events.
+     * @return - the ListView of recent events.
+     */
+    public ListView<Event> getRecentEvents() {
+        return recentEvents;
+    }
+
+    /**
+     * Setter for the recent events ListView.
+     * @param list - the recent events ListView.
+     */
+    void setRecentEvents(ListView<Event> list) {
+        this.recentEvents = list;
     }
 }
