@@ -1,7 +1,9 @@
 package client.scenes;
 
+import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
+import commons.Tag;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -33,10 +35,13 @@ public class AddExpenseCtrlTest {
 
     MainCtrl mainCtrl;
     ServerUtils serverUtils;
+    ConfigInterface config;
+    LanguageManager languageManager;
+    Alert alert;
     AddExpenseCtrl sut;
     ChoiceBox<String> payee;
     ChoiceBox<String> currency;
-    ComboBox<String> expenseType;
+    ComboBox<Tag> expenseType;
     CheckBox everyone;
     CheckBox only;
     VBox namesContainer;
@@ -48,7 +53,10 @@ public class AddExpenseCtrlTest {
     ObservableList oc = FXCollections.observableArrayList();
     ObservableList ot = FXCollections.observableArrayList();
     ObservableList noc = FXCollections.observableArrayList();
-    LanguageManager languageManager;
+    ScrollPane scrollNames;
+    Button addTag;
+    TextField newTag;
+    Label instructions;
 
 
     @Start
@@ -56,7 +64,7 @@ public class AddExpenseCtrlTest {
         mainCtrl = mock(MainCtrl.class);
         serverUtils = mock(ServerUtils.class);
         languageManager = mock(LanguageManager.class);
-        sut = new AddExpenseCtrl(languageManager, serverUtils, mainCtrl);
+        sut = new AddExpenseCtrl(mainCtrl, config, languageManager, serverUtils, alert);
         payee = mock(ChoiceBox.class);
         currency = mock(ChoiceBox.class);
         expenseType = mock(ComboBox.class);
@@ -67,6 +75,10 @@ public class AddExpenseCtrlTest {
         title = mock(TextField.class);
         price = mock(TextField.class);
         date = mock(DatePicker.class);
+        scrollNames = mock(ScrollPane.class);
+        addTag = mock(Button.class);
+        newTag = mock(TextField.class);
+        instructions = mock(Label.class);
 
         sut.setPayee(payee);
         sut.setCurrency(currency);
@@ -78,6 +90,10 @@ public class AddExpenseCtrlTest {
         sut.setTitle(title);
         sut.setPrice(price);
         sut.setDate(date);
+        sut.setScrollNames(scrollNames);
+        sut.setAddTag(addTag);
+        sut.setNewTag(newTag);
+        sut.setInstructions(instructions);
 
         when(payee.getItems()).thenReturn(op);
         when(currency.getItems()).thenReturn(oc);
@@ -94,7 +110,7 @@ public class AddExpenseCtrlTest {
     @Test
     void initialize() {
         assertFalse(question.isVisible());
-        assertNotNull(sut.getNames());
+        assertNotNull(sut.getNamesContainer());
         assertNotNull(sut.getCurrencies());
         assertNotNull(sut.getTags());
         assertEquals(0, namesContainer.getChildren().size());

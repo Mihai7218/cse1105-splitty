@@ -6,15 +6,15 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="572.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
+<AnchorPane prefHeight="572.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
     <children>
-        <ChoiceBox fx:id="payee" layoutX="198.0" layoutY="81.0" prefWidth="150.0" />
+        <ChoiceBox fx:id="payee" layoutX="198.0" layoutY="81.0" onMouseClicked="#loadParticipants" prefWidth="150.0" />
         <Label fx:id="mainLabel" alignment="TOP_CENTER" layoutY="14.0" prefHeight="41.0" prefWidth="328.0" text="${controller.languageManager.addExpense.mainLabel}" textAlignment="CENTER">
             <font>
                 <Font size="27.0" />
@@ -51,13 +51,12 @@
         </Label>
         <CheckBox fx:id="everyone" layoutX="61.0" layoutY="318.0" mnemonicParsing="false" onAction="#chooseOne" text="${controller.languageManager.addExpense.equallyLabel}" />
         <CheckBox fx:id="only" layoutX="61.0" layoutY="350.0" mnemonicParsing="false" onAction="#chooseOne" text="${controller.languageManager.addExpense.subsetLabel}" />
-        <Label layoutX="60.0" layoutY="458.0" text="${controller.languageManager.addExpense.expenseType}">
+        <Label layoutX="60.0" layoutY="420.0" text="${controller.languageManager.addExpense.expenseType}">
             <font>
                 <Font size="19.0" />
             </font>
         </Label>
-        <ComboBox fx:id="expenseType" layoutX="222.0" layoutY="459.0" prefWidth="150.0" />
-        <Pane layoutX="69.0" layoutY="376.0" prefHeight="81.0" prefWidth="126.0" />
+        <ComboBox fx:id="expenseType" layoutX="218.0" layoutY="420.0" prefWidth="150.0" />
         <Button layoutX="390.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
             <font>
                 <Font size="19.0" />
@@ -68,11 +67,22 @@
                 <Font size="19.0" />
             </font>
         </Button>
-        <VBox fx:id="namesContainer" layoutX="287.0" layoutY="302.0" onMouseExited="#checkAllSelected" prefHeight="145.0" prefWidth="82.0" />
         <Label fx:id="question" layoutX="257.0" layoutY="363.0" prefHeight="26.0" prefWidth="328.0" text="${controller.languageManager.addExpense.selectAllMessage}">
             <font>
                 <Font size="16.0" />
             </font>
         </Label>
+      <ScrollPane fx:id="scrollNames" layoutX="378.0" layoutY="275.0" prefHeight="200.0" prefWidth="200.0">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+               <children>
+                    <VBox fx:id="namesContainer" layoutX="3.0" layoutY="-1.0" onMouseExited="#checkAllSelected" prefHeight="192.0" prefWidth="184.0" />
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+      <Button fx:id="addTag" layoutX="65.0" layoutY="460.0" mnemonicParsing="false" onAction="#addTag" text="${controller.languageManager.addExpense.addTag}" />
+      <TextField fx:id="newTag" layoutX="43.0" layoutY="510.0" />
+      <Label fx:id="instructions" layoutX="43.0" layoutY="548.0" text="${controller.languageManager.addExpense.addTagInstructions}" />
     </children>
 </AnchorPane>

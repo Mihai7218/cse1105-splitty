@@ -1,17 +1,16 @@
 package server.api;
 
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
+import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import server.database.EventRepository;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
+import static server.api.PasswordService.setPassword;
 
 public class ExpenseControllerTest {
     private ExpenseController ctrl;
@@ -47,6 +46,34 @@ public class ExpenseControllerTest {
         expenseRepo.save(expense1);
         expenseRepo.save(expense2);
         expenseRepo.save(expense3);
+
+        setPassword("password");
+    }
+
+    @Test
+    public void importExpense(){
+        EventRepository eventRepo = new TestEventRepository();
+
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+        event.getParticipantsList().add(p);
+        event.getParticipantsList().add(other);
+        event.getExpensesList().add(e);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event.setTagsList(List.of(t, one, two, three));
+        event.setInviteCode(5);
+        eventRepo.save(event);
+        assertEquals(OK, ctrl.addJsonImport(0,"password", e).getStatusCode());
     }
 
     /***

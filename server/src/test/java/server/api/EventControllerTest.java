@@ -15,31 +15,64 @@
  */
 package server.api;
 
-import commons.Event;
-import commons.Person;
-import commons.Quote;
-import commons.Tag;
+import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.database.EventRepository;
+import server.database.ParticipantRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.*;
+import static server.api.PasswordService.setPassword;
 
 public class EventControllerTest {
 
     private EventController sut;
+    private PasswordService ps;
 
     @BeforeEach
     public void setup() {
         TestEventRepository repo = new TestEventRepository();
         TestTagRepository tagRepo = new TestTagRepository();
         EventService ev = new EventService(repo, tagRepo);
+        ps=new PasswordService();
+        setPassword("password");
         sut = new EventController(ev);
+    }
+
+    @Test
+    public void calculateDebts(){
+        ParticipantRepository participantRepo = new TestParticipantRepository();
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+
+        event.getParticipantsList().add(p);
+        event.getParticipantsList().add(other);
+        event.getExpensesList().add(e);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event.setTagsList(List.of(t, one, two, three));
+        event.setInviteCode(5);
+        EventRepository eventRepository = new TestEventRepository();
+        TestTagRepository tagRepo = new TestTagRepository();
+        EventService temp = new EventService(eventRepository, tagRepo);
+        eventRepository.save(event);
+        participantRepo.save(p);
+        participantRepo.save(other);
+        assertEquals(OK, temp.getDebts(0L,0L).getStatusCode());
+        assertEquals(OK, temp.getDebts(0L,1L).getStatusCode());
     }
 
     @Test
@@ -98,4 +131,26 @@ public class EventControllerTest {
     }
 
 
+    @Test
+    public void importEvent(){
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+        event.getParticipantsList().add(p);
+        event.getParticipantsList().add(other);
+        event.getExpensesList().add(e);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event.setTagsList(List.of(t, one, two, three));
+        event.setInviteCode(5);
+        assertEquals(OK,sut.addJsonImport("password", event).getStatusCode());
+    }
 }
