@@ -232,4 +232,31 @@ public class ExpenseService {
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
         return ResponseEntity.ok(expense);
     }
+
+
+    /**
+     * Method to check if the imported expense is valid
+     * @param expense expense being imported
+     * @return expense if it is valid or error code if not
+     */
+    public ResponseEntity<Expense> validateExpense(Expense expense) {
+        if(expense == null || expense.getAmount()<0
+                || expense.getTitle() == null
+                || Objects.equals(expense.getTitle(), "")
+                || expense.getPayee() == null){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(expense);
+    }
+
+    /**
+     * Method to add an expense to the repository from a JSON import
+     * @param expense expense to be added to the expenseRepository
+     * @return the expense in a ResponseEntity
+     */
+    public ResponseEntity<Expense> addCreatedExpense(Expense expense) {
+        return ResponseEntity.ok(expenseRepo.save(expense));
+    }
+
+
 }

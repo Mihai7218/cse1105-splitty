@@ -7,6 +7,9 @@ import commons.Event;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
+
+
 
 @RestController
 @RequestMapping("/api/events")
@@ -78,6 +81,40 @@ public class EventController {
     public ResponseEntity<Event> delete(@PathVariable("inviteCode") long inviteCode) {
         return eventService.deleteEvent(inviteCode);
     }
+
+    /**
+     * Post method to allow an admin to upload new events
+     * @param password string password
+     * @param event the list of events to be added
+     * @return the list of events if succesfully added
+     */
+    @PostMapping(path = {"/admin/{password}"})
+    public ResponseEntity<Event> addJsonImport(@PathVariable("password") String password,
+                                               @RequestBody  Event event){
+        if (PasswordService.getPassword().equals(password)) {
+            if(eventService.validateEvent(event).getStatusCode().equals(OK)){
+                eventService.addCreatedEvent(event);
+                return ResponseEntity.ok(event);
+            }else{
+                return ResponseEntity.badRequest().build();
+            }
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    /**
+     * Endpoint to access and calculated the debts for a certain participant
+     * @param eventId id of the event the particpant is in
+     * @param participantId id of the participant
+     * @return amount that is owed if calculable
+     */
+    @GetMapping(path = {"/{invitecode}/debts/{participantId}"})
+    public ResponseEntity<Double> getDebts(@PathVariable("invitecode") Long eventId,
+                                           @PathVariable("participantId") Long participantId){
+        return eventService.getDebts(eventId, participantId);
+    }
+
 
 
 

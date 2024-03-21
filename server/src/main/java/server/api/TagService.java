@@ -103,10 +103,10 @@ public class TagService {
      *
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId      the id of the tag itself
-     * @param newName    the new name of the tag after change
+     * @param tag        the new tag which the old one should be changed to
      * @return whether the tagName was changed
      */
-    public ResponseEntity<Tag> changeName(long inviteCode, long tagId, String newName) {
+    public ResponseEntity<Tag> changeTag(long inviteCode, long tagId, Tag tag) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -114,7 +114,7 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
-        if (newName == null || Objects.equals(newName, "")) {
+        if (tag == null || Objects.equals(tag.getName(), "")) {
             return ResponseEntity.badRequest().build();
         }
         Event event = eventRepo.findById(inviteCode).get();
@@ -122,33 +122,7 @@ public class TagService {
         Timestamp timestamp2 = new Timestamp(date.getTime());
         event.setLastActivity(timestamp2);
         eventRepo.save(event);
-        Tag change = tagRepo.findById(tagId).get();
-        change.setName(newName);
-        tagRepo.save(change);
-        return ResponseEntity.ok(null);
-    }
-
-    /**
-     * Changes the colorcode of a tag
-     *
-     * @param inviteCode the inviteCode of the event with which the tag is associated
-     * @param tagId      the id of the tag itself
-     * @param newColor   the new colorCode of the tag
-     * @return whether the color of the tag was updated
-     */
-    public ResponseEntity<Tag> changeColor(long inviteCode, long tagId, String newColor) {
-        if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
-                eventRepo.findById(inviteCode).get().getExpensesList() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        if (tagId < 0 || !tagRepo.existsById(tagId)) {
-            return ResponseEntity.notFound().build();
-        }
-        if (newColor == null || Objects.equals(newColor, "")) {
-            return ResponseEntity.badRequest().build();
-        }
-        Tag change = tagRepo.findById(tagId).get();
-        change.setColor(newColor);
+        Tag change = tag;
         tagRepo.save(change);
         return ResponseEntity.ok(null);
     }
@@ -179,4 +153,32 @@ public class TagService {
         tagRepo.deleteAllById(Collections.singleton(tagId));
         return ResponseEntity.ok(null);
     }
+
+
+
+    /**
+     * Method to check if the imported tag is valid
+     * @param tag tag being imported
+     * @return tag if it is valid or error code if not
+     */
+    public ResponseEntity<Tag> validateTag(Tag tag) {
+        if(tag == null || tag.getName() == null
+                || tag.getColor() == null
+                || Objects.equals(tag.getName(), "")
+                || Objects.equals(tag.getColor(), "")){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(tag);
+    }
+
+    /**
+     * Method to add a tag to the repository from a JSON import
+     * @param tag tag to be added to the tagRepository
+     * @return the tag in a ResponseEntity
+     */
+    public ResponseEntity<Tag> addCreatedTag(Tag tag) {
+        return ResponseEntity.ok(tagRepo.save(tag));
+    }
+
+
 }

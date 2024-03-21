@@ -5,6 +5,8 @@ import commons.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
+
 import java.util.List;
 
 //TODO: add endpoints for specific expense within an event if necessary
@@ -64,17 +66,15 @@ public class TagController {
      * Changes the name of a tag
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId the id of the tag itself
-     * @param newName the new name of the tag after change
+     * @param tag the new tag to be changed to
      * @return whether the tagname was changed
      */
     @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
-    public ResponseEntity<Tag> changeName(@PathVariable("inviteCode") long inviteCode,
+    public ResponseEntity<Tag> changeTag(@PathVariable("inviteCode") long inviteCode,
                                           @PathVariable("tagId") long tagId,
-                                          @RequestBody String newName){
-        return tagService.changeName(inviteCode, tagId, newName);
+                                          @RequestBody Tag tag){
+        return tagService.changeTag(inviteCode, tagId, tag);
     }
-
-
 
     /***
      * Deletes a tag from an event/the repo
@@ -87,5 +87,33 @@ public class TagController {
                                                   @PathVariable("tagId") long tagId){
         return tagService.deleteTagFromEvent(inviteCode, tagId);
     }
+
+
+
+    /**
+     * Post method to allow an admin to upload new tags
+     * @param password string password
+     * @param tag the list of tags to be added
+     * @return the list of tags if succesfully added
+     */
+    @PostMapping(path = {"/admin/tag/{password}"})
+    public ResponseEntity <Tag> addJsonImport(@PathVariable("password") String password,
+                                              @RequestBody Tag tag){
+        if (PasswordService.getPassword().equals(password)) {
+
+            if(tagService.validateTag(tag).getStatusCode().equals(OK)){
+                tagService.addCreatedTag(tag);
+                return ResponseEntity.ok(tag);
+
+            }else{
+                return ResponseEntity.badRequest().build();
+
+            }
+
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 
 }

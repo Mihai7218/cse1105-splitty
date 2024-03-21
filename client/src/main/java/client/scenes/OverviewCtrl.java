@@ -18,23 +18,37 @@ package client.scenes;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Participant;
 import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 
-import java.util.Date;
+import java.util.List;
 
-public class OverviewCtrl {
+public class OverviewCtrl{
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
 
-    private Event event;
+    @FXML
+    private Label title;
+    @FXML
+    private ListView participants;
 
     @FXML
-    private TextField title;
+    private ListView all;
+
     @FXML
-    private TextArea participants;
+    private ChoiceBox<String> expenseparticipants;
+
+    @FXML
+    private Button addparticipant;
+
+    @FXML
+    private Button editparticipant;
+
 
     /**
      * Constructs a new OverviewCtrl object.
@@ -45,21 +59,46 @@ public class OverviewCtrl {
     public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-        this.event = new Event("", new Date(),new Date());
     }
+
+    /**
+     * Refreshes all shown items in the overview.
+     */
+    public void refresh() {
+        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
+        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
+        Event event = mainCtrl.getEvent();
+        clearFields();
+        if(event != null){
+            title.setText(event.getTitle());
+            List<String> names = event.getParticipantsList().stream()
+                    .map(Participant::getName).toList();
+            participants.getItems().addAll(names);
+            expenseparticipants.getItems().addAll(names);
+        }
+    }
+
+
 
     /**
      * Opens the addparticipant scene to be able to add participants to the event.
      */
     public void addParticipant(){
-        //Should show the add participant scene
+        mainCtrl.showParticipant();
     }
 
     /**
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense(){
-        //Should show the add Expense scene
+        mainCtrl.showAddExpense();
+    }
+
+    /**
+     * Goes back to the startMenu.
+     */
+    public void startMenu(){
+        mainCtrl.showStartMenu();
     }
 
     /**
@@ -70,18 +109,40 @@ public class OverviewCtrl {
     }
 
     /**
-     * Change the title.
+     * Settles the debts of the event.
      */
-    public void changeTitle() {
-       //Should update the title of the Event that is being added.
+    public void settleDebts(){
+        //Should show the sendInvites scene
     }
 
     /**
-     * Refreshes the items in the view.
+     * Change the title.
      */
-    public void refresh() {
-      //Should refresh the view with updated items from the event object. e.g.
-        // you add a participant then the list of participants should update in the view.
+    public void changeTitle() {
+        TextField changeable = new TextField(title.getText());
+        title.setGraphic(changeable);
+        title.setText("");
+        changeable.requestFocus();
+        changeable.setOnKeyReleased(e -> {
+            if (e.getCode().equals(KeyCode.ENTER)) {
+                title.setGraphic(null);
+                title.setText(changeable.getText());
+                mainCtrl.getEvent().setTitle(changeable.getText());
+            }
+        });
+    }
+
+    /**
+     * Clears all the fields
+     */
+    private void clearFields() {
+        if(participants!=null){
+            participants.getItems().clear();
+        }
+        if(expenseparticipants!=null){
+            expenseparticipants.getItems().clear();
+        }
+
     }
 
 }

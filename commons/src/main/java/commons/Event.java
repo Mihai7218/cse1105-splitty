@@ -83,6 +83,14 @@ public class Event {
     }
 
     /**
+     *
+     * @param expense to be added to the even
+     */
+    public void addExpense(Expense expense){
+        expensesList.add(expense);
+    }
+
+    /**
      * @param expensesList set the expenses list to a new list
      *                     TODO: addExpense method
      */
@@ -98,6 +106,14 @@ public class Event {
     }
 
     /**
+     *
+     * @param participant to be added to the event
+     */
+    public void addParticipant(Participant participant){
+        participantsList.add(participant);
+    }
+
+    /**
      * @param participantsList set the list of participants of the event
      *                         TODO: addParticipant method
      */
@@ -110,6 +126,14 @@ public class Event {
      */
     public List<Tag> getTagsList() {
         return tagsList;
+    }
+
+    /**
+     *
+     * @param tag to be added to the event
+     */
+    public void addTag(Tag tag){
+        tagsList.add(tag);
     }
 
     /**
@@ -182,14 +206,10 @@ public class Event {
      */
     @Override
     public String toString() {
-        return "Event{" +
-                "inviteCode='" + inviteCode + '\'' +
-                ", title='" + title + '\'' +
-                ", expenses='" + expensesList.toString() + '\'' +
-                ", participants='" + participantsList.toString() + '\'' +
-                ", tags='" + tagsList.toString() + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", lastActivity='" + lastActivity + '\'' +
-                '}';
+        return this.getInviteCode() + "\t\t" +
+                this.getTitle() + "\t\t" +
+                this.getParticipantsList().size() + "\t\t" +
+                this.getExpensesList().size() + "\t\t" +
+                this.getLastActivity() + "\n";
     }
 }

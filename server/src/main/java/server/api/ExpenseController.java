@@ -8,6 +8,9 @@ import commons.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import static org.springframework.http.HttpStatus.*;
+
+
 @RestController
 @RequestMapping("/api/events/{id}/expenses")
 public class ExpenseController {
@@ -99,5 +102,31 @@ public class ExpenseController {
                                               @PathVariable("id") long id){
         return expenseService.deleteExpense(expenseId, id);
     }
+
+
+    /**
+     * Post method to allow an admin to upload new expenses
+     * @param password string password
+     * @param expenses the list of expenses to be added
+     * @return the list of events if succesfully added
+     */
+    @PostMapping(path = {"/admin/{password}"})
+    public ResponseEntity<Expense> addJsonImport(@PathVariable("id") long id,
+            @PathVariable("password") String password,
+                                                 @RequestBody Expense expenses){
+        if (PasswordService.getPassword().equals(password)) {
+            if(expenseService.validateExpense(expenses).getStatusCode().equals(OK)){
+                expenseService.addCreatedExpense(expenses);
+                return ResponseEntity.ok(expenses);
+
+            }else{
+                return ResponseEntity.badRequest().build();
+            }
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
 
 }

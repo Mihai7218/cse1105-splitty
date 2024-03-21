@@ -183,4 +183,28 @@ public class ParticipantPaymentService {
         participantPaymentRepository.deleteById(id);
         return ResponseEntity.ok(resultFindSpec.getBody());
     }
+
+
+    /**
+     * Method to check if the imported participantPayment is valid
+     * @param p participantPayment being imported
+     * @return participantPayment if it is valid or error code if not
+     */
+    public ResponseEntity<ParticipantPayment> validateParticipantPayment(ParticipantPayment p) {
+        if(p == null || p.getParticipant() == null
+                || p.getPaymentAmount() < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(p);
+    }
+
+    /**
+     * Method to add a participant payment to the repository from a JSON import
+     * @param p ParticipantPayment to be added to the tagRepository
+     * @return the participantPayment in a ResponseEntity
+     */
+    public ResponseEntity<ParticipantPayment> addCreatedParticipantPayment(ParticipantPayment p) {
+        return ResponseEntity.ok(participantPaymentRepository.save(p));
+    }
+
 }

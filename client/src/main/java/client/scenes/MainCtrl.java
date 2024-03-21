@@ -17,6 +17,7 @@ package client.scenes;
 
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
+import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -41,7 +42,10 @@ public class MainCtrl {
     private Scene participant;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
+    private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
+
+    private Event event;
 
     /**
      * Constructor for the MainCtrl
@@ -55,11 +59,13 @@ public class MainCtrl {
     /**
      * Initialize the main controller with the primary stage,
      *
-     * @param primaryStage           primary stage of the controller.
-     * @param overview               overview controller and scene
-     * @param add                    add quote controller and scene
-     * @param startScreen            start screen controller and scene
-     * @param participant
+     * @param primaryStage primary stage of the controller.
+     * @param qouteoverview qoute overview controller and scene
+     * @param add          add quote controller and scene
+     * @param startScreen  start screen controller and scene
+     * @param participant participant controller and scene
+     * @param overview     overview controller and scene
+     * @param addExpense addExpense controller and scene
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
@@ -81,10 +87,10 @@ public class MainCtrl {
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
 
+        this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
-        showAddExpense();
 
-        //showStartMenu();
+        showStartMenu();
         primaryStage.show();
     }
 
@@ -92,7 +98,7 @@ public class MainCtrl {
      * shows AddExpense scene
      */
     public void showAddExpense(){
-        primaryStage.setTitle("Add/Edit Expense");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(addExpense);
     }
 
@@ -100,7 +106,7 @@ public class MainCtrl {
      * Shows the overview scene.
      */
     public void showOverview() {
-        primaryStage.setTitle("Quotes: Overview");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
     }
@@ -126,9 +132,8 @@ public class MainCtrl {
      * Shows the add participant scene.
      */
     public void showParticipant() {
-        primaryStage.setTitle("Add Participant");
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(participant);
-        if (add != null) add.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**
@@ -199,7 +204,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - start screen controller.
      */
-    StartScreenCtrl getStartScreenCtrl() {
+    public StartScreenCtrl getStartScreenCtrl() {
         return startScreenCtrl;
     }
 
@@ -236,5 +241,20 @@ public class MainCtrl {
      */
     void setPrimaryStage(Stage primaryStage) {
         this.primaryStage = primaryStage;
+    }
+
+    /**
+     * Getter for the event.
+     */
+    public Event getEvent() {
+        return event;
+    }
+
+    /**
+     * Setter for the event.
+     * @param event - the event
+     */
+    public void setEvent(Event event) {
+        this.event = event;
     }
 }

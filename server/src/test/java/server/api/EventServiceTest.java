@@ -1,19 +1,18 @@
 package server.api;
 
-import commons.Event;
-import commons.Participant;
+import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import server.database.ParticipantRepository;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 
 class EventServiceTest {
@@ -41,6 +40,69 @@ class EventServiceTest {
         eventService.addEvent(event1);
         eventService.addEvent(event2);
         eventService.addEvent(event3);
+    }
+
+    @Test
+    public void calculateDebtsTest(){
+        ParticipantRepository participantRepo = new TestParticipantRepository();
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+
+        event.getParticipantsList().add(p);
+        event.getParticipantsList().add(other);
+        event.getExpensesList().add(e);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event.setTagsList(List.of(t, one, two, three));
+        event.setInviteCode(5);
+        eventRepository.save(event);
+        participantRepo.save(p);
+        participantRepo.save(other);
+        assertEquals(eventService.getDebts(3L,1L).getBody(), -25.0);
+        assertEquals(eventService.getDebts(3L, 0L).getBody(), 50.0);
+
+    }
+
+    @Test
+    public void calculateComplexDebts(){
+        ParticipantRepository participantRepo = new TestParticipantRepository();
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+        ParticipantPayment pp1 = new ParticipantPayment(p, 15);
+        Expense ee = new Expense(15, "USD", "secondExpense", "description",
+                null, List.of(pp1), t, other);
+        event.getParticipantsList().add(p);
+        event.getParticipantsList().add(other);
+        event.getExpensesList().add(e);
+        event.getExpensesList().add(ee);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event.setTagsList(List.of(t, one, two, three));
+        event.setInviteCode(5);
+        eventRepository.save(event);
+        participantRepo.save(p);
+        participantRepo.save(other);
+        assertEquals(eventService.getDebts(3L,1L).getBody(), -10.0);
+        assertEquals(eventService.getDebts(3L, 0L).getBody(), 35.0);
+
     }
 
     @Test
@@ -124,6 +186,31 @@ class EventServiceTest {
         eventService.getEvent(0L);
         event = eventRepository.getById(0L);
         assertEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void addImportValidTest(){
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+        event.getParticipantsList().add(p);
+        event.getParticipantsList().add(other);
+        event.getExpensesList().add(e);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event.setTagsList(List.of(t, one, two, three));
+        event.setInviteCode(5);
+        assertEquals(OK, eventService.validateEvent(event).getStatusCode());
+        eventService.addEvent(event);
+        assertEquals(eventService.getAllEvents().getBody().size(), 4);
     }
 
 

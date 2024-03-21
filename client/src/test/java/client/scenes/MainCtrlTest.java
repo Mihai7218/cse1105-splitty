@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.LanguageManager;
+import commons.Event;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -62,7 +65,7 @@ class MainCtrlTest {
     @Test
     void showOverview() {
         sut.showOverview();
-        assertEquals("Quotes: Overview", stageTitle);
+        assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
 
@@ -96,7 +99,7 @@ class MainCtrlTest {
     @Test
     void showParticipant() {
         sut.showParticipant();
-        assertEquals("Add Participant", stageTitle);
+        assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
 
@@ -124,18 +127,15 @@ class MainCtrlTest {
         Parent participant = spy(Parent.class);
         OverviewCtrl overviewCtrl = mock(OverviewCtrl.class);
         Parent overview = spy(Parent.class);
-
         AddExpenseCtrl addExpenseCtrl = mock(AddExpenseCtrl.class);
-        Parent addExpense = spy(Parent.class);
-
-
+        Parent addexpense = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
-                new Pair<>(addExpenseCtrl, addExpense));
+                new Pair<>(addExpenseCtrl, addexpense));
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
@@ -147,5 +147,13 @@ class MainCtrlTest {
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
+    }
+
+    @Test
+    void setEvent() {
+        Event event = new Event("Mock Event", new Date(), new Date());
+        sut.setEvent(event);
+
+        assertEquals(event, sut.getEvent());
     }
 }

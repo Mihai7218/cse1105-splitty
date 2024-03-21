@@ -1,7 +1,6 @@
 package server.api;
 
-import commons.Event;
-import commons.Tag;
+import commons.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +9,8 @@ import server.database.EventRepository;
 import server.database.TagRepository;
 
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.*;import static org.springframework.http.HttpStatus.*;
+
 
 @Service
 public class EventService {
@@ -137,5 +137,93 @@ public class EventService {
         }
         eventRepository.deleteAllById(Collections.singleton(inviteCode));
         return ResponseEntity.ok(saved);
+    }
+
+
+    /**
+     * Method to check if the imported event is valid
+     * @param event event being imported
+     * @return event if it is valid or error code if not
+     */
+    public ResponseEntity<Event> validateEvent(Event event) {
+        if(event == null || event.getInviteCode()<0
+                || Objects.equals(event.getTitle(), "")
+                || event.getTitle() == null){
+            return ResponseEntity.badRequest().build();
+        }
+        List<Event> allEvents = eventRepository.findAll();
+        for(Event e: allEvents){
+            if(e.equals(event)){
+                return ResponseEntity.badRequest().build();
+            }
+        }
+
+        return ResponseEntity.ok(event);
+    }
+
+    /**
+     * Method to add an event to the repository from a JSON import
+     * @param event event to be added to the eventRepository
+     * @return the event in a ResponseEntity
+     */
+    public ResponseEntity<Event> addCreatedEvent(Event event) {
+        return ResponseEntity.ok(eventRepository.save(event));
+    }
+
+
+    /**
+     * Endpoint to calculate the debts that a certain participant owes/is owed
+     * @param eventId the event that the participant is in
+     * @param participantId the id of the participant whose debt is to be calculated
+     * @return double of debt amount (negative if they owe, positive if they are owed)
+     */
+    public ResponseEntity<Double> getDebts(Long eventId, Long participantId) {
+        if(validateDebt(eventId, participantId).getStatusCode() != OK){
+            return validateDebt(eventId, participantId);
+        }
+        Event e= eventRepository.findById(eventId).get();
+        Participant current = e.getParticipantsList()
+                .stream()
+                .filter(item -> item.getId()==participantId)
+                .toList().getFirst();
+        List<Expense> expenses = e.getExpensesList();
+        double balance = 0;
+        for(Expense expense: expenses){
+            if(expense.getPayee().equals(current)){
+                balance += expense.getAmount();
+            }else{
+                for(ParticipantPayment p: expense.getSplit()){
+                    if(p.getParticipant().equals(current)){
+                        balance -= p.getPaymentAmount();
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(balance);
+    }
+
+    /**
+     * Validates that the event and participant exist together
+     * @param eventId id of the event to check
+     * @param participantId id of the participant to locate
+     * @return responseentity indicating if the event and participant could be
+     * verified.
+     */
+    private ResponseEntity<Double> validateDebt(Long eventId, Long participantId) {
+        if(eventId<0 || participantId<0){
+            return ResponseEntity.badRequest().build();
+        }else if(!eventRepository.existsById(eventId)){
+            return ResponseEntity.notFound().build();
+        }
+        if(eventRepository.findById(eventId).isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        Event e = eventRepository.findById(eventId).get();
+        Participant current = e.getParticipantsList()
+                .stream()
+                .filter(item -> item.getId()==participantId)
+                .toList().getFirst();
+        if(current == null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(0.0);
     }
 }

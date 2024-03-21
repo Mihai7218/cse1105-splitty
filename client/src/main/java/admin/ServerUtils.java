@@ -16,8 +16,7 @@
 package admin;
 
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Quote;
+import commons.*;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -129,5 +128,110 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Event.class);
+    }
+
+    /**
+     * @param i the invite code of the event to be deleted
+     *          TODO: check for correctness
+     */
+    public Event deleteEvent(int i) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + i)
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(Event.class);
+    }
+
+    /**
+     * Method to add events from a JSON import file
+     * @param events list of events from JSON import
+     * @param password admin password string to allow endpoint access
+     */
+    public void setEvents(Event events, String password){
+        if(events==null){
+            System.out.println("Error - empty import.");
+            return;
+        }
+
+
+        ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/admin/" + password )//
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .post(Entity.entity(events, APPLICATION_JSON), Event.class);
+        setParticipants(events.getParticipantsList(), password, events);
+        setExpenses(events.getExpensesList(), password, events);
+        setTags(events.getTagsList(), password, events);
+
+    }
+
+    /**
+     * Method to add participants to the database based on JSON import
+     * @param participants list of participnats in JSON import
+     * @param password admin password to allow endpoint access
+     */
+    public void setParticipants(List<Participant> participants, String password, Event e){
+        for(Participant p: participants){
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(server).path("api/events/admin/participants/" + password )
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(p, APPLICATION_JSON), Participant.class);
+        }
+    }
+
+    /**
+     * Method to add expenses from event import
+     * @param expenses list of expenses from the imported event
+     * @param password admin password to allow access to endpoints
+     */
+    public void setExpenses(List<Expense> expenses, String password, Event event){
+        for(Expense e: expenses){
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(server).path("api/events" + event.getInviteCode() +
+                            "/admin/" + password )
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(e, APPLICATION_JSON), Expense.class);
+            setParticipantPayment(e.getSplit(),password, event);
+        }
+    }
+
+    /**
+     * Method to add participantPayments from an event import
+     * @param participantPayment list of participantPayments from the imported event
+     * @param password admin password to allow access to endpoints
+     */
+    public void setParticipantPayment(List<ParticipantPayment> participantPayment, String password,
+                                      Event e){
+        for(ParticipantPayment p: participantPayment){
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(server).path("api/events/admin/participantPayment/" + password )
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(p, APPLICATION_JSON), ParticipantPayment.class);
+        }
+    }
+
+    /**
+     * Method to add tags from an imported event
+     * @param tags list of tags associated with event
+     * @param password admin password to allow access to endpoints
+     */
+    public void setTags(List<Tag> tags, String password, Event e){
+        for(Tag t: tags){
+            ClientBuilder.newClient(new ClientConfig())
+                    .target(server).path("api/events/admin/tag/" + password)
+                    .request(APPLICATION_JSON)
+                    .accept(APPLICATION_JSON)
+                    .post(Entity.entity(t, APPLICATION_JSON), Tag.class);
+        }
+    }
+
+    /**
+     * @return the current server
+     */
+    public String getServer() {
+        return server;
     }
 }
