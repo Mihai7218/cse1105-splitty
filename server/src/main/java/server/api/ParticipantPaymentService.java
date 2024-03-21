@@ -12,6 +12,8 @@ import server.database.EventRepository;
 import server.database.ParticipantPaymentRepository;
 import server.database.ParticipantRepository;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -110,6 +112,11 @@ public class ParticipantPaymentService {
                 getAllParticipantPayment(eventId,expenseId).getBody();
         participantPaymentRepository.save(participantPayment);
         participantPaymentList.add(participantPayment);
+        Event event = eventRepository.findById(eventId).get();
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event.setLastActivity(timestamp2);
+        eventRepository.save(event);
         return ResponseEntity.ok(participantPayment);
     }
 
@@ -140,6 +147,11 @@ public class ParticipantPaymentService {
             return ResponseEntity.badRequest().build();
         old.setParticipant(participantPayment.getParticipant());
         old.setPaymentAmount(participantPayment.getPaymentAmount());
+        Event event = eventRepository.findById(eventId).get();
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event.setLastActivity(timestamp2);
+        eventRepository.save(event);
         return ResponseEntity.ok(old);
     }
 
@@ -162,6 +174,11 @@ public class ParticipantPaymentService {
         if(resultFindAll.getBody() == null || resultFindSpec.getBody() == null)
             return ResponseEntity.badRequest().build();
         List<ParticipantPayment> listForAll = resultFindAll.getBody();
+        Event event = eventRepository.findById(eventId).get();
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event.setLastActivity(timestamp2);
+        eventRepository.save(event);
         listForAll.remove(resultFindSpec.getBody());
         participantPaymentRepository.deleteById(id);
         return ResponseEntity.ok(resultFindSpec.getBody());

@@ -22,24 +22,38 @@ import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
 public class EventControllerTest {
 
     private EventController sut;
 
+    public TestEventRepository repo = new TestEventRepository();
+
     @BeforeEach
     public void setup() {
-        TestEventRepository repo = new TestEventRepository();
         TestTagRepository tagRepo = new TestTagRepository();
         EventService ev = new EventService(repo, tagRepo);
         sut = new EventController(ev);
+    }
+
+    @Test
+    public void lastActivityAfterChangeTest() {
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        sut.add(new Event("asa",timestamp2,timestamp2));
+        Event event = repo.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity();
+        sut.change(0L,new Event("dwa",timestamp2,timestamp2));
+        event = repo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
     }
 
     @Test
@@ -95,6 +109,30 @@ public class EventControllerTest {
         tags.add(new Tag("entrance fees", "blue"));
         tags.add(new Tag("travel", "red"));
         return new Event(q,null,null);
+    }
+
+    @Test
+    public void lastActivityNotChange2Test(){
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        sut.add(new Event("asa",timestamp2,timestamp2));
+        Event event = repo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        sut.get(0L);
+        event = repo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+
+
+
+    @Test
+    public void lastActivityAddTest(){
+        sut.add(new Event("daw",null,null));
+        Event event = repo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        sut.add(new Event("dwa",null,null));
+        event = repo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
     }
 
 

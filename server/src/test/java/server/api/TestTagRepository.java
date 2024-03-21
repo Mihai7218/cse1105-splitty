@@ -15,6 +15,7 @@
  */
 package server.api;
 
+import commons.Event;
 import commons.Tag;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -247,6 +248,11 @@ public class TestTagRepository implements TagRepository {
     @Override
     public Optional<Tag> findById(Long id) {
         // TODO Auto-generated method stub
+        call("findById");
+            if (tags.size() > id) {
+                return Optional.of(tags.get(Math.toIntExact(id)));
+            }
+
         return null;
     }
 

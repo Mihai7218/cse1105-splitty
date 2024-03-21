@@ -7,9 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -22,9 +24,11 @@ public class ExpenseControllerTest {
     public long eventId;
     public Participant payee;
 
+    public TestEventRepository eventRepo = new TestEventRepository();
+
     @BeforeEach
     public void setup() {
-        TestEventRepository eventRepo = new TestEventRepository();
+
         TestExpenseRepository expenseRepo = new TestExpenseRepository();
         ExpenseService serv = new ExpenseService(eventRepo, expenseRepo);
         ctrl = new ExpenseController(serv);
@@ -316,6 +320,35 @@ public class ExpenseControllerTest {
     public void deleteEventDoesntExistTest(){
         ResponseEntity<Expense> res = ctrl.deleteExpense(expense1.getId(), 100);
         assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        ctrl.getAllExpenses(0L);
+        event = eventRepo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        ctrl.deleteExpense(0L,0L);
+        event = eventRepo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+
+    @Test
+    public void lastActivityAddTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        ctrl.add(0L,new Expense(600, "party2", "party2",
+                null, null, null, null, new Participant("joe", null, null, null)));
+        event = eventRepo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
     }
 
 }

@@ -117,7 +117,31 @@ class EventServiceTest {
         assertEquals(BAD_REQUEST, eventService.changeEvent(-100,new Event("asd",null,null)).getStatusCode());
     }
 
+    @Test
+    public void lastActivityNotChange2Test(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        eventService.getEvent(0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
 
+    @Test
+    public void lastActivityAfterChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        eventService.changeEvent(0L,new Event("dwa",null,null));
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
 
+    @Test
+    public void lastActivityAddTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        eventService.addEvent(new Event("dwa",null,null));
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
 
 }

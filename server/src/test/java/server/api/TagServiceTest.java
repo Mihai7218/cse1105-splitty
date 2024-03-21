@@ -7,12 +7,12 @@ import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
-import server.database.EventRepository;
-import server.database.TagRepository;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -71,6 +71,7 @@ public class TagServiceTest {
         ResponseEntity<List<Expense>> res = tagService.getAllExpensesWithTag(0, "food");
         assertEquals(1, res.getBody().size());
     }
+
     @Test
     public void getAllExpensesWithTagTest2(){
         ResponseEntity<List<Expense>> res = tagService.getAllExpensesWithTag(0, "picnic");
@@ -150,6 +151,41 @@ public class TagServiceTest {
         Tag tester = new Tag("cool", "#000000");
         ResponseEntity<Tag> res = tagService.addNewToEvent(-10, tester);
         assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    public void lastActivityTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        tagService.deleteTagFromEvent(0L,0L);
+        event = eventRepo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        tagService.getTagsFromEvent(0L);
+        event = eventRepo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void lastActivityAfterColorChangeTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        tagService.changeColor(0L,0L,"blue");
+        event = eventRepo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterAddChangeTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        tagService.addNewToEvent(0L,new Tag("new","blue"));
+        event = eventRepo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
     }
 
 }

@@ -196,4 +196,41 @@ class ParticipantServiceTest {
 
     }
 
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantService.getAllParticipants(0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantService.deleteParticipant(0L,0L);
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void lastActivityAfterChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantService.updateParticipant(0L,0L,new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B"));
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void lastActivityAddChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantService.addParticipant(0L,new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B"));
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
 }

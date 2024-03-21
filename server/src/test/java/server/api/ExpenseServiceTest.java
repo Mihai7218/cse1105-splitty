@@ -11,6 +11,7 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 import server.database.TagRepository;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -329,6 +330,34 @@ public class ExpenseServiceTest {
     public void deleteEventDoesntExistTest(){
         ResponseEntity<Expense> res = expenseService.deleteExpense(expense1.getId(), 100);
         assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        expenseService.getAllExpenses(0L);
+        event = eventRepo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        expenseService.deleteExpense(0L,0L);
+        event = eventRepo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+
+    @Test
+    public void lastActivityAddTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        expenseService.add(0L,new Expense(600, "party2", "party2",
+                null, null, null, null, new Participant("joe", null, null, null)));
+        event = eventRepo.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
     }
 
 }

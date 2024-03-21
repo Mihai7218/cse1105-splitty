@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 public class ParticipantPaymentControllerTest {
     TestEventRepository eventRepository;
@@ -121,6 +122,53 @@ public class ParticipantPaymentControllerTest {
         assertEquals(participantPaymentRepository.calledMethods, List.of("save", "save"));
         assertEquals(participantPaymentRepository.participantPayments.size(), 1);
         assertEquals(participantPaymentRepository.participantPayments.get(0), p1);
+    }
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.getParticipantPayment(0L,0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityNotChange2Test(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.getParticipantPayment(0L,0L,0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.deleteParticipantPayment(0L,0L,0L);
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void lastActivityAfterChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.updateParticipantPayment(0L,0L,0L,new ParticipantPayment(new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B"), 5));
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
+    }
+
+    @Test
+    public void lastActivityAddTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.createParticipantPayment(0L,0L,new ParticipantPayment(new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B"), 5));
+        event = eventRepository.getById(0L);
+        assertNotEquals(event.getLastActivity(),tmpdate);
     }
 
 }
