@@ -15,7 +15,6 @@
  */
 package server.api;
 
-import commons.Event;
 import commons.Tag;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
@@ -35,7 +34,6 @@ public class TestTagRepository implements TagRepository {
     public final List<String> calledMethods = new ArrayList<>();
 
     /**
-     *
      * @param name
      */
     private void call(String name) {
@@ -43,7 +41,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -53,7 +50,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param sort
      * @return
      */
@@ -64,7 +60,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param ids
      * @return
      */
@@ -75,10 +70,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param entities
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> List<S> saveAll(Iterable<S> entities) {
@@ -96,10 +90,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param entity
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> S saveAndFlush(S entity) {
@@ -108,10 +101,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param entities
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> List<S> saveAllAndFlush(Iterable<S> entities) {
@@ -120,7 +112,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param entities
      */
     @Override
@@ -130,7 +121,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param ids
      */
     @Override
@@ -149,7 +139,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -160,7 +149,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -171,7 +159,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -182,7 +169,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -191,10 +177,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> List<S> findAll(Example<S> example) {
@@ -203,11 +188,10 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
      * @param sort
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> List<S> findAll(Example<S> example, Sort sort) {
@@ -216,7 +200,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param pageable
      * @return
      */
@@ -227,10 +210,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param entity
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> S save(S entity) {
@@ -241,7 +223,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -249,15 +230,14 @@ public class TestTagRepository implements TagRepository {
     public Optional<Tag> findById(Long id) {
         // TODO Auto-generated method stub
         call("findById");
-            if (tags.size() > id) {
-                return Optional.of(tags.get(Math.toIntExact(id)));
-            }
+        if (tags.size() > id) {
+            return Optional.of(tags.get(Math.toIntExact(id)));
+        }
 
         return null;
     }
 
     /**
-     *
      * @param id
      * @return
      */
@@ -268,7 +248,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -277,7 +256,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param id
      */
     @Override
@@ -287,7 +265,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     * 
      * @param entity
      */
     @Override
@@ -297,7 +274,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param ids
      */
     @Override
@@ -307,7 +283,6 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param entities
      */
     @Override
@@ -326,10 +301,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> Optional<S> findOne(Example<S> example) {
@@ -338,11 +312,10 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
      * @param pageable
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> Page<S> findAll(Example<S> example, Pageable pageable) {
@@ -351,10 +324,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> long count(Example<S> example) {
@@ -363,10 +335,9 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
-     * @return
      * @param <S>
+     * @return
      */
     @Override
     public <S extends Tag> boolean exists(Example<S> example) {
@@ -375,16 +346,15 @@ public class TestTagRepository implements TagRepository {
     }
 
     /**
-     *
      * @param example
      * @param queryFunction
-     * @return
      * @param <S>
      * @param <R>
+     * @return
      */
     @Override
     public <S extends Tag, R> R findBy(Example<S> example,
-                                         Function<FetchableFluentQuery<S>, R> queryFunction) {
+                                       Function<FetchableFluentQuery<S>, R> queryFunction) {
         // TODO Auto-generated method stub
         return null;
     }
