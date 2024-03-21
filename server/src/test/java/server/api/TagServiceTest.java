@@ -203,12 +203,12 @@ public class TagServiceTest {
     }
 
     @Test
-    public void lastActivityAfterColorChangeTest(){
+    public void lastActivityAfterChangeTest(){
         Event event = eventRepo.getById(0L);
         Date tmpdate = event.getLastActivity();
         tagService.changeTag(0L,0L,new Tag("new tag", "blue"));
         event = eventRepo.getById(0L);
-        assertEquals(event.getLastActivity(),tmpdate);
+        assertNotEquals(event.getLastActivity(),tmpdate);
     }
     @Test
     public void lastActivityAfterAddChangeTest(){
