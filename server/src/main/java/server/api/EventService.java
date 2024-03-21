@@ -148,8 +148,7 @@ public class EventService {
     public ResponseEntity<Event> validateEvent(Event event) {
         if(event == null || event.getInviteCode()<0
                 || Objects.equals(event.getTitle(), "")
-                || event.getTitle() == null
-                || eventRepository.existsById((long)event.getInviteCode())){
+                || event.getTitle() == null){
             return ResponseEntity.badRequest().build();
         }
         List<Event> allEvents = eventRepository.findAll();
@@ -158,12 +157,7 @@ public class EventService {
                 return ResponseEntity.badRequest().build();
             }
         }
-        List<Tag> tags = event.getTagsList();
-        if(!tags.contains(new Tag("food","#93c47d"))
-                || !tags.contains(new Tag("entrance fees", "#4a86e8"))
-                || !tags.contains(new Tag("travel", "#e06666"))){
-            return ResponseEntity.badRequest().build();
-        }
+
         return ResponseEntity.ok(event);
     }
 
