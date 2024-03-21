@@ -206,7 +206,7 @@ public class TagServiceTest {
     public void lastActivityAfterColorChangeTest(){
         Event event = eventRepo.getById(0L);
         Date tmpdate = event.getLastActivity();
-        tagService.changeColor(0L,0L,"blue");
+        tagService.changeTag(0L,0L,new Tag("new tag", "blue"));
         event = eventRepo.getById(0L);
         assertEquals(event.getLastActivity(),tmpdate);
     }
