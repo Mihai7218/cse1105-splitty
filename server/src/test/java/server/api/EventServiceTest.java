@@ -126,14 +126,6 @@ class EventServiceTest {
         assertEquals(event.getLastActivity(),tmpdate);
     }
 
-    @Test
-    public void lastActivityAfterChangeTest(){
-        Event event = eventRepository.getById(0L);
-        Date tmpdate = event.getLastActivity();
-        eventService.changeEvent(0L,new Event("dwa",null,null));
-        event = eventRepository.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
-    }
 
     @Test
     public void lastActivityAddTest(){

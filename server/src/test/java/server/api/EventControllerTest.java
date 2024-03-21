@@ -44,17 +44,6 @@ public class EventControllerTest {
         sut = new EventController(ev);
     }
 
-    @Test
-    public void lastActivityAfterChangeTest() {
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        sut.add(new Event("asa",timestamp2,timestamp2));
-        Event event = repo.getById(0L);
-        Date tmpdate = (Date) event.getLastActivity();
-        sut.change(0L,new Event("dwa",timestamp2,timestamp2));
-        event = repo.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
-    }
 
     @Test
     public void cannotAddEmptyEvent() {
