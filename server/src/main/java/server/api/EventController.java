@@ -116,9 +116,9 @@ public class EventController {
     }
 
     /**
-     * @param eventId 
-     * @param participantId
-     * @return
+     * @param eventId the event to get the debt from
+     * @param participantId the participant to calculate the debt of
+     * @return the response entity containing the debt as a double
      */
     //TODO
     @GetMapping(path = {"/{invitecode}/debt/{participantId}"})
@@ -128,9 +128,9 @@ public class EventController {
     }
 
     /**
-     * @param eventId
-     * @param participantId
-     * @return
+     * @param eventId the event to calculate how much the part. is owed
+     * @param participantId the participant to calculate the owed of
+     * @return the response entity containing how much the part. is owed
      */
     @GetMapping(path = {"/{invitecode}/owed/{participantId}"})
     public ResponseEntity<Double> getOwed(@PathVariable("invitecode") Long eventId,
