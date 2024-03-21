@@ -178,12 +178,12 @@ public class EventService {
 
 
     /**
-     * Endpoint to calculate the debts that a certain participant owes/is owed
+     * Endpoint to calculate the share/total that a certain participant owes/is owed
      * @param eventId the event that the participant is in
-     * @param participantId the id of the participant whose debt is to be calculated
-     * @return double of debt amount (negative if they owe, positive if they are owed)
+     * @param participantId the id of the participant whose share is to be calculated
+     * @return double of share amount (negative if they owe, positive if they are owed)
      */
-    public ResponseEntity<Double> getDebts(Long eventId, Long participantId) {
+    public ResponseEntity<Double> getShare(Long eventId, Long participantId) {
         if(validateDebt(eventId, participantId).getStatusCode() != OK){
             return validateDebt(eventId, participantId);
         }

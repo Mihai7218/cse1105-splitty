@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.*;
 
 
-//TODO: debt and owed endpoints, change name of existing method to 'calculateShare'
+//TODO: debt and owed endpoints
 @RestController
 @RequestMapping("/api/events")
 
@@ -104,15 +104,15 @@ public class EventController {
     }
 
     /**
-     * Endpoint to access and calculated the debts for a certain participant
-     * @param eventId id of the event the particpant is in
+     * Endpoint to access and calculated the share for a certain participant
+     * @param eventId id of the event the participant is in
      * @param participantId id of the participant
      * @return amount that is owed if calculable
      */
-    @GetMapping(path = {"/{invitecode}/debts/{participantId}"})
-    public ResponseEntity<Double> getDebts(@PathVariable("invitecode") Long eventId,
+    @GetMapping(path = {"/{invitecode}/share/{participantId}"})
+    public ResponseEntity<Double> getShare(@PathVariable("invitecode") Long eventId,
                                            @PathVariable("participantId") Long participantId){
-        return eventService.getDebts(eventId, participantId);
+        return eventService.getShare(eventId, participantId);
     }
 
 

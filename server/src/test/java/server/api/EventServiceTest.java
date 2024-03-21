@@ -67,8 +67,8 @@ class EventServiceTest {
         eventRepository.save(event);
         participantRepo.save(p);
         participantRepo.save(other);
-        assertEquals(eventService.getDebts(3L,1L).getBody(), -25.0);
-        assertEquals(eventService.getDebts(3L, 0L).getBody(), 50.0);
+        assertEquals(eventService.getShare(3L,1L).getBody(), -25.0);
+        assertEquals(eventService.getShare(3L, 0L).getBody(), 50.0);
 
     }
 
@@ -100,8 +100,8 @@ class EventServiceTest {
         eventRepository.save(event);
         participantRepo.save(p);
         participantRepo.save(other);
-        assertEquals(eventService.getDebts(3L,1L).getBody(), -10.0);
-        assertEquals(eventService.getDebts(3L, 0L).getBody(), 35.0);
+        assertEquals(eventService.getShare(3L,1L).getBody(), -10.0);
+        assertEquals(eventService.getShare(3L, 0L).getBody(), 35.0);
 
     }
 
