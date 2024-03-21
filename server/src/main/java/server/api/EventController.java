@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import static org.springframework.http.HttpStatus.*;
 
 
-
+//TODO: debt and owed endpoints, change name of existing method to 'calculateShare'
 @RestController
 @RequestMapping("/api/events")
 
