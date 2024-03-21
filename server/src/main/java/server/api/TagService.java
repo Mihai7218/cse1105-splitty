@@ -102,10 +102,10 @@ public class TagService {
      *
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId      the id of the tag itself
-     * @param newName    the new name of the tag after change
+     * @param tag        the new tag which the old one should be changed to
      * @return whether the tagName was changed
      */
-    public ResponseEntity<Tag> changeName(long inviteCode, long tagId, String newName) {
+    public ResponseEntity<Tag> changeTag(long inviteCode, long tagId, Tag tag) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -113,36 +113,10 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
-        if (newName == null || Objects.equals(newName, "")) {
+        if (tag == null || Objects.equals(tag.getName(), "")) {
             return ResponseEntity.badRequest().build();
         }
-        Tag change = tagRepo.findById(tagId).get();
-        change.setName(newName);
-        tagRepo.save(change);
-        return ResponseEntity.ok(null);
-    }
-
-    /**
-     * Changes the colorcode of a tag
-     *
-     * @param inviteCode the inviteCode of the event with which the tag is associated
-     * @param tagId      the id of the tag itself
-     * @param newColor   the new colorCode of the tag
-     * @return whether the color of the tag was updated
-     */
-    public ResponseEntity<Tag> changeColor(long inviteCode, long tagId, String newColor) {
-        if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
-                eventRepo.findById(inviteCode).get().getExpensesList() == null) {
-            return ResponseEntity.notFound().build();
-        }
-        if (tagId < 0 || !tagRepo.existsById(tagId)) {
-            return ResponseEntity.notFound().build();
-        }
-        if (newColor == null || Objects.equals(newColor, "")) {
-            return ResponseEntity.badRequest().build();
-        }
-        Tag change = tagRepo.findById(tagId).get();
-        change.setColor(newColor);
+        Tag change = tag;
         tagRepo.save(change);
         return ResponseEntity.ok(null);
     }
