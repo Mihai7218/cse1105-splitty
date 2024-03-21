@@ -168,7 +168,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - overview controller.
      */
-    OverviewCtrl getOverviewCtrl() {
+    public OverviewCtrl getOverviewCtrl() {
         return overviewCtrl;
     }
 

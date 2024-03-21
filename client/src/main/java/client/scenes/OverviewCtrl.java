@@ -196,6 +196,8 @@ public class OverviewCtrl implements Initializable {
         String language = "";
         if (languages != null) language = languages.getValue();
         config.setProperty("language", language);
+        mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
+        mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
         this.refreshLanguage();
     }
 
@@ -207,6 +209,7 @@ public class OverviewCtrl implements Initializable {
         if (language == null) {
             language = "en";
         }
+        updateLanguageComboBox(language);
         languageManager.changeLanguage(Locale.of(language));
     }
 
@@ -221,5 +224,14 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
+    }
+
+
+    /**
+     * Method that updates the language combo box with the correct flag.
+     * @param language - code of the new language
+     */
+    public void updateLanguageComboBox(String language) {
+        languages.setValue(language);
     }
 }
