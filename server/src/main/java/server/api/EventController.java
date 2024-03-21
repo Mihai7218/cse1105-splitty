@@ -115,7 +115,17 @@ public class EventController {
         return eventService.getShare(eventId, participantId);
     }
 
+    //TODO
+    @GetMapping(path = {"/{invitecode}/debt/{participantId}"})
+    public ResponseEntity<Double> getDebt(@PathVariable("invitecode") Long eventId,
+                                           @PathVariable("participantId") Long participantId){
+        return eventService.getDebt(eventId, participantId);
+    }
 
-
+    @GetMapping(path = {"/{invitecode}/owed/{participantId}"})
+    public ResponseEntity<Double> getOwed(@PathVariable("invitecode") Long eventId,
+                                          @PathVariable("participantId") Long participantId){
+        return eventService.getOwed(eventId, participantId);
+    }
 
 }

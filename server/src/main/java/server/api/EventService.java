@@ -209,6 +209,59 @@ public class EventService {
     }
 
     /**
+     * TODO: check if logic is correct
+     * @param eventId
+     * @param participantId
+     * @return
+     */
+    public ResponseEntity<Double> getDebt(Long eventId, Long participantId) {
+        if(validateDebt(eventId, participantId).getStatusCode() != OK){
+            return validateDebt(eventId, participantId);
+        }
+        Event e= eventRepository.findById(eventId).get();
+        Participant current = e.getParticipantsList()
+                .stream()
+                .filter(item -> item.getId()==participantId)
+                .toList().getFirst();
+        List<Expense> expenses = e.getExpensesList();
+        double balance = 0;
+        for(Expense expense: expenses){
+            if(!expense.getPayee().equals(current)){
+                for(ParticipantPayment p: expense.getSplit()){
+                    if(p.getParticipant().equals(current)){
+                        balance -= p.getPaymentAmount();
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(balance);
+    }
+
+    /**
+     * TODO: check if logic correct
+     * @param eventId
+     * @param participantId
+     * @return
+     */
+    public ResponseEntity<Double> getOwed(Long eventId, Long participantId) {
+        if(validateDebt(eventId, participantId).getStatusCode() != OK){
+            return validateDebt(eventId, participantId);
+        }
+        Event e= eventRepository.findById(eventId).get();
+        Participant current = e.getParticipantsList()
+                .stream()
+                .filter(item -> item.getId()==participantId)
+                .toList().getFirst();
+        List<Expense> expenses = e.getExpensesList();
+        double balance = 0;
+        for(Expense expense: expenses){
+            if(expense.getPayee().equals(current)){
+                balance += expense.getAmount();
+            }
+        }
+        return ResponseEntity.ok(balance);
+    }
+    /**
      * Validates that the event and participant exist together
      * @param eventId id of the event to check
      * @param participantId id of the participant to locate
