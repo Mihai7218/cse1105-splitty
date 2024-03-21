@@ -196,13 +196,38 @@ public class AdminConsole {
     /**
      * @param userInput the scanner for the userInput
      * @param adminConsole the currently running adminConsole
-     *                     TODO: fix this implementation
      */
     public void deleteEventMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("Please enter the inviteCode of the " +
                 "Event you would like to delete from the database:");
         int invCode = userInput.nextInt();
-        Event event = utils.deleteEvent(invCode);
+        boolean deletion = confirmationMenu(userInput, invCode);
+        if (deletion == true){
+            Event event = utils.deleteEvent(invCode);
+            System.out.println("Event" + event.toString() + "deleted successfully");
+        } else {
+            System.out.println("Event remains in the database");
+        }
+    }
+
+
+    /**
+     * @param userInput the userInput scanner
+     * @param invCode the invite code of the event to be deleted from the system
+     * @return whether the deletion was confirmed
+     */
+    public boolean confirmationMenu(Scanner userInput, int invCode) {
+        System.out.println("Please confirm you want to delete event" + invCode + "\n" +
+                "Y/N");
+        String choice = userInput.next();
+        switch (choice) {
+            case "Y":
+                return true;
+            case "N":
+                return false;
+            default:
+                return false;
+        }
     }
     /**
      * Methode to update/download the event list from the server
