@@ -182,14 +182,10 @@ public class Event {
      */
     @Override
     public String toString() {
-        return "Event{" +
-                "inviteCode='" + inviteCode + '\'' +
-                ", title='" + title + '\'' +
-                ", expenses='" + expensesList.toString() + '\'' +
-                ", participants='" + participantsList.toString() + '\'' +
-                ", tags='" + tagsList.toString() + '\'' +
-                ", creationDate='" + creationDate + '\'' +
-                ", lastActivity='" + lastActivity + '\'' +
-                '}';
+        return this.getInviteCode() + "\t\t" +
+                this.getTitle() + "\t\t" +
+                this.getParticipantsList().size() + "\t\t" +
+                this.getExpensesList().size() + "\t\t" +
+                this.getLastActivity() + "\n";
     }
 }
