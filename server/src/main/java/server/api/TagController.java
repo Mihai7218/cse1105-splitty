@@ -66,8 +66,8 @@ public class TagController {
      * Changes the name of a tag
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId the id of the tag itself
-     * @param tag the new tag after change
-     * @return whether the tag was changed
+     * @param tag the new tag to be changed to
+     * @return whether the tagname was changed
      */
     @PutMapping(path = {"/{inviteCode}/tags/{tagId}"})
     public ResponseEntity<Tag> changeTag(@PathVariable("inviteCode") long inviteCode,

@@ -20,7 +20,7 @@ public class AdminConsole {
 
     private List<Event> events;
 
-    private ServerUtils serverUtils;
+    private ServerUtils utils;
 
     private String password;
 
@@ -44,8 +44,8 @@ public class AdminConsole {
      * Return the ServerUtils that are stored in the adminconsole
      * @return the stored ServerUtils
      */
-    public ServerUtils getServerUtils() {
-        return serverUtils;
+    public ServerUtils getUtils() {
+        return utils;
     }
 
     /**
@@ -61,7 +61,7 @@ public class AdminConsole {
      */
     public AdminConsole() {
         this.events = new ArrayList<>();
-        serverUtils = new ServerUtils("");
+        utils = new ServerUtils("");
         password = "";
     }
 
@@ -87,7 +87,6 @@ public class AdminConsole {
         //AdminConsole adminConsole = new AdminConsole("http://localhost:8080");
         System.out.println("Succes :D");
         showOptions(userInput, adminConsole);
-
     }
 
     /**
@@ -98,15 +97,14 @@ public class AdminConsole {
      */
     public static void showOptions(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What would you like to do?");
-        System.out.println("\t 1 - Show all events");
+        System.out.println("\t 1 - Show events in the database");
         System.out.println("\t 2 - Dump database to json file");
         System.out.println("\t 3 - Import events from json file");
-        System.out.println("\t 4 - exit");
+        System.out.println("\t 4 - Delete an event from the database"); //TODO
+        System.out.println("\t 5 - exit");
         switch (userInput.nextInt()) {
             case 1:
-                adminConsole.updateEvents();
-                System.out.println(adminConsole.printEvents());
-                showOptions(userInput, adminConsole);
+                printerMenu(userInput, adminConsole);
                 break;
             case 2:
                 adminConsole.updateEvents();
@@ -118,16 +116,124 @@ public class AdminConsole {
                 if(importedEvents == null || importedEvents.isEmpty()) break;
                 for(Event e: importedEvents) adminConsole.setNewEvents(e);
                 break;
+            case 4:
+                adminConsole.deleteEventMenu(userInput, adminConsole);
+                break;
             default:
                 exit();
         }
     }
 
     /**
+     * @param userInput scanner to read user selected option from
+     * @param adminConsole the current admin console
+     */
+    public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
+        System.out.println("What would you like to do?");
+        printerMenuPrintText();
+        switch (userInput.nextInt()){
+            case 1:
+                adminConsole.updateEvents();
+                adminConsole.printEvents();
+                showOptions(userInput, adminConsole);
+                break;
+            case 2:
+                adminConsole.updateEvents();
+                adminConsole.orderByTitleAsc();
+                showOptions(userInput, adminConsole);
+                break;
+            case 3:
+                adminConsole.updateEvents();
+                adminConsole.orderByTitleDesc();
+                showOptions(userInput, adminConsole);
+                break;
+            case 4:
+                adminConsole.updateEvents();
+                adminConsole.orderByCreationRecent();
+                showOptions(userInput, adminConsole);
+                break;
+            case 5:
+                adminConsole.updateEvents();
+                adminConsole.orderByCreationOld();
+                showOptions(userInput, adminConsole);
+                break;
+            case 6:
+                adminConsole.updateEvents();
+                adminConsole.orderByActivityRecent();
+                showOptions(userInput, adminConsole);
+                break;
+            case 7:
+                adminConsole.updateEvents();
+                adminConsole.orderByActivityOld();
+                showOptions(userInput, adminConsole);
+                break;
+            case 8:
+                showOptions(userInput, adminConsole);
+            case 9:
+                exit();
+        }
+
+
+    }
+
+    /**
+     * Just prints the text for the printerMenu
+     * Otherwise the method is too long
+     */
+    public static void printerMenuPrintText(){
+        System.out.println("""
+                        \t 1 - Show all events in the database
+                        \t 2 - Show all events ordered by title (ASC)
+                        \t 3 - Show all events ordered by title (DESC)
+                        \t 4 - Show all events ordered by creation date (NEWEST)
+                        \t 5 - Show all events ordered by creation date (OLDEST)
+                        \t 6 - Show all events ordered by activity (RECENT)
+                        \t 7 - Show all events ordered by activity (LAST)
+                        \t 8 - Return to main menu
+                        \t 9 - exit""");
+    }
+
+    /**
+     * @param userInput the scanner for the userInput
+     * @param adminConsole the currently running adminConsole
+     */
+    public void deleteEventMenu(Scanner userInput, AdminConsole adminConsole){
+        System.out.println("Please enter the inviteCode of the " +
+                "Event you would like to delete from the database:");
+        int invCode = userInput.nextInt();
+        boolean deletion = confirmationMenu(userInput, invCode);
+        if (deletion == true){
+            Event event = utils.deleteEvent(invCode);
+            System.out.println("Event" + event.toString() + "deleted successfully");
+        } else {
+            System.out.println("Event remains in the database");
+        }
+    }
+
+
+    /**
+     * @param userInput the userInput scanner
+     * @param invCode the invite code of the event to be deleted from the system
+     * @return whether the deletion was confirmed
+     */
+    public boolean confirmationMenu(Scanner userInput, int invCode) {
+        System.out.println("Please confirm you want to delete event" + invCode + "\n" +
+                "Y/N");
+        String choice = userInput.next();
+        switch (choice) {
+            case "Y":
+                return true;
+            case "N":
+                return false;
+            default:
+                return false;
+        }
+    }
+    /**
      * Methode to update/download the event list from the server
      */
     public void updateEvents() {
-        events = serverUtils.getEvents(password);
+        events = utils.getEvents(password);
     }
 
     /**
@@ -181,15 +287,14 @@ public class AdminConsole {
     }
 
     /**
-     * Print all the events that are currently on the server
+     * Prints all events on the server
      */
-    public String printEvents() {
-        String res = "";
-
+    public void printEvents() {
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
-            res += event.toString();
+            System.out.println(event.toString());
         }
-        return res;
     }
 
     /**
@@ -203,7 +308,7 @@ public class AdminConsole {
         String password = userInput.next();
         //password = "902087";
         try {
-            adminConsole.events = adminConsole.serverUtils.getEvents(password);
+            adminConsole.events = adminConsole.utils.getEvents(password);
             adminConsole.setPassword(password);
         } catch (Exception e) {
             System.out.println("Password incorrect");
@@ -288,7 +393,7 @@ public class AdminConsole {
      * @param event the event to be added/validated
      */
     public void setNewEvents(Event event){
-        serverUtils.setEvents(event, password);
+        utils.setEvents(event, password);
     }
 
     /**
@@ -296,6 +401,8 @@ public class AdminConsole {
      */
     public void orderByTitleAsc(){
         Collections.sort(events, Comparator.comparing(Event::getTitle));
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -307,6 +414,8 @@ public class AdminConsole {
     public void orderByTitleDesc(){
         Collections.sort(events, Comparator.comparing(Event::getTitle));
         Collections.reverse(events);
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -317,6 +426,8 @@ public class AdminConsole {
      */
     public void orderByCreationRecent(){
         events.sort(Comparator.comparing(Event::getCreationDate));
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -328,6 +439,8 @@ public class AdminConsole {
     public void orderByCreationOld(){
         events.sort(Comparator.comparing(Event::getCreationDate));
         Collections.reverse(events);
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -338,6 +451,8 @@ public class AdminConsole {
      */
     public void orderByActivityRecent(){
         events.sort(Comparator.comparing(Event::getLastActivity));
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -349,6 +464,8 @@ public class AdminConsole {
     public void orderByActivityOld(){
         events.sort(Comparator.comparing(Event::getLastActivity));
         Collections.reverse(events);
+        System.out.println("InviteCode\t\tTitle\t\tNr. Participants" +
+                "\t\tNr. Expenses\t\tLast Activity\n");
         for (Event event : events) {
             System.out.println(event.toString());
         }
@@ -362,7 +479,7 @@ public class AdminConsole {
      */
     public static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
-        adminConsole.serverUtils.setServer(userInput.next());
+        adminConsole.utils.setServer(userInput.next());
         //adminConsole.serverUtils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
