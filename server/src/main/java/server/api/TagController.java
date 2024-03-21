@@ -76,8 +76,6 @@ public class TagController {
         return tagService.changeTag(inviteCode, tagId, tag);
     }
 
-
-
     /***
      * Deletes a tag from an event/the repo
      * @param inviteCode the event to delete from

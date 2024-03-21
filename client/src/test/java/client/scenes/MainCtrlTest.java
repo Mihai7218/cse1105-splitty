@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.LanguageManager;
+import commons.Event;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+
+import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -144,5 +147,13 @@ class MainCtrlTest {
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
+    }
+
+    @Test
+    void setEvent() {
+        Event event = new Event("Mock Event", new Date(), new Date());
+        sut.setEvent(event);
+
+        assertEquals(event, sut.getEvent());
     }
 }
