@@ -128,14 +128,17 @@ class MainCtrlTest {
         OverviewCtrl overviewCtrl = mock(OverviewCtrl.class);
         Parent overview = spy(Parent.class);
         AddExpenseCtrl addExpenseCtrl = mock(AddExpenseCtrl.class);
-        Parent addexpense = spy(Parent.class);
+        Parent addExpense = spy(Parent.class);
+        InvitationCtrl invitationCtrl = mock(InvitationCtrl.class);
+        Parent invitation = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
-                new Pair<>(addExpenseCtrl, addexpense));
+                new Pair<>(addExpenseCtrl, addExpense),
+                new Pair<>(invitationCtrl, invitation));
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
@@ -147,6 +150,10 @@ class MainCtrlTest {
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
+        assertEquals(addExpenseCtrl, sut.getAddExpenseCtrl());
+        assertEquals(addExpense, sut.getAddExpense().getRoot());
+        assertEquals(invitationCtrl, sut.getInvitationCtrl());
+        assertEquals(invitation, sut.getInvitation().getRoot());
     }
 
     @Test

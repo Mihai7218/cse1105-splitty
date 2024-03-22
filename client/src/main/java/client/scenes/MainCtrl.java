@@ -44,6 +44,8 @@ public class MainCtrl {
     private Scene overview;
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
+    private InvitationCtrl invitationCtrl;
+    private Scene invitation;
 
     private Event event;
 
@@ -70,7 +72,8 @@ public class MainCtrl {
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
                            Parent> startScreen, Pair<ParticipantCtrl, Parent> participant
-            , Pair<OverviewCtrl, Parent> overview, Pair<AddExpenseCtrl, Parent> addExpense) {
+            , Pair<OverviewCtrl, Parent> overview, Pair<AddExpenseCtrl, Parent> addExpense,
+                           Pair<InvitationCtrl, Parent> invitation) {
         this.primaryStage = primaryStage;
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
@@ -90,8 +93,21 @@ public class MainCtrl {
         this.addExpenseCtrl = addExpense.getKey();
         this.addExpense = new Scene(addExpense.getValue());
 
+        this.invitationCtrl = invitation.getKey();
+        this.invitation = new Scene(invitation.getValue());
+
+
         showStartMenu();
         primaryStage.show();
+    }
+
+    /**
+     * shows scene to send invitations
+     */
+    public void showInvitation(){
+        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.setScene(invitation);
+        if (invitationCtrl != null) invitationCtrl.refresh();
     }
 
     /**
@@ -256,5 +272,37 @@ public class MainCtrl {
      */
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    /**
+     * Getter for expense controller
+     * @return the ExpenseCtrl
+     */
+    public AddExpenseCtrl getAddExpenseCtrl() {
+        return addExpenseCtrl;
+    }
+
+    /**
+     * Getter for AddExpense scene
+     * @return the scene
+     */
+    public Scene getAddExpense() {
+        return addExpense;
+    }
+
+    /**
+     * Getter for the invitation controller
+     * @return the InvitationCtrl
+     */
+    public InvitationCtrl getInvitationCtrl() {
+        return invitationCtrl;
+    }
+
+    /**
+     * Getter for Invitation scene
+     * @return the scene
+     */
+    public Scene getInvitation() {
+        return invitation;
     }
 }
