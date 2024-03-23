@@ -9,6 +9,7 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -57,11 +58,6 @@
             </font>
         </Label>
         <ComboBox fx:id="expenseType" layoutX="218.0" layoutY="420.0" prefWidth="150.0" />
-        <Button id="cancel" layoutX="390.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Button>
         <Button fx:id="add" layoutX="501.0" layoutY="508.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.addExpense.addButton}">
             <font>
                 <Font size="19.0" />
@@ -84,5 +80,11 @@
       <Button id="addEntity" fx:id="addTag" layoutX="65.0" layoutY="460.0" mnemonicParsing="false" onAction="#addTag" text="${controller.languageManager.addExpense.addTag}" />
       <TextField fx:id="newTag" layoutX="43.0" layoutY="510.0" />
       <Label fx:id="instructions" layoutX="43.0" layoutY="548.0" text="${controller.languageManager.addExpense.addTagInstructions}" />
+        <Button id="cancel" fx:id="cancelButton" layoutX="390.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
+            <font>
+                <Font size="19.0" />
+            </font>
+        </Button>
+      <HBox layoutX="173.0" layoutY="472.0" prefHeight="70.0" prefWidth="150.0" />
     </children>
 </AnchorPane>

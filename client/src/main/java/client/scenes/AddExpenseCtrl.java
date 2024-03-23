@@ -15,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -59,6 +61,10 @@ public class AddExpenseCtrl implements Initializable {
     private TextField newTag;
     @FXML
     private Label instructions;
+    @FXML
+    private Button add;
+    @FXML
+    private Button cancelButton;
     private final LanguageManager languageManager;
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
@@ -99,6 +105,8 @@ public class AddExpenseCtrl implements Initializable {
         scrollNames.setVisible(false);
         instructions.setVisible(false);
         newTag.setVisible(false);
+        cancelButton.setGraphic(new ImageView(new Image("icons/cancel.png")));
+        add.setGraphic(new ImageView(new Image("icons/check.png")));
         //payee.getItems().addAll(names);
         currency.getItems().addAll(currencies);
         Tag food = new Tag("food", "green");

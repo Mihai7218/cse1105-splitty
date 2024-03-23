@@ -28,6 +28,16 @@
     -fx-cursor: hand;
 }
 
+#cancelButtonContainer{
+    -fx-background-color: RGB(235,64,52);
+}
+
+#cancelButtonContainer:hover{
+    -fx-background-color:RGB(250, 103, 92);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
 #addEntity{
     -fx-background-color:RGB(086,180,233);
 }
