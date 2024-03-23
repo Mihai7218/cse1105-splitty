@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -53,8 +54,9 @@ public class ParticipantControllerTest {
         participantList.add(valid);
         creationDate = new Date(124, 4, 20);
         lastActivity = new Date(124, 4, 25);
-
-        baseEvent = new Event("Mock Event",creationDate,lastActivity);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        baseEvent = new Event("Mock Event",timestamp2,timestamp2);
         eventRepository.save(baseEvent);
         eventRepository.getById(0L).setParticipantsList(participantList);
 
@@ -180,34 +182,37 @@ public class ParticipantControllerTest {
         assertEquals(event.getLastActivity(),tmpdate);
     }
     @Test
-    public void lastActivityAfterDeleteTest(){
+    public void lastActivityAfterDeleteTest() throws InterruptedException {
         Event event = eventRepository.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         participantController.deleteParticipant(0L,0L);
         event = eventRepository.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
     @Test
-    public void lastActivityAfterChangeTest(){
+    public void lastActivityAfterChangeTest() throws InterruptedException {
         Event event = eventRepository.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         participantController.updateParticipant(0L,0L,new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
                 "HBUKGB4B"));
         event = eventRepository.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
     @Test
-    public void lastActivityAddTest(){
+    public void lastActivityAddTest() throws InterruptedException {
         Event event = eventRepository.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         participantController.addParticipant(0L,new Participant("Jon Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
                 "HBUKGB4B"));
         event = eventRepository.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
 }

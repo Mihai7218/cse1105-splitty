@@ -9,11 +9,11 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 import server.database.TagRepository;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
 public class ExpenseServiceTest {
@@ -36,8 +36,9 @@ public class ExpenseServiceTest {
         tagRepo = new TestTagRepository();
         expenseService = new ExpenseService(eventRepo, expenseRepo);
         eventService = new EventService(eventRepo, tagRepo);
-
-        event = new Event("main", null, null);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event = new Event("main", timestamp2, timestamp2);
 
         expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, null, payee);
         expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, payee);
@@ -364,23 +365,25 @@ public class ExpenseServiceTest {
         assertEquals(event.getLastActivity(),tmpdate);
     }
     @Test
-    public void lastActivityAfterDeleteTest(){
+    public void lastActivityAfterDeleteTest() throws InterruptedException {
         Event event = eventRepo.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         expenseService.deleteExpense(0L,0L);
         event = eventRepo.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
 
     @Test
-    public void lastActivityAddTest(){
+    public void lastActivityAddTest() throws InterruptedException {
         Event event = eventRepo.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         expenseService.add(0L,new Expense(600, "party2", "party2",
                 null, null, null, null, new Participant("joe", null, null, null)));
         event = eventRepo.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
 }

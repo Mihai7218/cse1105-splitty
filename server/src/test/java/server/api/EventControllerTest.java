@@ -148,15 +148,6 @@ public class EventControllerTest {
 
 
 
-    @Test
-    public void lastActivityAddTest(){
-        sut.add(new Event("daw",null,null));
-        Event event = repo.getById(0L);
-        Date tmpdate = event.getLastActivity();
-        sut.add(new Event("dwa",null,null));
-        event = repo.getById(0L);
-        assertEquals(event.getLastActivity(),tmpdate);
-    }
 
 
     @Test

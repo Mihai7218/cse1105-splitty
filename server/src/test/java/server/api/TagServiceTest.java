@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +31,8 @@ public class TagServiceTest {
 
     @BeforeEach
     public void setup() {
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
         eventRepo = new TestEventRepository();
         expenseRepo = new TestExpenseRepository();
         tagRepo = new TestTagRepository();
@@ -41,8 +44,8 @@ public class TagServiceTest {
         tagRepo.save(tag1);
         tagRepo.save(tag2);
 
-        event1 = new Event("bowling", null, null);
-        event2 = new Event("picnic", null, null);
+        event1 = new Event("bowling", timestamp2, timestamp2);
+        event2 = new Event("picnic", timestamp2, timestamp2);
 
         expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, tag1, payee);
         expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, tag2, payee);
@@ -64,7 +67,9 @@ public class TagServiceTest {
 
     @Test
     public void importTag(){
-        Event event = new Event("Title4", null, null);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        Event event = new Event("Title4", timestamp2, timestamp2);
         Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
         Participant other = new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
@@ -185,38 +190,42 @@ public class TagServiceTest {
     }
 
     @Test
-    public void lastActivityTest(){
+    public void lastActivityTest() throws InterruptedException {
         Event event = eventRepo.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         tagService.deleteTagFromEvent(0L,0L);
         event = eventRepo.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
     @Test
     public void lastActivityNotChangeTest(){
         Event event = eventRepo.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
         tagService.getTagsFromEvent(0L);
         event = eventRepo.getById(0L);
         assertEquals(event.getLastActivity(),tmpdate);
     }
 
     @Test
-    public void lastActivityAfterChangeTest(){
+    public void lastActivityAfterChangeTest() throws InterruptedException {
         Event event = eventRepo.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         tagService.changeTag(0L,0L,new Tag("new tag", "blue"));
         event = eventRepo.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
     @Test
-    public void lastActivityAfterAddChangeTest(){
+    public void lastActivityAfterAddChangeTest() throws InterruptedException {
         Event event = eventRepo.getById(0L);
-        Date tmpdate = event.getLastActivity();
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
         tagService.addNewToEvent(0L,new Tag("new","blue"));
         event = eventRepo.getById(0L);
-        assertNotEquals(event.getLastActivity(),tmpdate);
+        Date kip = event.getLastActivity();
+        assertTrue(kip.after(tmpdate));
     }
 
 }
