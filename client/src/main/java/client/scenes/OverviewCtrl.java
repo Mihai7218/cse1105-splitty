@@ -15,19 +15,24 @@
  */
 package client.scenes;
 
+import client.utils.ExpenseListCell;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 
+import java.net.URL;
 import java.util.List;
+import java.util.ResourceBundle;
 
-public class OverviewCtrl{
+public class OverviewCtrl implements Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -38,7 +43,7 @@ public class OverviewCtrl{
     private ListView participants;
 
     @FXML
-    private ListView all;
+    private ListView<Expense> all;
 
     @FXML
     private ChoiceBox<String> expenseparticipants;
@@ -65,6 +70,10 @@ public class OverviewCtrl{
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
+        all.getItems().clear();
+        all.getItems().addAll(mainCtrl.getEvent().getExpensesList());
+        all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+        all.refresh();
         addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
         editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         Event event = mainCtrl.getEvent();
@@ -145,4 +154,8 @@ public class OverviewCtrl{
 
     }
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+        all.setCellFactory(x -> new ExpenseListCell(mainCtrl));
+    }
 }
