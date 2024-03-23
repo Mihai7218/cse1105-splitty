@@ -78,7 +78,12 @@ public class StartScreenCtrl implements Initializable {
         if (eventString == null) return new ArrayList<>();
         List<Event> events = new ArrayList<>();
         for (String s : eventString.split(",")) {
-            events.add(serverUtils.getEvent(Integer.parseInt(s)));
+            try {
+                events.add(serverUtils.getEvent(Integer.parseInt(s)));
+            }
+            catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
         }
         return events;
     }
