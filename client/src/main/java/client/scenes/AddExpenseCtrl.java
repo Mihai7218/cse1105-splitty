@@ -2,11 +2,6 @@ package client.scenes;
 
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ComboBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Expense;
@@ -15,25 +10,22 @@ import commons.ParticipantPayment;
 import commons.Tag;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-import java.awt.*;
 import java.net.URL;
-//import javafx.util.Duration;
 import java.time.LocalDate;
 import java.util.ArrayList;
-
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -67,11 +59,10 @@ public class AddExpenseCtrl implements Initializable {
     private TextField newTag;
     @FXML
     private Label instructions;
-
+    private final LanguageManager languageManager;
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
-    private final LanguageManager languageManager;
     private final Alert alert;
 
     /**
@@ -321,9 +312,9 @@ public class AddExpenseCtrl implements Initializable {
         if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null) {
             // Display an alert informing the user about missing input
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Incomplete Data");
-            alert.setContentText("Please fill in all fields.");
+            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
+            alert.headerTextProperty().bind(languageManager.bind("addExpense.incompleteHeader"));
+            alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
             alert.showAndWait();
             return;
         }
@@ -342,9 +333,9 @@ public class AddExpenseCtrl implements Initializable {
         } catch (NumberFormatException e) {
             // Display an alert informing the user about incorrect price format
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Incorrect Data Format");
-            alert.setContentText("Please enter a valid price.");
+            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
+            alert.headerTextProperty().bind(languageManager.bind("addExpense.invalidHeader"));
+            alert.contentTextProperty().bind(languageManager.bind("addExpense.invalidBody"));
             alert.showAndWait();
         }
     }
@@ -376,6 +367,30 @@ public class AddExpenseCtrl implements Initializable {
         title.clear();
         price.clear();
         date.setValue(null);
+    }
+
+    /**
+     * Getter for the language manager observable map.
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Setter for the language manager observable map.
+     * @param languageManager - the language manager observable map.
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the language manager property.
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
     }
 
     /**
