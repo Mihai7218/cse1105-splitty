@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<?import client.utils.LanguageComboBox?>
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+<!--<?import client.utils.LanguageComboBox?>-->
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
-      <Button layoutX="285.0" layoutY="22.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="${controller.languageManager.overview.sendInvitesButton}" />
-      <Button layoutX="285.0" layoutY="173.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
+      <Button id="sendmail" layoutX="285.0" layoutY="22.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="92.0" text="${controller.languageManager.overview.sendInvitesButton}" />
+      <Button id="addEntity" layoutX="285.0" layoutY="173.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
       <TabPane layoutX="35.0" layoutY="206.0" prefHeight="162.0" prefWidth="350.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="${controller.languageManager.overview.allTab}">
@@ -44,11 +51,17 @@
          <font>
             <Font size="18.0" />
          </font></Label>
-      <Button fx:id="addparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="143.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="20.0" prefWidth="20.0" scaleShape="false" />
+      <Button id="icon" fx:id="addparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="143.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="20.0" prefWidth="20.0" scaleShape="false">
+         <tooltip>
+            <Tooltip id="tooltipAddParticipants" fx:id="addParticipantTooltip" text="Add Participants" />
+         </tooltip></Button>
       <ListView fx:id="participants" layoutX="35.0" layoutY="108.0" prefHeight="37.0" prefWidth="238.0" />
       <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="174.0" prefWidth="150.0" />
-      <Button fx:id="editparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="105.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" scaleShape="false" />
-      <Button cancelButton="true" layoutX="33.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
-      <LanguageComboBox fx:id="languages" layoutX="210.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0" />
+      <Button id="icon" fx:id="editparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="105.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" scaleShape="false">
+         <tooltip>
+            <Tooltip id="tooltipTextEdit" fx:id="tooltipEdit" text="Edit Participants" />
+         </tooltip></Button>
+      <Button id="cancel" cancelButton="true" layoutX="33.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
+<!--      <LanguageComboBox fx:id="languages" layoutX="210.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0" />-->
    </children>
 </AnchorPane>

@@ -17,7 +17,7 @@
    <children>
       <VBox alignment="TOP_CENTER" layoutX="70.0" layoutY="51.0" prefHeight="410.0" prefWidth="310.0">
          <children>
-            <VBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
+            <VBox id="createEventContainer" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
                <children>
                   <Label fx:id="createNewEventLabel" text="${controller.languageManager.startScreen.createNewEventLabel}">
                      <font>
@@ -34,7 +34,7 @@
                </children>
             </VBox>
             <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
-            <VBox alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
+            <VBox id="joinEventContainer" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
                <children>
                   <Label fx:id="joinEventLabel" text="${controller.languageManager.startScreen.joinEventLabel}">
                      <font>
@@ -65,12 +65,12 @@
       </VBox>
       <Pane layoutX="26.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0">
          <children>
-            <Text layoutX="14.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
+            <Text id="header" layoutX="14.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
                <font>
                   <Font name="MathJax_SansSerif-Regular" size="30.0" />
                </font>
             </Text>
-            <LanguageComboBox fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />
+            <LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />
          </children>
       </Pane>
    </children>

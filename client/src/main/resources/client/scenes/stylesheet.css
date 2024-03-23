@@ -1,0 +1,55 @@
+/*General CSS styling*/
+.root{
+}
+
+.button{
+    -fx-background-color: RGB(000,158,115);
+    -fx-text-fill: white;
+}
+
+.button:hover{
+    -fx-background-color: RGB(36, 201, 144);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#icon{
+    -fx-background-color: none;
+
+}
+
+#cancel{
+    -fx-background-color: RGB(235,64,52);
+}
+
+#cancel:hover{
+    -fx-background-color:RGB(250, 103, 92);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#addEntity{
+    -fx-background-color:RGB(086,180,233);
+}
+
+#addEntity:hover{
+    -fx-background-color:RGB(138, 200, 235);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#languages:hover{
+    -fx-cursor: hand;
+}
+
+/*Overview Specific Styling*/
+
+/*Start Page Specific Styling*/
+#createEventContainer{
+}
+
+#joinEventContainer{
+
+}
+
+

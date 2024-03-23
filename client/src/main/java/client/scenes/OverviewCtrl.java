@@ -61,6 +61,9 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Button editparticipant;
 
+    @FXML
+    private Button sendMail;
+
 
 
     /**

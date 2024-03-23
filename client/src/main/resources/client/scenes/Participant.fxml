@@ -9,7 +9,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="267.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ParticipantCtrl">
    <children>
       <Button defaultButton="true" layoutX="420.0" layoutY="227.0" mnemonicParsing="false" onAction="#ok" text="${controller.languageManager.addParticipant.okButton}" />
-      <Button cancelButton="true" layoutX="348.0" layoutY="227.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addParticipant.cancelButton}" />
+      <Button id="cancel" cancelButton="true" layoutX="348.0" layoutY="227.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addParticipant.cancelButton}" />
       <TextField fx:id="name" layoutX="109.0" layoutY="76.0" prefHeight="26.0" prefWidth="346.0" />
       <TextField fx:id="iban" layoutX="109.0" layoutY="150.0" prefHeight="26.0" prefWidth="346.0" />
       <TextField fx:id="email" layoutX="109.0" layoutY="113.0" prefHeight="26.0" prefWidth="345.0" />
