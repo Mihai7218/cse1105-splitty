@@ -65,6 +65,7 @@ public class StartScreenCtrl implements Initializable {
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
         recentEvents.getItems().addAll(getRecentEventsFromConfig());
+        this.refreshConfig();
         updateLanguageComboBox(language);
         this.refreshLanguage();
     }
@@ -78,7 +79,12 @@ public class StartScreenCtrl implements Initializable {
         if (eventString == null) return new ArrayList<>();
         List<Event> events = new ArrayList<>();
         for (String s : eventString.split(",")) {
-            events.add(serverUtils.getEvent(Integer.parseInt(s)));
+            try {
+                events.add(serverUtils.getEvent(Integer.parseInt(s)));
+            }
+            catch (WebApplicationException | NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
         return events;
     }
