@@ -65,6 +65,7 @@ public class StartScreenCtrl implements Initializable {
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
         recentEvents.getItems().addAll(getRecentEventsFromConfig());
+        this.refreshConfig();
         updateLanguageComboBox(language);
         this.refreshLanguage();
     }
