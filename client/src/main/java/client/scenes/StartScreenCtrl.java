@@ -81,7 +81,7 @@ public class StartScreenCtrl implements Initializable {
             try {
                 events.add(serverUtils.getEvent(Integer.parseInt(s)));
             }
-            catch (WebApplicationException e) {
+            catch (WebApplicationException | NumberFormatException e) {
                 e.printStackTrace();
             }
         }
