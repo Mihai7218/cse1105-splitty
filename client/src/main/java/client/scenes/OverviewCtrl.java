@@ -154,6 +154,11 @@ public class OverviewCtrl implements Initializable {
 
     }
 
+    /**
+     * Initialize method for the overview controller.
+     * @param url - URL
+     * @param resourceBundle - ResourceBundle
+     */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         all.setCellFactory(x -> new ExpenseListCell(mainCtrl));

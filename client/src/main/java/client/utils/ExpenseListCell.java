@@ -74,53 +74,60 @@ public class ExpenseListCell extends ListCell<Expense> {
             setText(null);
             setGraphic(null);
         } else {
-            try {
-                expenseName.setText(this.getItem().getTitle());
-            }
-            catch (NullPointerException e) {
-                expenseName.setText("<no title>");
-            }
-            try {
-                payeeName.setText(this.getItem().getPayee().getName());
-            }
-            catch (NullPointerException e) {
-                payeeName.setText("<no payee>");
-            }
-            try {
-                price.setText(Double.toString(this.getItem().getAmount()));
-            }
-            catch (NullPointerException e) {
-                price.setText("<no price>");
-            }
-            catch (NumberFormatException e) {
-                price.setText("<invalid price>");
-            }
-            try {
-                currency.setText(this.getItem().getCurrency());
-            }
-            catch (NullPointerException e) {
-                currency.setText("<no currency>");
-            }
-            StringBuilder sb = new StringBuilder();
-            if (!this.getItem().getSplit().isEmpty()) {
-                sb.append("(");
-                for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
-                    sb.append(this.getItem().getSplit().get(i)).append(", ");
-                }
-                sb.append(this.getItem().getSplit().get(this.getItem().getSplit().size() - 1));
-                sb.append(")");
-            }
-            else {
-                sb.append("none");
-            }
-            payers.setText(sb.toString());
-            try {
-                date.setText(String.valueOf(this.getItem().getDate()));
-            }
-            catch (NullPointerException e) {
-                date.setText("<no date>");
-            }
-            setGraphic(hBox);
+            update();
         }
+    }
+
+    /**
+     * Updates the labels and sets the graphic to the HBox.
+     */
+    private void update() {
+        try {
+            expenseName.setText(this.getItem().getTitle());
+        }
+        catch (NullPointerException e) {
+            expenseName.setText("<no title>");
+        }
+        try {
+            payeeName.setText(this.getItem().getPayee().getName());
+        }
+        catch (NullPointerException e) {
+            payeeName.setText("<no payee>");
+        }
+        try {
+            price.setText(Double.toString(this.getItem().getAmount()));
+        }
+        catch (NullPointerException e) {
+            price.setText("<no price>");
+        }
+        catch (NumberFormatException e) {
+            price.setText("<invalid price>");
+        }
+        try {
+            currency.setText(this.getItem().getCurrency());
+        }
+        catch (NullPointerException e) {
+            currency.setText("<no currency>");
+        }
+        StringBuilder sb = new StringBuilder();
+        if (!this.getItem().getSplit().isEmpty()) {
+            sb.append("(");
+            for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
+                sb.append(this.getItem().getSplit().get(i)).append(", ");
+            }
+            sb.append(this.getItem().getSplit().get(this.getItem().getSplit().size() - 1));
+            sb.append(")");
+        }
+        else {
+            sb.append("none");
+        }
+        payers.setText(sb.toString());
+        try {
+            date.setText(String.valueOf(this.getItem().getDate()));
+        }
+        catch (NullPointerException e) {
+            date.setText("<no date>");
+        }
+        setGraphic(hBox);
     }
 }
