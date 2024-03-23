@@ -117,11 +117,12 @@ public class ParticipantControllerTest {
                 "NL85RABO5253446745", "HBUKGB4B");
         participantController.addParticipant(0, three);
         List<String> called = List.of("existsById", "findById", "findById",
-                "existsById", "findById", "findById",
-                "existsById", "findById", "findById","findById", "save", "existsById", "getById");
+                "existsById", "findById", "findById", "existsById",
+                "findById", "findById", "findById", "findById",
+                "save", "existsById", "getById", "save", "existsById", "getById");
         assertEquals(eventRepository.calledMethods, called);
         assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 13);
+        assertEquals(eventRepository.calledMethods.size(), 17);
     }
 
     @Test
@@ -151,15 +152,14 @@ public class ParticipantControllerTest {
         eventRepository.flush();
         participantController.deleteParticipant(0,0);
         assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 23);
-        List<String> called = List.of("existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "findById", "save", "existsById",
-                "getById", "getReferenceById");
+        assertEquals(eventRepository.calledMethods.size(), 27);
+        List<String> called = List.of("existsById", "findById", "findById",
+                "existsById", "findById", "findById", "existsById",
+                "findById", "findById", "existsById", "findById",
+                "findById", "existsById", "findById", "findById",
+                "existsById", "findById", "findById", "findById",
+                "findById", "save", "existsById", "getById", "save",
+                "existsById", "getById", "getReferenceById");
         assertEquals(eventRepository.calledMethods, called);
 
     }

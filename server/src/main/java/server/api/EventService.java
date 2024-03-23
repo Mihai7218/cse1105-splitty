@@ -104,9 +104,7 @@ public class EventService {
         }
 
         Event saved = eventRepository.findById(inviteCode).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        saved.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepository,inviteCode);
         saved.setTitle(event.getTitle());
         eventRepository.save(saved);
         return ResponseEntity.ok(saved);

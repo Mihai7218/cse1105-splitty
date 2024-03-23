@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.TagRepository;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 @Service
@@ -89,9 +88,7 @@ public class TagService {
         tagList.add(tag);
         event.setTagsList(tagList);
         //Save both in their respective repos
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepo,inviteCode);
         tagRepo.save(tag);
         eventRepo.save(event);
 
@@ -118,10 +115,7 @@ public class TagService {
             return ResponseEntity.badRequest().build();
         }
         Event event = eventRepo.findById(inviteCode).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
-        eventRepo.save(event);
+        UpdateService.updateDate(eventRepo,inviteCode);
         Tag change = tag;
         tagRepo.save(change);
         return ResponseEntity.ok(null);
@@ -144,9 +138,7 @@ public class TagService {
             return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(inviteCode).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepo,inviteCode);
         Optional<Tag> test = tagRepo.findById(tagId);
         event.getTagsList().remove(test.get());
         eventRepo.save(event);

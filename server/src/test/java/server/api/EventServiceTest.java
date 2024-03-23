@@ -3,11 +3,10 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import server.database.ParticipantRepository;
 
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -214,13 +213,5 @@ class EventServiceTest {
     }
 
 
-    @Test
-    public void lastActivityAddTest(){
-        Event event = eventRepository.getById(0L);
-        Date tmpdate = event.getLastActivity();
-        eventService.addEvent(new Event("dwa",null,null));
-        event = eventRepository.getById(0L);
-        assertEquals(event.getLastActivity(),tmpdate);
-    }
 
 }

@@ -9,8 +9,6 @@ import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -98,9 +96,7 @@ public class ParticipantService {
         participantRepository.save(participant);
         currentParticipants.add(participant);
         Event event = eventRepository.findById(eventId).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepository,eventId);
         eventRepository.save(event);
         return ResponseEntity.ok(participant);
     }
@@ -127,11 +123,7 @@ public class ParticipantService {
         old.setBic(participant.getBic());
         old.setIban(participant.getIban());
         old.setEmail(participant.getEmail());
-        Event event = eventRepository.findById(eventId).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
-        eventRepository.save(event);
+        UpdateService.updateDate(eventRepository,eventId);
         return ResponseEntity.ok(participant);
     }
 
@@ -154,9 +146,7 @@ public class ParticipantService {
         participantList.remove(participant);
         participantRepository.deleteById(id);
         Event event = eventRepository.findById(eventId).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepository,eventId);
         eventRepository.save(event);
         eventRepository.getReferenceById(eventId).setParticipantsList(participantList);
         return ResponseEntity.ok(participant);

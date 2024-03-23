@@ -9,9 +9,9 @@ import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
 
-import java.sql.Timestamp;
+
 import java.util.Collections;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -93,9 +93,7 @@ public class ExpenseService {
         expenseList.add(expense);
         event.setExpensesList(expenseList);
         expenseRepo.save(expense);
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepo,id);
         eventRepo.save(event);
         return ResponseEntity.ok(expense);
     }
@@ -126,9 +124,7 @@ public class ExpenseService {
         change.setTitle(title);
         expenseRepo.save(change);
         Event event = eventRepo.findById(id).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepo,id);
         eventRepo.save(event);
         return ResponseEntity.ok(null);
     }
@@ -159,11 +155,7 @@ public class ExpenseService {
         Expense change = expenseRepo.findById(expenseId).get();
         change.setAmount(amount);
         expenseRepo.save(change);
-        Event event = eventRepo.findById(id).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
-        eventRepo.save(event);
+        UpdateService.updateDate(eventRepo,id);
         return ResponseEntity.ok(null);
     }
 
@@ -194,11 +186,7 @@ public class ExpenseService {
         Expense change = expenseRepo.findById(expenseId).get();
         change.setPayee(payee);
         expenseRepo.save(change);
-        Event event = eventRepo.findById(id).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
-        eventRepo.save(event);
+        UpdateService.updateDate(eventRepo,id);
         return ResponseEntity.ok(null);
     }
 
@@ -225,9 +213,7 @@ public class ExpenseService {
         List<Expense> expenseList = event.getExpensesList();
         expenseList.remove(expense);
         event.setExpensesList(expenseList);
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setLastActivity(timestamp2);
+        UpdateService.updateDate(eventRepo,id);
         eventRepo.save(event);
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
         return ResponseEntity.ok(expense);
