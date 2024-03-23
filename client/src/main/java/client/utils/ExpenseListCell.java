@@ -2,14 +2,12 @@ package client.utils;
 
 import client.scenes.MainCtrl;
 import commons.Expense;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 
 public class ExpenseListCell extends ListCell<Expense> {
     private Label expenseName;
@@ -21,7 +19,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     private Label date;
     private Label payers;
     private Button edit;
-    private HBox details;
+    private FlowPane details;
     private VBox vBox;
     private HBox hBox;
     private Region autogrowLeft;
@@ -47,12 +45,13 @@ public class ExpenseListCell extends ListCell<Expense> {
         });
         autogrowLeft = new Region();
         autogrowRight = new Region();
-        details = new HBox(payeeName, paidLabel, price, currency, forLabel, expenseName);
+        details = new FlowPane(payeeName, paidLabel, price, currency, forLabel, expenseName);
         vBox = new VBox(details, payers);
         hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit);
         hBox.setSpacing(5);
         vBox.setSpacing(5);
-        details.setSpacing(3);
+        details.setHgap(3);
+        details.setOrientation(Orientation.HORIZONTAL);
         payeeName.setStyle("-fx-font-weight: 700;");
         expenseName.setStyle("-fx-font-weight: 700;");
         price.setStyle("-fx-font-weight: 700;");
