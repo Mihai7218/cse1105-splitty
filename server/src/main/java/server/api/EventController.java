@@ -18,13 +18,16 @@ public class EventController {
 
     private final EventService eventService;
 
+    private final GerneralServerUtil serverUtil;
+
 
     /**
      * constructor for the EventController
      * @param eventService the service with all the necessary functions for the api
      */
-    public EventController(EventService eventService) {
+    public EventController(EventService eventService, GerneralServerUtil serverUtil) {
         this.eventService = eventService;
+        this.serverUtil = serverUtil;
     }
 
     /**
@@ -69,7 +72,7 @@ public class EventController {
     @PutMapping(path = {"/{inviteCode}" })
     public ResponseEntity<Event> change(@PathVariable("inviteCode") long inviteCode,
                                         @RequestBody Event event) {
-        return eventService.changeEvent(inviteCode,event);
+        return eventService.changeEvent(inviteCode,event,serverUtil);
     }
 
     /**

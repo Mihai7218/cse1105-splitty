@@ -2,6 +2,8 @@ package commons;
 
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -21,7 +23,9 @@ public class Event {
     private List<Participant> participantsList;
     @OneToMany
     private List<Tag> tagsList;
+    @CreationTimestamp
     private Date creationDate;
+    @UpdateTimestamp
     private Date lastActivity;
 
     /**

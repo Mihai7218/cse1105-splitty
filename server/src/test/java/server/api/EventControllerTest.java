@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -33,15 +35,18 @@ public class EventControllerTest {
     private EventController sut;
     private PasswordService ps;
 
+    public TestEventRepository repo = new TestEventRepository();
+
     @BeforeEach
     public void setup() {
-        TestEventRepository repo = new TestEventRepository();
+        GerneralServerUtil test = new ServerUtilModule();
         TestTagRepository tagRepo = new TestTagRepository();
         EventService ev = new EventService(repo, tagRepo);
         ps=new PasswordService();
         setPassword("password");
-        sut = new EventController(ev);
+        sut = new EventController(ev, test);
     }
+
 
     @Test
     public void calculateDebts(){
@@ -129,6 +134,21 @@ public class EventControllerTest {
         tags.add(new Tag("travel", "red"));
         return new Event(q,null,null);
     }
+
+    @Test
+    public void lastActivityNotChange2Test(){
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        sut.add(new Event("asa",timestamp2,timestamp2));
+        Event event = repo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        sut.get(0L);
+        event = repo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+
+
+
 
 
     @Test

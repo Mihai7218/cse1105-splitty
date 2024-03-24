@@ -6,9 +6,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import server.database.EventRepository;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.*;
 import static server.api.PasswordService.setPassword;
 
@@ -21,14 +25,19 @@ public class ExpenseControllerTest {
     public long eventId;
     public Participant payee;
 
+    public TestEventRepository eventRepo = new TestEventRepository();
+
+    public GerneralServerUtil serverUtil;
+
     @BeforeEach
     public void setup() {
-        TestEventRepository eventRepo = new TestEventRepository();
+        serverUtil = new ServerUtilModule();
         TestExpenseRepository expenseRepo = new TestExpenseRepository();
         ExpenseService serv = new ExpenseService(eventRepo, expenseRepo);
-        ctrl = new ExpenseController(serv);
-
-        event = new Event("main", null, null);
+        ctrl = new ExpenseController(serv,serverUtil);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        event = new Event("main", timestamp2, timestamp2);
 
         expense1 = new Expense(2.0, "eur", "drinks", "drinks", null, null, null, payee);
         expense2 = new Expense(23.60, "try", "bowling", "fun activity", null, null, null, payee);
@@ -343,6 +352,37 @@ public class ExpenseControllerTest {
     public void deleteEventDoesntExistTest(){
         ResponseEntity<Expense> res = ctrl.deleteExpense(expense1.getId(), 100);
         assertEquals(NOT_FOUND, res.getStatusCode());
+    }
+
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        ctrl.getAllExpenses(0L);
+        event = eventRepo.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest() throws InterruptedException {
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        ctrl.deleteExpense(0L,0L);
+        event = eventRepo.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+
+    @Test
+    public void lastActivityAddTest() throws InterruptedException {
+        Event event = eventRepo.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        ctrl.add(0L,new Expense(600, "party2", "party2",
+                null, null, null, null, new Participant("joe", null, null, null)));
+        event = eventRepo.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
 }

@@ -79,8 +79,8 @@ public class EventService {
         event.setTagsList(savedTags);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setCreationDate(timestamp2);
         event.setLastActivity(timestamp2);
+        event.setCreationDate(timestamp2);
         eventRepository.save(event);
 
         return ResponseEntity.ok(event);
@@ -93,7 +93,8 @@ public class EventService {
      * @return the new changed event
      */
     @Transactional
-    public ResponseEntity<Event> changeEvent(long inviteCode, Event event) {
+    public ResponseEntity<Event> changeEvent(long inviteCode, Event event,
+                                             GerneralServerUtil serverUtil) {
         if (inviteCode < 0) {
             return ResponseEntity.badRequest().build();
         }if (!eventRepository.existsById(inviteCode)) {
@@ -104,9 +105,7 @@ public class EventService {
         }
 
         Event saved = eventRepository.findById(inviteCode).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        saved.setLastActivity(timestamp2);
+        serverUtil.updateDate(eventRepository,inviteCode);
         saved.setTitle(event.getTitle());
         eventRepository.save(saved);
         return ResponseEntity.ok(saved);
