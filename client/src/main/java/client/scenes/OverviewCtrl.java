@@ -15,11 +15,7 @@
  */
 package client.scenes;
 
-import client.utils.ExpenseListCell;
-import client.utils.ConfigInterface;
-import client.utils.LanguageComboBox;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
@@ -35,7 +31,6 @@ import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 
 import java.net.URL;
-import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -189,9 +184,9 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        all.setCellFactory(x -> new ExpenseListCell(mainCtrl));
-        from.setCellFactory(x -> new ExpenseListCell(mainCtrl));
-        including.setCellFactory(x -> new ExpenseListCell(mainCtrl));
+        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
         participants.setCellFactory(x -> new ListCell<>() {
             @Override
             protected void updateItem(Participant item, boolean empty) {

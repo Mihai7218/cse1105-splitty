@@ -11,6 +11,7 @@ import javafx.scene.layout.*;
 
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
+    private final LanguageManager languageManager;
     private Label expenseName;
     private Label paidLabel;
     private Label payeeName;
@@ -29,9 +30,10 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Constructor for the RecentEventCell.
      */
-    public ExpenseListCell(MainCtrl mainCtrl) {
+    public ExpenseListCell(MainCtrl mainCtrl, LanguageManager languageManager) {
         super();
         this.mainCtrl = mainCtrl;
+        this.languageManager = languageManager;
     }
 
     /**
@@ -40,9 +42,11 @@ public class ExpenseListCell extends ListCell<Expense> {
      */
     private void createGraphic(Expense item) {
         expenseName = new Label();
-        paidLabel = new Label("paid");
+        paidLabel = new Label();
+        paidLabel.textProperty().bind(languageManager.bind("overview.paidLabel"));
         payeeName = new Label();
-        forLabel = new Label("for");
+        forLabel = new Label();
+        forLabel.textProperty().bind(languageManager.bind("overview.forLabel"));
         price = new Label();
         currency = new Label();
         date = new Label();
