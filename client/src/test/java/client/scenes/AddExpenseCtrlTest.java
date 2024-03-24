@@ -120,13 +120,13 @@ public class AddExpenseCtrlTest {
     @Test
     void chooseOne() {
         everyone.setSelected(true);
-        sut.chooseOne();
+        sut.everyoneCheck();
         assertFalse(only.isSelected());
         assertTrue(namesContainer.getChildren().isEmpty());
 
         everyone.setSelected(false);
         only.setSelected(true);
-        sut.chooseOne();
+        sut.onlyCheck();
         assertFalse(everyone.isSelected());
         if(everyone.isSelected()) noc.clear();
         else addPeople(noc);
