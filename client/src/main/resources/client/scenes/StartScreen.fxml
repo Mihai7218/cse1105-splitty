@@ -8,6 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
@@ -15,15 +16,17 @@
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartScreenCtrl">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="70.0" layoutY="51.0" prefHeight="410.0" prefWidth="310.0">
+      <VBox alignment="TOP_CENTER" layoutX="70.0" layoutY="64.0" prefHeight="410.0" prefWidth="310.0">
          <children>
-            <VBox id="createEventContainer" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
+            <VBox id="createEventContainer" alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="312.0">
                <children>
                   <Label id="startLabels" fx:id="createNewEventLabel" text="${controller.languageManager.startScreen.createNewEventLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
+                  <Line endX="209.69285583496094" endY="0.592908501625061" startX="-100.0" />
+                  <Region prefHeight="125.0" prefWidth="312.0" />
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
                      <children>
                         <TextField fx:id="newEventTitle" onKeyPressed="#createEventTextFieldHandler" promptText="${controller.languageManager.startScreen.newEventTitle}" />
@@ -37,14 +40,16 @@
                   </HBox>
                </children>
             </VBox>
-            <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
-            <VBox id="joinEventContainer" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
+            <Region prefHeight="0.0" prefWidth="310.0" VBox.vgrow="ALWAYS" />
+            <VBox id="joinEventContainer" alignment="CENTER_LEFT" prefHeight="69.0" prefWidth="312.0">
                <children>
                   <Label id="startLabels" fx:id="joinEventLabel" text="${controller.languageManager.startScreen.joinEventLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
+                  <Line endX="210.49290466308594" endY="1.692884087562561" startX="-100.0" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
                      <children>
                         <TextField fx:id="eventInvite" onKeyPressed="#joinEventTextFieldHandler" promptText="${controller.languageManager.startScreen.eventInvite}" />
@@ -58,7 +63,7 @@
                   </HBox>
                </children>
             </VBox>
-            <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
+            <Region prefHeight="0.0" prefWidth="310.0" VBox.vgrow="ALWAYS" />
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
                   <Label id="startLabels" fx:id="recentEventsLabel" text="${controller.languageManager.startScreen.recentEventsLabel}">
@@ -69,6 +74,7 @@
                   <ListView id="recentEvents" fx:id="recentEvents" prefHeight="200.0" prefWidth="200.0" />
                </children>
             </VBox>
+            <Region prefHeight="18.0" prefWidth="310.0" />
          </children>
       </VBox>
       <Pane layoutX="26.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0">
@@ -78,6 +84,7 @@
                   <Font name="MathJax_SansSerif-Regular" size="30.0" />
                </font>
             </Text>
+            <Button id="logo" fx:id="logo" contentDisplay="GRAPHIC_ONLY" layoutX="-8.0" mnemonicParsing="false" />
             <LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />
          </children>
       </Pane>

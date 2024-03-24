@@ -1,6 +1,6 @@
 /*General CSS styling*/
 .root{
-
+    -fx-background-color: white;
 }
 
 
@@ -9,6 +9,10 @@
 
     -fx-background-color: RGB(26, 132, 189);
     -fx-text-fill: white;
+}
+
+.Line{
+    -fx-background-color: RGB(26, 132, 189);
 }
 
 .button:hover{
@@ -60,8 +64,27 @@
     -fx-cursor: hand;
 }
 
-/*Overview Specific Styling*/
+#logo{
+    -fx-background-color: none;
+}
 
+/*Overview Specific Styling*/
+#sendmail{
+    -fx-text-alignment: left;
+    -fx-background-color: none;
+    -fx-border-color: none;
+    -fx-underline: true;
+    -fx-text-fill: RGB(26, 132, 189);
+}
+
+#sendmail:hover{
+    -fx-text-fill: RGB(84, 158, 199);
+    -fx-highlight-fill: RGB(125,125,125);
+    -fx-highlight-text-fill: RGB(125,125,125);
+    -fx-background-color: none;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
 /*Start Page Specific Styling*/
 
 /*Add Expense Specific Styling*/

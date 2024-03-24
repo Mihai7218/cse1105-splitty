@@ -4,6 +4,7 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,6 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.*;
@@ -73,14 +75,16 @@ public class StartScreenCtrl implements Initializable {
         String language = config.getProperty("language");
         createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
-        //logo.setGraphic(new ImageView(new Image("icons/Splitty.png")));
-
+        ImageView imageView = new ImageView(new Image("icons/logo.png"));
+        logo.setGraphic(imageView);
+        imageView.setFitWidth(107.735);
+        imageView.setFitHeight(40);
         createEventButton.prefWidthProperty()
                 .bind(createButtonHBox.widthProperty()
-                        .multiply(0.5)); // Adjust the percentage as needed
+                        .multiply(0.75)); // Adjust the percentage as needed
         joinEventButton.prefWidthProperty()
                 .bind(joinButtonHBox.widthProperty()
-                        .multiply(0.5)); // Adjust the percentage as needed
+                        .multiply(0.75)); // Adjust the percentage as needed
         if (language == null) {
             language = "en";
         }
@@ -90,6 +94,7 @@ public class StartScreenCtrl implements Initializable {
         recentEvents.getItems().addAll(getRecentEventsFromConfig());
         updateLanguageComboBox(language);
         this.refreshLanguage();
+
     }
 
     /**
