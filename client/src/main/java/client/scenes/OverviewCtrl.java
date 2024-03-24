@@ -161,6 +161,14 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
+     * Removes a participant from the list
+     */
+    public void removeParticipant(Participant participant) {
+        participants.getItems().remove(participant);
+        participants.refresh();
+    }
+
+    /**
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */

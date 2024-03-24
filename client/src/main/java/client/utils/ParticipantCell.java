@@ -33,7 +33,7 @@ public class ParticipantCell extends ListCell<Participant> {
         remove = new Button();
         remove.setText("\uD83D\uDDD1");
         remove.setOnAction(param -> {
-//            mainCtrl.getStartScreenCtrl().removeRecentEvent(this.getItem());
+            mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
         });
         autogrow = new Region();
         hBox = new HBox(participant, autogrow,edit, remove);
