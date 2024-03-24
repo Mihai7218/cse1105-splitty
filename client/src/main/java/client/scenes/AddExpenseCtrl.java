@@ -632,4 +632,19 @@ public class AddExpenseCtrl implements Initializable {
         this.instructions = instructions;
     }
 
+    /**
+     * setter for the add button (testing)
+     * @param add button for adding expense
+     */
+    public void setAdd(Button add) {
+        this.add = add;
+    }
+
+    /**
+     * setter for cancel button (testing)
+     * @param cancelButton button to cancel adding expense
+     */
+    public void setCancelButton(Button cancelButton) {
+        this.cancelButton = cancelButton;
+    }
 }

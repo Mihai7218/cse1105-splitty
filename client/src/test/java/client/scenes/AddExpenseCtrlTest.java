@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import commons.Tag;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -18,8 +19,9 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(ApplicationExtension.class)
 public class AddExpenseCtrlTest {
@@ -57,6 +59,8 @@ public class AddExpenseCtrlTest {
     Button addTag;
     TextField newTag;
     Label instructions;
+    Button cancelButton;
+    Button add;
 
 
     @Start
@@ -79,6 +83,8 @@ public class AddExpenseCtrlTest {
         addTag = mock(Button.class);
         newTag = mock(TextField.class);
         instructions = mock(Label.class);
+        cancelButton=mock(Button.class);
+        add = mock(Button.class);
 
         sut.setPayee(payee);
         sut.setCurrency(currency);
@@ -94,7 +100,11 @@ public class AddExpenseCtrlTest {
         sut.setAddTag(addTag);
         sut.setNewTag(newTag);
         sut.setInstructions(instructions);
+        sut.setAdd(add);
+        sut.setCancelButton(cancelButton);
 
+        doNothing().when(add).setGraphic(any(Node.class));
+        doNothing().when(cancelButton).setGraphic(any(Node.class));
         when(payee.getItems()).thenReturn(op);
         when(currency.getItems()).thenReturn(oc);
         when(expenseType.getItems()).thenReturn(ot);

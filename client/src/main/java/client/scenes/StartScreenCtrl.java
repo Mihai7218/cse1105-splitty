@@ -4,7 +4,6 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -16,7 +15,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.text.Text;
 
 import java.net.URL;
 import java.util.*;
@@ -36,15 +34,15 @@ public class StartScreenCtrl implements Initializable {
     @FXML
     private TextField eventInvite;
     @FXML
-    private Button createEventButton;
+    Button createEventButton;
     @FXML
-    private HBox createButtonHBox;
+    HBox createButtonHBox;
     @FXML
-    private HBox joinButtonHBox;
+    HBox joinButtonHBox;
     @FXML
-    private Button joinEventButton;
+    Button joinEventButton;
     @FXML
-    private Button logo;
+    Button logo;
     private Alert alert;
 
     /**
@@ -73,18 +71,7 @@ public class StartScreenCtrl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String language = config.getProperty("language");
-        createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
-        joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
-        ImageView imageView = new ImageView(new Image("icons/logo.png"));
-        logo.setGraphic(imageView);
-        imageView.setFitWidth(107.735);
-        imageView.setFitHeight(40);
-        createEventButton.prefWidthProperty()
-                .bind(createButtonHBox.widthProperty()
-                        .multiply(0.75)); // Adjust the percentage as needed
-        joinEventButton.prefWidthProperty()
-                .bind(joinButtonHBox.widthProperty()
-                        .multiply(0.75)); // Adjust the percentage as needed
+        setUI();
         if (language == null) {
             language = "en";
         }
@@ -95,6 +82,24 @@ public class StartScreenCtrl implements Initializable {
         updateLanguageComboBox(language);
         this.refreshLanguage();
 
+    }
+
+    /**
+     * refactored method to setup the button icons in the UI
+     */
+    public void setUI() {
+        createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
+        ImageView imageView = new ImageView(new Image("icons/logo.png"));
+        logo.setGraphic(imageView);
+        imageView.setFitWidth(107.735);
+        imageView.setFitHeight(40);
+//        createEventButton.prefWidthProperty()
+//                .bind(createButtonHBox.widthProperty()
+//                        .multiply(0.75)); // Adjust the percentage as needed
+//        joinEventButton.prefWidthProperty()
+//                .bind(joinButtonHBox.widthProperty()
+//                        .multiply(0.75)); // Adjust the percentage as needed
     }
 
     /**
