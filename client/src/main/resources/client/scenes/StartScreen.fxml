@@ -10,8 +10,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import client.utils.LanguageComboBox?>
 
+<!--<?import client.utils.LanguageComboBox?>-->
 
 <Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartScreenCtrl">
    <children>
@@ -19,7 +19,7 @@
          <children>
             <VBox id="createEventContainer" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
                <children>
-                  <Label fx:id="createNewEventLabel" text="${controller.languageManager.startScreen.createNewEventLabel}">
+                  <Label id="startLabels" fx:id="createNewEventLabel" text="${controller.languageManager.startScreen.createNewEventLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
@@ -28,7 +28,11 @@
                      <children>
                         <TextField fx:id="newEventTitle" onKeyPressed="#createEventTextFieldHandler" promptText="${controller.languageManager.startScreen.newEventTitle}" />
                         <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <Button id="joinButton" fx:id="createEventButton" mnemonicParsing="false" onAction="#createEventButtonHandler" text="${controller.languageManager.startScreen.createEventButton}" />
+                        <HBox id="buttonContainerStart" fx:id="createButtonHBox" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Button id="joinButton" fx:id="createEventButton" graphicTextGap="8.0" mnemonicParsing="false" onAction="#createEventButtonHandler" text="${controller.languageManager.startScreen.createEventButton}" />
+                           </children>
+                        </HBox>
                      </children>
                   </HBox>
                </children>
@@ -36,7 +40,7 @@
             <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
             <VBox id="joinEventContainer" alignment="CENTER_LEFT" prefHeight="56.0" prefWidth="244.0">
                <children>
-                  <Label fx:id="joinEventLabel" text="${controller.languageManager.startScreen.joinEventLabel}">
+                  <Label id="startLabels" fx:id="joinEventLabel" text="${controller.languageManager.startScreen.joinEventLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
@@ -44,8 +48,12 @@
                   <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
                      <children>
                         <TextField fx:id="eventInvite" onKeyPressed="#joinEventTextFieldHandler" promptText="${controller.languageManager.startScreen.eventInvite}" />
+                        <HBox id="buttonContainerStart" fx:id="joinButtonHBox" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Button id="joinButton" fx:id="joinEventButton" graphicTextGap="8.0" mnemonicParsing="false" onAction="#joinEventButtonHandler" text="${controller.languageManager.startScreen.joinEventButton}" />
+                           </children>
+                        </HBox>
                         <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <Button id="joinButton" fx:id="joinEventButton" mnemonicParsing="false" onAction="#joinEventButtonHandler" text="${controller.languageManager.startScreen.joinEventButton}" />
                      </children>
                   </HBox>
                </children>
@@ -53,7 +61,7 @@
             <Region prefHeight="0.0" prefWidth="0.0" VBox.vgrow="ALWAYS" />
             <VBox prefHeight="200.0" prefWidth="100.0">
                <children>
-                  <Label fx:id="recentEventsLabel" text="${controller.languageManager.startScreen.recentEventsLabel}">
+                  <Label id="startLabels" fx:id="recentEventsLabel" text="${controller.languageManager.startScreen.recentEventsLabel}">
                      <font>
                         <Font name="System Bold" size="18.0" />
                      </font>
@@ -65,12 +73,12 @@
       </VBox>
       <Pane layoutX="26.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0">
          <children>
-            <Text id="header" layoutX="14.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
+            <Text id="header" layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
                <font>
                   <Font name="MathJax_SansSerif-Regular" size="30.0" />
                </font>
             </Text>
-            <LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />
+<!--            <LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />-->
          </children>
       </Pane>
    </children>

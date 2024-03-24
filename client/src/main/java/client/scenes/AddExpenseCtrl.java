@@ -48,6 +48,8 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private CheckBox everyone;
     @FXML
+    private Button addTag;
+    @FXML
     private CheckBox only;
     @FXML
     private VBox namesContainer;
@@ -55,8 +57,6 @@ public class AddExpenseCtrl implements Initializable {
     private Label question;
     @FXML
     private ScrollPane scrollNames;
-    @FXML
-    private Button addTag;
     @FXML
     private TextField newTag;
     @FXML
@@ -105,9 +105,9 @@ public class AddExpenseCtrl implements Initializable {
         scrollNames.setVisible(false);
         instructions.setVisible(false);
         newTag.setVisible(false);
-        cancelButton.setGraphic(new ImageView(new Image("icons/cancel.png")));
-        add.setGraphic(new ImageView(new Image("icons/check.png")));
-        //payee.getItems().addAll(names);
+        cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
+        addTag.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         currency.getItems().addAll(currencies);
         Tag food = new Tag("food", "green");
         Tag entranceFees = new Tag("entrance fees", "red");
@@ -120,7 +120,6 @@ public class AddExpenseCtrl implements Initializable {
         }
         expenseType.setCellFactory(param -> new ListCell<>() {
             private final Rectangle rectangle = new Rectangle(100, 20);
-
             @Override
             protected void updateItem(Tag item, boolean empty) {
                 super.updateItem(item, empty);
@@ -144,7 +143,6 @@ public class AddExpenseCtrl implements Initializable {
                     return tag.getName();
                 }
             }
-
             @Override
             public Tag fromString(String string) {
                 // Not needed for ComboBox

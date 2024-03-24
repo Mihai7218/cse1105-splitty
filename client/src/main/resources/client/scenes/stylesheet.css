@@ -1,16 +1,24 @@
 /*General CSS styling*/
 .root{
+
 }
 
+
 .button{
-    -fx-background-color: RGB(000,158,115);
+    -fx-background-radius: 50px;
+
+    -fx-background-color: RGB(26, 132, 189);
     -fx-text-fill: white;
 }
 
 .button:hover{
-    -fx-background-color: RGB(36, 201, 144);
+    -fx-background-color: RGB(58,147, 195);
     -fx-underline: true;
     -fx-cursor: hand;
+}
+
+#EventTitle{
+    -fx-font-weight: bold;
 }
 
 #icon{
@@ -38,11 +46,11 @@
     -fx-cursor: hand;
 }
 
-#addEntity{
+#addEntity, #sendmail{
     -fx-background-color:RGB(086,180,233);
 }
 
-#addEntity:hover{
+#addEntity:hover, #sendmail:hover{
     -fx-background-color:RGB(138, 200, 235);
     -fx-underline: true;
     -fx-cursor: hand;
@@ -55,11 +63,7 @@
 /*Overview Specific Styling*/
 
 /*Start Page Specific Styling*/
-#createEventContainer{
-}
 
-#joinEventContainer{
-
-}
+/*Add Expense Specific Styling*/
 
 
