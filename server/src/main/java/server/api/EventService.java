@@ -209,10 +209,9 @@ public class EventService {
     }
 
     /**
-     * TODO: check if logic is correct
-     * @param eventId
-     * @param participantId
-     * @return
+     * @param eventId the event in which to check
+     * @param participantId the participant to calculate the debt of
+     * @return debt how much the participant owes other people in total
      */
     public ResponseEntity<Double> getDebt(Long eventId, Long participantId) {
         if(validateDebt(eventId, participantId).getStatusCode() != OK){
@@ -224,24 +223,24 @@ public class EventService {
                 .filter(item -> item.getId()==participantId)
                 .toList().getFirst();
         List<Expense> expenses = e.getExpensesList();
-        double balance = 0;
+        double debt = 0;
         for(Expense expense: expenses){
             if(!expense.getPayee().equals(current)){
                 for(ParticipantPayment p: expense.getSplit()){
                     if(p.getParticipant().equals(current)){
-                        balance -= p.getPaymentAmount();
+                        debt -= p.getPaymentAmount();
                     }
                 }
             }
         }
-        return ResponseEntity.ok(balance);
+        return ResponseEntity.ok(debt);
     }
 
     /**
-     * TODO: check if logic correct
-     * @param eventId
-     * @param participantId
-     * @return
+     * @param eventId the event in which to check
+     * @param participantId the participant of which we want to see how
+     *                      much other people owe them
+     * @return owed the amount of money the participant is owed by others in the event
      */
     public ResponseEntity<Double> getOwed(Long eventId, Long participantId) {
         if(validateDebt(eventId, participantId).getStatusCode() != OK){
@@ -253,13 +252,13 @@ public class EventService {
                 .filter(item -> item.getId()==participantId)
                 .toList().getFirst();
         List<Expense> expenses = e.getExpensesList();
-        double balance = 0;
+        double owed = 0;
         for(Expense expense: expenses){
             if(expense.getPayee().equals(current)){
-                balance += expense.getAmount();
+                owed += expense.getAmount();
             }
         }
-        return ResponseEntity.ok(balance);
+        return ResponseEntity.ok(owed);
     }
     /**
      * Validates that the event and participant exist together
