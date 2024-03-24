@@ -10,6 +10,7 @@ import commons.ParticipantPayment;
 import commons.Tag;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -340,9 +341,9 @@ public class AddExpenseCtrl implements Initializable {
         if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null) {
             // Display an alert informing the user about missing input
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Incomplete Data");
-            alert.setContentText("Please fill in all fields.");
+            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
+            alert.headerTextProperty().bind(languageManager.bind("addExpense.incompleteHeader"));
+            alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
             alert.showAndWait();
             return;
         }
@@ -361,9 +362,9 @@ public class AddExpenseCtrl implements Initializable {
         } catch (NumberFormatException e) {
             // Display an alert informing the user about incorrect price format
             Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Error");
-            alert.setHeaderText("Incorrect Data Format");
-            alert.setContentText("Please enter a valid price.");
+            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
+            alert.headerTextProperty().bind(languageManager.bind("addExpense.invalidHeader"));
+            alert.contentTextProperty().bind(languageManager.bind("addExpense.invalidBody"));
             alert.showAndWait();
         }
     }
@@ -417,6 +418,30 @@ public class AddExpenseCtrl implements Initializable {
         everyone.setSelected(false);
         only.setSelected(false);
         expenseType.setValue(null);
+    }
+
+    /**
+     * Getter for the language manager observable map.
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Setter for the language manager observable map.
+     * @param languageManager - the language manager observable map.
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the language manager property.
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
     }
 
     /**

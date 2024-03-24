@@ -64,6 +64,7 @@ public class AddExpenseCtrlTest {
     void setUp(Stage stage) {
         mainCtrl = mock(MainCtrl.class);
         serverUtils = mock(ServerUtils.class);
+        languageManager = mock(LanguageManager.class);
         sut = new AddExpenseCtrl(mainCtrl, config, languageManager, serverUtils, alert);
         payee = mock(ChoiceBox.class);
         currency = mock(ChoiceBox.class);

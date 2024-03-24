@@ -16,12 +16,16 @@
 package client.scenes;
 
 import client.utils.ExpenseListCell;
+import client.utils.ConfigInterface;
+import client.utils.LanguageComboBox;
+import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -31,13 +35,19 @@ import javafx.scene.input.KeyCode;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 public class OverviewCtrl implements Initializable {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
+    private final LanguageManager languageManager;
+    private final ConfigInterface config;
 
+    @FXML
+    private LanguageComboBox languages;
     @FXML
     private Label title;
     @FXML
@@ -60,16 +70,23 @@ public class OverviewCtrl implements Initializable {
     private Button editparticipant;
 
 
+
     /**
      * Constructs a new OverviewCtrl object.
+     * @param languageManager LanguageManager object
+     * @param config Config object
      * @param server ServerUtils object
      * @param mainCtrl MainCtrl object
      */
     @Inject
-    public OverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public OverviewCtrl(LanguageManager languageManager, ConfigInterface config,
+                        ServerUtils server, MainCtrl mainCtrl) {
+        this.languageManager = languageManager;
+        this.config = config;
         this.mainCtrl = mainCtrl;
         this.server = server;
     }
+
 
     /**
      * Refreshes all shown items in the overview.
@@ -161,12 +178,17 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
-     * Initialize method for the overview controller.
+     * Initialize method for the Overview scene.
+     * Sets the language currently in the config file as the selected one.
+     * Sets the cell factories for all ListViews.
      * @param url - URL
      * @param resourceBundle - ResourceBundle
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        String language = config.getProperty("language");
+        if (languages != null) languages.setValue(language);
+        this.refreshLanguage();
         all.setCellFactory(x -> new ExpenseListCell(mainCtrl));
         from.setCellFactory(x -> new ExpenseListCell(mainCtrl));
         including.setCellFactory(x -> new ExpenseListCell(mainCtrl));
@@ -207,5 +229,65 @@ public class OverviewCtrl implements Initializable {
                 .filter(x -> !(x.getSplit().stream()
                         .map(ParticipantPayment::getParticipant)
                         .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
+    }
+    /**
+     * Getter for the language manager observable map.
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Setter for the language manager observable map.
+     * @param languageManager - the language manager observable map.
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the language manager property.
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
+    }
+
+
+    /**
+     * Changes language
+     */
+    public void changeLanguage() {
+        String language = "";
+        if (languages != null) language = languages.getValue();
+        config.setProperty("language", language);
+        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
+                && mainCtrl.getStartScreenCtrl() != null) {
+            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
+            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
+        }
+        this.refreshLanguage();
+    }
+
+    /**
+     * Method that refreshes the language.
+     */
+    private void refreshLanguage() {
+        String language = config.getProperty("language");
+        if (language == null) {
+            language = "en";
+        }
+        updateLanguageComboBox(language);
+        languageManager.changeLanguage(Locale.of(language));
+    }
+
+
+    /**
+     * Method that updates the language combo box with the correct flag.
+     * @param language - code of the new language
+     */
+    public void updateLanguageComboBox(String language) {
+        if (languages != null) languages.setValue(language);
     }
 }

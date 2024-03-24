@@ -65,7 +65,8 @@ public class StartScreenCtrl implements Initializable {
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
         recentEvents.getItems().addAll(getRecentEventsFromConfig());
-        if (languages != null) languages.setValue(language);
+        this.refreshConfig();
+        updateLanguageComboBox(language);
         this.refreshLanguage();
     }
 
@@ -78,9 +79,22 @@ public class StartScreenCtrl implements Initializable {
         if (eventString == null) return new ArrayList<>();
         List<Event> events = new ArrayList<>();
         for (String s : eventString.split(",")) {
-            events.add(serverUtils.getEvent(Integer.parseInt(s)));
+            try {
+                events.add(serverUtils.getEvent(Integer.parseInt(s)));
+            }
+            catch (WebApplicationException | NumberFormatException e) {
+                e.printStackTrace();
+            }
         }
         return events;
+    }
+
+    /**
+     * Method that updates the language combo box with the correct flag.
+     * @param language - code of the new language
+     */
+    public void updateLanguageComboBox(String language) {
+        if (languages != null) languages.setValue(language);
     }
 
     /**
@@ -90,6 +104,11 @@ public class StartScreenCtrl implements Initializable {
         String language = "";
         if (languages != null) language = languages.getValue();
         config.setProperty("language", language);
+        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
+                && mainCtrl.getStartScreenCtrl() != null) {
+            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
+            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
+        }
         this.refreshLanguage();
     }
 
@@ -101,6 +120,7 @@ public class StartScreenCtrl implements Initializable {
         if (language == null) {
             language = "en";
         }
+        updateLanguageComboBox(language);
         languageManager.changeLanguage(Locale.of(language));
     }
 
