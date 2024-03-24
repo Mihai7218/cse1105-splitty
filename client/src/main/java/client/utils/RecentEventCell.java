@@ -22,23 +22,6 @@ public class RecentEventCell extends ListCell<Event> {
     public RecentEventCell(MainCtrl mainCtrl) {
         super();
         this.mainCtrl = mainCtrl;
-        eventName = new Label();
-        open = new Button();
-        open.setText("↗");
-        open.setOnAction(param -> {
-            mainCtrl.getStartScreenCtrl().addRecentEvent(this.getItem());
-            mainCtrl.setEvent(this.getItem());
-            mainCtrl.showOverview();
-        });
-        close = new Button();
-        close.setText("\uD83D\uDDD1");
-        close.setOnAction(param -> {
-            mainCtrl.getStartScreenCtrl().removeRecentEvent(this.getItem());
-        });
-        autogrow = new Region();
-        hBox = new HBox(eventName, open, autogrow, close);
-        hBox.setSpacing(5);
-        HBox.setHgrow(autogrow, Priority.ALWAYS);
     }
 
     /**
@@ -53,8 +36,33 @@ public class RecentEventCell extends ListCell<Event> {
             setText(null);
             setGraphic(null);
         } else {
+            createGraphic(item);
             eventName.setText(item.getTitle());
             setGraphic(hBox);
         }
+    }
+
+    /**
+     * Creates the graphic for the recent event.
+     * @param item - the event
+     */
+    private void createGraphic(Event item) {
+        eventName = new Label();
+        open = new Button();
+        open.setText("↗");
+        open.setOnAction(param -> {
+            mainCtrl.getStartScreenCtrl().addRecentEvent(item);
+            mainCtrl.setEvent(item);
+            mainCtrl.showOverview();
+        });
+        close = new Button();
+        close.setText("\uD83D\uDDD1");
+        close.setOnAction(param -> {
+            mainCtrl.getStartScreenCtrl().removeRecentEvent(item);
+        });
+        autogrow = new Region();
+        hBox = new HBox(eventName, open, autogrow, close);
+        hBox.setSpacing(5);
+        HBox.setHgrow(autogrow, Priority.ALWAYS);
     }
 }
