@@ -42,6 +42,9 @@ public class EditParticipantCtrl {
 
     @FXML
     private TextField bic;
+
+    //this is the participant that is being edited.
+    private Participant participant;
     private final LanguageManager languageManager;
 
 
@@ -82,7 +85,10 @@ public class EditParticipantCtrl {
             return;
         }
         try {
-            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
+            participant.setName(name.getText());
+            participant.setEmail(email.getText());
+            participant.setIban(iban.getText());
+            participant.setBic(bic.getText());
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -102,6 +108,14 @@ public class EditParticipantCtrl {
     public void abort() {
         clearFields();
         mainCtrl.showOverview();
+    }
+
+    /**
+     * sets the participant that is getting edited
+     * @param participant
+     */
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
     }
 
     /**

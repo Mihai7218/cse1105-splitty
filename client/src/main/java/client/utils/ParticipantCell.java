@@ -26,6 +26,7 @@ public class ParticipantCell extends ListCell<Participant> {
         edit = new Button();
         edit.setText("\uD83D\uDD89");
         edit.setOnAction(param -> {
+            mainCtrl.getEditparticipantCtrl().setParticipant(this.getItem());
             mainCtrl.showEditParticipant();
         });
         remove = new Button();
