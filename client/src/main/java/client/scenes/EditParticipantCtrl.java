@@ -55,7 +55,8 @@ public class EditParticipantCtrl {
      * @param languageManager LanguageManager object
      */
     @Inject
-    public EditParticipantCtrl(ServerUtils server, MainCtrl mainCtrl, LanguageManager languageManager) {
+    public EditParticipantCtrl(ServerUtils server, MainCtrl mainCtrl,
+                               LanguageManager languageManager) {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.languageManager = languageManager;
