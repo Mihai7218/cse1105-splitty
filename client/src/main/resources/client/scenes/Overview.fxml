@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<!--<?import client.utils.LanguageComboBox?>-->
+<?import client.utils.LanguageComboBox?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
    <children>
@@ -62,6 +62,6 @@
             <Tooltip id="tooltipTextEdit" fx:id="tooltipEdit" text="Edit Participants" />
          </tooltip></Button>
       <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="33.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
-<!--      <LanguageComboBox fx:id="languages" layoutX="210.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0" />-->
+      <LanguageComboBox fx:id="languages" layoutX="210.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0" />
    </children>
 </AnchorPane>
