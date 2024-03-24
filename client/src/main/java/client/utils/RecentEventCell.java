@@ -24,6 +24,7 @@ public class RecentEventCell extends ListCell<Event> {
         this.mainCtrl = mainCtrl;
         eventName = new Label();
         open = new Button();
+        open.setId("openRecent");
         open.setText("↗");
         open.setOnAction(param -> {
             mainCtrl.getStartScreenCtrl().addRecentEvent(this.getItem());
@@ -32,6 +33,7 @@ public class RecentEventCell extends ListCell<Event> {
         });
         close = new Button();
         close.setText("\uD83D\uDDD1");
+        close.setId("closeButton");
         close.setOnAction(param -> {
             mainCtrl.getStartScreenCtrl().removeRecentEvent(this.getItem());
         });
