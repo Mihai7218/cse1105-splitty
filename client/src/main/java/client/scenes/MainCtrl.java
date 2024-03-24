@@ -100,6 +100,7 @@ public class MainCtrl {
     public void showAddExpense(){
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(addExpense);
+        addExpenseCtrl.refresh();
     }
 
     /**

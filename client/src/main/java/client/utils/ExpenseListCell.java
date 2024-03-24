@@ -10,6 +10,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
 
 public class ExpenseListCell extends ListCell<Expense> {
+    private final MainCtrl mainCtrl;
     private Label expenseName;
     private Label paidLabel;
     private Label payeeName;
@@ -30,6 +31,14 @@ public class ExpenseListCell extends ListCell<Expense> {
      */
     public ExpenseListCell(MainCtrl mainCtrl) {
         super();
+        this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Creates the graphic for the expense.
+     * @param item - expense item
+     */
+    private void createGraphic(Expense item) {
         expenseName = new Label();
         paidLabel = new Label("paid");
         payeeName = new Label();
@@ -52,6 +61,7 @@ public class ExpenseListCell extends ListCell<Expense> {
         vBox.setSpacing(5);
         details.setHgap(3);
         details.setOrientation(Orientation.HORIZONTAL);
+        details.setPrefWidth(200);
         payeeName.setStyle("-fx-font-weight: 700;");
         expenseName.setStyle("-fx-font-weight: 700;");
         price.setStyle("-fx-font-weight: 700;");
@@ -74,6 +84,7 @@ public class ExpenseListCell extends ListCell<Expense> {
             setText(null);
             setGraphic(null);
         } else {
+            createGraphic(item);
             update();
         }
     }
@@ -113,9 +124,10 @@ public class ExpenseListCell extends ListCell<Expense> {
         if (!this.getItem().getSplit().isEmpty()) {
             sb.append("(");
             for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
-                sb.append(this.getItem().getSplit().get(i)).append(", ");
+                sb.append(this.getItem().getSplit().get(i).getParticipant().getName()).append(", ");
             }
-            sb.append(this.getItem().getSplit().get(this.getItem().getSplit().size() - 1));
+            sb.append(this.getItem().getSplit()
+                    .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
             sb.append(")");
         }
         else {

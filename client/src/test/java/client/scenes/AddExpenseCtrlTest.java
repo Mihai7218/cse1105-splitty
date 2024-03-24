@@ -3,26 +3,19 @@ package client.scenes;
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
+import commons.Participant;
 import commons.Tag;
-import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,7 +40,7 @@ public class AddExpenseCtrlTest {
     LanguageManager languageManager;
     Alert alert;
     AddExpenseCtrl sut;
-    ChoiceBox<String> payee;
+    ChoiceBox<Participant> payee;
     ChoiceBox<String> currency;
     ComboBox<Tag> expenseType;
     CheckBox everyone;

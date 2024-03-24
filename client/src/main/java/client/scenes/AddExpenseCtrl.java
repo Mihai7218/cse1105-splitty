@@ -2,11 +2,6 @@ package client.scenes;
 
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ComboBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Expense;
@@ -19,36 +14,36 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
-import java.awt.*;
 import java.net.URL;
-//import javafx.util.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
-
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class AddExpenseCtrl implements Initializable {
 
+    private final ServerUtils serverUtils;
+    private final ConfigInterface config;
+    private final MainCtrl mainCtrl;
+    private final LanguageManager languageManager;
+    private final Alert alert;
     // Include this in the anchor of the fxml file after overwriting using Scene Builder:
     // fx:controller="com.example.tutorial.addCtrl"
     @FXML
-    private ChoiceBox<String> payee;
+    private ChoiceBox<Participant> payee;
     private List<Participant> participantsList;
     @FXML
     private ChoiceBox<String> currency;
     private String[] currencies = {"USD", "EUR", "CHF"};
     private ArrayList<Tag> tags = new ArrayList<>();
+    private Map<CheckBox, Participant> participantCheckBoxMap;
     @FXML
     private ComboBox<Tag> expenseType;
     @FXML
@@ -67,12 +62,12 @@ public class AddExpenseCtrl implements Initializable {
     private TextField newTag;
     @FXML
     private Label instructions;
-
-    private final ServerUtils serverUtils;
-    private final ConfigInterface config;
-    private final MainCtrl mainCtrl;
-    private final LanguageManager languageManager;
-    private final Alert alert;
+    @FXML
+    private TextField title;
+    @FXML
+    private TextField price;
+    @FXML
+    private DatePicker date;
 
     /**
      *
@@ -84,15 +79,16 @@ public class AddExpenseCtrl implements Initializable {
      */
     @Inject
     public AddExpenseCtrl(MainCtrl mainCtrl,
-                           ConfigInterface config,
-                           LanguageManager languageManager,
-                           ServerUtils serverUtils,
-                           Alert alert) {
+                          ConfigInterface config,
+                          LanguageManager languageManager,
+                          ServerUtils serverUtils,
+                          Alert alert) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
         this.alert = alert;
+        participantCheckBoxMap = new HashMap<>();
         //System.out.println(mainCtrl.getEvent());
     }
 
@@ -119,6 +115,18 @@ public class AddExpenseCtrl implements Initializable {
         for (Tag tag : tags) {
             expenseType.getItems().add(tag);
         }
+        payee.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Participant participant) {
+                if (participant == null) return "";
+                return participant.getName();
+            }
+
+            @Override
+            public Participant fromString(String s) {
+                return null;
+            }
+        });
         expenseType.setCellFactory(param -> new ListCell<>() {
             private final Rectangle rectangle = new Rectangle(100, 20);
 
@@ -152,19 +160,28 @@ public class AddExpenseCtrl implements Initializable {
                 return null;
             }
         });
+        refresh();
+    }
+
+    public void refresh() {
+        loadParticipants();
+        populateParticipantCheckBoxes();
     }
 
     /**
      *
      */
-    public void loadParticipants(){
-        participantsList = mainCtrl.getEvent().getParticipantsList();
-        if(payee.getItems().isEmpty()) {
+    public void loadParticipants() {
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null) {
+            payee.getItems().clear();
+            participantsList = mainCtrl.getEvent().getParticipantsList();
             for (Participant participant : participantsList) {
-                payee.getItems().add(participant.getName());
+                payee.getItems().add(participant);
             }
         }
     }
+
     /**
      * makes only one of the two checkboxes regarding the split be selected
      * not both at once
@@ -181,14 +198,9 @@ public class AddExpenseCtrl implements Initializable {
 
         only.setOnAction(event -> {
             if (only.isSelected()) {
+                populateParticipantCheckBoxes();
                 everyone.setSelected(false);
                 scrollNames.setVisible(true);
-                namesContainer.getChildren().clear(); // Clear the checkboxes before adding new ones
-                for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
-                    String name = participant.getName();
-                    CheckBox checkBox = new CheckBox(name);
-                    namesContainer.getChildren().add(checkBox);
-                }
             } else {
                 namesContainer.getChildren().clear();
                 // Clear the checkboxes if "only" is deselected
@@ -196,10 +208,25 @@ public class AddExpenseCtrl implements Initializable {
         });
     }
 
+    private void populateParticipantCheckBoxes() {
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null) {
+            namesContainer.getChildren().clear(); // Clear the checkboxes before adding new ones
+            participantCheckBoxMap.clear();
+            for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
+                if (participant == payee.getValue()) continue;
+                String name = participant.getName();
+                CheckBox checkBox = new CheckBox(name);
+                participantCheckBoxMap.put(checkBox, participant);
+                namesContainer.getChildren().add(checkBox);
+            }
+        }
+    }
+
     /**
      * lets the user add a new tag to the already existing list
      */
-    public void addTag(){
+    public void addTag() {
         showInstructions();
         newTag.setVisible(true);
         newTag.setOnKeyPressed(event -> {
@@ -208,7 +235,7 @@ public class AddExpenseCtrl implements Initializable {
                 // Add text to the ArrayList if it's not empty
                 if (!tag.isEmpty()) {
                     //tags.add(new Tag(tag, "black"));
-                    expenseType.getItems().add(new Tag(tag,"yellow"));
+                    expenseType.getItems().add(new Tag(tag, "yellow"));
                 }
                 // Clear the text field
                 newTag.clear();
@@ -220,7 +247,7 @@ public class AddExpenseCtrl implements Initializable {
     /**
      * tell the user how to add the new tag
      */
-    public void showInstructions(){
+    public void showInstructions() {
         instructions.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), instructions);
         fadeIn.setFromValue(0.0);
@@ -268,7 +295,7 @@ public class AddExpenseCtrl implements Initializable {
             only.setSelected(false);
             scrollNames.setVisible(false);
             showQuestion();
-        } else if (atLeastOneSelected){
+        } else if (atLeastOneSelected) {
             scrollNames.setVisible(true);
             everyone.setSelected(false); // Deselect "everyone" if not all names are selected
         }
@@ -297,14 +324,6 @@ public class AddExpenseCtrl implements Initializable {
 
         fadeIn.play();
     }
-
-
-    @FXML
-    private TextField title;
-    @FXML
-    private TextField price;
-    @FXML
-    private DatePicker date;
 
     /**
      * Add method for handling "Add" button click event
@@ -356,10 +375,27 @@ public class AddExpenseCtrl implements Initializable {
     public Expense createExpense(String title, double price, LocalDate date) {
         List<ParticipantPayment> participantPayments = new ArrayList<>();
         Tag tag = expenseType.getValue();
-        Participant actualPayee = null;
-        for(Participant p: mainCtrl.getEvent().getParticipantsList()){
-            if(p.getName().equals(payee.getValue())){
-                actualPayee = p;
+        Participant actualPayee = payee.getValue();
+
+        if (everyone.isSelected()) {
+            for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
+                if (!p.equals(actualPayee)) {
+                    participantPayments.add(new ParticipantPayment(p,
+                            price / (mainCtrl.getEvent().getParticipantsList().size())));
+                }
+            }
+        } else if (only.isSelected()) {
+            int numberOfParticipants = 1;
+            for (var pair : participantCheckBoxMap.entrySet()) {
+                if (pair.getKey().isSelected()) {
+                    numberOfParticipants++;
+                }
+            }
+            for (var pair : participantCheckBoxMap.entrySet()) {
+                if (pair.getKey().isSelected()) {
+                    participantPayments.add(new ParticipantPayment(pair.getValue(),
+                            price / numberOfParticipants));
+                }
             }
         }
 
@@ -376,6 +412,11 @@ public class AddExpenseCtrl implements Initializable {
         title.clear();
         price.clear();
         date.setValue(null);
+        currency.setValue(null);
+        payee.setValue(null);
+        everyone.setSelected(false);
+        only.setSelected(false);
+        expenseType.setValue(null);
     }
 
     /**
@@ -390,8 +431,16 @@ public class AddExpenseCtrl implements Initializable {
      *
      * @return
      */
-    public ChoiceBox<String> getPayee() {
+    public ChoiceBox<Participant> getPayee() {
         return payee;
+    }
+
+    /**
+     *
+     * @param payee
+     */
+    public void setPayee(ChoiceBox<Participant> payee) {
+        this.payee = payee;
     }
 
     /**
@@ -404,138 +453,18 @@ public class AddExpenseCtrl implements Initializable {
 
     /**
      *
-     * @return
-     */
-    public String[] getCurrencies() {
-        return currencies;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ArrayList<Tag> getTags() {
-        return tags;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ComboBox<Tag> getExpenseType() {
-        return expenseType;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public CheckBox getEveryone() {
-        return everyone;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public CheckBox getOnly() {
-        return only;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public VBox getNamesContainer() {
-        return namesContainer;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public Label getQuestion() {
-        return question;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public TextField getTitle() {
-        return title;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public TextField getPrice() {
-        return price;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public DatePicker getDate() {
-        return date;
-    }
-
-    /**
-     *
-     * @param namesContainer
-     */
-    public void setNamesContainer(VBox namesContainer) {
-        this.namesContainer = namesContainer;
-    }
-
-    /**
-     *
-     * @param question
-     */
-    public void setQuestion(Label question) {
-        this.question = question;
-    }
-
-    /**
-     *
-     * @param title
-     */
-    public void setTitle(TextField title) {
-        this.title = title;
-    }
-
-    /**
-     *
-     * @param price
-     */
-    public void setPrice(TextField price) {
-        this.price = price;
-    }
-
-    /**
-     *
-     * @param date
-     */
-    public void setDate(DatePicker date) {
-        this.date = date;
-    }
-
-    /**
-     *
-     * @param payee
-     */
-    public void setPayee(ChoiceBox<String> payee) {
-        this.payee = payee;
-    }
-
-    /**
-     *
      * @param currency
      */
     public void setCurrency(ChoiceBox<String> currency) {
         this.currency = currency;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String[] getCurrencies() {
+        return currencies;
     }
 
     /**
@@ -548,10 +477,26 @@ public class AddExpenseCtrl implements Initializable {
 
     /**
      *
+     * @return
+     */
+    public ArrayList<Tag> getTags() {
+        return tags;
+    }
+
+    /**
+     *
      * @param tags
      */
     public void setTags(ArrayList<Tag> tags) {
         this.tags = tags;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public ComboBox<Tag> getExpenseType() {
+        return expenseType;
     }
 
     /**
@@ -564,10 +509,26 @@ public class AddExpenseCtrl implements Initializable {
 
     /**
      *
+     * @return
+     */
+    public CheckBox getEveryone() {
+        return everyone;
+    }
+
+    /**
+     *
      * @param everyone
      */
     public void setEveryone(CheckBox everyone) {
         this.everyone = everyone;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public CheckBox getOnly() {
+        return only;
     }
 
     /**
@@ -578,6 +539,85 @@ public class AddExpenseCtrl implements Initializable {
         this.only = only;
     }
 
+    /**
+     *
+     * @return
+     */
+    public VBox getNamesContainer() {
+        return namesContainer;
+    }
+
+    /**
+     *
+     * @param namesContainer
+     */
+    public void setNamesContainer(VBox namesContainer) {
+        this.namesContainer = namesContainer;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Label getQuestion() {
+        return question;
+    }
+
+    /**
+     *
+     * @param question
+     */
+    public void setQuestion(Label question) {
+        this.question = question;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public TextField getTitle() {
+        return title;
+    }
+
+    /**
+     *
+     * @param title
+     */
+    public void setTitle(TextField title) {
+        this.title = title;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public TextField getPrice() {
+        return price;
+    }
+
+    /**
+     *
+     * @param price
+     */
+    public void setPrice(TextField price) {
+        this.price = price;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public DatePicker getDate() {
+        return date;
+    }
+
+    /**
+     *
+     * @param date
+     */
+    public void setDate(DatePicker date) {
+        this.date = date;
+    }
 
     /**
      *
