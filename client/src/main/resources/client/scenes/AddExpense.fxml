@@ -49,8 +49,8 @@
                 <Font size="19.0" />
             </font>
         </Label>
-        <CheckBox fx:id="everyone" layoutX="61.0" layoutY="318.0" mnemonicParsing="false" onAction="#chooseOne" text="${controller.languageManager.addExpense.equallyLabel}" />
-        <CheckBox fx:id="only" layoutX="61.0" layoutY="350.0" mnemonicParsing="false" onAction="#chooseOne" text="${controller.languageManager.addExpense.subsetLabel}" />
+        <CheckBox fx:id="everyone" layoutX="61.0" layoutY="318.0" mnemonicParsing="false" onAction="#everyoneCheck" text="${controller.languageManager.addExpense.equallyLabel}" />
+        <CheckBox fx:id="only" layoutX="61.0" layoutY="350.0" mnemonicParsing="false" onAction="#onlyCheck" text="${controller.languageManager.addExpense.subsetLabel}" />
         <Label layoutX="60.0" layoutY="420.0" text="${controller.languageManager.addExpense.expenseType}">
             <font>
                 <Font size="19.0" />

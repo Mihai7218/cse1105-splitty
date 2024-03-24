@@ -194,29 +194,30 @@ public class AddExpenseCtrl implements Initializable {
     }
 
     /**
-     * makes only one of the two checkboxes regarding the split be selected
-     * not both at once
+     * Handler for the "only" checkbox.
      */
-    public void chooseOne() {
-        everyone.setOnAction(event -> {
-            if (everyone.isSelected()) {
-                scrollNames.setVisible(false);
-                only.setSelected(false);
-                namesContainer.getChildren().clear();
-                // Clear the checkboxes if "everyone" is selected
-            }
-        });
+    public void onlyCheck() {
+        if (only.isSelected()) {
+            populateParticipantCheckBoxes();
+            everyone.setSelected(false);
+            scrollNames.setVisible(true);
+        } else {
+            scrollNames.setVisible(false);
+            namesContainer.getChildren().clear();
+            // Clear the checkboxes if "only" is deselected
+        }
+    }
 
-        only.setOnAction(event -> {
-            if (only.isSelected()) {
-                populateParticipantCheckBoxes();
-                everyone.setSelected(false);
-                scrollNames.setVisible(true);
-            } else {
-                namesContainer.getChildren().clear();
-                // Clear the checkboxes if "only" is deselected
-            }
-        });
+    /**
+     * Handler for the "everyone" checkbox.
+     */
+    public void everyoneCheck() {
+        if (everyone.isSelected()) {
+            scrollNames.setVisible(false);
+            only.setSelected(false);
+            namesContainer.getChildren().clear();
+            // Clear the checkboxes if "everyone" is selected
+        }
     }
 
     /**
