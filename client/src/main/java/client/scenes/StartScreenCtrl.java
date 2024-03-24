@@ -71,7 +71,8 @@ public class StartScreenCtrl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         String language = config.getProperty("language");
-        setUI();
+        createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
         if (language == null) {
             language = "en";
         }
@@ -82,18 +83,6 @@ public class StartScreenCtrl implements Initializable {
         updateLanguageComboBox(language);
         this.refreshLanguage();
 
-    }
-
-    /**
-     * refactored method to setup the button icons in the UI
-     */
-    public void setUI() {
-        createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
-        joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
-        ImageView imageView = new ImageView(new Image("icons/logo.png"));
-        logo.setGraphic(imageView);
-        imageView.setFitWidth(107.735);
-        imageView.setFitHeight(40);
     }
 
     /**

@@ -14,12 +14,13 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
-import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -66,7 +67,6 @@ class StartScreenCtrlTest {
     LanguageComboBox languageComboBox;
     ListView<Event> recentEvents;
     ObservableList<Event> eventsList = FXCollections.observableArrayList();
-    Button logo;
     Button createEventButton;
     HBox createButtonHBox;
     HBox joinButtonHBox;
@@ -87,7 +87,6 @@ class StartScreenCtrlTest {
         serverUtils = mock(ServerUtils.class);
         languageComboBox = mock(LanguageComboBox.class);
         alert = mock(Alert.class);
-        logo = mock (Button.class);
         createEventButton = mock(Button.class);
         joinEventButton = mock(Button.class);
         createButtonHBox = mock(HBox.class);
@@ -111,17 +110,10 @@ class StartScreenCtrlTest {
         sut.joinEventButton = joinEventButton;
         sut.createButtonHBox = createButtonHBox;
         sut.joinButtonHBox = joinButtonHBox;
-        DoubleProperty prop = createButtonHBox.prefWidthProperty();
 
-        sut.logo = logo;
         mock = spy(sut);
-        doNothing().when(mock).setUI();
         doNothing().when(createEventButton).setGraphic(any(Node.class));
         doNothing().when(joinEventButton).setGraphic(any(Node.class));
-//        when(createButtonHBox.prefWidthProperty()).thenReturn(createButtonHBoxWidthProperty);
-//        when(joinButtonHBox.prefWidthProperty()).thenReturn(joinButtonHBoxWidthProperty);
-//        when(createButtonHBoxWidthProperty.multiply(0.75)).thenAnswer(invocation -> createEventButtonPrefWidthProperty.negate());
-//        when(joinButtonHBoxWidthProperty.multiply(0.75)).thenAnswer(invocation -> joinButtonHBoxWidthProperty.negate());
 
         sut.setRecentEvents(recentEvents);
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));

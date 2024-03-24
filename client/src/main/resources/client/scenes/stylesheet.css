@@ -1,6 +1,7 @@
 /*General CSS styling*/
 .root{
     -fx-background-color: white;
+    -fx-font-family: Verdana;
 }
 
 
@@ -19,6 +20,11 @@
     -fx-background-color: RGB(58,147, 195);
     -fx-underline: true;
     -fx-cursor: hand;
+}
+
+#header{
+    -fx-font-weight: bold;
+    -fx-font-family: Verdana;
 }
 
 #EventTitle{
