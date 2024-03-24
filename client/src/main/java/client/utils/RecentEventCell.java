@@ -2,12 +2,16 @@ package client.utils;
 
 import client.scenes.MainCtrl;
 import commons.Event;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
 
 public class RecentEventCell extends ListCell<Event> {
     private Label eventName;
@@ -23,9 +27,11 @@ public class RecentEventCell extends ListCell<Event> {
         super();
         this.mainCtrl = mainCtrl;
         eventName = new Label();
+        eventName.setFont(new Font(15));
         open = new Button();
         open.setId("openRecent");
-        open.setText("↗");
+        //open.setText("↗");
+        open.setGraphic(new ImageView(new Image("icons/openarrow.png")));
         open.setOnAction(param -> {
             mainCtrl.getStartScreenCtrl().addRecentEvent(this.getItem());
             mainCtrl.setEvent(this.getItem());
@@ -40,6 +46,7 @@ public class RecentEventCell extends ListCell<Event> {
         autogrow = new Region();
         hBox = new HBox(eventName, open, autogrow, close);
         hBox.setSpacing(5);
+        hBox.setAlignment(Pos.CENTER);
         HBox.setHgrow(autogrow, Priority.ALWAYS);
     }
 
