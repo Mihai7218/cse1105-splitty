@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.*;
+import jakarta.servlet.http.Part;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -87,6 +88,13 @@ class ParticipantServiceTest {
         assertEquals(participantService.getParticipant(1, 2).getBody(), p);
     }
 
+    @Test
+    public void addValidNoPaymentDetails(){
+        Participant validNoPayment = new Participant("Jane", null, null, null);
+        Participant validNoPayment2=new Participant("Jeff", "","","");
+        assertEquals(participantService.addParticipant(0,validNoPayment).getStatusCode(), OK);
+        assertEquals(participantService.addParticipant(0,validNoPayment2).getStatusCode(), OK);
+    }
     @Test
     public void getAllParticipantsTest(){
         List<Participant> result = participantService.getAllParticipants(0).getBody();

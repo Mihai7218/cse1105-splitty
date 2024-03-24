@@ -45,6 +45,7 @@ public class ParticipantCtrl {
     private final LanguageManager languageManager;
 
 
+
     /**
      * Constructs a new ParticipantCtrl object.
      * @param server ServerUtils object
@@ -71,9 +72,7 @@ public class ParticipantCtrl {
      * When the ok button is pressed the new Participant is stored on the server.
      */
     public void ok() {
-        if (name.getText().isEmpty()
-                || email.getText().isEmpty() || iban.getText().isEmpty()
-                || bic.getText().isEmpty()){
+        if (name.getText().isEmpty()){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("addParticipant.emptyFields"));
