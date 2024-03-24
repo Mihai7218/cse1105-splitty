@@ -70,10 +70,13 @@ public class OverviewCtrl implements Initializable {
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
-        all.getItems().clear();
-        all.getItems().addAll(mainCtrl.getEvent().getExpensesList());
-        all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
-        all.refresh();
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getExpensesList() != null) {
+            all.getItems().clear();
+            all.getItems().addAll(mainCtrl.getEvent().getExpensesList());
+            all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+            all.refresh();
+        }
         addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
         editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         Event event = mainCtrl.getEvent();
