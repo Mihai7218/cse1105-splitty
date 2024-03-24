@@ -21,15 +21,16 @@ import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
+import commons.ParticipantPayment;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.util.StringConverter;
 
 import java.net.URL;
-import java.util.List;
 import java.util.ResourceBundle;
 
 public class OverviewCtrl implements Initializable {
@@ -40,13 +41,17 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Label title;
     @FXML
-    private ListView participants;
+    private ListView<Participant> participants;
 
     @FXML
     private ListView<Expense> all;
+    @FXML
+    private ListView<Expense> from;
+    @FXML
+    private ListView<Expense> including;
 
     @FXML
-    private ChoiceBox<String> expenseparticipants;
+    private ChoiceBox<Participant> expenseparticipants;
 
     @FXML
     private Button addparticipant;
@@ -83,10 +88,8 @@ public class OverviewCtrl implements Initializable {
         clearFields();
         if(event != null){
             title.setText(event.getTitle());
-            List<String> names = event.getParticipantsList().stream()
-                    .map(Participant::getName).toList();
-            participants.getItems().addAll(names);
-            expenseparticipants.getItems().addAll(names);
+            participants.getItems().addAll(event.getParticipantsList());
+            expenseparticipants.getItems().addAll(event.getParticipantsList());
         }
     }
 
@@ -165,5 +168,44 @@ public class OverviewCtrl implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         all.setCellFactory(x -> new ExpenseListCell(mainCtrl));
+        from.setCellFactory(x -> new ExpenseListCell(mainCtrl));
+        including.setCellFactory(x -> new ExpenseListCell(mainCtrl));
+        participants.setCellFactory(x -> new ListCell<>() {
+            @Override
+            protected void updateItem(Participant item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(item.getName());
+                }
+            }
+        });
+        expenseparticipants.setConverter(new StringConverter<Participant>() {
+            @Override
+            public String toString(Participant participant) {
+                if (participant == null) return "";
+                return participant.getName();
+            }
+
+            @Override
+            public Participant fromString(String s) {
+                return null;
+            }
+        });
+    }
+
+    public void filterViews() {
+        Participant participant = expenseparticipants.getValue();
+        if (participant == null) return;
+        from.getItems().clear();
+        from.getItems().addAll(all.getItems().stream()
+                .filter(x -> x.getPayee().equals(participant)).toList());
+        including.getItems().clear();
+        including.getItems().addAll(all.getItems().stream()
+                .filter(x -> !(x.getSplit().stream()
+                        .map(ParticipantPayment::getParticipant)
+                        .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
     }
 }

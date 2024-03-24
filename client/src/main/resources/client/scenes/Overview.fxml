@@ -27,7 +27,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ListView layoutX="35.0" layoutY="-75.0" prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ListView fx:id="from" layoutX="35.0" layoutY="-75.0" prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>
             </content>
           </Tab>
@@ -35,7 +35,7 @@
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ListView prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <ListView fx:id="including" prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children></AnchorPane>
               </content>
             </Tab>
@@ -50,7 +50,7 @@
          </font></Label>
       <Button fx:id="addparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="143.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="20.0" prefWidth="20.0" scaleShape="false" />
       <ListView fx:id="participants" layoutX="35.0" layoutY="108.0" prefHeight="37.0" prefWidth="238.0" />
-      <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="174.0" prefWidth="150.0" />
+      <ChoiceBox fx:id="expenseparticipants" onAction="#filterViews" layoutX="35.0" layoutY="174.0" prefWidth="150.0" />
       <Button fx:id="editparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="105.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" scaleShape="false" />
       <Button cancelButton="true" layoutX="33.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="Go Back" />
    </children>
