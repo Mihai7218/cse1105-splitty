@@ -15,10 +15,7 @@
  */
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageComboBox;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
@@ -31,6 +28,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -84,15 +82,13 @@ public class OverviewCtrl implements Initializable {
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
-        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
-        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         Event event = mainCtrl.getEvent();
         clearFields();
         if(event != null){
             title.setText(event.getTitle());
+            participants.getItems().addAll(getParticipants());
             List<String> names = event.getParticipantsList().stream()
                     .map(Participant::getName).toList();
-            participants.getItems().addAll(names);
             expenseparticipants.getItems().addAll(names);
         }
     }
@@ -227,6 +223,20 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
+        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
+        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
+        participants.getItems().addAll(getParticipants());
+        System.out.println(getParticipants());
+    }
+
+    /**
+     * Gets the List of participants of the event
+     */
+    private List<Participant> getParticipants() {
+        if (mainCtrl.getEvent() == null) return new ArrayList<>();
+        List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
+        return participantsList;
     }
 
 
