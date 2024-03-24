@@ -40,6 +40,9 @@ public class MainCtrl {
 
     private ParticipantCtrl participantCtrl;
     private Scene participant;
+
+    private EditParticipantCtrl editparticipantCtrl;
+    private Scene editparticipant;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
     private AddExpenseCtrl addExpenseCtrl;
@@ -59,18 +62,21 @@ public class MainCtrl {
     /**
      * Initialize the main controller with the primary stage,
      *
-     * @param primaryStage primary stage of the controller.
-     * @param qouteoverview qoute overview controller and scene
-     * @param add          add quote controller and scene
-     * @param startScreen  start screen controller and scene
-     * @param participant participant controller and scene
-     * @param overview     overview controller and scene
-     * @param addExpense addExpense controller and scene
+     * @param primaryStage    primary stage of the controller.
+     * @param qouteoverview   qoute overview controller and scene
+     * @param add             add quote controller and scene
+     * @param startScreen     start screen controller and scene
+     * @param participant     participant controller and scene
+     * @param overview        overview controller and scene
+     * @param addExpense      addExpense controller and scene
+     * @param editparticipant
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
-                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant
-            , Pair<OverviewCtrl, Parent> overview, Pair<AddExpenseCtrl, Parent> addExpense) {
+                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant,
+                           Pair<OverviewCtrl, Parent> overview,
+                           Pair<AddExpenseCtrl, Parent> addExpense,
+                           Pair<EditParticipantCtrl, Parent> editparticipant) {
         this.primaryStage = primaryStage;
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
@@ -83,6 +89,9 @@ public class MainCtrl {
 
         this.participantCtrl = participant.getKey();
         this.participant = new Scene(participant.getValue());
+
+        this.editparticipantCtrl = editparticipant.getKey();
+        this.editparticipant = new Scene(editparticipant.getValue());
 
         this.overviewCtrl = overview.getKey();
         this.overview = new Scene(overview.getValue());
@@ -137,6 +146,14 @@ public class MainCtrl {
     }
 
     /**
+     * Shows the edit participant scene.
+     */
+    public void showEditParticipant() {
+        primaryStage.titleProperty().bind(languageManager.bind("editParticipant.windowTitle"));
+        primaryStage.setScene(editparticipant);
+    }
+
+    /**
      * Getter for the primary stage.
      * Package-access getter for testing purposes.
      * @return - primary stage.
@@ -179,6 +196,24 @@ public class MainCtrl {
      */
     Scene getOverview() {
         return overview;
+    }
+
+    /**
+     * Getter for the editParticipant controller.
+     * Package-access getter for testing purposes.
+     * @return - editParticipant controller.
+     */
+    public EditParticipantCtrl getEditparticipantCtrl() {
+        return editparticipantCtrl;
+    }
+
+    /**
+     * Getter for the editParticipant scene.
+     * Package-access getter for testing purposes.
+     * @return - editParticipant scene.
+     */
+    public Scene getEditparticipant() {
+        return editparticipant;
     }
 
     /**
