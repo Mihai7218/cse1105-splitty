@@ -213,6 +213,9 @@ public class OverviewCtrl implements Initializable {
         });
     }
 
+    /**
+     * Method that filters the views to a specific participant.
+     */
     public void filterViews() {
         Participant participant = expenseparticipants.getValue();
         if (participant == null) return;

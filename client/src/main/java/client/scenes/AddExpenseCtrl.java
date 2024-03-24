@@ -128,6 +128,14 @@ public class AddExpenseCtrl implements Initializable {
                 return null;
             }
         });
+        setExpenseTypeView();
+        refresh();
+    }
+
+    /**
+     * Creates the view for the expense type.
+     */
+    private void setExpenseTypeView() {
         expenseType.setCellFactory(param -> new ListCell<>() {
             private final Rectangle rectangle = new Rectangle(100, 20);
 
@@ -161,9 +169,11 @@ public class AddExpenseCtrl implements Initializable {
                 return null;
             }
         });
-        refresh();
     }
 
+    /**
+     * Refreshes the available participants.
+     */
     public void refresh() {
         loadParticipants();
         populateParticipantCheckBoxes();
@@ -209,6 +219,9 @@ public class AddExpenseCtrl implements Initializable {
         });
     }
 
+    /**
+     * Creates the checkboxes for each participant.
+     */
     private void populateParticipantCheckBoxes() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null) {
@@ -374,31 +387,10 @@ public class AddExpenseCtrl implements Initializable {
      */
 
     public Expense createExpense(String title, double price, LocalDate date) {
-        List<ParticipantPayment> participantPayments = new ArrayList<>();
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
 
-        if (everyone.isSelected()) {
-            for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
-                if (!p.equals(actualPayee)) {
-                    participantPayments.add(new ParticipantPayment(p,
-                            price / (mainCtrl.getEvent().getParticipantsList().size())));
-                }
-            }
-        } else if (only.isSelected()) {
-            int numberOfParticipants = 1;
-            for (var pair : participantCheckBoxMap.entrySet()) {
-                if (pair.getKey().isSelected()) {
-                    numberOfParticipants++;
-                }
-            }
-            for (var pair : participantCheckBoxMap.entrySet()) {
-                if (pair.getKey().isSelected()) {
-                    participantPayments.add(new ParticipantPayment(pair.getValue(),
-                            price / numberOfParticipants));
-                }
-            }
-        }
+        List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
         Expense expense = new Expense(price, currency.getValue(), title, "testing",
                 java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
@@ -407,17 +399,74 @@ public class AddExpenseCtrl implements Initializable {
     }
 
     /**
+     * Method that gets the list of participant payments.
+     * @param price - price of the expense
+     * @param actualPayee - payee of the expense.
+     * @return  - list of participant payments.
+     */
+    private List<ParticipantPayment> getParticipantPayments(double price, Participant actualPayee) {
+        List<ParticipantPayment> participantPayments = new ArrayList<>();
+        if (everyone.isSelected()) {
+            everyoneCase(price, actualPayee, participantPayments);
+        } else if (only.isSelected()) {
+            onlyCase(price, participantPayments);
+        }
+        return participantPayments;
+    }
+
+    /**
+     * Updates the participant payments list in the case that only some people are selected.
+     * @param price - price of the expense
+     * @param participantPayments - list of participant payments.
+     */
+    private void onlyCase(double price, List<ParticipantPayment> participantPayments) {
+        int numberOfParticipants = 1;
+        for (var pair : participantCheckBoxMap.entrySet()) {
+            if (pair.getKey().isSelected()) {
+                numberOfParticipants++;
+            }
+        }
+        for (var pair : participantCheckBoxMap.entrySet()) {
+            if (pair.getKey().isSelected()) {
+                participantPayments.add(new ParticipantPayment(pair.getValue(),
+                        price / numberOfParticipants));
+            }
+        }
+    }
+
+    /**
+     * Updates the participant payments list in the case that everyone is selected.
+     * @param price - price of the expense
+     * @param actualPayee - payee of the expense.
+     * @param participantPayments - list of participant payments.
+     */
+    private void everyoneCase(double price, Participant actualPayee,
+                              List<ParticipantPayment> participantPayments) {
+        for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
+            if (!p.equals(actualPayee)) {
+                participantPayments.add(new ParticipantPayment(p,
+                        price / (mainCtrl.getEvent().getParticipantsList().size())));
+            }
+        }
+    }
+
+    /**
      * Method to clear input fields
      */
     public void clearFields() {
         title.clear();
         price.clear();
+        newTag.clear();
         date.setValue(null);
         currency.setValue(null);
         payee.setValue(null);
         everyone.setSelected(false);
         only.setSelected(false);
         expenseType.setValue(null);
+        question.setVisible(false);
+        scrollNames.setVisible(false);
+        instructions.setVisible(false);
+        newTag.setVisible(false);
     }
 
     /**
