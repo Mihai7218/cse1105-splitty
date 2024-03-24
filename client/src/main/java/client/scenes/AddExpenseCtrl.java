@@ -29,6 +29,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -403,8 +404,17 @@ public class AddExpenseCtrl implements Initializable {
      * When the abort button is pressed it goes back to the overview
      */
     public void abort() {
-        clearFields();
-        mainCtrl.showOverview();
+        //alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
+
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+        confirmation.contentTextProperty().bind(languageManager.bind("addExpense.abortAlert"));
+        confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+        confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+        Optional<ButtonType> result = confirmation.showAndWait();
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+            clearFields();
+            mainCtrl.showOverview();
+        }
     }
 
     /**

@@ -94,12 +94,6 @@ public class StartScreenCtrl implements Initializable {
         logo.setGraphic(imageView);
         imageView.setFitWidth(107.735);
         imageView.setFitHeight(40);
-//        createEventButton.prefWidthProperty()
-//                .bind(createButtonHBox.widthProperty()
-//                        .multiply(0.75)); // Adjust the percentage as needed
-//        joinEventButton.prefWidthProperty()
-//                .bind(joinButtonHBox.widthProperty()
-//                        .multiply(0.75)); // Adjust the percentage as needed
     }
 
     /**
