@@ -9,10 +9,7 @@ import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.TagRepository;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class TagService {
@@ -72,11 +69,13 @@ public class TagService {
      * Adds a new tag to an event
      *
      * @param inviteCode the invite code of the event to add the tag to
-     * @param tag the tag to be added
+     * @param tag        the tag to be added
+     * @param serverUtil
      * @return whether the tag could be added to the event
      * TODO: add a check for duplicates
      */
-    public ResponseEntity<Tag> addNewToEvent(long inviteCode, Tag tag) {
+    public ResponseEntity<Tag> addNewToEvent(long inviteCode, Tag tag,
+                                             GerneralServerUtil serverUtil) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -91,6 +90,7 @@ public class TagService {
         tagList.add(tag);
         event.setTagsList(tagList);
         //Save both in their respective repos
+        serverUtil.updateDate(eventRepo,inviteCode);
         tagRepo.save(tag);
         eventRepo.save(event);
 
@@ -103,9 +103,11 @@ public class TagService {
      * @param inviteCode the inviteCode of the event with which the tag is associated
      * @param tagId      the id of the tag itself
      * @param tag        the new tag which the old one should be changed to
+     * @param serverUtil
      * @return whether the tagName was changed
      */
-    public ResponseEntity<Tag> changeTag(long inviteCode, long tagId, Tag tag) {
+    public ResponseEntity<Tag> changeTag(long inviteCode, long tagId, Tag tag,
+                                         GerneralServerUtil serverUtil) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -116,6 +118,8 @@ public class TagService {
         if (tag == null || Objects.equals(tag.getName(), "")) {
             return ResponseEntity.badRequest().build();
         }
+        Event event = eventRepo.findById(inviteCode).get();
+        serverUtil.updateDate(eventRepo,inviteCode);
         Tag change = tag;
         tagRepo.save(change);
         return ResponseEntity.ok(null);
@@ -125,11 +129,13 @@ public class TagService {
      * Deletes a tag from an event
      *
      * @param inviteCode the inviteCode of the event to delete the tag from
-     * @param tagId the id of the tag to be deleted
+     * @param tagId      the id of the tag to be deleted
+     * @param serverUtil
      * @return whether the tag was successfully deleted
      * TODO: check if we need to delete tag specifically from event as well or from repo is fine
      */
-    public ResponseEntity<Tag> deleteTagFromEvent(long inviteCode, long tagId) {
+    public ResponseEntity<Tag> deleteTagFromEvent(long inviteCode, long tagId,
+                                                  GerneralServerUtil serverUtil) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
                 eventRepo.findById(inviteCode).get().getExpensesList() == null) {
             return ResponseEntity.notFound().build();
@@ -137,6 +143,11 @@ public class TagService {
         if (tagId < 0 || !tagRepo.existsById(tagId)) {
             return ResponseEntity.notFound().build();
         }
+        Event event = eventRepo.findById(inviteCode).get();
+        serverUtil.updateDate(eventRepo,inviteCode);
+        Optional<Tag> test = tagRepo.findById(tagId);
+        event.getTagsList().remove(test.get());
+        eventRepo.save(event);
         tagRepo.deleteAllById(Collections.singleton(tagId));
         return ResponseEntity.ok(null);
     }

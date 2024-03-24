@@ -4,11 +4,12 @@ import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.OK;
 import static server.api.PasswordService.setPassword;
 
@@ -41,9 +42,12 @@ public class ParticipantPaymentControllerTest {
 
     public Expense expense;
 
+    public GerneralServerUtil serverUtil;
+
 
     @BeforeEach
     public void init(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         participantPaymentRepository = new TestParticipantPaymentRepository();
         participantRepository = new TestParticipantRepository();
@@ -67,11 +71,13 @@ public class ParticipantPaymentControllerTest {
         participantList.add(valid);
         creationDate = new Date(124, 4, 20);
         lastActivity = new Date(124, 4, 25);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
         p1 = new ParticipantPayment(baseParticipant, 20);
         p2 = new ParticipantPayment(valid, 5);
         participantPaymentRepository.save(p1);
         participantPaymentRepository.save(p2);
-        baseEvent = new Event("Mock Event",creationDate,lastActivity);
+        baseEvent = new Event("Mock Event",timestamp2,timestamp2);
         List<ParticipantPayment> participantPaymentList = new ArrayList<>();
         participantPaymentList.add(p1);
         participantPaymentList.add(p2);
@@ -82,7 +88,7 @@ public class ParticipantPaymentControllerTest {
         expenseRepository.save(expense);
         eventRepository.save(baseEvent);
         eventRepository.getById(0L).setParticipantsList(participantList);
-        participantPaymentController = new ParticipantPaymentController(participantPaymentService);
+        participantPaymentController = new ParticipantPaymentController(participantPaymentService,serverUtil);
     }
 
     @Test
@@ -147,6 +153,56 @@ public class ParticipantPaymentControllerTest {
         assertEquals(participantPaymentRepository.calledMethods, List.of("save", "save"));
         assertEquals(participantPaymentRepository.participantPayments.size(), 1);
         assertEquals(participantPaymentRepository.participantPayments.get(0), p1);
+    }
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.getParticipantPayment(0L,0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityNotChange2Test(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantPaymentController.getParticipantPayment(0L,0L,0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantPaymentController.deleteParticipantPayment(0L,0L,0L);
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+    @Test
+    public void lastActivityAfterChangeTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantPaymentController.updateParticipantPayment(0L,0L,0L,new ParticipantPayment(new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B"), 5));
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+    @Test
+    public void lastActivityAddTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantPaymentController.createParticipantPayment(0L,0L,new ParticipantPayment(new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B"), 5));
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
 }
