@@ -72,11 +72,14 @@ public class ParticipantService {
 
     /**
      * Post method that validates the participant to be added and adds it
-     * @param eventId the event the participant is added to
+     *
+     * @param eventId     the event the participant is added to
      * @param participant the participant being added
+     * @param serverUtil
      * @return participant if successfully added to event
      */
-    public ResponseEntity<Participant> addParticipant(long eventId, Participant participant) {
+    public ResponseEntity<Participant> addParticipant(long eventId, Participant participant,
+                                                      GerneralServerUtil serverUtil) {
         if(getAllParticipants(eventId).getStatusCode().equals(BAD_REQUEST)){
             return ResponseEntity.badRequest().build();
         }else if(getAllParticipants(eventId).getStatusCode().equals(NOT_FOUND)){
@@ -96,20 +99,23 @@ public class ParticipantService {
         participantRepository.save(participant);
         currentParticipants.add(participant);
         Event event = eventRepository.findById(eventId).get();
-        UpdateService.updateDate(eventRepository,eventId);
+        serverUtil.updateDate(eventRepository,eventId);
         eventRepository.save(event);
         return ResponseEntity.ok(participant);
     }
 
     /**
      * Put method that validates the values in the participant to be changed
-     * @param eventId id of the event the participant is in
-     * @param id id of the participant to be retrieved
+     *
+     * @param eventId    id of the event the participant is in
+     * @param id         id of the participant to be retrieved
+     * @param serverUtil
      * @return participant if successfully added to event
      */
     @Transactional
     public ResponseEntity<Participant> updateParticipant(long eventId,
-                                                         long id, Participant participant) {
+                                                         long id, Participant participant,
+                                                         GerneralServerUtil serverUtil) {
         if(!getParticipant(eventId, id).getStatusCode().equals(OK)
             || getParticipant(eventId,id).getBody() == null){
             return getParticipant(eventId,id);
@@ -123,17 +129,20 @@ public class ParticipantService {
         old.setBic(participant.getBic());
         old.setIban(participant.getIban());
         old.setEmail(participant.getEmail());
-        UpdateService.updateDate(eventRepository,eventId);
+        serverUtil.updateDate(eventRepository,eventId);
         return ResponseEntity.ok(participant);
     }
 
     /**
      * Delete method to remove a participant from the event
-     * @param eventId id of event participant is in
-     * @param id id of the participant to delete
+     *
+     * @param eventId    id of event participant is in
+     * @param id         id of the participant to delete
+     * @param serverUtil
      * @return participant if successfully removed
      */
-    public ResponseEntity<Participant> deleteParticipant(long eventId, long id) {
+    public ResponseEntity<Participant> deleteParticipant(long eventId, long id,
+                                                         GerneralServerUtil serverUtil) {
         if(getAllParticipants(eventId).getStatusCode().equals(BAD_REQUEST)
             || getParticipant(eventId, id).getStatusCode().equals(NOT_FOUND)){
             return ResponseEntity.badRequest().build();
@@ -146,7 +155,7 @@ public class ParticipantService {
         participantList.remove(participant);
         participantRepository.deleteById(id);
         Event event = eventRepository.findById(eventId).get();
-        UpdateService.updateDate(eventRepository,eventId);
+        serverUtil.updateDate(eventRepository,eventId);
         eventRepository.save(event);
         eventRepository.getReferenceById(eventId).setParticipantsList(participantList);
         return ResponseEntity.ok(participant);

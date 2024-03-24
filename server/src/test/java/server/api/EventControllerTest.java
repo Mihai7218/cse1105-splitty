@@ -39,11 +39,12 @@ public class EventControllerTest {
 
     @BeforeEach
     public void setup() {
+        GerneralServerUtil test = new ServerUtilModule();
         TestTagRepository tagRepo = new TestTagRepository();
         EventService ev = new EventService(repo, tagRepo);
         ps=new PasswordService();
         setPassword("password");
-        sut = new EventController(ev);
+        sut = new EventController(ev, test);
     }
 
 

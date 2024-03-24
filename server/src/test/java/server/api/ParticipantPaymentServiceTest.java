@@ -41,9 +41,12 @@ public class ParticipantPaymentServiceTest {
 
     public Expense expense;
 
+    public GerneralServerUtil serverUtil;
+
 
     @BeforeEach
     public void init(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         participantPaymentRepository = new TestParticipantPaymentRepository();
         participantRepository = new TestParticipantRepository();
@@ -132,7 +135,7 @@ public class ParticipantPaymentServiceTest {
     public void testAddParticipantPayment(){
         ParticipantPayment newPP = new ParticipantPayment(valid3, 5);
         ResponseEntity<ParticipantPayment> result = participantPaymentService
-                .createParticipantPayment(0,0, newPP);
+                .createParticipantPayment(0,0, newPP, serverUtil);
         assertEquals(result.getStatusCode(), OK);
         assertEquals(participantPaymentService.
                 getAllParticipantPayment(0,0).getBody().size(), 3);
@@ -145,7 +148,7 @@ public class ParticipantPaymentServiceTest {
     public void testInvalidParticipantPayment(){
         ParticipantPayment newPP = new ParticipantPayment(valid3, -5);
         ResponseEntity<ParticipantPayment> result = participantPaymentService
-                .createParticipantPayment(0,0, newPP);
+                .createParticipantPayment(0,0, newPP, serverUtil);
         assertEquals(result.getStatusCode(), BAD_REQUEST);
         assertEquals(participantPaymentService.
                 getAllParticipantPayment(0,0).getBody().size(), 2);
@@ -155,10 +158,10 @@ public class ParticipantPaymentServiceTest {
     @Test
     public void testUpdateValidParticipantPayment(){
         ParticipantPayment newPP = new ParticipantPayment(valid3, 5);
-        participantPaymentService.createParticipantPayment(0,0, newPP);
+        participantPaymentService.createParticipantPayment(0,0, newPP, serverUtil);
         ParticipantPayment updatedPP = new ParticipantPayment(valid3, 3);
         ResponseEntity<ParticipantPayment> updated = participantPaymentService
-                .updateParticipantPayment(0,0,2,updatedPP);
+                .updateParticipantPayment(0,0,2,updatedPP, serverUtil);
         assertEquals(updated.getStatusCode(), OK);
         assertEquals(participantPaymentService
                 .getParticipantPayment(0,0,2)
@@ -170,10 +173,10 @@ public class ParticipantPaymentServiceTest {
     @Test
     public void testUpdateinvalidParticipantPayment(){
         ParticipantPayment newPP = new ParticipantPayment(valid3, 5);
-        participantPaymentService.createParticipantPayment(0,0, newPP);
+        participantPaymentService.createParticipantPayment(0,0, newPP, serverUtil);
         ParticipantPayment updatedPP = new ParticipantPayment(valid3, -3);
         ResponseEntity<ParticipantPayment> updated = participantPaymentService
-                .updateParticipantPayment(0,0,2,updatedPP);
+                .updateParticipantPayment(0,0,2,updatedPP, serverUtil);
         assertEquals(updated.getStatusCode(), BAD_REQUEST);
         assertEquals(participantPaymentService
                 .getParticipantPayment(0,0,2)
@@ -185,7 +188,7 @@ public class ParticipantPaymentServiceTest {
     @Test
     public void testDeleteParticipantPayment(){
         ResponseEntity<ParticipantPayment> result =
-                participantPaymentService.deleteParticipantPayment(0,0,0);
+                participantPaymentService.deleteParticipantPayment(0,0,0, serverUtil);
         assertEquals(result.getBody(), p1);
         assertEquals(participantPaymentRepository.participantPayments.size(), 1);
         assertEquals(participantPaymentRepository.participantPayments, List.of(p2));
@@ -194,7 +197,7 @@ public class ParticipantPaymentServiceTest {
     @Test
     public void testDeleteInvalidParticipantPayment(){
         ResponseEntity<ParticipantPayment> result =
-                participantPaymentService.deleteParticipantPayment(0,0,3);
+                participantPaymentService.deleteParticipantPayment(0,0,3, serverUtil);
         assertEquals(result.getStatusCode(), BAD_REQUEST);
         assertEquals(participantPaymentRepository.participantPayments.size(), 2);
         assertEquals(participantPaymentRepository.participantPayments, List.of(p1, p2));
@@ -222,7 +225,7 @@ public class ParticipantPaymentServiceTest {
         Event event = eventRepository.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        participantPaymentService.deleteParticipantPayment(0L,0L,0L);
+        participantPaymentService.deleteParticipantPayment(0L,0L,0L, serverUtil);
         event = eventRepository.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
@@ -234,7 +237,7 @@ public class ParticipantPaymentServiceTest {
         Thread.sleep(500);
         participantPaymentService.updateParticipantPayment(0L,0L,0L,new ParticipantPayment(new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B"), 5));
+                "HBUKGB4B"), 5), serverUtil);
         event = eventRepository.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
@@ -246,7 +249,7 @@ public class ParticipantPaymentServiceTest {
         Thread.sleep(500);
         participantPaymentService.createParticipantPayment(0L,0L,new ParticipantPayment(new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B"), 5));
+                "HBUKGB4B"), 5), serverUtil);
         event = eventRepository.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }

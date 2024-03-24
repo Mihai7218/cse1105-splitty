@@ -93,7 +93,8 @@ public class EventService {
      * @return the new changed event
      */
     @Transactional
-    public ResponseEntity<Event> changeEvent(long inviteCode, Event event) {
+    public ResponseEntity<Event> changeEvent(long inviteCode, Event event,
+                                             GerneralServerUtil serverUtil) {
         if (inviteCode < 0) {
             return ResponseEntity.badRequest().build();
         }if (!eventRepository.existsById(inviteCode)) {
@@ -104,7 +105,7 @@ public class EventService {
         }
 
         Event saved = eventRepository.findById(inviteCode).get();
-        UpdateService.updateDate(eventRepository,inviteCode);
+        serverUtil.updateDate(eventRepository,inviteCode);
         saved.setTitle(event.getTitle());
         eventRepository.save(saved);
         return ResponseEntity.ok(saved);

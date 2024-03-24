@@ -42,9 +42,12 @@ public class ParticipantPaymentControllerTest {
 
     public Expense expense;
 
+    public GerneralServerUtil serverUtil;
+
 
     @BeforeEach
     public void init(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         participantPaymentRepository = new TestParticipantPaymentRepository();
         participantRepository = new TestParticipantRepository();
@@ -85,7 +88,7 @@ public class ParticipantPaymentControllerTest {
         expenseRepository.save(expense);
         eventRepository.save(baseEvent);
         eventRepository.getById(0L).setParticipantsList(participantList);
-        participantPaymentController = new ParticipantPaymentController(participantPaymentService);
+        participantPaymentController = new ParticipantPaymentController(participantPaymentService,serverUtil);
     }
 
     @Test

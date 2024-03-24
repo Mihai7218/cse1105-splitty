@@ -20,6 +20,7 @@ class EventServiceTest {
     public TestTagRepository tagRepository;
 
     public EventService eventService;
+    public GerneralServerUtil serverUtil;
 
     public Event event1;
     public Event event2;
@@ -28,6 +29,7 @@ class EventServiceTest {
 
     @BeforeEach
     public void setup(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         tagRepository = new TestTagRepository();
         eventService = new EventService(eventRepository, tagRepository);
@@ -163,19 +165,19 @@ class EventServiceTest {
 
     @Test
     public void changeEvent(){
-        assertEquals("asd", eventService.changeEvent(0,new Event("asd",null,null)).getBody().getTitle());
+        assertEquals("asd", eventService.changeEvent(0,new Event("asd",null,null),serverUtil).getBody().getTitle());
     }
     @Test
     public void changeEventEmptyName(){
-        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event("",null,null)).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event("",null,null),serverUtil).getStatusCode());
     }
     @Test
     public void changeEventNullName(){
-        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event(null,null,null)).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event(null,null,null),serverUtil).getStatusCode());
     }
     @Test
     public void changeEventNotFound(){
-        assertEquals(BAD_REQUEST, eventService.changeEvent(-100,new Event("asd",null,null)).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.changeEvent(-100,new Event("asd",null,null),serverUtil).getStatusCode());
     }
 
     @Test

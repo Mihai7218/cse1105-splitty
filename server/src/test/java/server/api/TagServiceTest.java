@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -29,8 +28,11 @@ public class TagServiceTest {
     public Expense expense1;
     public Expense expense2;
 
+    public GerneralServerUtil serverUtil;
+
     @BeforeEach
     public void setup() {
+        serverUtil = new ServerUtilModule();
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
         eventRepo = new TestEventRepository();
@@ -155,37 +157,37 @@ public class TagServiceTest {
     @Test
     public void addNewToEventTest(){
         Tag tester = new Tag("cool", "#000000");
-        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester, serverUtil);
         assertEquals(3, event1.getTagsList().size());
     }
     @Test
     public void addNewToEventTestNull(){
         Tag tester = null;
-        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void addNewToEventTestNoName(){
         Tag tester = new Tag("", "#000000");
-        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void addNewToEventTestNullName(){
         Tag tester = new Tag(null, "#000000");
-        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester);
+        ResponseEntity<Tag> res = tagService.addNewToEvent(0, tester, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void addNewToEventTestDNE(){
         Tag tester = new Tag("cool", "#000000");
-        ResponseEntity<Tag> res = tagService.addNewToEvent(10, tester);
+        ResponseEntity<Tag> res = tagService.addNewToEvent(10, tester, serverUtil);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void addNewToEventTestInvalid(){
         Tag tester = new Tag("cool", "#000000");
-        ResponseEntity<Tag> res = tagService.addNewToEvent(-10, tester);
+        ResponseEntity<Tag> res = tagService.addNewToEvent(-10, tester, serverUtil);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
 
@@ -194,7 +196,7 @@ public class TagServiceTest {
         Event event = eventRepo.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        tagService.deleteTagFromEvent(0L,0L);
+        tagService.deleteTagFromEvent(0L,0L, serverUtil);
         event = eventRepo.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
@@ -213,7 +215,7 @@ public class TagServiceTest {
         Event event = eventRepo.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        tagService.changeTag(0L,0L,new Tag("new tag", "blue"));
+        tagService.changeTag(0L,0L,new Tag("new tag", "blue"), serverUtil);
         event = eventRepo.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
@@ -222,7 +224,7 @@ public class TagServiceTest {
         Event event = eventRepo.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        tagService.addNewToEvent(0L,new Tag("new","blue"));
+        tagService.addNewToEvent(0L,new Tag("new","blue"), serverUtil);
         event = eventRepo.getById(0L);
         Date kip = event.getLastActivity();
         assertTrue(kip.after(tmpdate));

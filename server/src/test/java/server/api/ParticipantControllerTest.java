@@ -32,14 +32,17 @@ public class ParticipantControllerTest {
     ParticipantController participantController;
     ParticipantService participantService;
 
+    public GerneralServerUtil serverUtil;
+
 
     @BeforeEach
     public void init(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         participantRepository = new TestParticipantRepository();
         participantService = new ParticipantService(
                 eventRepository, participantRepository);
-        participantController = new ParticipantController(participantService);
+        participantController = new ParticipantController(participantService,serverUtil);
         valid = new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
                 "HBUKGB4B");

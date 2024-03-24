@@ -27,12 +27,14 @@ public class ExpenseControllerTest {
 
     public TestEventRepository eventRepo = new TestEventRepository();
 
+    public GerneralServerUtil serverUtil;
+
     @BeforeEach
     public void setup() {
-
+        serverUtil = new ServerUtilModule();
         TestExpenseRepository expenseRepo = new TestExpenseRepository();
         ExpenseService serv = new ExpenseService(eventRepo, expenseRepo);
-        ctrl = new ExpenseController(serv);
+        ctrl = new ExpenseController(serv,serverUtil);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
         event = new Event("main", timestamp2, timestamp2);

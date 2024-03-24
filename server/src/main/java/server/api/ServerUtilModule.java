@@ -6,14 +6,14 @@ import server.database.EventRepository;
 import java.sql.Timestamp;
 import java.util.Date;
 
-public class UpdateService {
+public class ServerUtilModule implements GerneralServerUtil{
 
     /**
      * adw
      * @param eventRepo dwa
      * @param inviteCode dwa
      */
-    public static void updateDate(EventRepository eventRepo, long inviteCode) {
+    public void updateDate(EventRepository eventRepo, long inviteCode) {
         Event event = eventRepo.findById(inviteCode).get();
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());

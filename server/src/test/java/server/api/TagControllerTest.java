@@ -7,8 +7,6 @@ import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
-import server.database.EventRepository;
-import server.database.TagRepository;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -34,15 +32,18 @@ public class TagControllerTest {
     public Expense expense1;
     public Expense expense2;
 
+    public GerneralServerUtil serverUtil;
+
     @BeforeEach
     public void setup(){
+        serverUtil = new ServerUtilModule();
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
         eventRepo = new TestEventRepository();
         expenseRepo = new TestExpenseRepository();
         tagRepo = new TestTagRepository();
         tagService = new TagService(eventRepo, tagRepo);
-        ctrl = new TagController(tagService);
+        ctrl = new TagController(tagService,serverUtil);
 
         payee = new Participant("joe", null, null, null);
         tag1 = new Tag("food", "#FF1493");
@@ -170,7 +171,7 @@ public class TagControllerTest {
         Event event = eventRepo.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        tagService.deleteTagFromEvent(0L,0L);
+        tagService.deleteTagFromEvent(0L,0L, serverUtil);
         event = eventRepo.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
@@ -189,7 +190,7 @@ public class TagControllerTest {
         Event event = eventRepo.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        tagService.changeTag(0L,0L,new Tag("new tag", "blue"));
+        tagService.changeTag(0L,0L,new Tag("new tag", "blue"), serverUtil);
         event = eventRepo.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
@@ -198,7 +199,7 @@ public class TagControllerTest {
         Event event = eventRepo.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        tagService.addNewToEvent(0L,new Tag("new","blue"));
+        tagService.addNewToEvent(0L,new Tag("new","blue"), serverUtil);
         event = eventRepo.getById(0L);
         Date kip = event.getLastActivity();
         assertTrue(kip.after(tmpdate));

@@ -71,11 +71,13 @@ public class ExpenseService {
 
     /**
      * Adds an expense to the event
-     * @param id the id of the event to be added to
-     * @param expense the expense to be added
+     *
+     * @param id         the id of the event to be added to
+     * @param expense    the expense to be added
+     * @param serverUtil
      * @return whether the expense could be added to the event
      */
-    public ResponseEntity<Expense> add(long id, Expense expense) {
+    public ResponseEntity<Expense> add(long id, Expense expense, GerneralServerUtil serverUtil) {
         if (id < 0){
             return ResponseEntity.badRequest().build();
         }
@@ -93,18 +95,20 @@ public class ExpenseService {
         expenseList.add(expense);
         event.setExpensesList(expenseList);
         expenseRepo.save(expense);
-        UpdateService.updateDate(eventRepo,id);
+        serverUtil.updateDate(eventRepo,id);
         eventRepo.save(event);
         return ResponseEntity.ok(expense);
     }
 
     /**
-     * @param title the new title of the expense
-     * @param expenseId the id of the expense to be edited
-     * @param id the id of the event which contains the expense
+     * @param title      the new title of the expense
+     * @param expenseId  the id of the expense to be edited
+     * @param id         the id of the event which contains the expense
+     * @param serverUtil
      * @return whether the title could be changed
      */
-    public ResponseEntity<Void> changeTitle(String title, long expenseId, long id) {
+    public ResponseEntity<Void> changeTitle(String title, long expenseId,
+                                            long id, GerneralServerUtil serverUtil) {
         if (id < 0){
             return ResponseEntity.badRequest().build();
         }
@@ -124,19 +128,21 @@ public class ExpenseService {
         change.setTitle(title);
         expenseRepo.save(change);
         Event event = eventRepo.findById(id).get();
-        UpdateService.updateDate(eventRepo,id);
+        serverUtil.updateDate(eventRepo,id);
         eventRepo.save(event);
         return ResponseEntity.ok(null);
     }
 
     /**
-     * @param amount the new amount of the expense
-     * @param expenseId the id of the expense to be edited
-     * @param id the id of the event
+     * @param amount     the new amount of the expense
+     * @param expenseId  the id of the expense to be edited
+     * @param id         the id of the event
+     * @param serverUtil
      * @return whether the amount could be updated
      */
     public ResponseEntity<Void> changeAmount(double amount,
-                                             long expenseId, long id){
+                                             long expenseId, long id,
+                                             GerneralServerUtil serverUtil){
         if (id < 0) {
             return ResponseEntity.badRequest().build();
         }
@@ -155,18 +161,19 @@ public class ExpenseService {
         Expense change = expenseRepo.findById(expenseId).get();
         change.setAmount(amount);
         expenseRepo.save(change);
-        UpdateService.updateDate(eventRepo,id);
+        serverUtil.updateDate(eventRepo,id);
         return ResponseEntity.ok(null);
     }
 
     /**
-     * @param payee the new payee of the expense
-     * @param expenseId the id of the expense to be edited
-     * @param id the id of the event
+     * @param payee      the new payee of the expense
+     * @param expenseId  the id of the expense to be edited
+     * @param id         the id of the event
+     * @param serverUtil
      * @return whether the payee could be updated
      */
     public ResponseEntity<Void> changePayee(Participant payee, long expenseId,
-                                            long id){
+                                            long id, GerneralServerUtil serverUtil){
         if (id < 0){
             return ResponseEntity.badRequest().build();
         }
@@ -186,16 +193,18 @@ public class ExpenseService {
         Expense change = expenseRepo.findById(expenseId).get();
         change.setPayee(payee);
         expenseRepo.save(change);
-        UpdateService.updateDate(eventRepo,id);
+        serverUtil.updateDate(eventRepo,id);
         return ResponseEntity.ok(null);
     }
 
     /**
-     * @param expenseId the id of the expense to be deleted
-     * @param id the id of the event
+     * @param expenseId  the id of the expense to be deleted
+     * @param id         the id of the event
+     * @param serverUtil
      * @return whether the expense was deleted
      */
-    public ResponseEntity<Expense> deleteExpense(long expenseId, long id){
+    public ResponseEntity<Expense> deleteExpense(long expenseId, long id,
+                                                 GerneralServerUtil serverUtil){
         if (id < 0){
             return ResponseEntity.badRequest().build();
         }
@@ -213,7 +222,7 @@ public class ExpenseService {
         List<Expense> expenseList = event.getExpensesList();
         expenseList.remove(expense);
         event.setExpensesList(expenseList);
-        UpdateService.updateDate(eventRepo,id);
+        serverUtil.updateDate(eventRepo,id);
         eventRepo.save(event);
         expenseRepo.deleteAllById(Collections.singleton(expenseId));
         return ResponseEntity.ok(expense);
