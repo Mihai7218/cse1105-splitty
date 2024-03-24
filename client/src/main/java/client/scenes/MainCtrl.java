@@ -98,7 +98,7 @@ public class MainCtrl {
      * shows AddExpense scene
      */
     public void showAddExpense(){
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("addExpense.windowTitle"));
         primaryStage.setScene(addExpense);
     }
 
@@ -106,7 +106,7 @@ public class MainCtrl {
      * Shows the overview scene.
      */
     public void showOverview() {
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("overview.windowTitle"));
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
     }
@@ -132,7 +132,7 @@ public class MainCtrl {
      * Shows the add participant scene.
      */
     public void showParticipant() {
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("addParticipant.windowTitle"));
         primaryStage.setScene(participant);
     }
 
@@ -168,7 +168,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - overview controller.
      */
-    OverviewCtrl getOverviewCtrl() {
+    public OverviewCtrl getOverviewCtrl() {
         return overviewCtrl;
     }
 
@@ -204,7 +204,7 @@ public class MainCtrl {
      * Package-access getter for testing purposes.
      * @return - start screen controller.
      */
-    StartScreenCtrl getStartScreenCtrl() {
+    public StartScreenCtrl getStartScreenCtrl() {
         return startScreenCtrl;
     }
 

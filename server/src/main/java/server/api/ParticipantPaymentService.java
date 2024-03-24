@@ -175,15 +175,8 @@ public class ParticipantPaymentService {
      */
     public ResponseEntity<ParticipantPayment> validateParticipantPayment(ParticipantPayment p) {
         if(p == null || p.getParticipant() == null
-                || p.getPaymentAmount() < 0
-                || !(participantRepository.existsById(p.getParticipant().getId()))){
+                || p.getPaymentAmount() < 0){
             return ResponseEntity.badRequest().build();
-        }
-        List<ParticipantPayment> allParticipantPayments = participantPaymentRepository.findAll();
-        for(ParticipantPayment pp: allParticipantPayments){
-            if(pp.equals(p)){
-                return ResponseEntity.badRequest().build();
-            }
         }
         return ResponseEntity.ok(p);
     }

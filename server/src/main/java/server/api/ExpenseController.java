@@ -111,7 +111,8 @@ public class ExpenseController {
      * @return the list of events if succesfully added
      */
     @PostMapping(path = {"/admin/{password}"})
-    public ResponseEntity<Expense> addJsonImport(@PathVariable("password") String password,
+    public ResponseEntity<Expense> addJsonImport(@PathVariable("id") long id,
+            @PathVariable("password") String password,
                                                  @RequestBody Expense expenses){
         if (PasswordService.getPassword().equals(password)) {
             if(expenseService.validateExpense(expenses).getStatusCode().equals(OK)){
