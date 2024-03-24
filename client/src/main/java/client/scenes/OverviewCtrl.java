@@ -28,6 +28,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 
 import java.net.URL;
@@ -40,13 +41,19 @@ public class OverviewCtrl implements Initializable {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final ConfigInterface config;
-
+    @FXML
+    private Tab fromTab;
+    @FXML
+    private Tab includingTab;
     @FXML
     private LanguageComboBox languages;
     @FXML
     private Label title;
     @FXML
     private ListView<Participant> participants;
+
+    private Label participantFrom;
+    private Label participantIncluding;
 
     @FXML
     private ListView<Expense> all;
@@ -187,6 +194,14 @@ public class OverviewCtrl implements Initializable {
         all.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
         from.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
         including.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        Label fromLabel = new Label();
+        Label includingLabel = new Label();
+        participantFrom = new Label();
+        participantIncluding = new Label();
+        fromLabel.textProperty().bind(languageManager.bind("overview.fromTab"));
+        includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
+        fromTab.setGraphic(new HBox(fromLabel, participantFrom));
+        includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
         participants.setCellFactory(x -> new ListCell<>() {
             @Override
             protected void updateItem(Participant item, boolean empty) {
@@ -219,6 +234,8 @@ public class OverviewCtrl implements Initializable {
     public void filterViews() {
         Participant participant = expenseparticipants.getValue();
         if (participant == null) return;
+        participantFrom.setText(participant.getName());
+        participantIncluding.setText(participant.getName());
         from.getItems().clear();
         from.getItems().addAll(all.getItems().stream()
                 .filter(x -> x.getPayee().equals(participant)).toList());

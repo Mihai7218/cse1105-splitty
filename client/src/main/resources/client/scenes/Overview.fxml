@@ -19,7 +19,7 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-          <Tab text="${controller.languageManager.overview.fromTab}">
+          <Tab fx:id="fromTab">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -27,7 +27,7 @@
                      </children></AnchorPane>
             </content>
           </Tab>
-            <Tab text="${controller.languageManager.overview.includingTab}">
+            <Tab fx:id="includingTab">
               <content>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
