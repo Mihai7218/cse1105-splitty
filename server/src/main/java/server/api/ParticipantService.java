@@ -87,8 +87,9 @@ public class ParticipantService {
             return ResponseEntity.badRequest().build();
         }
 
-        if(!validateBic(participant.getBic()) || !validateName(participant.getName()) ||
-                !validateEmail(participant.getEmail()) || !validateIban(participant.getIban())){
+        if(!validateName(participant.getName()) ||
+                !validateEmail(participant.getEmail())
+                || !validateBankInfo(participant)){
             return ResponseEntity.badRequest().build();
         }
 
@@ -112,7 +113,7 @@ public class ParticipantService {
         }
         Participant old = getParticipant(eventId,id).getBody();
         if(!validateName(participant.getName()) || !validateEmail(participant.getEmail())
-                || !validateBic(participant.getBic()) || !validateIban(participant.getIban())){
+                || !validateBankInfo(participant)){
             return ResponseEntity.badRequest().build();
         }
         old.setName(participant.getName());
@@ -153,6 +154,19 @@ public class ParticipantService {
         if(bic == null || bic.isEmpty()) return true;
         String bicRegex = "^[A-Za-z]{6}[0-9A-Za-z]{2}([0-9A-Za-z]{3})?$";
         return Pattern.compile(bicRegex).matcher(bic).matches();
+    }
+
+    public static boolean validateBankInfo(Participant p){
+        boolean bicEmpty = false;
+        boolean ibanEmpty = false;
+        if(p.getBic() == null || p.getBic().isEmpty()){
+            bicEmpty = true;
+        }
+        if(p.getIban() == null || p.getIban().isEmpty()){
+            ibanEmpty = true;
+        }
+        if(bicEmpty != ibanEmpty) return false;
+        return validateIban(p.getIban()) && validateBic(p.getBic());
     }
 
     /**
