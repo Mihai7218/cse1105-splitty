@@ -75,12 +75,19 @@ public class EditParticipantCtrl {
      * When the ok button is pressed the new Participant is stored on the server.
      */
     public void ok() {
-        if (name.getText().isEmpty()
-                || email.getText().isEmpty() || iban.getText().isEmpty()
-                || bic.getText().isEmpty()){
+        boolean bicPresent = bic.getText().isEmpty();
+        boolean ibanPresent = iban.getText().isEmpty();
+        if (name.getText().isEmpty()){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("editParticipant.emptyFields"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            return;
+        }
+        if(bicPresent != ibanPresent){
+            var alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager.bind("addParticipant.invalidPayment"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
