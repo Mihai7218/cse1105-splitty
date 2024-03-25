@@ -91,8 +91,9 @@ public class ParticipantService {
             return ResponseEntity.badRequest().build();
         }
 
-        if(!validateBic(participant.getBic()) || !validateName(participant.getName()) ||
-                !validateEmail(participant.getEmail()) || !validateIban(participant.getIban())){
+        if(!validateName(participant.getName()) ||
+                !validateEmail(participant.getEmail())
+                || !validateBankInfo(participant)){
             return ResponseEntity.badRequest().build();
         }
 
@@ -122,7 +123,7 @@ public class ParticipantService {
         }
         Participant old = getParticipant(eventId,id).getBody();
         if(!validateName(participant.getName()) || !validateEmail(participant.getEmail())
-                || !validateBic(participant.getBic()) || !validateIban(participant.getIban())){
+                || !validateBankInfo(participant)){
             return ResponseEntity.badRequest().build();
         }
         old.setName(participant.getName());
@@ -167,8 +168,27 @@ public class ParticipantService {
      * @return boolean value if the string is a valid bic number
      */
     public static boolean validateBic(String bic) {
+        if(bic == null || bic.isEmpty()) return true;
         String bicRegex = "^[A-Za-z]{6}[0-9A-Za-z]{2}([0-9A-Za-z]{3})?$";
-        return bic != null && Pattern.compile(bicRegex).matcher(bic).matches();
+        return Pattern.compile(bicRegex).matcher(bic).matches();
+    }
+
+    /**
+     * Method to check that bic and iban are present as a pair and not alone
+     * @param p participant to check
+     * @return true or false depending on if their payment info is valid
+     */
+    public static boolean validateBankInfo(Participant p){
+        boolean bicEmpty = false;
+        boolean ibanEmpty = false;
+        if(p.getBic() == null || p.getBic().isEmpty()){
+            bicEmpty = true;
+        }
+        if(p.getIban() == null || p.getIban().isEmpty()){
+            ibanEmpty = true;
+        }
+        if(bicEmpty != ibanEmpty) return false;
+        return validateIban(p.getIban()) && validateBic(p.getBic());
     }
 
     /**
@@ -186,8 +206,9 @@ public class ParticipantService {
      * @return boolean value if the string is a valid iban number
      */
     public static boolean validateIban(String iban) {
+        if(iban == null || iban.isEmpty()) return true;
         String ibanRegex = "^[A-Z]{2}[0-9]{2}[A-Za-z0-9]{11,30}$";
-        return iban != null && Pattern.compile(ibanRegex).matcher(iban).matches();
+        return Pattern.compile(ibanRegex).matcher(iban).matches();
     }
 
     /**
@@ -196,9 +217,10 @@ public class ParticipantService {
      * @return boolean value if the string is a valid email
      */
     public static boolean validateEmail(String email) {
+        if(email == null || email.isEmpty()) return true;
         Pattern basic = Pattern.compile("^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
                 "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
-        return email != null && basic.matcher(email).matches();
+        return basic.matcher(email).matches();
 
     }
 
