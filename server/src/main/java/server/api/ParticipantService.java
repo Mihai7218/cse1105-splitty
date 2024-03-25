@@ -156,6 +156,11 @@ public class ParticipantService {
         return Pattern.compile(bicRegex).matcher(bic).matches();
     }
 
+    /**
+     * Method to check that bic and iban are present as a pair and not alone
+     * @param p participant to check
+     * @return true or false depending on if their payment info is valid
+     */
     public static boolean validateBankInfo(Participant p){
         boolean bicEmpty = false;
         boolean ibanEmpty = false;
