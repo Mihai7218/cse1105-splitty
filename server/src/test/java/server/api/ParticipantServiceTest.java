@@ -100,18 +100,18 @@ class ParticipantServiceTest {
         Participant invalidNoPayment2=new Participant("Jeff", "","NL85RABO5253446745","");
         Participant invalidNoPayment3 = new Participant("Jane", null, null, "HBUKGB4B");
         Participant invalidNoPayment4=new Participant("Jeff", "","","HBUKGB4B");
-        assertEquals(participantService.addParticipant(0,invalidNoPayment).getStatusCode(), BAD_REQUEST);
-        assertEquals(participantService.addParticipant(0,invalidNoPayment2).getStatusCode(), BAD_REQUEST);
-        assertEquals(participantService.addParticipant(0,invalidNoPayment3).getStatusCode(), BAD_REQUEST);
-        assertEquals(participantService.addParticipant(0,invalidNoPayment4).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment,serverUtil).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment2,serverUtil).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment3,serverUtil).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment4,serverUtil).getStatusCode(), BAD_REQUEST);
     }
 
     @Test
     public void addParticipantvalidPaymentDetails(){
         Participant validNoPayment = new Participant("Jane", null, null, null);
         Participant validNoPayment2=new Participant("Jeff", "","","");
-        assertEquals(participantService.addParticipant(0,validNoPayment).getStatusCode(), OK);
-        assertEquals(participantService.addParticipant(0,validNoPayment2).getStatusCode(), OK);
+        assertEquals(participantService.addParticipant(0,validNoPayment,serverUtil).getStatusCode(), OK);
+        assertEquals(participantService.addParticipant(0,validNoPayment2,serverUtil).getStatusCode(), OK);
     }
     @Test
     public void getAllParticipantsTest(){
