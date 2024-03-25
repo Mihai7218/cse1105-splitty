@@ -48,7 +48,7 @@ public class Main extends Application {
         var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
         var startScreen = FXML.load(StartScreenCtrl.class, "client", "scenes", "StartScreen.fxml");
         var participant = FXML.load(ParticipantCtrl.class, "client", "scenes", "Participant.fxml");
-        var overview = FXML.load(OverviewCtrl.class, "client", "scenes", "Overview2.fxml");
+        var overview = FXML.load(OverviewCtrl.class, "client", "scenes", "Overview.fxml");
         var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes", "AddExpense.fxml");
 
 
