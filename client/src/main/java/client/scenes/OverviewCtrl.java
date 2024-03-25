@@ -57,8 +57,6 @@ public class OverviewCtrl implements Initializable {
     private Button addparticipant;
 
     @FXML
-    private Button editparticipant;
-    @FXML
     private Button sendMail;
     @FXML
     private Button cancel;
@@ -91,7 +89,6 @@ public class OverviewCtrl implements Initializable {
      */
     public void refresh() {
         addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
-        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
@@ -244,8 +241,6 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
-        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
         participants.getItems().addAll(getParticipants());
         System.out.println(getParticipants());

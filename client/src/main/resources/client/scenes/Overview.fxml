@@ -57,10 +57,6 @@
          </tooltip></Button>
       <ListView fx:id="participants" layoutX="35.0" layoutY="108.0" prefHeight="37.0" prefWidth="238.0" />
       <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="177.0" prefWidth="150.0" />
-      <Button id="icon" fx:id="editparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="105.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="20.0" scaleShape="false">
-         <tooltip>
-            <Tooltip id="tooltipTextEdit" fx:id="tooltipEdit" text="Edit Participants" />
-         </tooltip></Button>
       <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
       <LanguageComboBox fx:id="languages" layoutX="210.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0" />
    </children>
