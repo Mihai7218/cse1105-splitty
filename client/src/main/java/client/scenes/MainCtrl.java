@@ -151,6 +151,7 @@ public class MainCtrl {
     public void showEditParticipant() {
         primaryStage.titleProperty().bind(languageManager.bind("editParticipant.windowTitle"));
         primaryStage.setScene(editparticipant);
+        if (overviewCtrl != null) editparticipantCtrl.refresh();
     }
 
     /**

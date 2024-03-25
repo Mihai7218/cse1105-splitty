@@ -26,6 +26,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
+
 public class EditParticipantCtrl {
 
     private final ServerUtils server;
@@ -63,6 +64,16 @@ public class EditParticipantCtrl {
     }
 
     /**
+     * Refreshes all shown items in the overview.
+     */
+    public void refresh() {
+        name.setText(participant.getName());
+        email.setText(participant.getEmail());
+        iban.setText(participant.getIban());
+        bic.setText(participant.getBic());
+    }
+
+    /**
      * Returns a new Participant object with the provided details.
      * @return a participant object with the details.
      */
@@ -87,7 +98,8 @@ public class EditParticipantCtrl {
         }
         if(bicPresent != ibanPresent){
             var alert = new Alert(Alert.AlertType.WARNING);
-            alert.contentTextProperty().bind(languageManager.bind("addParticipant.invalidPayment"));
+            alert.contentTextProperty()
+                    .bind(languageManager.bind("editParticipant.invalidPayment"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
