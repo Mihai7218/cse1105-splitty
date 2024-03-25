@@ -15,6 +15,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -27,6 +29,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 
@@ -46,6 +49,8 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private CheckBox everyone;
     @FXML
+    private Button addTag;
+    @FXML
     private CheckBox only;
     @FXML
     private VBox namesContainer;
@@ -54,11 +59,13 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private ScrollPane scrollNames;
     @FXML
-    private Button addTag;
-    @FXML
     private TextField newTag;
     @FXML
     private Label instructions;
+    @FXML
+    private Button add;
+    @FXML
+    private Button cancelButton;
     private final LanguageManager languageManager;
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
@@ -99,7 +106,9 @@ public class AddExpenseCtrl implements Initializable {
         scrollNames.setVisible(false);
         instructions.setVisible(false);
         newTag.setVisible(false);
-        //payee.getItems().addAll(names);
+        cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
+        addTag.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         currency.getItems().addAll(currencies);
         Tag food = new Tag("food", "green");
         Tag entranceFees = new Tag("entrance fees", "red");
@@ -112,7 +121,6 @@ public class AddExpenseCtrl implements Initializable {
         }
         expenseType.setCellFactory(param -> new ListCell<>() {
             private final Rectangle rectangle = new Rectangle(100, 20);
-
             @Override
             protected void updateItem(Tag item, boolean empty) {
                 super.updateItem(item, empty);
@@ -136,7 +144,6 @@ public class AddExpenseCtrl implements Initializable {
                     return tag.getName();
                 }
             }
-
             @Override
             public Tag fromString(String string) {
                 // Not needed for ComboBox
@@ -397,8 +404,17 @@ public class AddExpenseCtrl implements Initializable {
      * When the abort button is pressed it goes back to the overview
      */
     public void abort() {
-        clearFields();
-        mainCtrl.showOverview();
+        //alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
+
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+        confirmation.contentTextProperty().bind(languageManager.bind("addExpense.abortAlert"));
+        confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+        confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+        Optional<ButtonType> result = confirmation.showAndWait();
+        if(result.isPresent() && result.get() == ButtonType.OK) {
+            clearFields();
+            mainCtrl.showOverview();
+        }
     }
 
     /**
@@ -626,4 +642,19 @@ public class AddExpenseCtrl implements Initializable {
         this.instructions = instructions;
     }
 
+    /**
+     * setter for the add button (testing)
+     * @param add button for adding expense
+     */
+    public void setAdd(Button add) {
+        this.add = add;
+    }
+
+    /**
+     * setter for cancel button (testing)
+     * @param cancelButton button to cancel adding expense
+     */
+    public void setCancelButton(Button cancelButton) {
+        this.cancelButton = cancelButton;
+    }
 }
