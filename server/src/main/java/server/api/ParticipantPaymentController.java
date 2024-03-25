@@ -2,6 +2,7 @@ package server.api;
 
 import commons.ParticipantPayment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,13 +17,17 @@ public class ParticipantPaymentController {
 
     private final ParticipantPaymentService participantPaymentService;
 
+    private final GerneralServerUtil serverUtil;
+
     /**
      * Constructor for the participantPayment controller
      * @param participantPaymentService the service to connect with the controller
      */
     @Autowired
-    public ParticipantPaymentController(ParticipantPaymentService participantPaymentService) {
+    public ParticipantPaymentController(ParticipantPaymentService participantPaymentService,
+                                        @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil){
         this.participantPaymentService = participantPaymentService;
+        this.serverUtil = serverUtil;
     }
 
     /**
@@ -69,7 +74,7 @@ public class ParticipantPaymentController {
             @RequestBody ParticipantPayment participantPayment
     ){
         return participantPaymentService.createParticipantPayment(
-                eventId, expenseId, participantPayment);
+                eventId, expenseId, participantPayment, serverUtil);
     }
 
     /**
@@ -87,7 +92,7 @@ public class ParticipantPaymentController {
             @RequestBody ParticipantPayment participantPayment
     ){
         return participantPaymentService.updateParticipantPayment(
-                eventId,expenseId,id, participantPayment);
+                eventId,expenseId,id, participantPayment,serverUtil);
     }
 
     /**
@@ -103,7 +108,7 @@ public class ParticipantPaymentController {
             @PathVariable("expenseId") long expenseId,
             @PathVariable("id") long id
     ){
-        return participantPaymentService.deleteParticipantPayment(eventId,expenseId,id);
+        return participantPaymentService.deleteParticipantPayment(eventId,expenseId,id,serverUtil);
     }
 
 

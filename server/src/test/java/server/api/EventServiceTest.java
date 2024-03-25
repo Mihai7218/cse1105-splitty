@@ -3,11 +3,10 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import server.database.ParticipantRepository;
 
-import java.util.ArrayList;
+
 import java.util.Date;
 import java.util.List;
 
@@ -21,6 +20,7 @@ class EventServiceTest {
     public TestTagRepository tagRepository;
 
     public EventService eventService;
+    public GerneralServerUtil serverUtil;
 
     public Event event1;
     public Event event2;
@@ -29,6 +29,7 @@ class EventServiceTest {
 
     @BeforeEach
     public void setup(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         tagRepository = new TestTagRepository();
         eventService = new EventService(eventRepository, tagRepository);
@@ -67,8 +68,8 @@ class EventServiceTest {
         eventRepository.save(event);
         participantRepo.save(p);
         participantRepo.save(other);
-        assertEquals(eventService.getDebts(3L,1L).getBody(), -25.0);
-        assertEquals(eventService.getDebts(3L, 0L).getBody(), 50.0);
+        assertEquals(eventService.getShare(3L,1L).getBody(), -25.0);
+        assertEquals(eventService.getShare(3L, 0L).getBody(), 50.0);
 
     }
 
@@ -100,8 +101,8 @@ class EventServiceTest {
         eventRepository.save(event);
         participantRepo.save(p);
         participantRepo.save(other);
-        assertEquals(eventService.getDebts(3L,1L).getBody(), -10.0);
-        assertEquals(eventService.getDebts(3L, 0L).getBody(), 35.0);
+        assertEquals(eventService.getShare(3L,1L).getBody(), -10.0);
+        assertEquals(eventService.getShare(3L, 0L).getBody(), 35.0);
 
     }
 
@@ -164,21 +165,29 @@ class EventServiceTest {
 
     @Test
     public void changeEvent(){
-        assertEquals("asd", eventService.changeEvent(0,new Event("asd",null,null)).getBody().getTitle());
+        assertEquals("asd", eventService.changeEvent(0,new Event("asd",null,null),serverUtil).getBody().getTitle());
     }
     @Test
     public void changeEventEmptyName(){
-        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event("",null,null)).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event("",null,null),serverUtil).getStatusCode());
     }
     @Test
     public void changeEventNullName(){
-        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event(null,null,null)).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.changeEvent(0,new Event(null,null,null),serverUtil).getStatusCode());
     }
     @Test
     public void changeEventNotFound(){
-        assertEquals(BAD_REQUEST, eventService.changeEvent(-100,new Event("asd",null,null)).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.changeEvent(-100,new Event("asd",null,null),serverUtil).getStatusCode());
     }
 
+    @Test
+    public void lastActivityNotChange2Test(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        eventService.getEvent(0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
 
     @Test
     public void addImportValidTest(){

@@ -99,6 +99,12 @@ public class MainCtrl {
      */
     public void showAddExpense(){
         primaryStage.titleProperty().bind(languageManager.bind("addExpense.windowTitle"));
+        try {
+            addExpense.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(addExpense);
         addExpenseCtrl.refresh();
     }
@@ -108,6 +114,12 @@ public class MainCtrl {
      */
     public void showOverview() {
         primaryStage.titleProperty().bind(languageManager.bind("overview.windowTitle"));
+        try {
+            overview.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
     }
@@ -117,6 +129,12 @@ public class MainCtrl {
      */
     public void showStartMenu() {
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        try {
+            startScreen.getStylesheets().add(getClass().getResource("stylesheet.css")
+                    .toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(startScreen);
     }
 
@@ -134,6 +152,12 @@ public class MainCtrl {
      */
     public void showParticipant() {
         primaryStage.titleProperty().bind(languageManager.bind("addParticipant.windowTitle"));
+        try {
+            participant.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(participant);
     }
 

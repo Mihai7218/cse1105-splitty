@@ -2,12 +2,13 @@ package server.api;
 
 import commons.Expense;
 import commons.Tag;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.*;
-
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 //TODO: add endpoints for specific expense within an event if necessary
 
@@ -18,12 +19,16 @@ public class TagController {
 
     private final TagService tagService;
 
+    private final GerneralServerUtil serverUtil;
+
     /**
      * Constructor of the tag controller
      * @param tagService the service which will be called
      */
-    public TagController(TagService tagService) {
+    public TagController(TagService tagService,
+                         @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.tagService = tagService;
+        this.serverUtil = serverUtil;
     }
 
 
@@ -59,7 +64,7 @@ public class TagController {
     @PostMapping(path = {"/{inviteCode}/tags"})
     public ResponseEntity<Tag> addNewToEvent(@PathVariable("inviteCode") long inviteCode,
                                       @RequestBody Tag tag){
-        return tagService.addNewToEvent(inviteCode, tag);
+        return tagService.addNewToEvent(inviteCode, tag,serverUtil);
     }
 
     /**
@@ -73,7 +78,7 @@ public class TagController {
     public ResponseEntity<Tag> changeTag(@PathVariable("inviteCode") long inviteCode,
                                           @PathVariable("tagId") long tagId,
                                           @RequestBody Tag tag){
-        return tagService.changeTag(inviteCode, tagId, tag);
+        return tagService.changeTag(inviteCode, tagId, tag,serverUtil);
     }
 
     /***
@@ -85,7 +90,7 @@ public class TagController {
     @DeleteMapping(path = {"/{inviteCode}/tags/{tagId}"})
     public ResponseEntity<Tag> deleteTagFromEvent(@PathVariable("inviteCode") long inviteCode,
                                                   @PathVariable("tagId") long tagId){
-        return tagService.deleteTagFromEvent(inviteCode, tagId);
+        return tagService.deleteTagFromEvent(inviteCode, tagId,serverUtil);
     }
 
 

@@ -1,5 +1,6 @@
 package server.api;
 
+import commons.Event;
 import commons.Participant;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,11 +72,14 @@ public class ParticipantService {
 
     /**
      * Post method that validates the participant to be added and adds it
-     * @param eventId the event the participant is added to
+     *
+     * @param eventId     the event the participant is added to
      * @param participant the participant being added
+     * @param serverUtil
      * @return participant if successfully added to event
      */
-    public ResponseEntity<Participant> addParticipant(long eventId, Participant participant) {
+    public ResponseEntity<Participant> addParticipant(long eventId, Participant participant,
+                                                      GerneralServerUtil serverUtil) {
         if(getAllParticipants(eventId).getStatusCode().equals(BAD_REQUEST)){
             return ResponseEntity.badRequest().build();
         }else if(getAllParticipants(eventId).getStatusCode().equals(NOT_FOUND)){
@@ -87,48 +91,59 @@ public class ParticipantService {
             return ResponseEntity.badRequest().build();
         }
 
-        if(!validateBic(participant.getBic()) || !validateName(participant.getName()) ||
-                !validateEmail(participant.getEmail()) || !validateIban(participant.getIban())){
+        if(!validateName(participant.getName()) ||
+                !validateEmail(participant.getEmail())
+                || !validateBankInfo(participant)){
             return ResponseEntity.badRequest().build();
         }
 
         participantRepository.save(participant);
         currentParticipants.add(participant);
+        Event event = eventRepository.findById(eventId).get();
+        serverUtil.updateDate(eventRepository,eventId);
+        eventRepository.save(event);
         return ResponseEntity.ok(participant);
     }
 
     /**
      * Put method that validates the values in the participant to be changed
-     * @param eventId id of the event the participant is in
-     * @param id id of the participant to be retrieved
+     *
+     * @param eventId    id of the event the participant is in
+     * @param id         id of the participant to be retrieved
+     * @param serverUtil
      * @return participant if successfully added to event
      */
     @Transactional
     public ResponseEntity<Participant> updateParticipant(long eventId,
-                                                         long id, Participant participant) {
+                                                         long id, Participant participant,
+                                                         GerneralServerUtil serverUtil) {
         if(!getParticipant(eventId, id).getStatusCode().equals(OK)
             || getParticipant(eventId,id).getBody() == null){
             return getParticipant(eventId,id);
         }
         Participant old = getParticipant(eventId,id).getBody();
         if(!validateName(participant.getName()) || !validateEmail(participant.getEmail())
-                || !validateBic(participant.getBic()) || !validateIban(participant.getIban())){
+                || !validateBankInfo(participant)){
             return ResponseEntity.badRequest().build();
         }
         old.setName(participant.getName());
         old.setBic(participant.getBic());
         old.setIban(participant.getIban());
         old.setEmail(participant.getEmail());
+        serverUtil.updateDate(eventRepository,eventId);
         return ResponseEntity.ok(participant);
     }
 
     /**
      * Delete method to remove a participant from the event
-     * @param eventId id of event participant is in
-     * @param id id of the participant to delete
+     *
+     * @param eventId    id of event participant is in
+     * @param id         id of the participant to delete
+     * @param serverUtil
      * @return participant if successfully removed
      */
-    public ResponseEntity<Participant> deleteParticipant(long eventId, long id) {
+    public ResponseEntity<Participant> deleteParticipant(long eventId, long id,
+                                                         GerneralServerUtil serverUtil) {
         if(getAllParticipants(eventId).getStatusCode().equals(BAD_REQUEST)
             || getParticipant(eventId, id).getStatusCode().equals(NOT_FOUND)){
             return ResponseEntity.badRequest().build();
@@ -140,6 +155,9 @@ public class ParticipantService {
         }
         participantList.remove(participant);
         participantRepository.deleteById(id);
+        Event event = eventRepository.findById(eventId).get();
+        serverUtil.updateDate(eventRepository,eventId);
+        eventRepository.save(event);
         eventRepository.getReferenceById(eventId).setParticipantsList(participantList);
         return ResponseEntity.ok(participant);
     }
@@ -150,8 +168,27 @@ public class ParticipantService {
      * @return boolean value if the string is a valid bic number
      */
     public static boolean validateBic(String bic) {
+        if(bic == null || bic.isEmpty()) return true;
         String bicRegex = "^[A-Za-z]{6}[0-9A-Za-z]{2}([0-9A-Za-z]{3})?$";
-        return bic != null && Pattern.compile(bicRegex).matcher(bic).matches();
+        return Pattern.compile(bicRegex).matcher(bic).matches();
+    }
+
+    /**
+     * Method to check that bic and iban are present as a pair and not alone
+     * @param p participant to check
+     * @return true or false depending on if their payment info is valid
+     */
+    public static boolean validateBankInfo(Participant p){
+        boolean bicEmpty = false;
+        boolean ibanEmpty = false;
+        if(p.getBic() == null || p.getBic().isEmpty()){
+            bicEmpty = true;
+        }
+        if(p.getIban() == null || p.getIban().isEmpty()){
+            ibanEmpty = true;
+        }
+        if(bicEmpty != ibanEmpty) return false;
+        return validateIban(p.getIban()) && validateBic(p.getBic());
     }
 
     /**
@@ -169,8 +206,9 @@ public class ParticipantService {
      * @return boolean value if the string is a valid iban number
      */
     public static boolean validateIban(String iban) {
+        if(iban == null || iban.isEmpty()) return true;
         String ibanRegex = "^[A-Z]{2}[0-9]{2}[A-Za-z0-9]{11,30}$";
-        return iban != null && Pattern.compile(ibanRegex).matcher(iban).matches();
+        return Pattern.compile(ibanRegex).matcher(iban).matches();
     }
 
     /**
@@ -179,9 +217,10 @@ public class ParticipantService {
      * @return boolean value if the string is a valid email
      */
     public static boolean validateEmail(String email) {
+        if(email == null || email.isEmpty()) return true;
         Pattern basic = Pattern.compile("^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
                 "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$");
-        return email != null && basic.matcher(email).matches();
+        return basic.matcher(email).matches();
 
     }
 

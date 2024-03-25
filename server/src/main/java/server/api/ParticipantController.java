@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,13 +19,17 @@ public class ParticipantController {
      */
     private final ParticipantService participantService;
 
+    private final GerneralServerUtil serverUtil;
+
     /**
      * Participant Controller Constructor
      * @param participantService participant service used for this controller
      */
     @Autowired
-    public ParticipantController(ParticipantService participantService){
+    public ParticipantController(ParticipantService participantService,
+                                 @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil){
         this.participantService = participantService;
+        this.serverUtil = serverUtil;
     }
 
     /**
@@ -61,7 +66,7 @@ public class ParticipantController {
     public ResponseEntity<Participant> addParticipant(
             @PathVariable("eventId") long eventId,
             @RequestBody Participant participant){
-        return participantService.addParticipant(eventId, participant);
+        return participantService.addParticipant(eventId, participant,serverUtil);
     }
 
     /**
@@ -76,7 +81,7 @@ public class ParticipantController {
             @PathVariable("eventId") long eventId,
             @PathVariable("id") long id,
             @RequestBody Participant participant){
-        return participantService.updateParticipant(eventId, id,participant);
+        return participantService.updateParticipant(eventId, id,participant,serverUtil);
     }
 
     /**
@@ -88,7 +93,7 @@ public class ParticipantController {
     public ResponseEntity<Participant> deleteParticipant(
             @PathVariable("eventId") long eventId,
             @PathVariable("id") long id){
-        return participantService.deleteParticipant(eventId, id);
+        return participantService.deleteParticipant(eventId, id,serverUtil);
     }
 
 

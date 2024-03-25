@@ -79,8 +79,8 @@ public class EventService {
         event.setTagsList(savedTags);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
-        event.setCreationDate(timestamp2);
         event.setLastActivity(timestamp2);
+        event.setCreationDate(timestamp2);
         eventRepository.save(event);
 
         return ResponseEntity.ok(event);
@@ -93,7 +93,8 @@ public class EventService {
      * @return the new changed event
      */
     @Transactional
-    public ResponseEntity<Event> changeEvent(long inviteCode, Event event) {
+    public ResponseEntity<Event> changeEvent(long inviteCode, Event event,
+                                             GerneralServerUtil serverUtil) {
         if (inviteCode < 0) {
             return ResponseEntity.badRequest().build();
         }if (!eventRepository.existsById(inviteCode)) {
@@ -104,9 +105,7 @@ public class EventService {
         }
 
         Event saved = eventRepository.findById(inviteCode).get();
-        Date date = new Date();
-        Timestamp timestamp2 = new Timestamp(date.getTime());
-        saved.setLastActivity(timestamp2);
+        serverUtil.updateDate(eventRepository,inviteCode);
         saved.setTitle(event.getTitle());
         eventRepository.save(saved);
         return ResponseEntity.ok(saved);
@@ -172,12 +171,12 @@ public class EventService {
 
 
     /**
-     * Endpoint to calculate the debts that a certain participant owes/is owed
+     * Endpoint to calculate the share/total that a certain participant owes/is owed
      * @param eventId the event that the participant is in
-     * @param participantId the id of the participant whose debt is to be calculated
-     * @return double of debt amount (negative if they owe, positive if they are owed)
+     * @param participantId the id of the participant whose share is to be calculated
+     * @return double of share amount (negative if they owe, positive if they are owed)
      */
-    public ResponseEntity<Double> getDebts(Long eventId, Long participantId) {
+    public ResponseEntity<Double> getShare(Long eventId, Long participantId) {
         if(validateDebt(eventId, participantId).getStatusCode() != OK){
             return validateDebt(eventId, participantId);
         }
@@ -202,6 +201,58 @@ public class EventService {
         return ResponseEntity.ok(balance);
     }
 
+    /**
+     * @param eventId the event in which to check
+     * @param participantId the participant to calculate the debt of
+     * @return debt how much the participant owes other people in total
+     */
+    public ResponseEntity<Double> getDebt(Long eventId, Long participantId) {
+        if(validateDebt(eventId, participantId).getStatusCode() != OK){
+            return validateDebt(eventId, participantId);
+        }
+        Event e= eventRepository.findById(eventId).get();
+        Participant current = e.getParticipantsList()
+                .stream()
+                .filter(item -> item.getId()==participantId)
+                .toList().getFirst();
+        List<Expense> expenses = e.getExpensesList();
+        double debt = 0;
+        for(Expense expense: expenses){
+            if(!expense.getPayee().equals(current)){
+                for(ParticipantPayment p: expense.getSplit()){
+                    if(p.getParticipant().equals(current)){
+                        debt -= p.getPaymentAmount();
+                    }
+                }
+            }
+        }
+        return ResponseEntity.ok(debt);
+    }
+
+    /**
+     * @param eventId the event in which to check
+     * @param participantId the participant of which we want to see how
+     *                      much other people owe them
+     * @return owed the amount of money the participant is owed by others in the event
+     */
+    public ResponseEntity<Double> getOwed(Long eventId, Long participantId) {
+        if(validateDebt(eventId, participantId).getStatusCode() != OK){
+            return validateDebt(eventId, participantId);
+        }
+        Event e= eventRepository.findById(eventId).get();
+        Participant current = e.getParticipantsList()
+                .stream()
+                .filter(item -> item.getId()==participantId)
+                .toList().getFirst();
+        List<Expense> expenses = e.getExpensesList();
+        double owed = 0;
+        for(Expense expense: expenses){
+            if(expense.getPayee().equals(current)){
+                owed += expense.getAmount();
+            }
+        }
+        return ResponseEntity.ok(owed);
+    }
     /**
      * Validates that the event and participant exist together
      * @param eventId id of the event to check

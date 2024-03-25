@@ -1,14 +1,14 @@
 package server.api;
 
-import java.util.*;
-
-
-import commons.*;
-
+import commons.Expense;
+import commons.Participant;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.*;
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
@@ -16,12 +16,16 @@ import static org.springframework.http.HttpStatus.*;
 public class ExpenseController {
     private final ExpenseService expenseService;
 
+    private final GerneralServerUtil serverUtil;
+
     /**
      * Constructor for the ExpenseController
      * @param expenseService the associated service for the expense class
      */
-    public ExpenseController(ExpenseService expenseService) {
+    public ExpenseController(ExpenseService expenseService,
+                             @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.expenseService = expenseService;
+        this.serverUtil = serverUtil;
     }
 
     /**
@@ -50,7 +54,7 @@ public class ExpenseController {
     @PostMapping(path = {""})
     public ResponseEntity<Expense> add(@PathVariable("id") long id,
                                        @RequestBody Expense expense) {
-        return expenseService.add(id, expense);
+        return expenseService.add(id, expense, serverUtil);
     }
 
     /**
@@ -63,7 +67,7 @@ public class ExpenseController {
     public ResponseEntity<Void> changeTitle(@RequestBody String title,
                                             @PathVariable("expenseId") long expenseId,
                                             @PathVariable("id") long id){
-        return expenseService.changeTitle(title, expenseId, id);
+        return expenseService.changeTitle(title, expenseId, id,serverUtil);
     }
 
     /**
@@ -76,7 +80,7 @@ public class ExpenseController {
     public ResponseEntity<Void> changeAmount(@RequestBody double amount,
                                             @PathVariable("expenseId") long expenseId,
                                              @PathVariable("id") long id){
-        return expenseService.changeAmount(amount, expenseId, id);
+        return expenseService.changeAmount(amount, expenseId, id,serverUtil);
     }
 
     /**
@@ -89,7 +93,7 @@ public class ExpenseController {
     public ResponseEntity<Void> changePayee(@RequestBody Participant payee,
                                              @PathVariable("expenseId") long expenseId,
                                             @PathVariable("id") long id){
-        return expenseService.changePayee(payee, expenseId, id);
+        return expenseService.changePayee(payee, expenseId, id,serverUtil);
     }
 
     /**
@@ -100,7 +104,7 @@ public class ExpenseController {
     @DeleteMapping(path = {"/{expenseId}"})
     public ResponseEntity<Expense> deleteExpense(@PathVariable("expenseId") long expenseId,
                                               @PathVariable("id") long id){
-        return expenseService.deleteExpense(expenseId, id);
+        return expenseService.deleteExpense(expenseId, id,serverUtil);
     }
 
 

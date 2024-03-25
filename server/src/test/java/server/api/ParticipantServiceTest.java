@@ -3,15 +3,16 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.*;
 
 
@@ -31,9 +32,12 @@ class ParticipantServiceTest {
 
     ParticipantService participantService;
 
+    public GerneralServerUtil serverUtil;
+
 
     @BeforeEach
     public void init(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         participantRepository = new TestParticipantRepository();
         participantService = new ParticipantService(
@@ -51,10 +55,12 @@ class ParticipantServiceTest {
         participantRepository.save(valid);
         participantList.add(baseParticipant);
         participantList.add(valid);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
         creationDate = new Date(124, 4, 20);
         lastActivity = new Date(124, 4, 25);
 
-        baseEvent = new Event("Mock Event",creationDate,lastActivity);
+        baseEvent = new Event("Mock Event",timestamp2,timestamp2);
         eventRepository.save(baseEvent);
         eventRepository.getById(0L).setParticipantsList(participantList);
 
@@ -88,6 +94,25 @@ class ParticipantServiceTest {
     }
 
     @Test
+    public void addInValidNoPaymentDetails(){
+        Participant invalidNoPayment = new Participant("Jane", null, "NL85RABO5253446745", null);
+        Participant invalidNoPayment2=new Participant("Jeff", "","NL85RABO5253446745","");
+        Participant invalidNoPayment3 = new Participant("Jane", null, null, "HBUKGB4B");
+        Participant invalidNoPayment4=new Participant("Jeff", "","","HBUKGB4B");
+        assertEquals(participantService.addParticipant(0,invalidNoPayment, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment2, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment3, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment4, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
+    public void addParticipantvalidPaymentDetails(){
+        Participant validNoPayment = new Participant("Jane", null, null, null);
+        Participant validNoPayment2=new Participant("Jeff", "","","");
+        assertEquals(participantService.addParticipant(0,validNoPayment, mock(ServerUtilModule.class)).getStatusCode(), OK);
+        assertEquals(participantService.addParticipant(0,validNoPayment2, mock(ServerUtilModule.class)).getStatusCode(), OK);
+    }
+    @Test
     public void getAllParticipantsTest(){
         List<Participant> result = participantService.getAllParticipants(0).getBody();
         assertEquals(participantList.size(), result.size());
@@ -118,7 +143,7 @@ class ParticipantServiceTest {
     public void addValidParticipantTest(){
         Participant three = new Participant("Ethan", "eyoung@gmail.com",
                 "NL85RABO5253446745", "HBUKGB4B");
-        ResponseEntity<Participant> response = participantService.addParticipant(0, three);
+        ResponseEntity<Participant> response = participantService.addParticipant(0, three, serverUtil);
         Participant result = response.getBody();
         assertEquals(result, three);
         assertEquals(participantService.getAllParticipants(0).getBody().size(), 3);
@@ -127,7 +152,7 @@ class ParticipantServiceTest {
 
     @Test
     public void addInvalidParticipantTest(){
-        ResponseEntity<Participant> result = participantService.addParticipant(0, invalid);
+        ResponseEntity<Participant> result = participantService.addParticipant(0, invalid, serverUtil);
         HttpStatusCode status = result.getStatusCode();
         assertEquals(status, BAD_REQUEST);
         assertEquals(participantService.getAllParticipants(0).getBody().size(), 2);
@@ -137,7 +162,7 @@ class ParticipantServiceTest {
     public void updateParticipantValidTest(){
         Participant p = new Participant("Christina Smith", "cmsmith@yahoo.com",
                 "NL85ABNA5253446745", "AMUKGB7B");
-        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, p);
+        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, p, serverUtil);
         assertEquals(result.getBody().getName(), "Christina Smith");
         assertEquals(result.getBody().getEmail(), "cmsmith@yahoo.com");
         assertEquals(result.getBody().getIban(), "NL85ABNA5253446745");
@@ -151,7 +176,7 @@ class ParticipantServiceTest {
     public void updateInvalidParticipantTest(){
         Participant p = new Participant("Christina Smith", "cmsmith.com",
                 "NL85A6745", "AMUKGB7B");
-        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, p);
+        ResponseEntity<Participant> result = participantService.updateParticipant(0, 0, p, serverUtil);
         assertEquals(result.getStatusCode(), BAD_REQUEST);
         assertEquals(participantRepository.participants.get(0).getName(), "Chris Smith");
         assertEquals(participantRepository.participants.get(0).getEmail(), "chrismsmith@gmail.com");
@@ -163,7 +188,7 @@ class ParticipantServiceTest {
 
     @Test
     public void deleteParticipant(){
-        ResponseEntity<Participant> result = participantService.deleteParticipant(0, 0);
+        ResponseEntity<Participant> result = participantService.deleteParticipant(0, 0, serverUtil);
         assertEquals(baseParticipant, result.getBody());
         assertEquals(participantService.getAllParticipants(0).getBody().size(), 1);
         assertEquals(NOT_FOUND, participantService.getParticipant(0,0).getStatusCode());
@@ -171,7 +196,7 @@ class ParticipantServiceTest {
 
     @Test
     public void deleteParticipantInvalid(){
-        ResponseEntity<Participant> result = participantService.deleteParticipant(0,2);
+        ResponseEntity<Participant> result = participantService.deleteParticipant(0,2, serverUtil);
         assertEquals(result.getStatusCode(), BAD_REQUEST);
     }
 
@@ -218,6 +243,47 @@ class ParticipantServiceTest {
         assertFalse(participantService.validateEmail(i4));
         assertFalse(participantService.validateEmail(i5));
 
+    }
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantService.getAllParticipants(0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantService.deleteParticipant(0L,0L, serverUtil);
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+    @Test
+    public void lastActivityAfterChangeTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantService.updateParticipant(0L,0L,new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B"), serverUtil);
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+    @Test
+    public void lastActivityAddChangeTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantService.addParticipant(0L,new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B"), serverUtil);
+        event = eventRepository.getById(0L);
+        Date kip = event.getLastActivity();
+        assertTrue(kip.after(tmpdate));
     }
 
 }
