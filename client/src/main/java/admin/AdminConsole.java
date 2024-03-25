@@ -202,7 +202,7 @@ public class AdminConsole {
                 "Event you would like to delete from the database:");
         int invCode = userInput.nextInt();
         boolean deletion = confirmationMenu(userInput, invCode);
-        if (deletion == true){
+        if (deletion){
             Event event = utils.deleteEvent(invCode);
             System.out.println("Event" + event.toString() + "deleted successfully");
         } else {

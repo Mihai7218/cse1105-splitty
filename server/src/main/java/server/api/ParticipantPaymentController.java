@@ -16,13 +16,17 @@ public class ParticipantPaymentController {
 
     private final ParticipantPaymentService participantPaymentService;
 
+    private final GerneralServerUtil serverUtil;
+
     /**
      * Constructor for the participantPayment controller
      * @param participantPaymentService the service to connect with the controller
      */
     @Autowired
-    public ParticipantPaymentController(ParticipantPaymentService participantPaymentService) {
+    public ParticipantPaymentController(ParticipantPaymentService participantPaymentService,
+                                        GerneralServerUtil serverUtil) {
         this.participantPaymentService = participantPaymentService;
+        this.serverUtil = serverUtil;
     }
 
     /**
@@ -69,7 +73,7 @@ public class ParticipantPaymentController {
             @RequestBody ParticipantPayment participantPayment
     ){
         return participantPaymentService.createParticipantPayment(
-                eventId, expenseId, participantPayment);
+                eventId, expenseId, participantPayment, serverUtil);
     }
 
     /**
@@ -87,7 +91,7 @@ public class ParticipantPaymentController {
             @RequestBody ParticipantPayment participantPayment
     ){
         return participantPaymentService.updateParticipantPayment(
-                eventId,expenseId,id, participantPayment);
+                eventId,expenseId,id, participantPayment,serverUtil);
     }
 
     /**
@@ -103,7 +107,7 @@ public class ParticipantPaymentController {
             @PathVariable("expenseId") long expenseId,
             @PathVariable("id") long id
     ){
-        return participantPaymentService.deleteParticipantPayment(eventId,expenseId,id);
+        return participantPaymentService.deleteParticipantPayment(eventId,expenseId,id,serverUtil);
     }
 
 

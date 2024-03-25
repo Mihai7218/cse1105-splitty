@@ -58,6 +58,14 @@ public class OverviewCtrl implements Initializable {
 
     @FXML
     private Button editparticipant;
+    @FXML
+    private Button sendMail;
+    @FXML
+    private Button cancel;
+    @FXML
+    private Button settleDebts;
+    @FXML
+    private Button addExpenseButton;
 
 
 
@@ -82,6 +90,11 @@ public class OverviewCtrl implements Initializable {
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
+        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
+        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
+        settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
+        addExpenseButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
         clearFields();
         if(event != null){

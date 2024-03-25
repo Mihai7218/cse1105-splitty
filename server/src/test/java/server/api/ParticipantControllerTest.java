@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,14 +32,17 @@ public class ParticipantControllerTest {
     ParticipantController participantController;
     ParticipantService participantService;
 
+    public GerneralServerUtil serverUtil;
+
 
     @BeforeEach
     public void init(){
+        serverUtil = new ServerUtilModule();
         eventRepository = new TestEventRepository();
         participantRepository = new TestParticipantRepository();
         participantService = new ParticipantService(
                 eventRepository, participantRepository);
-        participantController = new ParticipantController(participantService);
+        participantController = new ParticipantController(participantService,serverUtil);
         valid = new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
                 "HBUKGB4B");
@@ -53,8 +57,9 @@ public class ParticipantControllerTest {
         participantList.add(valid);
         creationDate = new Date(124, 4, 20);
         lastActivity = new Date(124, 4, 25);
-
-        baseEvent = new Event("Mock Event",creationDate,lastActivity);
+        Date date = new Date();
+        Timestamp timestamp2 = new Timestamp(date.getTime());
+        baseEvent = new Event("Mock Event",timestamp2,timestamp2);
         eventRepository.save(baseEvent);
         eventRepository.getById(0L).setParticipantsList(participantList);
 
@@ -114,12 +119,13 @@ public class ParticipantControllerTest {
         Participant three = new Participant("Ethan", "eyoung@gmail.com",
                 "NL85RABO5253446745", "HBUKGB4B");
         participantController.addParticipant(0, three);
-        List<String> called = List.of("existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById");
+        List<String> called = List.of("existsById", "findById", "findById",
+                "existsById", "findById", "findById", "existsById",
+                "findById", "findById", "findById", "findById",
+                "save", "existsById", "getById", "save", "existsById", "getById");
         assertEquals(eventRepository.calledMethods, called);
         assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 9);
+        assertEquals(eventRepository.calledMethods.size(), 17);
     }
 
     @Test
@@ -134,11 +140,13 @@ public class ParticipantControllerTest {
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
                 "existsById", "findById","findById",
-                "existsById", "findById","findById");
+                "existsById", "findById","findById",
+                "findById", "save", "existsById",
+                "getById");
         assertEquals(eventRepository.calledMethods, called);
         assertEquals(participantRepository.participants.get(0).getName(), "Christina Smith");
         assertEquals(participantRepository.participants.size(), 2);
-        assertEquals(eventRepository.calledMethods.size(), 18);
+        assertEquals(eventRepository.calledMethods.size(), 22);
     }
 
     @Test
@@ -147,16 +155,67 @@ public class ParticipantControllerTest {
         eventRepository.flush();
         participantController.deleteParticipant(0,0);
         assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 19);
-        List<String> called = List.of("existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "existsById", "findById","findById",
-                "getReferenceById");
+        assertEquals(eventRepository.calledMethods.size(), 27);
+        List<String> called = List.of("existsById", "findById", "findById",
+                "existsById", "findById", "findById", "existsById",
+                "findById", "findById", "existsById", "findById",
+                "findById", "existsById", "findById", "findById",
+                "existsById", "findById", "findById", "findById",
+                "findById", "save", "existsById", "getById", "save",
+                "existsById", "getById", "getReferenceById");
         assertEquals(eventRepository.calledMethods, called);
 
+    }
+
+
+    @Test
+    public void lastActivityNotChangeTest(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantController.getParticipant(0L,0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityNotChange2Test(){
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = event.getLastActivity();
+        participantController.getParticipant(0L,0L);
+        event = eventRepository.getById(0L);
+        assertEquals(event.getLastActivity(),tmpdate);
+    }
+    @Test
+    public void lastActivityAfterDeleteTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantController.deleteParticipant(0L,0L);
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+    @Test
+    public void lastActivityAfterChangeTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantController.updateParticipant(0L,0L,new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B"));
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
+    }
+
+    @Test
+    public void lastActivityAddTest() throws InterruptedException {
+        Event event = eventRepository.getById(0L);
+        Date tmpdate = (Date) event.getLastActivity().clone();
+        Thread.sleep(500);
+        participantController.addParticipant(0L,new Participant("Jon Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B"));
+        event = eventRepository.getById(0L);
+        assertTrue(event.getLastActivity().after(tmpdate));
     }
 
 }

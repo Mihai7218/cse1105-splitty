@@ -87,13 +87,16 @@ public class ParticipantPaymentService {
 
     /**
      * Creates a new participantpayment for the given expense and event
-     * @param eventId the id of the event
-     * @param expenseId the id of the expense
+     *
+     * @param eventId            the id of the event
+     * @param expenseId          the id of the expense
      * @param participantPayment the participantPayment to be added
+     * @param serverUtil
      * @return the participantpayment if successfully added
      */
     public ResponseEntity<ParticipantPayment> createParticipantPayment(
-            long eventId, long expenseId, ParticipantPayment participantPayment) {
+            long eventId, long expenseId, ParticipantPayment participantPayment,
+            GerneralServerUtil serverUtil) {
         if(participantPayment == null) return ResponseEntity.badRequest().build();
         try{
             participantRepository
@@ -110,18 +113,24 @@ public class ParticipantPaymentService {
                 getAllParticipantPayment(eventId,expenseId).getBody();
         participantPaymentRepository.save(participantPayment);
         participantPaymentList.add(participantPayment);
+        Event event = eventRepository.findById(eventId).get();
+        serverUtil.updateDate(eventRepository,eventId);
+        eventRepository.save(event);
         return ResponseEntity.ok(participantPayment);
     }
 
     /**
      * Method to change the values of a given participant payment by id
-     * @param eventId id of the event that the participant payment is found in
-     * @param expenseId id of the expense that the participant payment is part of
-     * @param id id of the participant payment to edit
+     *
+     * @param eventId    id of the event that the participant payment is found in
+     * @param expenseId  id of the expense that the participant payment is part of
+     * @param id         id of the participant payment to edit
+     * @param serverUtil
      * @return editted participant payment if successful
      */
     public ResponseEntity<ParticipantPayment> updateParticipantPayment(
-            long eventId, long expenseId, long id,ParticipantPayment participantPayment) {
+            long eventId, long expenseId, long id, ParticipantPayment participantPayment,
+            GerneralServerUtil serverUtil) {
         ResponseEntity<ParticipantPayment> searchResult =
                 getParticipantPayment(eventId,expenseId,id);
         if(searchResult.getStatusCode() != OK){
@@ -140,18 +149,21 @@ public class ParticipantPaymentService {
             return ResponseEntity.badRequest().build();
         old.setParticipant(participantPayment.getParticipant());
         old.setPaymentAmount(participantPayment.getPaymentAmount());
+        serverUtil.updateDate(eventRepository,eventId);
         return ResponseEntity.ok(old);
     }
 
     /**
      * Method to remove a participant payment from the list in the expense
-     * @param eventId id of the event that the expense and participant payment are part of
-     * @param expenseId id of the expense that the participant payment is part of
-     * @param id id of the participant payment
+     *
+     * @param eventId    id of the event that the expense and participant payment are part of
+     * @param expenseId  id of the expense that the participant payment is part of
+     * @param id         id of the participant payment
+     * @param serverUtil
      * @return participant payment if found and successfully deleted
      */
     public ResponseEntity<ParticipantPayment> deleteParticipantPayment(
-            long eventId, long expenseId, long id) {
+            long eventId, long expenseId, long id, GerneralServerUtil serverUtil) {
         ResponseEntity<List<ParticipantPayment>> resultFindAll =
                 getAllParticipantPayment(eventId,expenseId);
         ResponseEntity<ParticipantPayment> resultFindSpec =
@@ -162,6 +174,9 @@ public class ParticipantPaymentService {
         if(resultFindAll.getBody() == null || resultFindSpec.getBody() == null)
             return ResponseEntity.badRequest().build();
         List<ParticipantPayment> listForAll = resultFindAll.getBody();
+        Event event = eventRepository.findById(eventId).get();
+        serverUtil.updateDate(eventRepository,eventId);
+        eventRepository.save(event);
         listForAll.remove(resultFindSpec.getBody());
         participantPaymentRepository.deleteById(id);
         return ResponseEntity.ok(resultFindSpec.getBody());
