@@ -61,7 +61,7 @@ public class AddExpenseCtrlTest {
     TextField newTag;
     Label instructions;
     Button cancelButton;
-    Button add;
+    Button addExpenseButton;
 
 
     @Start
@@ -85,7 +85,7 @@ public class AddExpenseCtrlTest {
         newTag = mock(TextField.class);
         instructions = mock(Label.class);
         cancelButton=mock(Button.class);
-        add = mock(Button.class);
+        addExpenseButton = mock(Button.class);
 
         sut.setPayee(payee);
         sut.setCurrency(currency);
@@ -101,10 +101,11 @@ public class AddExpenseCtrlTest {
         sut.setAddTag(addTag);
         sut.setNewTag(newTag);
         sut.setInstructions(instructions);
-        sut.setAdd(add);
+        sut.setAdd(addExpenseButton);
         sut.setCancelButton(cancelButton);
+        sut.setAddExpense(addExpenseButton);
 
-        doNothing().when(add).setGraphic(any(Node.class));
+        doNothing().when(addExpenseButton).setGraphic(any(Node.class));
         doNothing().when(cancelButton).setGraphic(any(Node.class));
         when(payee.getItems()).thenReturn(op);
         when(currency.getItems()).thenReturn(oc);

@@ -681,6 +681,14 @@ public class AddExpenseCtrl implements Initializable {
     }
 
     /**
+     * getter for button for testing
+     * @param addExpense
+     */
+    public void setAddExpense(Button addExpense) {
+        this.addExpense = addExpense;
+    }
+
+    /**
      *
      * @return
      */

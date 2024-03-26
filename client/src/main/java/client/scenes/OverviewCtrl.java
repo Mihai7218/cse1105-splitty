@@ -99,7 +99,6 @@ public class OverviewCtrl implements Initializable {
         this.server = server;
     }
 
-
     /**
      * Refreshes all shown items in the overview.
      */
