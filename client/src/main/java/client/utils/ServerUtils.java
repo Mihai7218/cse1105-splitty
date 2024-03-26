@@ -21,6 +21,7 @@ import commons.Quote;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.io.BufferedReader;
@@ -28,7 +29,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
@@ -36,6 +41,8 @@ public class ServerUtils {
 
     private final ConfigInterface config;
     private final String server;
+
+    private final List<ExecutorService> runningServices;
 
     /**
      * Constructor for the ServerUtils
@@ -50,6 +57,7 @@ public class ServerUtils {
             server = "http://localhost:8080";
             config.setProperty("server", server);
         }
+        runningServices = new ArrayList<>();
     }
 
     /**
@@ -117,5 +125,40 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Event.class);
+    }
+
+    /**
+     * Makes a thread to Long Poll event
+     * @param i inviteCode
+     */
+    public void getEventUpdate(int i, Consumer<Event> customer) {
+
+        ExecutorService exec = Executors.newSingleThreadExecutor();
+        runningServices.add(exec);
+        exec.submit(() -> {
+            while (!Thread.interrupted()) {
+                var res = ClientBuilder.newClient(new ClientConfig())
+                        .target(server).path("api/events/" + i + "/updates")
+                        .request(APPLICATION_JSON)
+                        .accept(APPLICATION_JSON)
+                        .get(Response.class);
+                if(res.getStatus() == 200) {
+                    var event = res.readEntity(Event.class);
+                    customer.accept(event);
+                }
+            }
+        });
+
+
+    }
+
+    /**
+     * Stop All running Threads
+     */
+    public void stop() {
+        for (ExecutorService exec : runningServices) {
+            exec.shutdown();
+            exec.shutdownNow();
+        }
     }
 }

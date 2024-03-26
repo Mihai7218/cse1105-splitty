@@ -6,6 +6,7 @@ import commons.Event;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -28,6 +29,18 @@ public class EventController {
     public EventController(EventService eventService, GerneralServerUtil serverUtil) {
         this.eventService = eventService;
         this.serverUtil = serverUtil;
+    }
+
+    /**
+     * Get method to get a specific event from the database
+     * @param inviteCode the invite code of that specific event
+     * @return the requested event
+     */
+    @GetMapping(path = { "/{inviteCode}/updates" })
+    public DeferredResult<ResponseEntity<Event>> getPolling(
+            @PathVariable("inviteCode") long inviteCode) {
+
+        return eventService.getPolling(inviteCode);
     }
 
     /**
