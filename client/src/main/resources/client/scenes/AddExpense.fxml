@@ -78,13 +78,8 @@
                             <Font size="19.0" />
                         </font>
                     </Label>
-                  <Region prefHeight="200.0" prefWidth="200.0" />
-                    <CheckBox fx:id="everyone" mnemonicParsing="false" onAction="#everyoneCheck" text="${controller.languageManager.addExpense.equallyLabel}" wrapText="true" VBox.vgrow="ALWAYS" />
-                  <Region prefHeight="200.0" prefWidth="196.0" />
-                    <CheckBox fx:id="only" mnemonicParsing="false" onAction="#onlyCheck" text="${controller.languageManager.addExpense.subsetLabel}" wrapText="true" VBox.vgrow="ALWAYS" />
-                  <Region prefHeight="200.0" prefWidth="200.0" />
-                  <Region prefHeight="200.0" prefWidth="200.0" />
-                  <Region prefHeight="200.0" prefWidth="200.0" />
+                    <CheckBox fx:id="everyone" mnemonicParsing="false" onAction="#everyoneCheck" prefHeight="37.0" prefWidth="196.0" text="${controller.languageManager.addExpense.equallyLabel}" wrapText="true" VBox.vgrow="ALWAYS" />
+                    <CheckBox fx:id="only" mnemonicParsing="false" onAction="#onlyCheck" prefHeight="40.0" prefWidth="196.0" text="${controller.languageManager.addExpense.subsetLabel}" wrapText="true" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <ScrollPane fx:id="scrollNames" prefHeight="200.0" prefWidth="200.0">
@@ -104,7 +99,7 @@
                <children>
                     <Label prefHeight="28.0" prefWidth="197.0" text="${controller.languageManager.addExpense.expenseType}">
                         <font>
-                            <Font size="19.0" />
+                            <Font size="14.0" />
                         </font>
                     </Label>
                     <ComboBox fx:id="expenseType" prefHeight="26.0" prefWidth="194.0" />
@@ -129,9 +124,9 @@
               <Button id="addEntity" fx:id="addExpense" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.addExpense.addButton}" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
-      <Label fx:id="question" layoutX="29.0" layoutY="292.0" prefHeight="26.0" prefWidth="392.0" text="${controller.languageManager.addExpense.selectAllMessage}">
+      <Label fx:id="question" layoutX="29.0" layoutY="292.0" prefHeight="26.0" prefWidth="392.0" text="${controller.languageManager.addExpense.selectAllMessage}" wrapText="true">
          <font>
-            <Font size="16.0" />
+            <Font size="11.0" />
          </font>
       </Label>
     </children>
