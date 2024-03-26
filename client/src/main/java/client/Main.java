@@ -52,11 +52,12 @@ public class Main extends Application {
         var addExpense = FXML.load(AddExpenseCtrl.class, "client", "scenes", "AddExpense.fxml");
         var editparticipant =
                 FXML.load(EditParticipantCtrl.class, "client", "scenes", "EditParticipant.fxml");
+        var invitation = FXML.load(InvitationCtrl.class, "client", "scenes", "Invitation.fxml");
 
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, qouteoverview, add, startScreen,
-                participant, overview, addExpense, editparticipant);
+                participant, overview, addExpense, invitation, editparticipant);;
     }
 
     /**

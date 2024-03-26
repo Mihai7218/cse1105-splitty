@@ -130,7 +130,7 @@ public class OverviewCtrl implements Initializable {
      * Opens the sendInvites scene to be able to send Invites to the other people.
      */
     public void sendInvites(){
-        //Should show the sendInvites scene
+        mainCtrl.showInvitation();
     }
 
     /**

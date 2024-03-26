@@ -132,8 +132,6 @@ class MainCtrlTest {
         Parent startScreen = spy(Parent.class);
         ParticipantCtrl participantCtrl = mock(ParticipantCtrl.class);
         Parent participant = spy(Parent.class);
-        EditParticipantCtrl editParticipantCtrl = mock(EditParticipantCtrl.class);
-        Parent editParticipant = spy(Parent.class);
         OverviewCtrl overviewCtrl = mock(OverviewCtrl.class);
         Parent overview = spy(Parent.class);
         AddExpenseCtrl addExpenseCtrl = mock(AddExpenseCtrl.class);
@@ -144,8 +142,7 @@ class MainCtrlTest {
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
-                new Pair<>(addExpenseCtrl, addexpense),
-                new Pair<>(editParticipantCtrl,editParticipant));
+                new Pair<>(addExpenseCtrl, addexpense));
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
@@ -154,8 +151,6 @@ class MainCtrlTest {
         assertEquals(startScreenCtrl, sut.getStartScreenCtrl());
         assertEquals(startScreen, sut.getStartScreen().getRoot());
         assertEquals(participantCtrl, sut.getParticipantCtrl());
-        assertEquals(participant, sut.getParticipant().getRoot());
-        assertEquals(editParticipantCtrl, sut.getEditparticipantCtrl());
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
