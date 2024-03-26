@@ -67,9 +67,9 @@ public class OverviewCtrl implements Initializable {
 
     @FXML
     private Button addparticipant;
-
     @FXML
     private Button editparticipant;
+
     @FXML
     private Button sendMail;
     @FXML
@@ -110,7 +110,6 @@ public class OverviewCtrl implements Initializable {
             all.refresh();
         }
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
-        editparticipant.setGraphic(new ImageView(new Image("icons/edit.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
