@@ -32,6 +32,8 @@ import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -149,7 +151,7 @@ public class OverviewCtrl implements Initializable {
      * Opens the sendInvites scene to be able to send Invites to the other people.
      */
     public void sendInvites(){
-        //Should show the sendInvites scene
+        mainCtrl.showInvitation();
     }
 
     /**
@@ -190,6 +192,7 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
+<<<<<<< HEAD
      * Initialize method for the Overview scene.
      * Sets the language currently in the config file as the selected one.
      * Sets the cell factories for all ListViews.
@@ -212,18 +215,8 @@ public class OverviewCtrl implements Initializable {
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
-        participants.setCellFactory(x -> new ListCell<>() {
-            @Override
-            protected void updateItem(Participant item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    setGraphic(null);
-                } else {
-                    setText(item.getName());
-                }
-            }
-        });
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
+        participants.getItems().addAll(getParticipants());
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
@@ -256,6 +249,16 @@ public class OverviewCtrl implements Initializable {
                         .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
     }
     /**
+=======
+     * Removes a participant from the list
+     */
+    public void removeParticipant(Participant participant) {
+        participants.getItems().remove(participant);
+        participants.refresh();
+    }
+
+    /**
+>>>>>>> c605a63e9bea86de7055e63fa987bc6f19703c64
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */
@@ -307,6 +310,15 @@ public class OverviewCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+
+    /**
+     * Gets the List of participants of the event
+     */
+    private List<Participant> getParticipants() {
+        if (mainCtrl.getEvent() == null) return new ArrayList<>();
+        List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
+        return participantsList;
+    }
 
     /**
      * Method that updates the language combo box with the correct flag.
