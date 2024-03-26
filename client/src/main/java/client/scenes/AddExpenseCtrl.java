@@ -74,6 +74,8 @@ public class AddExpenseCtrl implements Initializable {
     private Button add;
     @FXML
     private Button cancelButton;
+    @FXML
+    private Button addExpense;
 
     /**
      *
@@ -111,7 +113,8 @@ public class AddExpenseCtrl implements Initializable {
         instructions.setVisible(false);
         newTag.setVisible(false);
         cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
-        addTag.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
+        addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
         currency.getItems().addAll(currencies);
         Tag food = new Tag("food", "green");
         Tag entranceFees = new Tag("entrance fees", "red");
@@ -675,6 +678,14 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void setTitle(TextField title) {
         this.title = title;
+    }
+
+    /**
+     * getter for button for testing
+     * @param addExpense
+     */
+    public void setAddExpense(Button addExpense) {
+        this.addExpense = addExpense;
     }
 
     /**
