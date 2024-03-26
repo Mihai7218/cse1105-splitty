@@ -88,7 +88,7 @@ public class OverviewCtrl implements Initializable {
      * Refreshes all shown items in the overview.
      */
     public void refresh() {
-        addparticipant.setGraphic(new ImageView(new Image("icons/addparticipant.png")));
+        addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));

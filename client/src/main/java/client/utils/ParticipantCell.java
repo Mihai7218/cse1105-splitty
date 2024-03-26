@@ -31,6 +31,7 @@ public class ParticipantCell extends ListCell<Participant> {
         });
         remove = new Button();
         remove.setText("\uD83D\uDDD1");
+        remove.setId("cancel");
         remove.setOnAction(param -> {
             mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
         });
