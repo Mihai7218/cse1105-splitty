@@ -22,6 +22,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Participant;
+import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -228,6 +229,11 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
+        refresh();
+        server.registerForMessages("/topic/events", Event.class,q -> {
+            mainCtrl.setEvent(q);
+            Platform.runLater(() -> refresh());
+        });
     }
 
 

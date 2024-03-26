@@ -6,6 +6,7 @@ import commons.Event;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -49,8 +50,10 @@ public class EventController {
      * @param event new values of event
      */
     @MessageMapping("/events")
-    public void changeEvent(Event event) {
+    @SendTo("/topic/events")
+    public Event changeEvent(Event event) {
         change(event.getInviteCode(),event).getBody();
+        return event;
     }
 
     /**
