@@ -1,0 +1,116 @@
+/*General CSS styling*/
+.root{
+    -fx-background-color: white;
+    -fx-font-family: Verdana;
+}
+
+
+.button{
+    -fx-background-radius: 50px;
+
+    -fx-background-color: RGB(26, 132, 189);
+    -fx-text-fill: white;
+}
+
+.Line{
+    -fx-background-color: RGB(26, 132, 189);
+}
+
+.button:hover{
+    -fx-background-color: RGB(58,147, 195);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#header{
+    -fx-font-weight: bold;
+    -fx-font-family: Verdana;
+}
+
+#EventTitle{
+    -fx-font-weight: bold;
+}
+
+#icon{
+    -fx-background-color: none;
+
+}
+
+#cancel{
+    -fx-background-color: RGB(235,64,52);
+}
+
+#cancel:hover{
+    -fx-background-color:RGB(250, 103, 92);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#cancelButtonContainer{
+    -fx-background-color: RGB(235,64,52);
+}
+
+#cancelButtonContainer:hover{
+    -fx-background-color:RGB(250, 103, 92);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#addEntity, #sendmail{
+    -fx-background-color:RGB(086,180,233);
+}
+
+#addEntity:hover, #sendmail:hover{
+    -fx-background-color:RGB(138, 200, 235);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#languages:hover{
+    -fx-cursor: hand;
+}
+
+#logo{
+    -fx-background-color: none;
+}
+
+/*Overview Specific Styling*/
+#sendmail{
+    -fx-text-alignment: left;
+    -fx-background-color: none;
+    -fx-border-color: none;
+    -fx-underline: true;
+    -fx-text-fill: RGB(26, 132, 189);
+}
+
+#sendmail:hover{
+    -fx-text-fill: RGB(84, 158, 199);
+    -fx-highlight-fill: RGB(125,125,125);
+    -fx-highlight-text-fill: RGB(125,125,125);
+    -fx-background-color: none;
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+/*Start Page Specific Styling*/
+#closeButton{
+    -fx-background-color: RGB(235,64,52);
+}
+
+#closeButton:hover{
+    -fx-background-color:RGB(250, 103, 92);
+    -fx-underline: true;
+    -fx-cursor: hand;
+}
+
+#openRecent{
+    -fx-background-color: none;
+    -fx-text-fill: black;
+}
+#openRecent:hover{
+    -fx-background-color: none;
+    -fx-text-fill: black;
+    -fx-underline: false;
+}
+/*Add Expense Specific Styling*/
+
+

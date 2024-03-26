@@ -26,7 +26,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
-public class ParticipantCtrl {
+
+public class EditParticipantCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -42,8 +43,10 @@ public class ParticipantCtrl {
 
     @FXML
     private TextField bic;
-    private final LanguageManager languageManager;
 
+    //this is the participant that is being edited.
+    private Participant participant;
+    private final LanguageManager languageManager;
 
 
     /**
@@ -53,10 +56,21 @@ public class ParticipantCtrl {
      * @param languageManager LanguageManager object
      */
     @Inject
-    public ParticipantCtrl(ServerUtils server, MainCtrl mainCtrl, LanguageManager languageManager) {
+    public EditParticipantCtrl(ServerUtils server, MainCtrl mainCtrl,
+                               LanguageManager languageManager) {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.languageManager = languageManager;
+    }
+
+    /**
+     * Refreshes all shown items in the overview.
+     */
+    public void refresh() {
+        name.setText(participant.getName());
+        email.setText(participant.getEmail());
+        iban.setText(participant.getIban());
+        bic.setText(participant.getBic());
     }
 
     /**
@@ -77,20 +91,24 @@ public class ParticipantCtrl {
         if (name.getText().isEmpty()){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
-                    .bind("addParticipant.emptyFields"));
+                    .bind("editParticipant.emptyFields"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
         }
         if(bicPresent != ibanPresent){
             var alert = new Alert(Alert.AlertType.WARNING);
-            alert.contentTextProperty().bind(languageManager.bind("addParticipant.invalidPayment"));
+            alert.contentTextProperty()
+                    .bind(languageManager.bind("editParticipant.invalidPayment"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
         }
         try {
-            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
+            participant.setName(name.getText());
+            participant.setEmail(email.getText());
+            participant.setIban(iban.getText());
+            participant.setBic(bic.getText());
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -110,6 +128,14 @@ public class ParticipantCtrl {
     public void abort() {
         clearFields();
         mainCtrl.showOverview();
+    }
+
+    /**
+     * sets the participant that is getting edited
+     * @param participant
+     */
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
     }
 
     /**

@@ -1,19 +1,19 @@
 package server.api;
 
-import java.util.*;
-
 import commons.Event;
-
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
-import static org.springframework.http.HttpStatus.*;
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
-
+//TODO: debt and owed endpoints
 @RestController
 @RequestMapping("/api/events")
 
@@ -28,7 +28,8 @@ public class EventController {
      * constructor for the EventController
      * @param eventService the service with all the necessary functions for the api
      */
-    public EventController(EventService eventService, GerneralServerUtil serverUtil) {
+    public EventController(EventService eventService,
+                           @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.eventService = eventService;
         this.serverUtil = serverUtil;
     }
@@ -133,18 +134,38 @@ public class EventController {
     }
 
     /**
-     * Endpoint to access and calculated the debts for a certain participant
+     * Endpoint to access and calculated the share for a certain participant
      * @param eventId id of the event the participant is in
      * @param participantId id of the participant
      * @return amount that is owed if calculable
      */
-    @GetMapping(path = {"/{invitecode}/debts/{participantId}"})
-    public ResponseEntity<Double> getDebts(@PathVariable("invitecode") Long eventId,
+    @GetMapping(path = {"/{invitecode}/share/{participantId}"})
+    public ResponseEntity<Double> getShare(@PathVariable("invitecode") Long eventId,
                                            @PathVariable("participantId") Long participantId){
-        return eventService.getDebts(eventId, participantId);
+        return eventService.getShare(eventId, participantId);
     }
 
+    /**
+     * @param eventId the event to get the debt from
+     * @param participantId the participant to calculate the debt of
+     * @return the response entity containing the debt as a double
+     */
+    //TODO
+    @GetMapping(path = {"/{invitecode}/debt/{participantId}"})
+    public ResponseEntity<Double> getDebt(@PathVariable("invitecode") Long eventId,
+                                           @PathVariable("participantId") Long participantId){
+        return eventService.getDebt(eventId, participantId);
+    }
 
-
+    /**
+     * @param eventId the event to calculate how much the part. is owed
+     * @param participantId the participant to calculate the owed of
+     * @return the response entity containing how much the part. is owed
+     */
+    @GetMapping(path = {"/{invitecode}/owed/{participantId}"})
+    public ResponseEntity<Double> getOwed(@PathVariable("invitecode") Long eventId,
+                                          @PathVariable("participantId") Long participantId){
+        return eventService.getOwed(eventId, participantId);
+    }
 
 }

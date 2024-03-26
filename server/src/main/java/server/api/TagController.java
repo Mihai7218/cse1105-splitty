@@ -2,12 +2,13 @@ package server.api;
 
 import commons.Expense;
 import commons.Tag;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.*;
-
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 //TODO: add endpoints for specific expense within an event if necessary
 
@@ -24,7 +25,8 @@ public class TagController {
      * Constructor of the tag controller
      * @param tagService the service which will be called
      */
-    public TagController(TagService tagService, GerneralServerUtil serverUtil) {
+    public TagController(TagService tagService,
+                         @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.tagService = tagService;
         this.serverUtil = serverUtil;
     }

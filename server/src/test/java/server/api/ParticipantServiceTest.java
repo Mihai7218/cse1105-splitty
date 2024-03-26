@@ -3,7 +3,6 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 
@@ -13,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.*;
 
 
@@ -93,6 +93,25 @@ class ParticipantServiceTest {
         assertEquals(participantService.getParticipant(1, 2).getBody(), p);
     }
 
+    @Test
+    public void addInValidNoPaymentDetails(){
+        Participant invalidNoPayment = new Participant("Jane", null, "NL85RABO5253446745", null);
+        Participant invalidNoPayment2=new Participant("Jeff", "","NL85RABO5253446745","");
+        Participant invalidNoPayment3 = new Participant("Jane", null, null, "HBUKGB4B");
+        Participant invalidNoPayment4=new Participant("Jeff", "","","HBUKGB4B");
+        assertEquals(participantService.addParticipant(0,invalidNoPayment, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment2, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment3, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+        assertEquals(participantService.addParticipant(0,invalidNoPayment4, mock(ServerUtilModule.class)).getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
+    public void addParticipantvalidPaymentDetails(){
+        Participant validNoPayment = new Participant("Jane", null, null, null);
+        Participant validNoPayment2=new Participant("Jeff", "","","");
+        assertEquals(participantService.addParticipant(0,validNoPayment, mock(ServerUtilModule.class)).getStatusCode(), OK);
+        assertEquals(participantService.addParticipant(0,validNoPayment2, mock(ServerUtilModule.class)).getStatusCode(), OK);
+    }
     @Test
     public void getAllParticipantsTest(){
         List<Participant> result = participantService.getAllParticipants(0).getBody();

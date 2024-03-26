@@ -9,12 +9,13 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <AnchorPane prefHeight="572.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
     <children>
-        <ChoiceBox fx:id="payee" layoutX="198.0" layoutY="81.0" onMouseClicked="#loadParticipants" prefWidth="150.0" />
+        <ChoiceBox fx:id="payee" layoutX="198.0" layoutY="81.0" prefWidth="150.0" />
         <Label fx:id="mainLabel" alignment="TOP_CENTER" layoutY="14.0" prefHeight="41.0" prefWidth="328.0" text="${controller.languageManager.addExpense.mainLabel}" textAlignment="CENTER">
             <font>
                 <Font size="27.0" />
@@ -49,20 +50,15 @@
                 <Font size="19.0" />
             </font>
         </Label>
-        <CheckBox fx:id="everyone" layoutX="61.0" layoutY="318.0" mnemonicParsing="false" onAction="#chooseOne" text="${controller.languageManager.addExpense.equallyLabel}" />
-        <CheckBox fx:id="only" layoutX="61.0" layoutY="350.0" mnemonicParsing="false" onAction="#chooseOne" text="${controller.languageManager.addExpense.subsetLabel}" />
+        <CheckBox fx:id="everyone" layoutX="61.0" layoutY="318.0" mnemonicParsing="false" onAction="#everyoneCheck" text="${controller.languageManager.addExpense.equallyLabel}" />
+        <CheckBox fx:id="only" layoutX="61.0" layoutY="350.0" mnemonicParsing="false" onAction="#onlyCheck" text="${controller.languageManager.addExpense.subsetLabel}" />
         <Label layoutX="60.0" layoutY="420.0" text="${controller.languageManager.addExpense.expenseType}">
             <font>
                 <Font size="19.0" />
             </font>
         </Label>
         <ComboBox fx:id="expenseType" layoutX="218.0" layoutY="420.0" prefWidth="150.0" />
-        <Button layoutX="390.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Button>
-        <Button fx:id="add" layoutX="501.0" layoutY="508.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.addExpense.addButton}">
+        <Button fx:id="add" layoutX="474.0" layoutY="508.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.addExpense.addButton}">
             <font>
                 <Font size="19.0" />
             </font>
@@ -81,8 +77,14 @@
             </AnchorPane>
         </content>
       </ScrollPane>
-      <Button fx:id="addTag" layoutX="65.0" layoutY="460.0" mnemonicParsing="false" onAction="#addTag" text="${controller.languageManager.addExpense.addTag}" />
+      <Button id="addTag" fx:id="addTag" layoutX="65.0" layoutY="460.0" mnemonicParsing="false" onAction="#addTag" text="${controller.languageManager.addExpense.addTag}" />
       <TextField fx:id="newTag" layoutX="43.0" layoutY="510.0" />
       <Label fx:id="instructions" layoutX="43.0" layoutY="548.0" text="${controller.languageManager.addExpense.addTagInstructions}" />
+        <Button id="cancel" fx:id="cancelButton" layoutX="303.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
+            <font>
+                <Font size="19.0" />
+            </font>
+        </Button>
+      <HBox layoutX="173.0" layoutY="472.0" prefHeight="70.0" prefWidth="150.0" />
     </children>
 </AnchorPane>

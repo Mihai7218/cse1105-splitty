@@ -50,8 +50,8 @@ class RecentEventCellTest {
 
         HBox hBox = (HBox) sut.getGraphic();
         Label label = (Label) hBox.getChildren().stream().filter(x -> x instanceof Label).toList().getFirst();
-        Button open = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> "↗".equals(x.getText())).toList().getFirst();
-        Button close = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> !("↗".equals(x.getText()))).toList().getFirst();
+        Button open = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> x.getId().equals("openRecent")).toList().getFirst();
+        Button close = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> x.getId().equals("closeButton")).toList().getFirst();
 
         assertNotNull(open);
         assertNotNull(close);
@@ -66,8 +66,8 @@ class RecentEventCellTest {
         assertNotNull(sut.getGraphic());
 
         HBox hBox = (HBox) sut.getGraphic();
-        Button open = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> "↗".equals(x.getText())).toList().getFirst();
-        Button close = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> !("↗".equals(x.getText()))).toList().getFirst();
+        Button open = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> x.getId().equals("openRecent")).toList().getFirst();
+        Button close = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> x.getId().equals("closeButton")).toList().getFirst();
 
         assertNotNull(open);
         assertNotNull(close);
@@ -87,8 +87,8 @@ class RecentEventCellTest {
         assertNotNull(sut.getGraphic());
 
         HBox hBox = (HBox) sut.getGraphic();
-        Button open = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> "↗".equals(x.getText())).toList().getFirst();
-        Button close = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> !("↗".equals(x.getText()))).toList().getFirst();
+        Button open = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> x.getId().equals("openRecent")).toList().getFirst();
+        Button close = hBox.getChildren().stream().filter(x -> x instanceof Button).map(x -> (Button) x).filter(x -> x.getId().equals("closeButton")).toList().getFirst();
 
         assertNotNull(open);
         assertNotNull(close);
