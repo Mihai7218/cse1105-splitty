@@ -130,7 +130,7 @@ public class MainCtrl {
     public void showEditExpense(){
         primaryStage.titleProperty().bind(languageManager.bind("editExpense.windowTitle"));
         primaryStage.setScene(editExpense);
-        editExpenseCtrl.refresh();
+        if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
     }
 
     /**
