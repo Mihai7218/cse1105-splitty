@@ -365,4 +365,11 @@ public class StartScreenCtrl implements Initializable {
     void setRecentEvents(ListView<Event> list) {
         this.recentEvents = list;
     }
+
+    /**
+     * Stops all Threads when exit
+     */
+    public void stop() {
+        serverUtils.stop();
+    }
 }
