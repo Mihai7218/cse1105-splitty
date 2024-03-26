@@ -276,6 +276,7 @@ public class StartScreenCtrl implements Initializable {
         addRecentEvent(e);
         mainCtrl.setEvent(e);
         mainCtrl.showOverview();
+        serverUtils.stop();
     }
 
     /**
@@ -322,6 +323,7 @@ public class StartScreenCtrl implements Initializable {
         }
         mainCtrl.setEvent(e);
         mainCtrl.showOverview();
+        serverUtils.stop();
     }
 
     /**
