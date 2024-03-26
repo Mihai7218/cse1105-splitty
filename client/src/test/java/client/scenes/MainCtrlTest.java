@@ -103,6 +103,13 @@ class MainCtrlTest {
         verify(stage).setScene(any());
     }
 
+    @Test
+    void showEditParticipant() {
+        sut.showEditParticipant();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
+
     /**
      * Tests that the stage that was set is returned when calling the getter for it.
      */
@@ -128,17 +135,20 @@ class MainCtrlTest {
         OverviewCtrl overviewCtrl = mock(OverviewCtrl.class);
         Parent overview = spy(Parent.class);
         AddExpenseCtrl addExpenseCtrl = mock(AddExpenseCtrl.class);
-        Parent addExpense = spy(Parent.class);
+        Parent addexpense = spy(Parent.class);
         InvitationCtrl invitationCtrl = mock(InvitationCtrl.class);
         Parent invitation = spy(Parent.class);
+        EditParticipantCtrl editParticipantCtrl = mock(EditParticipantCtrl.class);
+        Parent editParticipant = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
-                new Pair<>(addExpenseCtrl, addExpense),
-                new Pair<>(invitationCtrl, invitation));
+                new Pair<>(addExpenseCtrl, addexpense),
+                new Pair<>(invitationCtrl,invitation),
+                new Pair<>(editParticipantCtrl,editParticipant));
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
@@ -150,10 +160,6 @@ class MainCtrlTest {
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
-        assertEquals(addExpenseCtrl, sut.getAddExpenseCtrl());
-        assertEquals(addExpense, sut.getAddExpense().getRoot());
-        assertEquals(invitationCtrl, sut.getInvitationCtrl());
-        assertEquals(invitation, sut.getInvitation().getRoot());
     }
 
     @Test
