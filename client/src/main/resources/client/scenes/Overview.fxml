@@ -8,56 +8,100 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <?import client.utils.LanguageComboBox?>
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="444.0" prefWidth="420.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
-   <children>
-      <Button id="sendmail" fx:id="sendMailButton" layoutX="175.0" layoutY="76.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="115.0" text="${controller.languageManager.overview.sendInvitesButton}" />
-      <Button id="addEntity" fx:id="addExpenseButton" layoutX="209.0" layoutY="169.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
-      <TabPane layoutX="35.0" layoutY="206.0" prefHeight="162.0" prefWidth="350.0" tabClosingPolicy="UNAVAILABLE">
-        <tabs>
-          <Tab text="${controller.languageManager.overview.allTab}">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView fx:id="all" layoutX="55.0" layoutY="-64.0" prefHeight="71.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children></AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="${controller.languageManager.overview.fromTab}">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView layoutX="35.0" layoutY="-75.0" prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children></AnchorPane>
-            </content>
-          </Tab>
-            <Tab text="${controller.languageManager.overview.includingTab}">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <ListView prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                     </children></AnchorPane>
-              </content>
-            </Tab>
-        </tabs>
-      </TabPane>
-      <Button fx:id="settleDebts" defaultButton="true" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" text="${controller.languageManager.overview.settleDebtsButton}" />
-      <Label layoutX="33.0" layoutY="86.0" text="${controller.languageManager.overview.participantsLabel}" />
-      <Label layoutX="35.0" layoutY="156.0" text="${controller.languageManager.overview.expensesLabel}" />
-      <Label id="EventTitle" fx:id="title" layoutX="35.0" layoutY="23.0" onMousePressed="#changeTitle">
-         <font>
-            <Font size="18.0" />
-         </font></Label>
-      <Button id="icon" fx:id="addparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="143.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="20.0" prefWidth="20.0" scaleShape="false">
-         <tooltip>
-            <Tooltip id="tooltipAddParticipants" fx:id="addParticipantTooltip" text="Add Participants" />
-         </tooltip></Button>
-      <ListView fx:id="participants" layoutX="35.0" layoutY="108.0" prefHeight="37.0" prefWidth="238.0" />
-      <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="177.0" prefWidth="150.0" />
-      <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
-      <LanguageComboBox fx:id="languages" layoutX="210.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0" />
-   </children>
-</AnchorPane>
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.OverviewCtrl">
+    <children>
+        <VBox alignment="TOP_CENTER" layoutX="32.0" layoutY="12.0" prefHeight="444.0" prefWidth="396.0">
+            <children>
+                <VBox id="titleContainer" alignment="TOP_LEFT" prefHeight="50.0" prefWidth="396.0">
+                    <children>
+                        <Label id="EventTitle" fx:id="title" layoutX="35.0" layoutY="23.0" onMousePressed="#changeTitle">
+                            <font>
+                                <Font name="System Bold" size="18.0" />
+                            </font>
+                        </Label>
+                        <Label layoutX="33.0" layoutY="86.0" text="${controller.languageManager.overview.tipTitle}" />
+                    </children>
+                </VBox>
+                <Region prefHeight="44.0" prefWidth="396.0" />
+                <VBox prefHeight="156.0" prefWidth="396.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" prefHeight="37.0" prefWidth="396.0">
+                            <children>
+                                <Label layoutX="33.0" layoutY="86.0" text="${controller.languageManager.overview.participantsLabel}" />
+                                <Region prefHeight="0.0" prefWidth="10.0" />
+                                <Button id="icon" fx:id="addparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="143.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="26.0" prefWidth="33.0" scaleShape="false">
+                                    <tooltip>
+                                        <Tooltip id="tooltipAddParticipants" fx:id="addParticipantTooltip" text="Add Participants" />
+                                    </tooltip></Button>
+                                <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                <Button id="sendmail" fx:id="sendMailButton" layoutX="175.0" layoutY="76.0" mnemonicParsing="false" text="${controller.languageManager.overview.sendInvitesButton}" />
+                            </children>
+                        </HBox>
+                        <ListView fx:id="participants" />
+                    </children>
+                </VBox>
+                <Region prefHeight="44.0" prefWidth="396.0" />
+                <VBox id="expenseContainer" alignment="CENTER_LEFT" prefHeight="69.0" prefWidth="312.0">
+                    <children>
+                        <Label layoutX="35.0" layoutY="156.0" text="${controller.languageManager.overview.expensesLabel}" />
+                        <Region prefHeight="200.0" prefWidth="200.0" />
+                        <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="350.0">
+                            <children>
+                                <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="177.0" prefWidth="150.0" />
+                                <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                <Button id="addEntity" fx:id="addExpenseButton" layoutX="209.0" layoutY="169.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
+                            </children>
+                        </HBox>
+                    </children>
+                </VBox>
+                <Region prefHeight="0.0" prefWidth="310.0" VBox.vgrow="ALWAYS" />
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+                            <tabs>
+                                <Tab text="${controller.languageManager.overview.allTab}">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                            <children>
+                                                <ListView fx:id="all" layoutX="55.0" layoutY="-64.0" prefHeight="71.0" prefWidth="350.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children></AnchorPane>                        </content>
+                                </Tab>
+                                <Tab text="${controller.languageManager.overview.fromTab}">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                            <children>
+                                                <ListView layoutX="35.0" layoutY="-75.0" prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children></AnchorPane>                        </content>
+                                </Tab>
+                                <Tab text="${controller.languageManager.overview.includingTab}">
+                                    <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                            <children>
+                                                <ListView prefHeight="71.2" prefWidth="349.6" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children></AnchorPane>                           </content>
+                                </Tab>
+                            </tabs>
+                        </TabPane>
+                    </children>
+                </VBox>
+                <Region prefHeight="44.0" prefWidth="396.0" />
+                <HBox prefHeight="34.0" prefWidth="396.0">
+                    <children>
+                        <Region prefHeight="0.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+                        <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
+                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="settleDebts" defaultButton="true" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" text="${controller.languageManager.overview.settleDebtsButton}" />
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+        <LanguageComboBox fx:id="languages" layoutX="370.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0"  />
+    </children>
+</Pane>
