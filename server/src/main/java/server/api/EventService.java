@@ -81,6 +81,8 @@ public class EventService {
     }
 
 
+
+
     /**
      * A post method to add and event to the repository
      * @param event an event in the requestBody to add to the repository
