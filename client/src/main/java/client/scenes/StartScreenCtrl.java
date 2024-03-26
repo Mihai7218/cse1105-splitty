@@ -242,8 +242,8 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
-     *
-     * @param newEventTitle
+     *  Set the title for a new event
+     * @param newEventTitle the text field of the new event
      */
     public void setNewEventTitle(TextField newEventTitle) {
         this.newEventTitle = newEventTitle;

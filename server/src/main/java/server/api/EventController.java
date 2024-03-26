@@ -134,7 +134,7 @@ public class EventController {
 
     /**
      * Endpoint to access and calculated the debts for a certain participant
-     * @param eventId id of the event the particpant is in
+     * @param eventId id of the event the participant is in
      * @param participantId id of the participant
      * @return amount that is owed if calculable
      */
