@@ -23,14 +23,23 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -44,7 +53,7 @@ public class ServerUtils {
 
     private final List<ExecutorService> runningServices;
 
-//    private StompSession session;
+    private StompSession session;
 
     /**
      * Constructor for the ServerUtils
@@ -60,7 +69,7 @@ public class ServerUtils {
             config.setProperty("server", server);
         }
         runningServices = new ArrayList<>();
-//        session = connect("ws://" + server + "/websocket");
+        session = connect("ws://" + server + "/websocket");
     }
 
     /**
@@ -165,50 +174,50 @@ public class ServerUtils {
         }
     }
 
-//    /**
-//     * connecting to server websocket
-//     * @param url url of the server to connect to
-//     * @return return a stomp session with the connection
-//     */
-//    public StompSession connect(String url) {
-//        var client = new StandardWebSocketClient();
-//        var stomp = new WebSocketStompClient(client);
-//        stomp.setMessageConverter(new MappingJackson2MessageConverter());
-//        try {
-//            return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
-//        } catch (InterruptedException e) {
-//            Thread.currentThread().interrupt();
-//        } catch (ExecutionException e) {
-//            throw  new RuntimeException(e);
-//        }
-//        throw new IllegalStateException();
-//    }
-//
-//    /**
-//     * register for messages from the websocket
-//     * @param dest the destination on the server
-//     * @param consumer a consumer who waits for a response
-//     */
-//    public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
-//        session.subscribe(dest, new StompFrameHandler() {
-//            @Override
-//            public Type getPayloadType(StompHeaders headers) {
-//                return type;
-//            }
-//
-//            @Override
-//            public void handleFrame(StompHeaders headers, Object payload) {
-//                consumer.accept((T) payload);
-//            }
-//        });
-//    }
-//
-//    /**
-//     * Send data over the websocket
-//     * @param dest destination to send the data to
-//     * @param o object to send
-//     */
-//    public void send(String dest, Object o) {
-//        session.send(dest,o);
-//    }
+    /**
+     * connecting to server websocket
+     * @param url url of the server to connect to
+     * @return return a stomp session with the connection
+     */
+    public StompSession connect(String url) {
+        var client = new StandardWebSocketClient();
+        var stomp = new WebSocketStompClient(client);
+        stomp.setMessageConverter(new MappingJackson2MessageConverter());
+        try {
+            return stomp.connect(url, new StompSessionHandlerAdapter() {}).get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        } catch (ExecutionException e) {
+            throw  new RuntimeException(e);
+        }
+        throw new IllegalStateException();
+    }
+
+    /**
+     * register for messages from the websocket
+     * @param dest the destination on the server
+     * @param consumer a consumer who waits for a response
+     */
+    public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
+        session.subscribe(dest, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return type;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                consumer.accept((T) payload);
+            }
+        });
+    }
+
+    /**
+     * Send data over the websocket
+     * @param dest destination to send the data to
+     * @param o object to send
+     */
+    public void send(String dest, Object o) {
+        session.send(dest,o);
+    }
 }
