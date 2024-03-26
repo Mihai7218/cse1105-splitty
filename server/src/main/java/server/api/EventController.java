@@ -1,13 +1,13 @@
 package server.api;
 
-import java.util.*;
-
 import commons.Event;
-
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.*;
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
 //TODO: debt and owed endpoints
@@ -25,7 +25,8 @@ public class EventController {
      * constructor for the EventController
      * @param eventService the service with all the necessary functions for the api
      */
-    public EventController(EventService eventService, GerneralServerUtil serverUtil) {
+    public EventController(EventService eventService,
+                           @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.eventService = eventService;
         this.serverUtil = serverUtil;
     }

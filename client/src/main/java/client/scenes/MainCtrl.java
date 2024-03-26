@@ -131,6 +131,7 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(addExpense);
+        addExpenseCtrl.refresh();
     }
 
     /**

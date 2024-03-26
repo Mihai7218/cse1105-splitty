@@ -1,13 +1,14 @@
 package server.api;
 
 import commons.Event;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 
 import java.sql.Timestamp;
 import java.util.Date;
-
-@Component
+@Service
+@Qualifier("serverUtilImpl")
 public class ServerUtilModule implements GerneralServerUtil{
 
     /**

@@ -1,14 +1,14 @@
 package server.api;
 
-import java.util.*;
-
-
-import commons.*;
-
+import commons.Expense;
+import commons.Participant;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.springframework.http.HttpStatus.*;
+import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
@@ -22,7 +22,8 @@ public class ExpenseController {
      * Constructor for the ExpenseController
      * @param expenseService the associated service for the expense class
      */
-    public ExpenseController(ExpenseService expenseService, GerneralServerUtil serverUtil) {
+    public ExpenseController(ExpenseService expenseService,
+                             @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.expenseService = expenseService;
         this.serverUtil = serverUtil;
     }

@@ -1,7 +1,9 @@
 package server.api;
 
+import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 
+@Service
 public interface GerneralServerUtil {
 
     /**

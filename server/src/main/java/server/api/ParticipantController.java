@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class ParticipantController {
      */
     @Autowired
     public ParticipantController(ParticipantService participantService,
-                                 GerneralServerUtil serverUtil){
+                                 @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil){
         this.participantService = participantService;
         this.serverUtil = serverUtil;
     }
