@@ -147,6 +147,7 @@ public class OverviewCtrl implements Initializable {
                 title.setGraphic(null);
                 title.setText(changeable.getText());
                 mainCtrl.getEvent().setTitle(changeable.getText());
+                server.send("/app/events",mainCtrl.getEvent());
             }
         });
     }

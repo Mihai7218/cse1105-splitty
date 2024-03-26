@@ -69,7 +69,7 @@ public class ServerUtils {
             config.setProperty("server", server);
         }
         runningServices = new ArrayList<>();
-        session = connect("ws://" + server + "/websocket");
+        session = connect("ws://" + server.substring(7) + "/websocket");
     }
 
     /**
