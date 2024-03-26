@@ -243,7 +243,6 @@ public class OverviewCtrl implements Initializable {
         this.refreshLanguage();
         participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
         participants.getItems().addAll(getParticipants());
-        System.out.println(getParticipants());
     }
 
     /**
