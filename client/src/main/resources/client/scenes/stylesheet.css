@@ -66,6 +66,16 @@
     -fx-cursor: hand;
 }
 
+#addTag, #addExpense{
+    -fx-background-color: none;
+    -fx-text-fill: black;
+}
+
+#addTag:hover, #addExpense:hover{
+    -fx-underline: true;
+    -fx-text-fill: RGB(58,147, 195);
+}
+
 #languages:hover{
     -fx-cursor: hand;
 }

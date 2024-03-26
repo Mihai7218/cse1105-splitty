@@ -10,81 +10,129 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="572.0" prefWidth="616.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
+<AnchorPane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddExpenseCtrl">
     <children>
-        <ChoiceBox fx:id="payee" layoutX="198.0" layoutY="81.0" prefWidth="150.0" />
-        <Label fx:id="mainLabel" alignment="TOP_CENTER" layoutY="14.0" prefHeight="41.0" prefWidth="328.0" text="${controller.languageManager.addExpense.mainLabel}" textAlignment="CENTER">
+        <Label fx:id="mainLabel" layoutX="29.0" layoutY="14.0" prefHeight="42.0" prefWidth="421.0" text="${controller.languageManager.addExpense.mainLabel}">
             <font>
-                <Font size="27.0" />
+                <Font size="24.0" />
             </font>
         </Label>
-        <Label fx:id="payeeLabel" layoutX="61.0" layoutY="74.0" prefHeight="42.0" prefWidth="112.0" text="${controller.languageManager.addExpense.payeeLabel}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Label>
-        <Label layoutX="61.0" layoutY="136.0" prefHeight="28.0" prefWidth="90.0" text="${controller.languageManager.addExpense.titleLabel}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Label>
-        <TextField fx:id="title" layoutX="198.0" layoutY="137.0" prefHeight="26.0" prefWidth="221.0" />
-        <Label layoutX="61.0" layoutY="184.0" prefHeight="28.0" prefWidth="103.0" text="${controller.languageManager.addExpense.sumLabel}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Label>
-        <TextField fx:id="price" layoutX="199.0" layoutY="186.0" />
-        <ChoiceBox fx:id="currency" layoutX="359.0" layoutY="186.0" prefHeight="26.0" prefWidth="62.0" />
-        <Label layoutX="61.0" layoutY="233.0" text="${controller.languageManager.addExpense.dateLabel}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Label>
-        <DatePicker fx:id="date" layoutX="199.0" layoutY="234.0" prefHeight="26.0" prefWidth="222.0" />
-        <Label layoutX="62.0" layoutY="280.0" text="${controller.languageManager.addExpense.splitLabel}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Label>
-        <CheckBox fx:id="everyone" layoutX="61.0" layoutY="318.0" mnemonicParsing="false" onAction="#everyoneCheck" text="${controller.languageManager.addExpense.equallyLabel}" />
-        <CheckBox fx:id="only" layoutX="61.0" layoutY="350.0" mnemonicParsing="false" onAction="#onlyCheck" text="${controller.languageManager.addExpense.subsetLabel}" />
-        <Label layoutX="60.0" layoutY="420.0" text="${controller.languageManager.addExpense.expenseType}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Label>
-        <ComboBox fx:id="expenseType" layoutX="218.0" layoutY="420.0" prefWidth="150.0" />
-        <Button fx:id="add" layoutX="474.0" layoutY="508.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.addExpense.addButton}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Button>
-        <Label fx:id="question" layoutX="257.0" layoutY="363.0" prefHeight="26.0" prefWidth="328.0" text="${controller.languageManager.addExpense.selectAllMessage}">
-            <font>
-                <Font size="16.0" />
-            </font>
-        </Label>
-      <ScrollPane fx:id="scrollNames" layoutX="378.0" layoutY="275.0" prefHeight="200.0" prefWidth="200.0">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+      <VBox layoutX="31.0" layoutY="63.0" prefHeight="127.0" prefWidth="392.0">
+         <children>
+            <HBox prefHeight="22.0" prefWidth="392.0">
                <children>
-                    <VBox fx:id="namesContainer" layoutX="3.0" layoutY="-1.0" onMouseExited="#checkAllSelected" prefHeight="192.0" prefWidth="184.0" />
+                    <Label fx:id="payeeLabel" prefHeight="22.0" prefWidth="200.0" text="${controller.languageManager.addExpense.payeeLabel}">
+                        <font>
+                            <Font size="15.0" />
+                        </font>
+                    </Label>
+                    <ChoiceBox fx:id="payee" prefHeight="26.0" prefWidth="202.0" />
                </children>
-            </AnchorPane>
-        </content>
-      </ScrollPane>
-      <Button id="addTag" fx:id="addTag" layoutX="65.0" layoutY="460.0" mnemonicParsing="false" onAction="#addTag" text="${controller.languageManager.addExpense.addTag}" />
-      <TextField fx:id="newTag" layoutX="43.0" layoutY="510.0" />
-      <Label fx:id="instructions" layoutX="43.0" layoutY="548.0" text="${controller.languageManager.addExpense.addTagInstructions}" />
-        <Button id="cancel" fx:id="cancelButton" layoutX="303.0" layoutY="508.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}">
-            <font>
-                <Font size="19.0" />
-            </font>
-        </Button>
-      <HBox layoutX="173.0" layoutY="472.0" prefHeight="70.0" prefWidth="150.0" />
+            </HBox>
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <HBox layoutX="10.0" layoutY="10.0" prefHeight="16.0" prefWidth="392.0">
+               <children>
+                    <Label prefHeight="22.0" prefWidth="229.0" text="${controller.languageManager.addExpense.titleLabel}">
+                        <font>
+                            <Font size="15.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="title" prefHeight="26.0" prefWidth="229.0" />
+               </children>
+            </HBox>
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <HBox layoutX="10.0" layoutY="80.0" prefHeight="14.0" prefWidth="392.0">
+               <children>
+                    <Label prefHeight="22.0" prefWidth="212.0" text="${controller.languageManager.addExpense.sumLabel}">
+                        <font>
+                            <Font size="15.0" />
+                        </font>
+                    </Label>
+                    <TextField fx:id="price" prefHeight="26.0" prefWidth="166.0" />
+                    <ChoiceBox fx:id="currency" prefHeight="26.0" prefWidth="62.0" />
+               </children>
+            </HBox>
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <HBox layoutX="10.0" layoutY="76.0" prefHeight="25.0" prefWidth="392.0">
+               <children>
+                    <Label prefHeight="28.0" prefWidth="231.0" text="${controller.languageManager.addExpense.dateLabel}">
+                        <font>
+                            <Font size="15.0" />
+                        </font>
+                    </Label>
+                    <DatePicker fx:id="date" prefHeight="26.0" prefWidth="231.0" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox layoutX="31.0" layoutY="201.0" prefHeight="118.0" prefWidth="392.0">
+         <children>
+            <VBox prefHeight="122.0" prefWidth="200.0">
+               <children>
+                    <Label prefHeight="28.0" prefWidth="210.0" text="${controller.languageManager.addExpense.splitLabel}" VBox.vgrow="ALWAYS">
+                        <font>
+                            <Font size="19.0" />
+                        </font>
+                    </Label>
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                    <CheckBox fx:id="everyone" mnemonicParsing="false" onAction="#everyoneCheck" text="${controller.languageManager.addExpense.equallyLabel}" wrapText="true" VBox.vgrow="ALWAYS" />
+                  <Region prefHeight="200.0" prefWidth="196.0" />
+                    <CheckBox fx:id="only" mnemonicParsing="false" onAction="#onlyCheck" text="${controller.languageManager.addExpense.subsetLabel}" wrapText="true" VBox.vgrow="ALWAYS" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+                  <Region prefHeight="200.0" prefWidth="200.0" />
+               </children>
+            </VBox>
+            <ScrollPane fx:id="scrollNames" prefHeight="200.0" prefWidth="200.0">
+              <content>
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                          <VBox fx:id="namesContainer" layoutX="4.0" layoutY="-1.0" onMouseExited="#checkAllSelected" prefHeight="192.0" prefWidth="184.0" />
+                     </children>
+                  </AnchorPane>
+              </content>
+            </ScrollPane>
+         </children>
+      </HBox>
+      <VBox layoutX="29.0" layoutY="325.0" prefHeight="127.0" prefWidth="392.0">
+         <children>
+            <HBox prefHeight="22.0" prefWidth="392.0">
+               <children>
+                    <Label prefHeight="28.0" prefWidth="197.0" text="${controller.languageManager.addExpense.expenseType}">
+                        <font>
+                            <Font size="19.0" />
+                        </font>
+                    </Label>
+                    <ComboBox fx:id="expenseType" prefHeight="26.0" prefWidth="194.0" />
+               </children>
+            </HBox>
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <Button id="addTag" fx:id="addTag" mnemonicParsing="false" onAction="#addTag" text="${controller.languageManager.addExpense.addTag}" />
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <Label fx:id="instructions" prefHeight="35.0" prefWidth="392.0" text="${controller.languageManager.addExpense.addTagInstructions}" wrapText="true">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <TextField fx:id="newTag" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="158.0" />
+         </children>
+      </VBox>
+      <HBox alignment="CENTER_RIGHT" layoutX="196.0" layoutY="426.0" prefHeight="26.0" prefWidth="225.0">
+         <children>
+              <Button id="cancel" fx:id="cancelButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}" HBox.hgrow="ALWAYS" />
+            <Region prefHeight="50.0" prefWidth="10.0" />
+              <Button id="addEntity" fx:id="addExpense" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.addExpense.addButton}" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <Label fx:id="question" layoutX="29.0" layoutY="292.0" prefHeight="26.0" prefWidth="392.0" text="${controller.languageManager.addExpense.selectAllMessage}">
+         <font>
+            <Font size="16.0" />
+         </font>
+      </Label>
     </children>
 </AnchorPane>

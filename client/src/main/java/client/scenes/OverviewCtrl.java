@@ -113,7 +113,7 @@ public class OverviewCtrl implements Initializable {
         }
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
-        addExpenseButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
+        addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
         clearFields();
