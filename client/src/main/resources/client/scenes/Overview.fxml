@@ -102,9 +102,15 @@
                 <Region prefHeight="44.0" prefWidth="396.0" />
                 <HBox prefHeight="34.0" prefWidth="396.0">
                     <children>
-                        <Region prefHeight="0.0" prefWidth="10.0" HBox.hgrow="ALWAYS" />
+                  <HBox prefHeight="26.0" prefWidth="171.0">
+                     <children>
+                        <Label fx:id="sumLabel" prefHeight="26.0" prefWidth="251.0" wrapText="true" />
+                        <Label fx:id="sumExpense" prefHeight="18.0" prefWidth="179.0" />
+                     </children>
+                  </HBox>
+                        <Region prefHeight="26.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                         <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" />
-                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Region prefHeight="26.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                         <Button fx:id="settleDebts" defaultButton="true" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" text="${controller.languageManager.overview.settleDebtsButton}" />
                     </children>
                 </HBox>

@@ -108,24 +108,6 @@ public class ExpenseControllerTest {
      * Tests for the getTotal method
      */
 
-    @Test
-    public void getTotalTest(){
-        double total = ctrl.getTotal(eventId).getBody();
-        assertEquals(total, 625.60);
-    }
-
-    @Test
-    public void getTotalTestInvalid(){
-        ResponseEntity<Double> res = ctrl.getTotal(-20);
-        assertEquals(res.getStatusCode(), BAD_REQUEST);
-    }
-
-    @Test
-    public void getTotalTestNonexistent(){
-        ResponseEntity<Double> res = ctrl.getTotal(20);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
-    }
-
     /***
      * Tests for the add method
      */

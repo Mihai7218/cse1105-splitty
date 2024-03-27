@@ -72,7 +72,10 @@ public class OverviewCtrl implements Initializable {
     private Button addparticipant;
     @FXML
     private Button editparticipant;
-
+    @FXML
+    private Label sumExpense;
+    @FXML
+    private Label sumLabel;
     @FXML
     private Button sendMail;
     @FXML
@@ -137,6 +140,7 @@ public class OverviewCtrl implements Initializable {
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense(){
+        server.send("/app/events/sum", mainCtrl.getEvent());
         mainCtrl.showAddExpense();
     }
 
@@ -212,6 +216,7 @@ public class OverviewCtrl implements Initializable {
         Label includingLabel = new Label();
         participantFrom = new Label();
         participantIncluding = new Label();
+        sumLabel.textProperty().bind(languageManager.bind("overview.totalSum"));
         fromLabel.textProperty().bind(languageManager.bind("overview.fromTab"));
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
@@ -234,6 +239,12 @@ public class OverviewCtrl implements Initializable {
         server.registerForMessages("/topic/events", Event.class,q -> {
             mainCtrl.setEvent(q);
             Platform.runLater(() -> refresh());
+        });
+        server.registerForMessages("/topic/events/sum", Double.class, q->{
+            sumExpense.setText(String.valueOf(q));
+            System.out.println("something happened!");
+            refresh();
+           // Platform.runLater(() -> refresh());
         });
     }
 

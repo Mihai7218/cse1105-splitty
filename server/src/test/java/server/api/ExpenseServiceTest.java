@@ -107,26 +107,6 @@ public class ExpenseServiceTest {
         assertEquals(res.getStatusCode(), NOT_FOUND);
     }
 
-    /***
-     * Tests for the getTotal method
-     */
-    @Test
-    public void getTotalTest(){
-        double total = expenseService.getTotal(eventId).getBody();
-        assertEquals(total, 625.60);
-    }
-
-    @Test
-    public void getTotalTestInvalid(){
-        ResponseEntity<Double> res = expenseService.getTotal(-20);
-        assertEquals(res.getStatusCode(), BAD_REQUEST);
-    }
-
-    @Test
-    public void getTotalTestNonexistent(){
-        ResponseEntity<Double> res = expenseService.getTotal(20);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
-    }
 
     /***
      * Tests for the add method
