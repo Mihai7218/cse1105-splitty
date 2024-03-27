@@ -482,7 +482,7 @@ public class AddExpenseCtrl implements Initializable {
         participantPayments.add(payeePayment);
         currParticipants.add(actualPayee);
 
-        System.out.println(amtAdded);
+        //System.out.println(amtAdded);
         int remainder = price % numberOfParticipants;
         for (var pair : participantCheckBoxMap.entrySet()) {
             ParticipantPayment newP = new ParticipantPayment(pair.getValue(), amtAdded);
@@ -501,7 +501,7 @@ public class AddExpenseCtrl implements Initializable {
             participantSplits.get(currParticipants.get(counter)).setPaymentAmount(initAmt + 0.01);
             remainder--;
             counter++;
-            System.out.println(subject.toString() + " got the extra cent!");
+            //System.out.println(subject.toString() + " got the extra cent!");
         }
 
     }
@@ -516,7 +516,7 @@ public class AddExpenseCtrl implements Initializable {
                               List<ParticipantPayment> participantPayments) {
         Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
         double amtAdded = (double)(price/mainCtrl.getEvent().getParticipantsList().size())/100.0;
-        System.out.println(amtAdded);
+        //System.out.println(amtAdded);
         int remainder = price % mainCtrl.getEvent().getParticipantsList().size();
         for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
             ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
@@ -535,7 +535,7 @@ public class AddExpenseCtrl implements Initializable {
             participantSplits.get(currParticipants.get(counter)).setPaymentAmount(initAmt + 0.01);
             remainder--;
             counter++;
-            System.out.println(subject.toString() + " got the extra cent!");
+            //System.out.println(subject.toString() + " got the extra cent!");
 
         }
     }
