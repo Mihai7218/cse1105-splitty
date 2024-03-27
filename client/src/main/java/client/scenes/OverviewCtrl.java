@@ -32,10 +32,7 @@ import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class OverviewCtrl implements Initializable {
 
@@ -252,8 +249,29 @@ public class OverviewCtrl implements Initializable {
      * Removes a participant from the list
      */
     public void removeParticipant(Participant participant) {
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for(Expense e: expenses){
+            if(!e.getSplit().stream()
+                    .filter(item -> item.getParticipant()
+                            .equals(participant)).toList().isEmpty()){
+                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+                confirmation.contentTextProperty().bind(
+                        languageManager.bind("overview.removeParticipant"));
+                confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+                confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+                Optional<ButtonType> result = confirmation.showAndWait();
+                if(result.isPresent() && result.get() == ButtonType.OK) {
+                    participants.getItems().remove(participant);
+                    participants.refresh();
+                    return;
+                }else{
+                    return;
+                }
+            }
+        }
         participants.getItems().remove(participant);
         participants.refresh();
+
     }
 
     /**
