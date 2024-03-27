@@ -79,10 +79,37 @@ public class StartScreenCtrl implements Initializable {
         alert.titleProperty().bind(languageManager.bind("commons.warning"));
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
-        recentEvents.getItems().addAll(getRecentEventsFromConfig());
+        List<Event> currentlyInConfig = getRecentEventsFromConfig();
+        recentEvents.getItems().addAll(currentlyInConfig);
         this.refreshConfig();
         updateLanguageComboBox(language);
         this.refreshLanguage();
+        setLongPolling(currentlyInConfig);
+    }
+
+    /**
+     * set the LongPolling for the already added events
+     * @param recentEventsFromConfig the list of already existing events
+     */
+    private void setLongPolling(List<Event> recentEventsFromConfig) {
+        for (Event event : recentEventsFromConfig) {
+            serverUtils.getEventUpdate(event.getInviteCode(),q -> {
+                updateEvent(q);
+            });
+        }
+    }
+
+    /**
+     * update the event in the list if anything changes
+     * @param q the event to update in the list
+     */
+    private void updateEvent(Event q) {
+        for (int i = 0; i < recentEvents.getItems().size(); i++) {
+            if(recentEvents.getItems().get(i).getInviteCode() == q.getInviteCode()) {
+                recentEvents.getItems().get(i).setTitle(q.getTitle());
+                recentEvents.refresh();
+            }
+        }
 
     }
 
@@ -169,6 +196,7 @@ public class StartScreenCtrl implements Initializable {
      * @param event - the event to be added.
      */
     public void addRecentEvent(Event event) {
+        newThreadForMethod(event);
         recentEvents.getItems().remove(event);
         recentEvents.getItems().addFirst(event);
         int limit;
@@ -183,6 +211,24 @@ public class StartScreenCtrl implements Initializable {
         }
         recentEvents.refresh();
         refreshConfig();
+    }
+
+    /**
+     * create a new thread for LongPoling for an event
+     * @param event event to make the thread for
+     */
+    private void newThreadForMethod(Event event) {
+        boolean check = true;
+        for (int i = 0; i < recentEvents.getItems().size(); i++) {
+            if(recentEvents.getItems().get(i).getInviteCode() == event.getInviteCode()) {
+                check = false;
+            }
+        }
+        if (check) {
+            serverUtils.getEventUpdate(event.getInviteCode(), q -> {
+                updateEvent(q);
+            });
+        }
     }
 
     /**
@@ -212,8 +258,8 @@ public class StartScreenCtrl implements Initializable {
     }
 
     /**
-     *
-     * @param newEventTitle
+     *  Set the title for a new event
+     * @param newEventTitle the text field of the new event
      */
     public void setNewEventTitle(TextField newEventTitle) {
         this.newEventTitle = newEventTitle;
@@ -246,6 +292,7 @@ public class StartScreenCtrl implements Initializable {
         addRecentEvent(e);
         mainCtrl.setEvent(e);
         mainCtrl.showOverview();
+        serverUtils.stop();
     }
 
     /**
@@ -292,6 +339,7 @@ public class StartScreenCtrl implements Initializable {
         }
         mainCtrl.setEvent(e);
         mainCtrl.showOverview();
+        serverUtils.stop();
     }
 
     /**
@@ -335,5 +383,12 @@ public class StartScreenCtrl implements Initializable {
      */
     void setRecentEvents(ListView<Event> list) {
         this.recentEvents = list;
+    }
+
+    /**
+     * Stops all Threads when exit
+     */
+    public void stop() {
+        serverUtils.stop();
     }
 }

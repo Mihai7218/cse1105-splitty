@@ -12,9 +12,9 @@ import java.util.Date;
 public class ServerUtilModule implements GerneralServerUtil{
 
     /**
-     * adw
-     * @param eventRepo dwa
-     * @param inviteCode dwa
+     * Method to update the activity date
+     * @param eventRepo the repository with the events
+     * @param inviteCode the invitecode of the event
      */
     public void updateDate(EventRepository eventRepo, long inviteCode) {
         Event event = eventRepo.findById(inviteCode).get();
