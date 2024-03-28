@@ -204,7 +204,7 @@ public class AdminConsole {
         boolean deletion = confirmationMenu(userInput, invCode);
         if (deletion){
             Event event = delete(adminConsole, invCode);
-            System.out.println("Event" + event.toString() + "deleted successfully");
+            System.out.println("Event deleted successfully");
         } else {
             System.out.println("Event remains in the database");
         }
