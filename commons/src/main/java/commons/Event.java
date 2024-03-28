@@ -17,11 +17,11 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int inviteCode;
     private String title;
-    @OneToMany
+    @OneToMany (fetch = FetchType.EAGER)
     private List<Expense> expensesList;
-    @OneToMany
+    @OneToMany (fetch = FetchType.EAGER)
     private List<Participant> participantsList;
-    @OneToMany
+    @OneToMany (fetch = FetchType.EAGER)
     private List<Tag> tagsList;
     @CreationTimestamp
     private Date creationDate;

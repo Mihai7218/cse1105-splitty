@@ -28,7 +28,7 @@ public class Expense {
      * No-arg constructor of Expense
      */
     @SuppressWarnings("unused")
-    private Expense() {
+    public Expense() {
     }
 
     /**

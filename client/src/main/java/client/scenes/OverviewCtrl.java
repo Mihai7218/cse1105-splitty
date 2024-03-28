@@ -31,6 +31,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -81,7 +82,7 @@ public class OverviewCtrl implements Initializable {
     private Button settleDebts;
     @FXML
     private Button addExpenseButton;
-
+    private StompSession.Subscription expensesSubscription;
 
 
     /**
@@ -107,7 +108,8 @@ public class OverviewCtrl implements Initializable {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
-            all.getItems().addAll(mainCtrl.getEvent().getExpensesList());
+            List<Expense> expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+            all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
         }
@@ -119,8 +121,20 @@ public class OverviewCtrl implements Initializable {
         clearFields();
         if(event != null){
             title.setText(event.getTitle());
-            participants.getItems().addAll(event.getParticipantsList());
+            participants.getItems().clear();
+            participants.getItems().addAll(server.getAllParticipants(mainCtrl.getEvent().getInviteCode()));
+            mainCtrl.getEvent().getParticipantsList().clear();
+            mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
             expenseparticipants.getItems().addAll(event.getParticipantsList());
+            if (expensesSubscription == null)
+                expensesSubscription = server.registerForMessages("/topic/events/" +
+                        mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class, expense -> {
+                    all.getItems().add(expense);
+                    mainCtrl.getEvent().getExpensesList().add(expense);
+                    all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+                    all.refresh();
+                    filterViews();
+                });
         }
     }
 
@@ -144,6 +158,10 @@ public class OverviewCtrl implements Initializable {
      * Goes back to the startMenu.
      */
     public void startMenu(){
+        if (expensesSubscription != null) {
+            expensesSubscription.unsubscribe();
+            expensesSubscription = null;
+        }
         mainCtrl.showStartMenu();
     }
 
@@ -193,7 +211,6 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
-<<<<<<< HEAD
      * Initialize method for the Overview scene.
      * Sets the language currently in the config file as the selected one.
      * Sets the cell factories for all ListViews.
@@ -242,7 +259,13 @@ public class OverviewCtrl implements Initializable {
      */
     public void filterViews() {
         Participant participant = expenseparticipants.getValue();
-        if (participant == null) return;
+        if (participant == null) {
+            from.getItems().clear();
+            including.getItems().clear();
+            participantFrom.setText("");
+            participantIncluding.setText("");
+            return;
+        }
         participantFrom.setText(participant.getName());
         participantIncluding.setText(participant.getName());
         from.getItems().clear();
@@ -255,7 +278,6 @@ public class OverviewCtrl implements Initializable {
                         .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
     }
     /**
-=======
      * Removes a participant from the list
      */
     public void removeParticipant(Participant participant) {
@@ -264,7 +286,6 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
->>>>>>> c605a63e9bea86de7055e63fa987bc6f19703c64
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */

@@ -16,8 +16,7 @@
 package client.utils;
 
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Quote;
+import commons.*;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -198,8 +197,10 @@ public class ServerUtils {
      * @param dest the destination on the server
      * @param consumer a consumer who waits for a response
      */
-    public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
-        session.subscribe(dest, new StompFrameHandler() {
+    public <T> StompSession.Subscription registerForMessages(String dest,
+                                                             Class<T> type,
+                                                             Consumer<T> consumer) {
+        return session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return type;
@@ -217,7 +218,59 @@ public class ServerUtils {
      * @param dest destination to send the data to
      * @param o object to send
      */
-    public void send(String dest, Object o) {
-        session.send(dest,o);
+    public Object send(String dest, Object o) {
+        return session.send(dest,o);
+    }
+
+    public List<Expense> getAllExpenses(int id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/" + id + "/expenses") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<>() {
+                });
+    }
+
+    public Participant addParticipant(int inviteCode, Participant participant) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + inviteCode + "/participants")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+    }
+
+    public List<Participant> getAllParticipants(int id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/" + id + "/participants") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<>() {
+                });
+    }
+
+    public ParticipantPayment addParticipantPayment(int inviteCode, long expenseId, ParticipantPayment pp) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + inviteCode +
+                        "/expenses/" + expenseId + "/participantpayment")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(pp, APPLICATION_JSON), ParticipantPayment.class);
+    }
+
+    public Expense addExpense(int inviteCode, Expense expense) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + inviteCode + "/expenses")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+    }
+
+    public List<Tag> getAllTags(int id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/" + id + "/tags") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<>() {
+                });
     }
 }

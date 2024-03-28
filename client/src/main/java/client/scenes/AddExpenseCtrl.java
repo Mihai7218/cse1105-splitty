@@ -45,7 +45,6 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private ChoiceBox<String> currency;
     private String[] currencies = {"USD", "EUR", "CHF"};
-    private ArrayList<Tag> tags = new ArrayList<>();
     private Map<CheckBox, Participant> participantCheckBoxMap;
     @FXML
     private ComboBox<Tag> expenseType;
@@ -116,15 +115,6 @@ public class AddExpenseCtrl implements Initializable {
         addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
         currency.getItems().addAll(currencies);
-        Tag food = new Tag("food", "green");
-        Tag entranceFees = new Tag("entrance fees", "red");
-        Tag travel = new Tag("travel", "blue");
-        tags.add(food);
-        tags.add(entranceFees);
-        tags.add(travel);
-        for (Tag tag : tags) {
-            expenseType.getItems().add(tag);
-        }
         payee.setConverter(new StringConverter<>() {
             @Override
             public String toString(Participant participant) {
@@ -184,21 +174,20 @@ public class AddExpenseCtrl implements Initializable {
     public void refresh() {
         if (add != null)
             add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
-        loadParticipants();
+        load();
         populateParticipantCheckBoxes();
     }
 
     /**
      *
      */
-    public void loadParticipants() {
+    public void load() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null) {
             payee.getItems().clear();
-            participantsList = mainCtrl.getEvent().getParticipantsList();
-            for (Participant participant : participantsList) {
-                payee.getItems().add(participant);
-            }
+            payee.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
+            expenseType.getItems().clear();
+            expenseType.getItems().addAll(mainCtrl.getEvent().getTagsList());
         }
     }
 
@@ -377,7 +366,7 @@ public class AddExpenseCtrl implements Initializable {
 
             // Create a new Expense object
             Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
-            mainCtrl.getEvent().addExpense(newExpense);
+            serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
             mainCtrl.showOverview();
 
             // Optionally, clear input fields after adding the expense
@@ -402,10 +391,8 @@ public class AddExpenseCtrl implements Initializable {
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        Expense expense = new Expense(price, currency.getValue(), title, "testing",
+        return new Expense(price, currency.getValue(), title, "testing",
                 java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
-
-        return expense;
     }
 
     /**
@@ -566,22 +553,6 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void setCurrencies(String[] currencies) {
         this.currencies = currencies;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ArrayList<Tag> getTags() {
-        return tags;
-    }
-
-    /**
-     *
-     * @param tags
-     */
-    public void setTags(ArrayList<Tag> tags) {
-        this.tags = tags;
     }
 
     /**

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import server.database.EventRepository;
+import server.database.ParticipantPaymentRepository;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -33,8 +34,9 @@ public class ExpenseControllerTest {
     public void setup() {
         serverUtil = new ServerUtilModule();
         TestExpenseRepository expenseRepo = new TestExpenseRepository();
-        ExpenseService serv = new ExpenseService(eventRepo, expenseRepo);
-        ctrl = new ExpenseController(serv,serverUtil);
+        ParticipantPaymentRepository ppRepo = new TestParticipantPaymentRepository();
+        ExpenseService serv = new ExpenseService(eventRepo, expenseRepo, ppRepo);
+        ctrl = new ExpenseController(serv,serverUtil, null);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
         event = new Event("main", timestamp2, timestamp2);

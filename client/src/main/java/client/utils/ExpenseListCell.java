@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
 
+import java.text.DateFormat;
+
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
@@ -139,7 +141,8 @@ public class ExpenseListCell extends ListCell<Expense> {
         }
         payers.setText(sb.toString());
         try {
-            date.setText(String.valueOf(this.getItem().getDate()));
+            var dateObj = this.getItem().getDate();
+            date.setText(DateFormat.getDateInstance().format(dateObj));
         }
         catch (NullPointerException e) {
             date.setText("<no date>");
