@@ -378,7 +378,6 @@ public class AddExpenseCtrl implements Initializable {
             // Create a new Expense object
             Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
             mainCtrl.getEvent().addExpense(newExpense);
-            serverUtils.send("/app/events/sum", mainCtrl.getEvent());
             mainCtrl.showOverview();
 
             // Optionally, clear input fields after adding the expense

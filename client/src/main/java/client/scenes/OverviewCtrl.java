@@ -119,6 +119,7 @@ public class OverviewCtrl implements Initializable {
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
+        sumExpense.setText(String.format("%.2f",getSum()));
         clearFields();
         if(event != null){
             title.setText(event.getTitle());
@@ -127,7 +128,19 @@ public class OverviewCtrl implements Initializable {
         }
     }
 
-
+    /**
+     * method to calculate the sum of all expenses in the event
+     * @return double for the event total
+     */
+    public double getSum(){
+        double sum = 0;
+        if(mainCtrl.getEvent() == null) return sum;
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for(Expense e: expenses){
+            sum += e.getAmount();
+        }
+        return sum;
+    }
 
     /**
      * Opens the addparticipant scene to be able to add participants to the event.
@@ -140,7 +153,6 @@ public class OverviewCtrl implements Initializable {
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense(){
-        server.send("/app/events/sum", mainCtrl.getEvent());
         mainCtrl.showAddExpense();
     }
 
@@ -240,12 +252,6 @@ public class OverviewCtrl implements Initializable {
             mainCtrl.setEvent(q);
             Platform.runLater(() -> refresh());
         });
-        server.registerForMessages("/topic/events/sum", Double.class, q->{
-            sumExpense.setText(String.valueOf(q));
-            System.out.println("something happened!");
-            refresh();
-           // Platform.runLater(() -> refresh());
-        });
     }
 
     /**
@@ -275,7 +281,6 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
->>>>>>> c605a63e9bea86de7055e63fa987bc6f19703c64
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */

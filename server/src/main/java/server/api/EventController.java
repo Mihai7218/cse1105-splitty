@@ -54,20 +54,7 @@ public class EventController {
     @SendTo("/topic/events")
     public Event changeEvent(Event event) {
         change(event.getInviteCode(),event).getBody();
-        getSum(event);
         return event;
-    }
-
-    /**
-     * Websocket implementation of getting sum of expense costs
-     * @param event to find expenses for
-     * @return double to represent total costs
-     */
-    @MessageMapping("/events/sum")
-    @SendTo("/topic/events/sum")
-    public Double getSum(Event event){
-        System.out.println("total in controller reached");
-        return getTotal(event.getInviteCode()).getBody();
     }
 
     /***
