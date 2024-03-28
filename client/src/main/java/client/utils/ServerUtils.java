@@ -309,4 +309,12 @@ public class ServerUtils {
                 .get(new GenericType<>() {
                 });
     }
+
+    public Tag addTag(int id, Tag tag) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + id + "/tags")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(tag, APPLICATION_JSON), Tag.class);
+    }
 }

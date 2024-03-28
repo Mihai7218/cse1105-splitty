@@ -251,7 +251,20 @@ public class AddExpenseCtrl implements Initializable {
                 // Add text to the ArrayList if it's not empty
                 if (!tag.isEmpty()) {
                     //tags.add(new Tag(tag, "black"));
-                    expenseType.getItems().add(new Tag(tag, "yellow"));
+                    Tag newTag = new Tag(tag, "yellow");
+                    try {
+                        newTag = serverUtils.addTag(mainCtrl.getEvent().getInviteCode(), newTag);
+                    }
+                    catch (WebApplicationException e) {
+                        switch (e.getResponse().getStatus()) {
+                            case 400 -> throwAlert("addExpense.invalidTagHeader",
+                                    "addExpense.invalidTagBody");
+                            case 404 -> throwAlert("addExpense.notFoundHeader",
+                                    "addExpense.notFoundBody");
+                        }
+                        return;
+                    }
+                    expenseType.getItems().add(newTag);
                 }
                 // Clear the text field
                 newTag.clear();
