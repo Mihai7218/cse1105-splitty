@@ -152,18 +152,9 @@ public class EventService {
         }
 
         Event saved = eventRepository.findById(inviteCode).get();
-
-        List<Tag> tmpTags = new ArrayList<>();
-        for(Tag tag : saved.getTagsList()) {
-            tmpTags.add(tag);
-        }
-        saved.getTagsList().removeAll(saved.getTagsList());
-        eventRepository.save(saved);
-        for(Tag tag : tmpTags) {
-            tagRepository.deleteById(tag.getId());
-        }
+        ResponseEntity<Event> response = ResponseEntity.ok(saved);
         eventRepository.deleteAllById(Collections.singleton(inviteCode));
-        return ResponseEntity.ok(saved);
+        return response;
     }
 
 
