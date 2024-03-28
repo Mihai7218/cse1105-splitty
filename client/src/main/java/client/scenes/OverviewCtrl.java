@@ -21,6 +21,8 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
