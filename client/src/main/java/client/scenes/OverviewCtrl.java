@@ -23,6 +23,7 @@ import commons.Participant;
 import commons.ParticipantPayment;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -253,6 +254,7 @@ public class OverviewCtrl implements Initializable {
                 title.setGraphic(null);
                 title.setText(changeable.getText());
                 mainCtrl.getEvent().setTitle(changeable.getText());
+                server.send("/app/events",mainCtrl.getEvent());
             }
         });
     }
@@ -307,6 +309,11 @@ public class OverviewCtrl implements Initializable {
             public Participant fromString(String s) {
                 return null;
             }
+        });
+        refresh();
+        server.registerForMessages("/topic/events", Event.class,q -> {
+            mainCtrl.setEvent(q);
+            Platform.runLater(() -> refresh());
         });
     }
 

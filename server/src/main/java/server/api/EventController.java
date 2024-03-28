@@ -3,7 +3,10 @@ package server.api;
 import commons.Event;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
 
@@ -29,6 +32,29 @@ public class EventController {
                            @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
         this.eventService = eventService;
         this.serverUtil = serverUtil;
+    }
+
+    /**
+     * Get method to get a specific event from the database
+     * @param inviteCode the invite code of that specific event
+     * @return the requested event
+     */
+    @GetMapping(path = { "/{inviteCode}/updates" })
+    public DeferredResult<ResponseEntity<Event>> getPolling(
+            @PathVariable("inviteCode") long inviteCode) {
+
+        return eventService.getPolling(inviteCode);
+    }
+
+    /**
+     * Websocket implemmentation of the add
+     * @param event new values of event
+     */
+    @MessageMapping("/events")
+    @SendTo("/topic/events")
+    public Event changeEvent(Event event) {
+        change(event.getInviteCode(),event).getBody();
+        return event;
     }
 
     /**
