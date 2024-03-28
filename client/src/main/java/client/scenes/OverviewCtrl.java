@@ -21,6 +21,7 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -108,7 +109,13 @@ public class OverviewCtrl implements Initializable {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
-            List<Expense> expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+            List<Expense> expenses = new ArrayList<>();
+            try {
+                expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+            }
+            catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
@@ -119,45 +126,46 @@ public class OverviewCtrl implements Initializable {
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
         clearFields();
-        if(event != null){
+        if (event != null) {
             title.setText(event.getTitle());
             participants.getItems().clear();
-            participants.getItems().addAll(server.getAllParticipants(mainCtrl.getEvent().getInviteCode()));
+            participants.getItems().addAll(server.getAllParticipants(
+                    mainCtrl.getEvent().getInviteCode()));
             mainCtrl.getEvent().getParticipantsList().clear();
             mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
             expenseparticipants.getItems().addAll(event.getParticipantsList());
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
-                        mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class, expense -> {
-                    all.getItems().add(expense);
-                    mainCtrl.getEvent().getExpensesList().add(expense);
-                    all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
-                    all.refresh();
-                    filterViews();
-                });
+                                mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
+                        expense -> {
+                            all.getItems().add(expense);
+                            mainCtrl.getEvent().getExpensesList().add(expense);
+                            all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+                            all.refresh();
+                            filterViews();
+                        });
         }
     }
-
 
 
     /**
      * Opens the addparticipant scene to be able to add participants to the event.
      */
-    public void addParticipant(){
+    public void addParticipant() {
         mainCtrl.showParticipant();
     }
 
     /**
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
-    public void addExpense(){
+    public void addExpense() {
         mainCtrl.showAddExpense();
     }
 
     /**
      * Goes back to the startMenu.
      */
-    public void startMenu(){
+    public void startMenu() {
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
@@ -168,14 +176,14 @@ public class OverviewCtrl implements Initializable {
     /**
      * Opens the sendInvites scene to be able to send Invites to the other people.
      */
-    public void sendInvites(){
+    public void sendInvites() {
         mainCtrl.showInvitation();
     }
 
     /**
      * Settles the debts of the event.
      */
-    public void settleDebts(){
+    public void settleDebts() {
         //Should show the sendInvites scene
     }
 
@@ -192,7 +200,7 @@ public class OverviewCtrl implements Initializable {
                 title.setGraphic(null);
                 title.setText(changeable.getText());
                 mainCtrl.getEvent().setTitle(changeable.getText());
-                server.send("/app/events",mainCtrl.getEvent());
+                server.send("/app/events", mainCtrl.getEvent());
             }
         });
     }
@@ -201,10 +209,10 @@ public class OverviewCtrl implements Initializable {
      * Clears all the fields
      */
     private void clearFields() {
-        if(participants!=null){
+        if (participants != null) {
             participants.getItems().clear();
         }
-        if(expenseparticipants!=null){
+        if (expenseparticipants != null) {
             expenseparticipants.getItems().clear();
         }
 
@@ -248,7 +256,7 @@ public class OverviewCtrl implements Initializable {
             }
         });
         refresh();
-        server.registerForMessages("/topic/events", Event.class,q -> {
+        server.registerForMessages("/topic/events", Event.class, q -> {
             mainCtrl.setEvent(q);
             Platform.runLater(() -> refresh());
         });
@@ -277,6 +285,7 @@ public class OverviewCtrl implements Initializable {
                         .map(ParticipantPayment::getParticipant)
                         .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
     }
+
     /**
      * Removes a participant from the list
      */

@@ -136,9 +136,7 @@ public class ExpenseListCell extends ListCell<Expense> {
                     .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
             sb.append(")");
         }
-        else {
-            sb.append("none");
-        }
+        else sb.append("none");
         payers.setText(sb.toString());
         try {
             var dateObj = this.getItem().getDate();
