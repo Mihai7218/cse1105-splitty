@@ -298,11 +298,14 @@ public class EventService {
             return ResponseEntity.notFound().build();
         }
         Event e = eventRepository.findById(eventId).get();
-        Participant current = e.getParticipantsList()
-                .stream()
-                .filter(item -> item.getId()==participantId)
-                .toList().getFirst();
-        if(current == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(0.0);
+        try {
+            Participant current = e.getParticipantsList()
+                    .stream()
+                    .filter(item -> item.getId() == participantId)
+                    .toList().getFirst();
+        }catch(NoSuchElementException notFound){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(1.0);
     }
 }
