@@ -160,7 +160,7 @@ public class OverviewCtrl implements Initializable {
      * Opens the statistics scene to be able to see the statistics.
      */
     public void statistics(){
-        mainCtrl.showInvitation();
+        mainCtrl.showStatistics();
     }
 
     /**

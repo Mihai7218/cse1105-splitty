@@ -48,7 +48,9 @@ public class MainCtrl {
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     private InvitationCtrl invitationCtrl;
+    private StatisticsCtrl statisticsCtrl;
     private Scene invitation;
+    private Scene statistics;
 
     private Event event;
 
@@ -72,6 +74,7 @@ public class MainCtrl {
      * @param overview        overview controller and scene
      * @param addExpense      addExpense controller and scene
      * @param editparticipant
+     * @param statistics
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
                            Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
@@ -79,7 +82,8 @@ public class MainCtrl {
                            Pair<OverviewCtrl, Parent> overview,
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
-                           Pair<EditParticipantCtrl, Parent> editparticipant) {
+                           Pair<EditParticipantCtrl, Parent> editparticipant,
+                           Pair<StatisticsCtrl, Parent> statistics) {
         this.primaryStage = primaryStage;
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
@@ -105,6 +109,9 @@ public class MainCtrl {
         this.invitationCtrl = invitation.getKey();
         this.invitation = new Scene(invitation.getValue());
 
+        this.statisticsCtrl = statistics.getKey();
+        this.statistics = new Scene(statistics.getValue());
+
 
         showStartMenu();
         primaryStage.show();
@@ -117,6 +124,14 @@ public class MainCtrl {
         primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
+    }
+    /**
+     * shows scene for statistics
+     */
+    public void showStatistics(){
+        primaryStage.titleProperty().bind(languageManager.bind("statistics.windowTitle"));
+        primaryStage.setScene(statistics);
+        if (statisticsCtrl != null) statisticsCtrl.refresh();
     }
 
     /**
