@@ -203,11 +203,20 @@ public class AdminConsole {
         int invCode = userInput.nextInt();
         boolean deletion = confirmationMenu(userInput, invCode);
         if (deletion){
-            Event event = utils.deleteEvent(invCode);
+            Event event = delete(adminConsole, invCode);
             System.out.println("Event" + event.toString() + "deleted successfully");
         } else {
             System.out.println("Event remains in the database");
         }
+    }
+
+    /**
+     * Split for testing purposes
+     * @param invCode the invite code of the event to delete
+     * @return  the deleted event
+     */
+    public Event delete(AdminConsole adminConsole, int invCode){
+        return utils.deleteEvent(invCode);
     }
 
 
@@ -491,4 +500,11 @@ public class AdminConsole {
         System.exit(0);
     }
 
+    /**
+     * Mainly for testing purposes
+     * @param util the util to change to
+     */
+    public void setUtils(ServerUtils util) {
+        this.utils = util;
+    }
 }
