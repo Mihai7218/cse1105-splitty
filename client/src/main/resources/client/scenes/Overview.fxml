@@ -110,6 +110,15 @@
                 </HBox>
             </children>
         </VBox>
+      <HBox alignment="CENTER" layoutY="360.0" prefHeight="57.0" prefWidth="450.0">
+         <children>
+            <Label id="hciFeedback" fx:id="expenseAdded" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" textFill="WHITE" visible="false" HBox.hgrow="ALWAYS">
+               <font>
+                  <Font size="14.0" />
+               </font>
+            </Label>
+         </children>
+      </HBox>
         <LanguageComboBox fx:id="languages" layoutX="370.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0"/>
     </children>
 </Pane>

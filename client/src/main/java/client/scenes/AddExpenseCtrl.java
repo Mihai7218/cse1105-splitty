@@ -387,6 +387,7 @@ public class AddExpenseCtrl implements Initializable {
             Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
             mainCtrl.getEvent().addExpense(newExpense);
             mainCtrl.showOverview();
+            mainCtrl.showExpenseConfirmation();
 
             // Optionally, clear input fields after adding the expense
             removeHighlight();
