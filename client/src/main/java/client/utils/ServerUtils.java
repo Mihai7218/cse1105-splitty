@@ -310,6 +310,12 @@ public class ServerUtils {
                 });
     }
 
+    /**
+     * Method that adds a tag to the server.
+     * @param id - invite code of the event.
+     * @param tag - tag that needs to be added.
+     * @return - the tag that was added.
+     */
     public Tag addTag(int id, Tag tag) {
         return ClientBuilder.newClient(new ClientConfig())
                 .target(server).path("api/events/" + id + "/tags")
