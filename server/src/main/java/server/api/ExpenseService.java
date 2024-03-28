@@ -91,7 +91,7 @@ public class ExpenseService {
         }
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
-                expense.getAmount() == 0 || expense.getPayee() == null) {
+                expense.getAmount() <= 0 || expense.getPayee() == null) {
             return ResponseEntity.badRequest().build();
         }
         if (expense.getSplit() != null) {

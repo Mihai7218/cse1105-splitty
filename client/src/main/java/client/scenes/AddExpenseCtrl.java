@@ -8,6 +8,7 @@ import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
 import commons.Tag;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.collections.ObservableMap;
@@ -137,6 +138,7 @@ public class AddExpenseCtrl implements Initializable {
     private void setExpenseTypeView() {
         expenseType.setCellFactory(param -> new ListCell<>() {
             private final Rectangle rectangle = new Rectangle(100, 20);
+
             @Override
             protected void updateItem(Tag item, boolean empty) {
                 super.updateItem(item, empty);
@@ -160,6 +162,7 @@ public class AddExpenseCtrl implements Initializable {
                     return tag.getName();
                 }
             }
+
             @Override
             public Tag fromString(String string) {
                 // Not needed for ComboBox
@@ -350,41 +353,62 @@ public class AddExpenseCtrl implements Initializable {
         LocalDate expenseDate = date.getValue();
 
         // Perform validation
-        if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null) {
+        if (expenseTitle.isEmpty() || expensePriceText.isEmpty()
+                || expenseDate == null || currency.getValue() == null) {
             // Display an alert informing the user about missing input
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
-            alert.headerTextProperty().bind(languageManager.bind("addExpense.incompleteHeader"));
-            alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
-            alert.showAndWait();
+            throwAlert("addExpense.incompleteHeader", "addExpense.incompleteBody");
             return;
         }
-
+        Expense newExpense;
         try {
             // Parse price to double
             double expensePrice = Double.parseDouble(expensePriceText);
 
-            // Create a new Expense object
-            Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
-            serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
-            mainCtrl.showOverview();
+            if (expensePrice <= 0) {
+                throwAlert("addExpense.smallHeader", "addExpense.smallBody");
+                return;
+            }
 
-            // Optionally, clear input fields after adding the expense
-            clearFields();
+            // Create a new Expense object
+            newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
         } catch (NumberFormatException e) {
             // Display an alert informing the user about incorrect price format
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
-            alert.headerTextProperty().bind(languageManager.bind("addExpense.invalidHeader"));
-            alert.contentTextProperty().bind(languageManager.bind("addExpense.invalidBody"));
-            alert.showAndWait();
+            throwAlert("addExpense.invalidHeader", "addExpense.invalidBody");
+            return;
         }
+        try {
+            serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
+        } catch (WebApplicationException e) {
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader", "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader", "addExpense.notFoundBody");
+                }
+            }
+        }
+        mainCtrl.showOverview();
+
+        // Optionally, clear input fields after adding the expense
+        clearFields();
+    }
+
+    /**
+     * Method that throws an alert.
+     * @param header - property associated with the header.
+     * @param body - property associated with the body.
+     */
+    private void throwAlert(String header, String body) {
+        alert.titleProperty().bind(languageManager.bind("commons.warning"));
+        alert.headerTextProperty().bind(languageManager.bind(header));
+        alert.contentTextProperty().bind(languageManager.bind(body));
+        alert.showAndWait();
     }
 
     /**
      * Method to create a new Expense object
      */
-
     public Expense createExpense(String title, double price, LocalDate date) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
@@ -501,7 +525,7 @@ public class AddExpenseCtrl implements Initializable {
         confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
         confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
         Optional<ButtonType> result = confirmation.showAndWait();
-        if(result.isPresent() && result.get() == ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             clearFields();
             mainCtrl.showOverview();
         }
