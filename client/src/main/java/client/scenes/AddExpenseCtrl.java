@@ -186,6 +186,7 @@ public class AddExpenseCtrl implements Initializable {
         if (add != null)
             add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         loadParticipants();
+        everyone.setSelected(true);
         populateParticipantCheckBoxes();
     }
 
@@ -363,7 +364,7 @@ public class AddExpenseCtrl implements Initializable {
 
         // Perform validation
         if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null
-            || currency.getValue() == null) {
+            || currency.getValue() == null || payee.getValue() == null) {
             removeHighlight();
             // Display an alert informing the user about missing input
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -372,7 +373,7 @@ public class AddExpenseCtrl implements Initializable {
             alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
             alert.showAndWait();
             highlightMissing(expenseTitle.isEmpty(), expensePriceText.isEmpty(), expenseDate==null,
-                    currency.getValue()==null);
+                    currency.getValue()==null, payee.getValue() == null);
             return;
         }
 
@@ -410,7 +411,8 @@ public class AddExpenseCtrl implements Initializable {
      * @param currencyBool boolean for currency selected
      */
     public void highlightMissing(boolean titleBool,
-                                 boolean priceText, boolean dateBool, boolean currencyBool){
+                                 boolean priceText, boolean dateBool, boolean currencyBool,
+                                 boolean payeeBool){
         if(titleBool) title
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px;, -fx-border-radius:2px;");
         if(priceText) price
@@ -418,6 +420,8 @@ public class AddExpenseCtrl implements Initializable {
         if(dateBool) date
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
         if(currencyBool) currency
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(payeeBool) payee
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
     }
 
@@ -429,6 +433,7 @@ public class AddExpenseCtrl implements Initializable {
         price.setStyle("-fx-border-color: none; ");
         date.setStyle("-fx-border-color: none; ");
         currency.setStyle("-fx-border-color: none;");
+        payee.setStyle("-fx-border-color: none");
     }
 
     /**
