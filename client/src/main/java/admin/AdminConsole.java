@@ -206,7 +206,9 @@ public class AdminConsole {
         if (deletion){
             Response event = delete(adminConsole, invCode);
             if (event.getStatus() == 200) {
-                System.out.println("Event " + ((Event) event.getEntity()).getInviteCode() + " deleted successfully");
+                System.out.println("Event " +
+                        ((Event) event.getEntity()).getInviteCode() +
+                        " deleted successfully");
             } else if (event.getStatus() == 404) {
                 System.out.println("Event was not found on the server");
             } else {
