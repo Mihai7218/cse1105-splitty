@@ -414,7 +414,7 @@ public class AddExpenseCtrl implements Initializable {
                                  boolean priceText, boolean dateBool, boolean currencyBool,
                                  boolean payeeBool){
         if(titleBool) title
-                .setStyle("-fx-border-color: red; -fx-border-width: 2px;, -fx-border-radius:2px;");
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
         if(priceText) price
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
         if(dateBool) date
