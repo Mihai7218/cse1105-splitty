@@ -81,6 +81,11 @@ public class EventControllerTest {
     }
 
     @Test
+    public void calculateInvalidDebts(){
+        assertEquals(BAD_REQUEST, sut.getDebt(-1L, -1L).getStatusCode());
+    }
+
+    @Test
     public void cannotAddEmptyEvent() {
         var actual = sut.add(null);
         assertEquals(BAD_REQUEST, actual.getStatusCode());

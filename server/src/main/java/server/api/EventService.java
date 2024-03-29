@@ -173,13 +173,14 @@ public class EventService {
      * @return event if it is valid or error code if not
      */
     public ResponseEntity<Event> validateEvent(Event event) {
-        if(event == null || event.getInviteCode()<0
+        if(event == null
                 || Objects.equals(event.getTitle(), "")
                 || event.getTitle() == null){
             return ResponseEntity.badRequest().build();
         }
         List<Event> allEvents = eventRepository.findAll();
         for(Event e: allEvents){
+            event.setInviteCode(e.getInviteCode());
             if(e.equals(event)){
                 return ResponseEntity.badRequest().build();
             }
@@ -194,7 +195,11 @@ public class EventService {
      * @return the event in a ResponseEntity
      */
     public ResponseEntity<Event> addCreatedEvent(Event event) {
-        return ResponseEntity.ok(eventRepository.save(event));
+        if(validateEvent(event).getStatusCode().equals(OK)){
+            return ResponseEntity.ok(eventRepository.save(event));
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
     }
 
 

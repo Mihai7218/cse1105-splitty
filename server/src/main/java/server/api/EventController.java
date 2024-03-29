@@ -122,13 +122,8 @@ public class EventController {
     public ResponseEntity<Event> addJsonImport(@PathVariable("password") String password,
                                                @RequestBody  Event event){
         if (PasswordService.getPassword().equals(password)) {
-            if(eventService.validateEvent(event).getStatusCode().equals(OK)){
-                eventService.addCreatedEvent(event);
-                return ResponseEntity.ok(event);
-            }else{
-                return ResponseEntity.badRequest().build();
-            }
-        } else {
+            return eventService.addCreatedEvent(event);
+        }else{
             return ResponseEntity.badRequest().build();
         }
     }

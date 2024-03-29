@@ -221,6 +221,20 @@ class EventServiceTest {
     }
 
     @Test
+    public void addImportInvalidDuplicate(){
+        assertEquals(BAD_REQUEST, eventService.addCreatedEvent(event1).getStatusCode());
+    }
+
+    @Test
+    public void addImportInvalidFormat(){
+        Event e = new Event("", null, null);
+        Event e1 = new Event(null, null, null);
+        assertEquals(BAD_REQUEST, eventService.addCreatedEvent(null).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.addCreatedEvent(e).getStatusCode());
+        assertEquals(BAD_REQUEST, eventService.addCreatedEvent(e1).getStatusCode());
+    }
+
+    @Test
     public void addImportValidTest(){
         Event event = new Event("Title4", null, null);
         Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
