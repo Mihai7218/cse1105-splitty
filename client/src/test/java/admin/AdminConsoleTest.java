@@ -46,7 +46,7 @@ public class AdminConsoleTest {
         events.add(new Event("test",null,null));
         adminConsole.setEvents(events);
 
-        Event deletedEvent = adminConsole.delete(adminConsole, 0);
+        Event deletedEvent = (Event) adminConsole.delete(adminConsole, 0).getEntity();
 
         assertEquals("test", deletedEvent.getTitle());
     }

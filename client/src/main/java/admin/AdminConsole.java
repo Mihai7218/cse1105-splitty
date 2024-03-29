@@ -3,6 +3,7 @@ package admin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
+import jakarta.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -203,8 +204,15 @@ public class AdminConsole {
         int invCode = userInput.nextInt();
         boolean deletion = confirmationMenu(userInput, invCode);
         if (deletion){
-            Event event = delete(adminConsole, invCode);
-            System.out.println("Event deleted successfully");
+            Response event = delete(adminConsole, invCode);
+            if (event.getStatus() == 200) {
+                System.out.println("Event " + ((Event) event.getEntity()).getInviteCode() + " deleted successfully");
+            } else if (event.getStatus() == 404) {
+                System.out.println("Event was not found on the server");
+            } else {
+                System.out.println("Something went wrong on the server");
+            }
+
         } else {
             System.out.println("Event remains in the database");
         }
@@ -215,7 +223,7 @@ public class AdminConsole {
      * @param invCode the invite code of the event to delete
      * @return  the deleted event
      */
-    public Event delete(AdminConsole adminConsole, int invCode){
+    public Response delete(AdminConsole adminConsole, int invCode){
         return utils.deleteEvent(invCode);
     }
 
