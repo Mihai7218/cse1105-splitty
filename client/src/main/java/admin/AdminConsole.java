@@ -87,9 +87,21 @@ public class AdminConsole {
         setServerAddress(userInput, adminConsole);
         //AdminConsole adminConsole = new AdminConsole("http://localhost:8080");
         System.out.println("Succes :D");
-        showOptions(userInput, adminConsole);
+            showOptions(userInput, adminConsole);
     }
 
+
+    /**
+     * Prints the options of the adminConsole
+     */
+    public static void printOptions(){
+        System.out.println("What would you like to do?");
+        System.out.println("\t 1 - Show events in the database");
+        System.out.println("\t 2 - Dump database to json file");
+        System.out.println("\t 3 - Import events from json file");
+        System.out.println("\t 4 - Delete an event from the database"); //TODO
+        System.out.println("\t 5 - exit");
+    }
     /**
      * show menu with options for user
      *
@@ -97,32 +109,32 @@ public class AdminConsole {
      * @param adminConsole the currently running admin console
      */
     public static void showOptions(Scanner userInput, AdminConsole adminConsole) {
-        System.out.println("What would you like to do?");
-        System.out.println("\t 1 - Show events in the database");
-        System.out.println("\t 2 - Dump database to json file");
-        System.out.println("\t 3 - Import events from json file");
-        System.out.println("\t 4 - Delete an event from the database"); //TODO
-        System.out.println("\t 5 - exit");
-        switch (userInput.nextInt()) {
-            case 1:
-                printerMenu(userInput, adminConsole);
-                break;
-            case 2:
-                adminConsole.updateEvents();
-                adminConsole.getDump(userInput);
-                showOptions(userInput, adminConsole);
-                break;
-            case 3:
-                List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
-                if(importedEvents == null || importedEvents.isEmpty()) break;
-                for(Event e: importedEvents) adminConsole.setNewEvents(e);
-                break;
-            case 4:
-                adminConsole.deleteEventMenu(userInput, adminConsole);
-                break;
-            default:
-                exit();
+        boolean running = true;
+        while (running){
+            printOptions();
+            switch (userInput.nextInt()) {
+                case 1:
+                    printerMenu(userInput, adminConsole);
+                    break;
+                case 2:
+                    adminConsole.updateEvents();
+                    adminConsole.getDump(userInput);
+                    showOptions(userInput, adminConsole);
+                    break;
+                case 3:
+                    List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
+                    if(importedEvents == null || importedEvents.isEmpty()) break;
+                    for(Event e: importedEvents) adminConsole.setNewEvents(e);
+                    break;
+                case 4:
+                    adminConsole.deleteEventMenu(userInput, adminConsole);
+                    break;
+                default:
+                    running = false;
+                    exit();
+            }
         }
+
     }
 
     /**

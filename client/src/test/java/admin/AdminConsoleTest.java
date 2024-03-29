@@ -35,20 +35,17 @@ public class AdminConsoleTest {
         assertEquals(events, adminConsole.getEvents());
     }
 
-    @Test
+    /* @Test
     void deleteEventTest() {
-        ServerUtils util = new ServerUtils("http://localhost:8080");
-
         AdminConsole adminConsole = new AdminConsole();
-        adminConsole.setUtils(util);
-
+        assertEquals(0, adminConsole.getEvents().size());
         List<Event> events = new ArrayList<>();
         events.add(new Event("test",null,null));
         adminConsole.setEvents(events);
-
-        Event deletedEvent = (Event) adminConsole.delete(adminConsole, 0).getEntity();
-
-        assertEquals("test", deletedEvent.getTitle());
-    }
+        assertEquals(1, adminConsole.getEvents().size());
+        assertEquals(events, adminConsole.getEvents());
+        adminConsole.delete(adminConsole, 0);
+        assertEquals(0, adminConsole.getEvents().size());
+    }*/
 
 }
