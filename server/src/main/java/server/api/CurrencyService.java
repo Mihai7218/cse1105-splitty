@@ -20,7 +20,7 @@ public class CurrencyService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
-     * Method that gets the rate from the cached file or the fixer currency API
+     * Method that gets the rate from the cached file or the currency API
      * @param date - date of the payment
      * @param from - currency of the payment
      * @param to - desired currency
@@ -42,11 +42,11 @@ public class CurrencyService {
             return ResponseEntity.ok(new Scanner(file).nextDouble());
         } catch (FileNotFoundException | NoSuchElementException e) {
             try {
-                InputStream in = new URI(String.format("http://data.fixer.io/api/%s?access" +
-                                "_key=95d3ec8d229b0de3605a0ec223f24c41&base=%s&symbols=%s",
-                        date, from, to)).toURL().openStream();
+                InputStream in = new URI(String.format("https://cdn.jsdelivr.net/npm/@fawazahmed0" +
+                                "/currency-api@%s/v1/currencies/%s.json",
+                        date, from.toLowerCase())).toURL().openStream();
                 var obj = objectMapper.readTree(in);
-                double rate = obj.get("rates").get(to).asDouble();
+                double rate = obj.get(from.toLowerCase()).get(to.toLowerCase()).asDouble();
                 new File(String.valueOf(Path.of("server", "src",
                         "main", "resources", "rates", date, from))).mkdirs();
                 PrintWriter pw = new PrintWriter(file);
