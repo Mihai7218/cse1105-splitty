@@ -56,7 +56,7 @@
     -fx-cursor: hand;
 }
 
-#addEntity, #sendmail{
+#addEntity, #sendmail, #save{
     -fx-background-color:RGB(086,180,233);
 }
 

@@ -28,7 +28,7 @@ public class CurrencyService {
      *           400 Bad Request if the date, from or to are not valid dates/currency codes
      */
     public ResponseEntity<Double> getCurrency(String date, String from, String to) {
-        if (from.length() != 3 && to.length() != 3)
+        if (from.length() != 3 || to.length() != 3)
             return ResponseEntity.badRequest().build();
         try {
             dateFormat.parse(date);

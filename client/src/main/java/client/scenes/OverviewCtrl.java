@@ -67,7 +67,8 @@ public class OverviewCtrl implements Initializable {
 
     @FXML
     private ChoiceBox<Participant> expenseparticipants;
-
+    @FXML
+    private Button settings;
     @FXML
     private Button addparticipant;
     @FXML
@@ -113,6 +114,7 @@ public class OverviewCtrl implements Initializable {
         }
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
+        settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
@@ -332,5 +334,13 @@ public class OverviewCtrl implements Initializable {
      */
     public void updateLanguageComboBox(String language) {
         if (languages != null) languages.setValue(language);
+    }
+
+    /**
+     * Method that handles the settings button.
+     */
+    public void settings() {
+        mainCtrl.getSettingsCtrl().setPrevScene(true);
+        mainCtrl.showSettings();
     }
 }

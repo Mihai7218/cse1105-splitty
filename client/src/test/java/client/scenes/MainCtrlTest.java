@@ -140,6 +140,8 @@ class MainCtrlTest {
         Parent invitation = spy(Parent.class);
         EditParticipantCtrl editParticipantCtrl = mock(EditParticipantCtrl.class);
         Parent editParticipant = spy(Parent.class);
+        SettingsCtrl settingsCtrl = mock(SettingsCtrl.class);
+        Parent settings = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),
@@ -148,7 +150,8 @@ class MainCtrlTest {
                 new Pair<>(overviewCtrl, overview),
                 new Pair<>(addExpenseCtrl, addexpense),
                 new Pair<>(invitationCtrl,invitation),
-                new Pair<>(editParticipantCtrl,editParticipant));
+                new Pair<>(editParticipantCtrl,editParticipant),
+                new Pair<>(settingsCtrl, settings));
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
