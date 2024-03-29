@@ -178,6 +178,7 @@ public class AddExpenseCtrl implements Initializable {
         if (add != null)
             add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         load();
+        date.setValue(LocalDate.now());
         populateParticipantCheckBoxes();
     }
 
