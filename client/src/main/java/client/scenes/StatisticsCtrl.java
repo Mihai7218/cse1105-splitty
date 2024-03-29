@@ -92,6 +92,30 @@ public class StatisticsCtrl implements Initializable {
      */
     public void setStatistics() {
         pieChart.getData().clear();
+        List<Pair<Tag, List<Expense>>> stats = pairListMaker();
+        System.out.println(stats);
+        for(Pair<Tag,List<Expense>> pair : stats) {
+            String catagoryName = pair.getKey().getName();
+            double value = 0;
+            for (Expense expense : pair.getValue()) {
+                value += expense.getAmount();
+            }
+            PieChart.Data slice = new PieChart.Data(catagoryName, value);
+            pieChart.getData().add(slice);
+            try {
+                slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
+            } catch (Exception e) {
+                System.out.println(e);
+            }
+
+        }
+    }
+
+    /**
+     * Generate a list with Pairs with the right stats
+     * @return a list of Tag and the associate expenses
+     */
+    private List<Pair<Tag, List<Expense>>> pairListMaker() {
         Event event = mainCtrl.getEvent();
         List<Pair<Tag,List<Expense>>> stats = new ArrayList<>();
         for(Tag tag : event.getTagsList()) {
@@ -110,22 +134,7 @@ public class StatisticsCtrl implements Initializable {
             }
         }
         stats.add(new Pair<>(new Tag("NO TAG","#000000"),expensesWithTag));
-        System.out.println(stats);
-        for(Pair<Tag,List<Expense>> pair : stats) {
-            String catagoryName = pair.getKey().getName();
-            double value = 0;
-            for (Expense expense : pair.getValue()) {
-                value += expense.getAmount();
-            }
-            PieChart.Data slice = new PieChart.Data(catagoryName, value);
-            pieChart.getData().add(slice);
-            try {
-                slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
-            } catch (Exception e) {
-                System.out.println(e);
-            }
-
-        }
+        return stats;
     }
 
 
