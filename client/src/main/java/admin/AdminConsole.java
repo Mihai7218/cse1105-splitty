@@ -87,7 +87,7 @@ public class AdminConsole {
         setServerAddress(userInput, adminConsole);
         //AdminConsole adminConsole = new AdminConsole("http://localhost:8080");
         System.out.println("Succes :D");
-            showOptions(userInput, adminConsole);
+        showOptions(userInput, adminConsole);
     }
 
 
