@@ -380,7 +380,7 @@ public class AddExpenseCtrl implements Initializable {
             // Parse price to double
             double currPrice = Double.parseDouble(expensePriceText);
             boolean fail = (BigDecimal.valueOf(currPrice).scale() > 2);
-            if(fail || currPrice < 0) throw new NumberFormatException();
+            if(fail || currPrice <= 0) throw new NumberFormatException();
             int expensePrice = (int)(currPrice * 100);
 
             // Create a new Expense object
@@ -411,10 +411,14 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void highlightMissing(boolean titleBool,
                                  boolean priceText, boolean dateBool, boolean currencyBool){
-        if(titleBool) title.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
-        if(priceText) price.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
-        if(dateBool) date.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
-        if(currencyBool) currency.setStyle("-fx-border-color: red; -fx-border-width: 2px;");
+        if(titleBool) title
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px;, -fx-border-radius:2px;");
+        if(priceText) price
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(dateBool) date
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(currencyBool) currency
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
     }
 
     /**
@@ -452,10 +456,10 @@ public class AddExpenseCtrl implements Initializable {
      */
     private List<ParticipantPayment> getParticipantPayments(int price, Participant actualPayee) {
         List<ParticipantPayment> participantPayments = new ArrayList<>();
-        if (everyone.isSelected()) {
-            everyoneCase(price, actualPayee, participantPayments);
-        } else if (only.isSelected()) {
+        if (only.isSelected()) {
             onlyCase(price, participantPayments, actualPayee);
+        } else {
+            everyoneCase(price, actualPayee, participantPayments);
         }
         return participantPayments;
     }

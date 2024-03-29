@@ -273,7 +273,6 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
-<<<<<<< HEAD
      * Initialize method for the Overview scene.
      * Sets the language currently in the config file as the selected one.
      * Sets the cell factories for all ListViews.
@@ -335,7 +334,6 @@ public class OverviewCtrl implements Initializable {
                         .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
     }
     /**
-=======
      * Removes a participant from the list
      */
     public void removeParticipant(Participant participant) {
@@ -343,7 +341,8 @@ public class OverviewCtrl implements Initializable {
         for(Expense e: expenses){
             if(!e.getSplit().stream()
                     .filter(item -> item.getParticipant()
-                            .equals(participant)).toList().isEmpty()){
+                            .equals(participant)).toList().isEmpty()
+                || e.getPayee().equals(participant)){
                 Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
                 confirmation.contentTextProperty().bind(
                         languageManager.bind("overview.removeParticipant"));
@@ -359,13 +358,13 @@ public class OverviewCtrl implements Initializable {
                 }
             }
         }
+
         participants.getItems().remove(participant);
         participants.refresh();
 
     }
 
     /**
->>>>>>> c605a63e9bea86de7055e63fa987bc6f19703c64
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */
