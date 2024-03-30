@@ -319,7 +319,12 @@ public class EventService {
         return ResponseEntity.ok(expensesInvolvingPayee);
     }
 
-    public ResponseEntity<Event> getExpensesInvolvingParticipant(long inviteCode) {
+    /**
+     * @param inviteCode the invite code of the event to check in
+     * @param partId the id of the participant to check if they're involved in the expenses
+     * @return the list of expenses the participant was involved in
+     */
+    public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode, long partId) {
         if(inviteCode < 0){
             return ResponseEntity.badRequest().build();
         }else if (!eventRepository.existsById(inviteCode)){
@@ -328,6 +333,18 @@ public class EventService {
             return ResponseEntity.badRequest().build();
         }
 
+        Event event = eventRepository.findById(inviteCode).get();
+
+        List<Expense> expensesInvolvingPart = new ArrayList<>();
+        for (Expense expense : event.getExpensesList()) {
+            List<ParticipantPayment> split = expense.getSplit();
+            for (ParticipantPayment pay : split){
+                if (pay.getParticipant().getId() == partId){
+                    expensesInvolvingPart.add(expense);
+                }
+            }
+        }
+        return ResponseEntity.ok(expensesInvolvingPart);
 
     }
 }
