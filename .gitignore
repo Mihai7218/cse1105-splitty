@@ -6,6 +6,7 @@ build/
 !**/src/test/**/build/
 /client/config.properties
 /server/src/main/resources/rates
+/client/src/main/resources/rates
 
 **/*.mv.db
 /coverage/*

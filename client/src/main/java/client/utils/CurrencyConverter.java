@@ -3,10 +3,16 @@ package client.utils;
 import com.google.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Scanner;
 
 public class CurrencyConverter {
 
@@ -37,7 +43,7 @@ public class CurrencyConverter {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = dateFormat.format(date);
         try {
-            return sum * serverUtils.getRate(dateString, from, to);
+            return sum * getRate(dateString, from, to);
         } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
                 case 400 -> {
@@ -47,9 +53,8 @@ public class CurrencyConverter {
                     System.err.println("Rate not found. Trying again with yesterday's rate.");
                     try {
                         Date yesterday = java.sql.Date.valueOf(LocalDate.now().minusDays(1));
-                        return sum * serverUtils.getRate(dateFormat.format(yesterday), from, to);
-                    }
-                    catch (WebApplicationException ex) {
+                        return sum * getRate(dateFormat.format(yesterday), from, to);
+                    } catch (WebApplicationException ex) {
                         switch (ex.getResponse().getStatus()) {
                             case 400 -> System.err.println("Date or currencies are invalid.");
                             case 404 -> System.err.println("Rate not found.");
@@ -62,6 +67,29 @@ public class CurrencyConverter {
             }
             System.err.printf("date: %s\nfrom: %s\nto: %s\n", date, from, to);
             throw new CouldNotConvertException(e.getResponse().getStatus());
+        }
+    }
+
+    private double getRate(String date, String from, String to) {
+        File file = new File(String.valueOf(Path.of("client", "src",
+                "main", "resources", "rates", date, from, to + ".txt")));
+        try {
+            if (file.equals(new File("null"))) throw new FileNotFoundException();
+            return new Scanner(file).nextDouble();
+        } catch (FileNotFoundException | NoSuchElementException e) {
+            double rate = serverUtils.getRate(date, from, to);
+            new File(String.valueOf(Path.of("client", "src",
+                    "main", "resources", "rates", date, from))).mkdirs();
+            PrintWriter pw;
+            try {
+                pw = new PrintWriter(file);
+            } catch (FileNotFoundException ex) {
+                System.err.println("Couldn't print the rate to a file!");
+                return rate;
+            }
+            pw.print(rate);
+            pw.flush();
+            return rate;
         }
     }
 
