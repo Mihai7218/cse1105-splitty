@@ -70,6 +70,13 @@ public class CurrencyConverter {
         }
     }
 
+    /**
+     * Method that gets the rate from the cached file or from the server.
+     * @param date - the date as a string
+     * @param from - the currency to convert from
+     * @param to - the currency to convert to
+     * @return - the rate for the specified date and currency pair.
+     */
     private double getRate(String date, String from, String to) {
         File file = new File(String.valueOf(Path.of("client", "src",
                 "main", "resources", "rates", date, from, to + ".txt")));
