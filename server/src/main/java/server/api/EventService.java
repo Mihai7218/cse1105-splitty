@@ -3,13 +3,17 @@ package server.api;
 import commons.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.async.DeferredResult;
 import server.database.EventRepository;
 import server.database.TagRepository;
 
 import java.sql.Timestamp;
-import java.util.*;import static org.springframework.http.HttpStatus.*;
+import java.util.*;
+
+import static org.springframework.http.HttpStatus.*;
 
 
 @Service
@@ -28,6 +32,28 @@ public class EventService {
         this.tagRepository = tagRepository;
     }
 
+    /**
+     * endpoint for longPolling
+     *
+     * @param inviteCode the event to longPoll
+     * @return the Long Polled event
+     */
+    public DeferredResult<ResponseEntity<Event>> getPolling(long inviteCode) {
+
+        var noContent = ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        var res = new DeferredResult<ResponseEntity<Event>>(5000L);
+
+        try {
+            Thread.sleep(1000);
+            Event tmp = eventRepository.findById(inviteCode).get();
+            res.setResult(ResponseEntity.ok(tmp));
+
+        } catch (Exception e) {
+            res.setErrorResult("Something went wrong");
+        }
+        res.onTimeout(() -> res.setErrorResult("The server did not respond in time"));
+        return res;
+    }
 
     /**
      * Get method to get a specific event from the database
@@ -53,6 +79,8 @@ public class EventService {
         return ResponseEntity.ok(eventRepository.findAll());
 
     }
+
+
 
 
     /**
