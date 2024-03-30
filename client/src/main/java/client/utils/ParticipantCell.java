@@ -180,4 +180,125 @@ public class ParticipantCell extends ListCell<Participant> {
         return participantShare;
 
     }
+
+    /**
+     * Setter for tests
+     * @param participant gets participant label
+     */
+    public void setParticipant(Label participant) {
+        this.participant = participant;
+    }
+
+    /**
+     * setter for edit button
+     * @param edit button
+     */
+    public void setEdit(Button edit) {
+        this.edit = edit;
+    }
+
+    /**
+     * setter for autogrow region
+     * @param autogrow region
+     */
+    public void setAutogrow(Region autogrow) {
+        this.autogrow = autogrow;
+    }
+
+    /**
+     * setter for remove button
+     * @param remove button
+     */
+    public void setRemove(Button remove) {
+        this.remove = remove;
+    }
+
+    /**
+     * setter for hbox1
+     * @param hBox1 hbox
+     */
+    public void sethBox1(HBox hBox1) {
+        this.hBox1 = hBox1;
+    }
+
+    /**
+     * setter for hbox2
+     * @param hBox2 hbox
+     */
+    public void sethBox2(HBox hBox2) {
+        this.hBox2 = hBox2;
+    }
+
+    /**
+     * setter for vbox
+     * @param vBox vbox
+     */
+    public void setvBox(VBox vBox) {
+        this.vBox = vBox;
+    }
+
+
+    /**
+     * setter for share label
+     * @param shareLabel label
+     */
+    public void setShareLabel(Label shareLabel) {
+        this.shareLabel = shareLabel;
+    }
+
+    /**
+     * setter for setShare
+     * @param share label
+     */
+    public void setShare(Label share) {
+        this.share = share;
+    }
+
+    /**
+     * setter for region
+     * @param autogrow2 region
+     */
+    public void setAutogrow2(Region autogrow2) {
+        this.autogrow2 = autogrow2;
+    }
+
+    /**
+     * setter for region
+     * @param autogrow3 region
+     */
+    public void setAutogrow3(Region autogrow3) {
+        this.autogrow3 = autogrow3;
+    }
+
+    /**
+     * setter for owelabel
+     * @param oweLabel label
+     */
+    public void setOweLabel(Label oweLabel) {
+        this.oweLabel = oweLabel;
+    }
+
+    /**
+     * setter for owe label
+     * @param owe label
+     */
+    public void setOwe(Label owe) {
+        this.owe = owe;
+    }
+
+    /**
+     * setter for setOwed label
+     * @param owedLabel label
+     */
+    public void setOwedLabel(Label owedLabel) {
+        this.owedLabel = owedLabel;
+    }
+
+    /**
+     * setter for setowed
+     * @param owed label
+     */
+    public void setOwed(Label owed) {
+        this.owed = owed;
+    }
 }
