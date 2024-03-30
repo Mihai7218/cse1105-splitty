@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ConfigInterface;
+import client.utils.CurrencyConverter;
 import client.utils.LanguageComboBox;
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
@@ -21,6 +22,7 @@ public class SettingsCtrl implements Initializable {
     private final ConfigInterface config;
     private final LanguageManager languageManager;
     private final MainCtrl mainCtrl;
+    private final CurrencyConverter currencyConverter;
     @FXML
     private LanguageComboBox languages;
     @FXML
@@ -41,10 +43,13 @@ public class SettingsCtrl implements Initializable {
      */
     @Inject
     public SettingsCtrl(ConfigInterface config,
-                        LanguageManager languageManager, MainCtrl mainCtrl) {
+                        LanguageManager languageManager,
+                        MainCtrl mainCtrl,
+                        CurrencyConverter currencyConverter) {
         this.config = config;
         this.languageManager = languageManager;
         this.mainCtrl = mainCtrl;
+        this.currencyConverter = currencyConverter;
     }
 
     /**
@@ -60,7 +65,7 @@ public class SettingsCtrl implements Initializable {
         saveButton.setGraphic(new ImageView(new Image("icons/savewhite.png")));
         noRecentEvents.setValueFactory(new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(0, 100));
-        currency.getItems().addAll("EUR", "USD", "CHF");
+        currency.getItems().addAll(currencyConverter.getCurrencies());
     }
 
     /**

@@ -43,6 +43,7 @@ public class OverviewCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
     @FXML
     private Tab fromTab;
@@ -91,14 +92,19 @@ public class OverviewCtrl implements Initializable {
      * @param config Config object
      * @param server ServerUtils object
      * @param mainCtrl MainCtrl object
+     * @param currencyConverter CurrencyConverter object
      */
     @Inject
-    public OverviewCtrl(LanguageManager languageManager, ConfigInterface config,
-                        ServerUtils server, MainCtrl mainCtrl) {
+    public OverviewCtrl(LanguageManager languageManager,
+                        ConfigInterface config,
+                        ServerUtils server,
+                        MainCtrl mainCtrl,
+                        CurrencyConverter currencyConverter) {
         this.languageManager = languageManager;
         this.config = config;
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.currencyConverter = currencyConverter;
     }
 
     /**
@@ -111,6 +117,7 @@ public class OverviewCtrl implements Initializable {
             all.getItems().addAll(mainCtrl.getEvent().getExpensesList());
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
+            filterViews();
         }
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
@@ -118,11 +125,14 @@ public class OverviewCtrl implements Initializable {
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
-        clearFields();
         if(event != null){
             title.setText(event.getTitle());
-            participants.getItems().addAll(event.getParticipantsList());
-            expenseparticipants.getItems().addAll(event.getParticipantsList());
+            for (Participant p : event.getParticipantsList()) {
+                if (!participants.getItems().contains(p))
+                    participants.getItems().add(p);
+                if (!expenseparticipants.getItems().contains(p))
+                    expenseparticipants.getItems().add(p);
+            }
         }
     }
 
@@ -146,6 +156,7 @@ public class OverviewCtrl implements Initializable {
      * Goes back to the startMenu.
      */
     public void startMenu(){
+        clearFields();
         mainCtrl.showStartMenu();
     }
 
@@ -207,9 +218,12 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        all.setCellFactory(x ->
+                new ExpenseListCell(mainCtrl, languageManager, currencyConverter, config));
+        from.setCellFactory(x ->
+                new ExpenseListCell(mainCtrl, languageManager, currencyConverter, config));
+        including.setCellFactory(x ->
+                new ExpenseListCell(mainCtrl, languageManager, currencyConverter, config));
         Label fromLabel = new Label();
         Label includingLabel = new Label();
         participantFrom = new Label();

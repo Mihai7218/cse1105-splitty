@@ -1,8 +1,6 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Expense;
 import commons.Participant;
@@ -36,6 +34,7 @@ public class AddExpenseCtrl implements Initializable {
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final CurrencyConverter currencyConverter;
     private final Alert alert;
     // Include this in the anchor of the fxml file after overwriting using Scene Builder:
     // fx:controller="com.example.tutorial.addCtrl"
@@ -44,7 +43,6 @@ public class AddExpenseCtrl implements Initializable {
     private List<Participant> participantsList;
     @FXML
     private ChoiceBox<String> currency;
-    private String[] currencies = {"USD", "EUR", "CHF"};
     private ArrayList<Tag> tags = new ArrayList<>();
     private Map<CheckBox, Participant> participantCheckBoxMap;
     @FXML
@@ -90,11 +88,13 @@ public class AddExpenseCtrl implements Initializable {
                           ConfigInterface config,
                           LanguageManager languageManager,
                           ServerUtils serverUtils,
+                          CurrencyConverter currencyConverter,
                           Alert alert) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
+        this.currencyConverter = currencyConverter;
         this.alert = alert;
         participantCheckBoxMap = new HashMap<>();
         //System.out.println(mainCtrl.getEvent());
@@ -115,7 +115,7 @@ public class AddExpenseCtrl implements Initializable {
         cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
-        currency.getItems().addAll(currencies);
+        currency.getItems().addAll(currencyConverter.getCurrencies());
         Tag food = new Tag("food", "green");
         Tag entranceFees = new Tag("entrance fees", "red");
         Tag travel = new Tag("travel", "blue");
@@ -399,11 +399,13 @@ public class AddExpenseCtrl implements Initializable {
     public Expense createExpense(String title, double price, LocalDate date) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
+        Date actualDate = java.sql.Date.valueOf(date);
+        String currencyString = currency.getValue();
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        Expense expense = new Expense(price, currency.getValue(), title, "testing",
-                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
+        Expense expense = new Expense(price, currencyString, title, "testing",
+                actualDate, participantPayments, tag, actualPayee);
 
         return expense;
     }
@@ -550,22 +552,6 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void setCurrency(ChoiceBox<String> currency) {
         this.currency = currency;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String[] getCurrencies() {
-        return currencies;
-    }
-
-    /**
-     *
-     * @param currencies
-     */
-    public void setCurrencies(String[] currencies) {
-        this.currencies = currencies;
     }
 
     /**

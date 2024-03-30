@@ -53,9 +53,9 @@ public class CurrencyService {
                 pw.print(rate);
                 pw.flush();
                 return ResponseEntity.ok(rate);
-            } catch (IOException | URISyntaxException ex) {
+            } catch (URISyntaxException ex) {
                 return ResponseEntity.internalServerError().build();
-            } catch (NullPointerException ex) {
+            } catch (IOException | NullPointerException ex) {
                 return ResponseEntity.notFound().build();
             }
         } catch (NumberFormatException e) {

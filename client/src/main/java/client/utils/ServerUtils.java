@@ -220,4 +220,19 @@ public class ServerUtils {
     public void send(String dest, Object o) {
         session.send(dest,o);
     }
+
+    /**
+     * Method that gets the rate for the specified date and currency pair.
+     * @param date - the date.
+     * @param from - the currency to convert from.
+     * @param to - the currency to convert to.
+     * @return - the rate for the requested day.
+     */
+    public double getRate(String date, String from, String to) {
+        return ClientBuilder.newClient(new ClientConfig()).target(server)
+                .path(String.format("api/rates/%s/%s/%s", date, from, to))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Double.class);
+    }
 }

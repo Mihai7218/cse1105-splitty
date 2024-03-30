@@ -12,6 +12,8 @@ import javafx.scene.layout.*;
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final CurrencyConverter currencyConverter;
+    private final ConfigInterface config;
     private Label expenseName;
     private Label paidLabel;
     private Label payeeName;
@@ -30,10 +32,15 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Constructor for the RecentEventCell.
      */
-    public ExpenseListCell(MainCtrl mainCtrl, LanguageManager languageManager) {
+    public ExpenseListCell(MainCtrl mainCtrl,
+                           LanguageManager languageManager,
+                           CurrencyConverter currencyConverter,
+                           ConfigInterface config) {
         super();
         this.mainCtrl = mainCtrl;
         this.languageManager = languageManager;
+        this.currencyConverter = currencyConverter;
+        this.config = config;
     }
 
     /**
@@ -97,6 +104,7 @@ public class ExpenseListCell extends ListCell<Expense> {
      * Updates the labels and sets the graphic to the HBox.
      */
     private void update() {
+        boolean setCurrency = false;
         try {
             expenseName.setText(this.getItem().getTitle());
         }
@@ -109,8 +117,16 @@ public class ExpenseListCell extends ListCell<Expense> {
         catch (NullPointerException e) {
             payeeName.setText("<no payee>");
         }
+        String currencyString = config.getProperty("currency");
+        if (currencyString == null || currencyString.isEmpty()) currencyString = "EUR";
         try {
-            price.setText(Double.toString(this.getItem().getAmount()));
+            double amountInEUR = this.getItem().getAmount();
+            double converted = currencyConverter.convert(
+                    this.getItem().getDate(),
+                    this.getItem().getCurrency(),
+                    currencyString,
+                    amountInEUR);
+            price.setText(String.format("%.2f", converted));
         }
         catch (NullPointerException e) {
             price.setText("<no price>");
@@ -118,8 +134,16 @@ public class ExpenseListCell extends ListCell<Expense> {
         catch (NumberFormatException e) {
             price.setText("<invalid price>");
         }
+        catch (CouldNotConvertException e) {
+            price.setText(Double.toString(this.getItem().getAmount()));
+            setCurrency = true;
+        }
         try {
-            currency.setText(this.getItem().getCurrency());
+            if (setCurrency) {
+                currency.setText(this.getItem().getCurrency());
+            } else {
+                currency.setText(currencyString);
+            }
         }
         catch (NullPointerException e) {
             currency.setText("<no currency>");
