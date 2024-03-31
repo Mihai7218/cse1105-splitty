@@ -238,4 +238,12 @@ public class Expense {
                 ", payee=" + payee +
                 '}';
     }
+
+    /**
+     * sets payment split among participants
+     * @param split
+     */
+    public void setSplit(List<ParticipantPayment> split) {
+        this.split = split;
+    }
 }
