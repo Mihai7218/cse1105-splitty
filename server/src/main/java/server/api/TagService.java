@@ -90,8 +90,8 @@ public class TagService {
         tagList.add(tag);
         event.setTagsList(tagList);
         //Save both in their respective repos
-        serverUtil.updateDate(eventRepo,inviteCode);
         tagRepo.save(tag);
+        serverUtil.updateDate(eventRepo,inviteCode);
         eventRepo.save(event);
 
         return ResponseEntity.ok(tag);

@@ -8,6 +8,7 @@ import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
 import commons.Tag;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
 import javafx.collections.ObservableMap;
@@ -46,7 +47,6 @@ public class AddExpenseCtrl implements Initializable {
     @FXML
     private ChoiceBox<String> currency;
     private String[] currencies = {"USD", "EUR", "CHF"};
-    private ArrayList<Tag> tags = new ArrayList<>();
     private Map<CheckBox, Participant> participantCheckBoxMap;
     @FXML
     private ComboBox<Tag> expenseType;
@@ -117,15 +117,6 @@ public class AddExpenseCtrl implements Initializable {
         addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
         currency.getItems().addAll(currencies);
-        Tag food = new Tag("food", "green");
-        Tag entranceFees = new Tag("entrance fees", "red");
-        Tag travel = new Tag("travel", "blue");
-        tags.add(food);
-        tags.add(entranceFees);
-        tags.add(travel);
-        for (Tag tag : tags) {
-            expenseType.getItems().add(tag);
-        }
         payee.setConverter(new StringConverter<>() {
             @Override
             public String toString(Participant participant) {
@@ -148,6 +139,7 @@ public class AddExpenseCtrl implements Initializable {
     private void setExpenseTypeView() {
         expenseType.setCellFactory(param -> new ListCell<>() {
             private final Rectangle rectangle = new Rectangle(100, 20);
+
             @Override
             protected void updateItem(Tag item, boolean empty) {
                 super.updateItem(item, empty);
@@ -171,6 +163,7 @@ public class AddExpenseCtrl implements Initializable {
                     return tag.getName();
                 }
             }
+
             @Override
             public Tag fromString(String string) {
                 // Not needed for ComboBox
@@ -185,7 +178,8 @@ public class AddExpenseCtrl implements Initializable {
     public void refresh() {
         if (add != null)
             add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
-        loadParticipants();
+        load();
+        date.setValue(LocalDate.now());
         everyone.setSelected(true);
         populateParticipantCheckBoxes();
     }
@@ -193,14 +187,13 @@ public class AddExpenseCtrl implements Initializable {
     /**
      *
      */
-    public void loadParticipants() {
+    public void load() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null) {
             payee.getItems().clear();
-            participantsList = mainCtrl.getEvent().getParticipantsList();
-            for (Participant participant : participantsList) {
-                payee.getItems().add(participant);
-            }
+            payee.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
+            expenseType.getItems().clear();
+            expenseType.getItems().addAll(mainCtrl.getEvent().getTagsList());
         }
     }
 
@@ -261,7 +254,20 @@ public class AddExpenseCtrl implements Initializable {
                 // Add text to the ArrayList if it's not empty
                 if (!tag.isEmpty()) {
                     //tags.add(new Tag(tag, "black"));
-                    expenseType.getItems().add(new Tag(tag, "yellow"));
+                    Tag newTag = new Tag(tag, "yellow");
+                    try {
+                        newTag = serverUtils.addTag(mainCtrl.getEvent().getInviteCode(), newTag);
+                    }
+                    catch (WebApplicationException e) {
+                        switch (e.getResponse().getStatus()) {
+                            case 400 -> throwAlert("addExpense.invalidTagHeader",
+                                    "addExpense.invalidTagBody");
+                            case 404 -> throwAlert("addExpense.notFoundHeader",
+                                    "addExpense.notFoundBody");
+                        }
+                        return;
+                    }
+                    expenseType.getItems().add(newTag);
                 }
                 // Clear the text field
                 newTag.clear();
@@ -364,7 +370,8 @@ public class AddExpenseCtrl implements Initializable {
 
         // Perform validation
         if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null
-            || currency.getValue() == null || payee.getValue() == null) {
+                || currency.getValue() == null || payee.getValue() == null) {
+            throwAlert("addExpense.incompleteHeader", "addExpense.incompleteBody");
             removeHighlight();
             // Display an alert informing the user about missing input
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -376,7 +383,7 @@ public class AddExpenseCtrl implements Initializable {
                     currency.getValue()==null, payee.getValue() == null);
             return;
         }
-
+        Expense newExpense;
         try {
             // Parse price to double
             double currPrice = Double.parseDouble(expensePriceText);
@@ -384,23 +391,53 @@ public class AddExpenseCtrl implements Initializable {
             if(fail || currPrice <= 0) throw new NumberFormatException();
             int expensePrice = (int)(currPrice * 100);
 
+            if (expensePrice <= 0) {
+                throwAlert("addExpense.smallHeader", "addExpense.smallBody");
+                highlightMissing(false, true, false, false, false);
+                return;
+            }
+
             // Create a new Expense object
-            Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
-            mainCtrl.getEvent().addExpense(newExpense);
-            mainCtrl.showOverview();
-            mainCtrl.showExpenseConfirmation();
+            newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
 
             // Optionally, clear input fields after adding the expense
             removeHighlight();
             clearFields();
         } catch (NumberFormatException e) {
             // Display an alert informing the user about incorrect price format
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
-            alert.headerTextProperty().bind(languageManager.bind("addExpense.invalidHeader"));
-            alert.contentTextProperty().bind(languageManager.bind("addExpense.invalidBody"));
-            alert.showAndWait();
+            throwAlert("addExpense.invalidHeader", "addExpense.invalidBody");
+            highlightMissing(false, true, false, false, false);
+            return;
         }
+        try {
+            serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
+        } catch (WebApplicationException e) {
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader", "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader", "addExpense.notFoundBody");
+                }
+            }
+        }
+        mainCtrl.showOverview();
+        mainCtrl.showExpenseConfirmation();
+
+        // Optionally, clear input fields after adding the expense
+        clearFields();
+    }
+
+    /**
+     * Method that throws an alert.
+     * @param header - property associated with the header.
+     * @param body - property associated with the body.
+     */
+    private void throwAlert(String header, String body) {
+        alert.titleProperty().bind(languageManager.bind("commons.warning"));
+        alert.headerTextProperty().bind(languageManager.bind(header));
+        alert.contentTextProperty().bind(languageManager.bind(body));
+        alert.showAndWait();
     }
 
     /**
@@ -439,7 +476,6 @@ public class AddExpenseCtrl implements Initializable {
     /**
      * Method to create a new Expense object
      */
-
     public Expense createExpense(String title, int price, LocalDate date) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
@@ -447,10 +483,8 @@ public class AddExpenseCtrl implements Initializable {
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        Expense expense = new Expense(priceVal, currency.getValue(), title, "testing",
+        return new Expense(priceVal, currency.getValue(), title, "testing",
                 java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
-
-        return expense;
     }
 
     /**
@@ -604,7 +638,7 @@ public class AddExpenseCtrl implements Initializable {
         confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
         confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
         Optional<ButtonType> result = confirmation.showAndWait();
-        if(result.isPresent() && result.get() == ButtonType.OK) {
+        if (result.isPresent() && result.get() == ButtonType.OK) {
             clearFields();
             mainCtrl.showOverview();
         }
@@ -656,22 +690,6 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void setCurrencies(String[] currencies) {
         this.currencies = currencies;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public ArrayList<Tag> getTags() {
-        return tags;
-    }
-
-    /**
-     *
-     * @param tags
-     */
-    public void setTags(ArrayList<Tag> tags) {
-        this.tags = tags;
     }
 
     /**

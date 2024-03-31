@@ -3,10 +3,13 @@ package server.api;
 import commons.Expense;
 import commons.Participant;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -18,14 +21,17 @@ public class ExpenseController {
 
     private final GerneralServerUtil serverUtil;
 
+    private final SimpMessagingTemplate messagingTemplate;
     /**
      * Constructor for the ExpenseController
      * @param expenseService the associated service for the expense class
      */
     public ExpenseController(ExpenseService expenseService,
-                             @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
+                             @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil,
+                             SimpMessagingTemplate messagingTemplate) {
         this.expenseService = expenseService;
         this.serverUtil = serverUtil;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -54,7 +60,12 @@ public class ExpenseController {
     @PostMapping(path = {""})
     public ResponseEntity<Expense> add(@PathVariable("id") long id,
                                        @RequestBody Expense expense) {
-        return expenseService.add(id, expense, serverUtil);
+        var resp = expenseService.add(id, expense, serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + id + "/expenses",
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /**
