@@ -86,6 +86,7 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
+    private StompSession.Subscription participantSubscription;
 
 
     /**
@@ -111,9 +112,12 @@ public class OverviewCtrl implements Initializable {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
+            participants.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
+            List<Participant> serverparticipants = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+                serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
             }
             catch (WebApplicationException e) {
                 e.printStackTrace();
@@ -121,6 +125,20 @@ public class OverviewCtrl implements Initializable {
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
+            participants.getItems().addAll(serverparticipants);
+
+        }
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null) {
+            participants.getItems().clear();
+            List<Participant> serverparticipants = new ArrayList<>();
+            try {
+                serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
+            }
+            catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+            participants.getItems().addAll(serverparticipants);
         }
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
@@ -130,11 +148,6 @@ public class OverviewCtrl implements Initializable {
         clearFields();
         if (event != null) {
             title.setText(event.getTitle());
-            participants.getItems().clear();
-            participants.getItems().addAll(server.getAllParticipants(
-                    mainCtrl.getEvent().getInviteCode()));
-            mainCtrl.getEvent().getParticipantsList().clear();
-            mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
             expenseparticipants.getItems().addAll(event.getParticipantsList());
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
@@ -145,6 +158,15 @@ public class OverviewCtrl implements Initializable {
                             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
                             all.refresh();
                             filterViews();
+                        });
+            if (participantSubscription == null)
+                participantSubscription = server.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent()
+                                        .getInviteCode() + "/participants", Participant.class,
+                        participant -> {
+                            participants.getItems().add(participant);
+                            mainCtrl.getEvent().getParticipantsList().add(participant);
+                            participants.refresh();
                         });
         }
     }
@@ -289,9 +311,6 @@ public class OverviewCtrl implements Initializable {
      * Clears all the fields
      */
     private void clearFields() {
-        if (participants != null) {
-            participants.getItems().clear();
-        }
         if (expenseparticipants != null) {
             expenseparticipants.getItems().clear();
         }
@@ -340,6 +359,7 @@ public class OverviewCtrl implements Initializable {
             mainCtrl.setEvent(q);
             Platform.runLater(() -> refresh());
         });
+
     }
 
     /**
