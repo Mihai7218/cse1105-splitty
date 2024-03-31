@@ -23,6 +23,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     private Label date;
     private Label payers;
     private Button edit;
+    private Button remove;
     private FlowPane details;
     private VBox vBox;
     private HBox hBox;
@@ -54,15 +55,24 @@ public class ExpenseListCell extends ListCell<Expense> {
         date = new Label();
         payers = new Label();
         edit = new Button();
-        edit.setText("✎");
+        edit.setText("\uD83D\uDD89");
         edit.setOnAction(param -> {
-            //TODO: add edit expense functionality
+            mainCtrl.getEditExpenseCtrl().setExpense(item);
+            mainCtrl.showEditExpense();
+            //System.out.println(item);
         });
+        remove = new Button();
+        remove.setText("\uD83D\uDDD1");
+        remove.setId("cancel");
+        remove.setOnAction(param -> {
+            //mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
+        });
+
         autogrowLeft = new Region();
         autogrowRight = new Region();
         details = new FlowPane(payeeName, paidLabel, price, currency, forLabel, expenseName);
         vBox = new VBox(details, payers);
-        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit);
+        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit, remove);
         hBox.setSpacing(5);
         vBox.setSpacing(5);
         details.setHgap(3);
