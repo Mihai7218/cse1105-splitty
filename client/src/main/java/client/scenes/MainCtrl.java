@@ -150,6 +150,27 @@ public class MainCtrl {
     }
 
     /**
+     * Calls the method to display successful expense added message
+     */
+    public void showExpenseConfirmation(){
+        overviewCtrl.showConfirmationExpense();
+    }
+
+    /**
+     * calls the method to display a participant being added successfully
+     */
+    public void showParticipantConfirmation(){
+        overviewCtrl.showConfirmationParticipant();
+    }
+
+    /**
+     * calls the method to display an edit being made successfully
+     */
+    public void showEditConfirmation(){
+        overviewCtrl.showEditConfirmation();
+    }
+
+    /**
      * Shows the start menu scene.
      */
     public void showStartMenu() {

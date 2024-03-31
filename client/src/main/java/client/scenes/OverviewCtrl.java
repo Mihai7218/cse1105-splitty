@@ -22,6 +22,8 @@ import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -31,14 +33,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class OverviewCtrl implements Initializable {
 
@@ -79,6 +79,8 @@ public class OverviewCtrl implements Initializable {
     private Button sendMail;
     @FXML
     private Button cancel;
+    @FXML
+    private Label expenseAdded;
     @FXML
     private Button settleDebts;
     @FXML
@@ -179,6 +181,84 @@ public class OverviewCtrl implements Initializable {
     public void sendInvites() {
         mainCtrl.showInvitation();
     }
+
+    /**
+     * method to display a confirmation message for the expense added
+     * this message disappears
+     */
+    public void showConfirmationExpense(){
+        expenseAdded.textProperty().bind(languageManager.bind("overview.confirmExpenseAdd"));
+        expenseAdded.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), expenseAdded);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> expenseAdded.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
+    /**
+     * method to display a confirmation message for participant added
+     * this message disappears
+     */
+    public void showConfirmationParticipant(){
+        expenseAdded.textProperty().bind(languageManager.bind("overview.confirmParticipantAdd"));
+        expenseAdded.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), expenseAdded);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> expenseAdded.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
+    /**
+     * General method to show a confirmation message for any edits
+     */
+    public void showEditConfirmation(){
+        expenseAdded.textProperty().bind(languageManager.bind("overview.confirmEdits"));
+        expenseAdded.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), expenseAdded);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> expenseAdded.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
 
     /**
      * Settles the debts of the event.
@@ -290,8 +370,31 @@ public class OverviewCtrl implements Initializable {
      * Removes a participant from the list
      */
     public void removeParticipant(Participant participant) {
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for(Expense e: expenses){
+            if(!e.getSplit().stream()
+                    .filter(item -> item.getParticipant()
+                            .equals(participant)).toList().isEmpty()
+                || e.getPayee().equals(participant)){
+                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+                confirmation.contentTextProperty().bind(
+                        languageManager.bind("overview.removeParticipant"));
+                confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+                confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+                Optional<ButtonType> result = confirmation.showAndWait();
+                if(result.isPresent() && result.get() == ButtonType.OK) {
+                    participants.getItems().remove(participant);
+                    participants.refresh();
+                    return;
+                }else{
+                    return;
+                }
+            }
+        }
+
         participants.getItems().remove(participant);
         participants.refresh();
+
     }
 
     /**

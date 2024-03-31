@@ -102,6 +102,7 @@ public class ParticipantCtrl {
 
         clearFields();
         mainCtrl.showOverview();
+        mainCtrl.showParticipantConfirmation();
     }
 
     /**
