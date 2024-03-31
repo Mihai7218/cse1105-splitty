@@ -328,14 +328,11 @@ public class EventService {
      */
     public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode,
                                                                          long partId) {
-        if(inviteCode < 0){
+        if(inviteCode < 0 || !eventRepository.findById(inviteCode).isPresent()){
             return ResponseEntity.badRequest().build();
-        }else if (!eventRepository.existsById(inviteCode)){
+        } else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
-        } else if(!eventRepository.findById(inviteCode).isPresent()) {
-            return ResponseEntity.badRequest().build();
         }
-
         Event event = eventRepository.findById(inviteCode).get();
 
         List<Expense> expensesInvolvingPart = new ArrayList<>();
@@ -348,6 +345,5 @@ public class EventService {
             }
         }
         return ResponseEntity.ok(expensesInvolvingPart);
-
     }
 }

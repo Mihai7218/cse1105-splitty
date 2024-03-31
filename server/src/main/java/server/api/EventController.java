@@ -88,7 +88,8 @@ public class EventController {
      * @return the list of expenses the participant was the payee in
      */
     @GetMapping(path = {"/{inviteCode}/payee/{payeeId}"})
-    public ResponseEntity<List<Expense>> getInvolvingPayee(@PathVariable("inviteCode") long inviteCode,
+    public ResponseEntity<List<Expense>> getInvolvingPayee(@PathVariable("inviteCode")
+                                                               long inviteCode,
                                              @PathVariable("payeeId") long payeeId){
         return eventService.getExpensesInvolvingPayee(inviteCode, payeeId);
     }
