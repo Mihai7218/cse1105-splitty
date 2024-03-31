@@ -299,7 +299,8 @@ public class EventService {
      * @param payeeId the id of the participant to check if they're the payee
      * @return a list of expenses where the given participant was the payee
      */
-    public ResponseEntity<List<Expense>> getExpensesInvolvingPayee(long inviteCode, long payeeId) {
+    public ResponseEntity<List<Expense>> getExpensesInvolvingPayee(long inviteCode,
+                                                                   long payeeId) {
         if(inviteCode < 0){
             return ResponseEntity.badRequest().build();
         }else if (!eventRepository.existsById(inviteCode)){
@@ -321,10 +322,12 @@ public class EventService {
 
     /**
      * @param inviteCode the invite code of the event to check in
-     * @param partId the id of the participant to check if they're involved in the expenses
+     * @param partId the id of the participant to check if they're
+     *               involved in the expenses
      * @return the list of expenses the participant was involved in
      */
-    public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode, long partId) {
+    public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode,
+                                                                         long partId) {
         if(inviteCode < 0){
             return ResponseEntity.badRequest().build();
         }else if (!eventRepository.existsById(inviteCode)){

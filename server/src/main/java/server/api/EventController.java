@@ -83,7 +83,8 @@ public class EventController {
 
     /**
      * @param inviteCode the invite code of the event to check in
-     * @param payeeId the id of the participant to check if they're the payee in the expenses
+     * @param payeeId the id of the participant to check if they're
+     *                the payee in the expenses
      * @return the list of expenses the participant was the payee in
      */
     @GetMapping(path = {"/{inviteCode}/payee/{payeeId}"})
@@ -94,11 +95,13 @@ public class EventController {
 
     /**
      * @param inviteCode the invite code of the event to check in
-     * @param partId the id of the participant to check if they're involved in the expenses
+     * @param partId the id of the participant to check if they're
+     *               involved in the expenses
      * @return the list of expenses the participant was involved in
      */
     @GetMapping(path = {"/{inviteCode}/participant/{partId}"})
-    public ResponseEntity<List<Expense>> getInvolvingPart(@PathVariable("inviteCode") long inviteCode,
+    public ResponseEntity<List<Expense>> getInvolvingPart(@PathVariable("inviteCode")
+                                                              long inviteCode,
                                              @PathVariable("partId") long partId){
         return eventService.getExpensesInvolvingParticipant(inviteCode, partId);
     }
