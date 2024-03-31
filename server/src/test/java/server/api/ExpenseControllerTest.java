@@ -4,15 +4,18 @@ import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.database.EventRepository;
+import server.database.ParticipantPaymentRepository;
 
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.springframework.http.HttpStatus.*;
 import static server.api.PasswordService.setPassword;
 
@@ -29,12 +32,15 @@ public class ExpenseControllerTest {
 
     public GerneralServerUtil serverUtil;
 
+    public SimpMessagingTemplate smt = mock(SimpMessagingTemplate.class);
+
     @BeforeEach
     public void setup() {
         serverUtil = new ServerUtilModule();
         TestExpenseRepository expenseRepo = new TestExpenseRepository();
-        ExpenseService serv = new ExpenseService(eventRepo, expenseRepo);
-        ctrl = new ExpenseController(serv,serverUtil);
+        ParticipantPaymentRepository ppRepo = new TestParticipantPaymentRepository();
+        ExpenseService serv = new ExpenseService(eventRepo, expenseRepo, ppRepo);
+        ctrl = new ExpenseController(serv,serverUtil, smt);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
         event = new Event("main", timestamp2, timestamp2);
@@ -116,6 +122,7 @@ public class ExpenseControllerTest {
         Expense expense4 = new Expense(60, "party", "drinks",
                 null, null, null, null, payee);
         ctrl.add(eventId, expense4);
+        verify(smt).convertAndSend("/topic/events/0/expenses", expense4);
         //there should be 4 expenses in the event now
         assertEquals(4, ctrl.getAllExpenses(eventId).getBody().size());
     }

@@ -20,7 +20,7 @@ public class ParticipantPayment {
      * Empty constructor for object mapper
      */
     @SuppressWarnings("unused")
-    private ParticipantPayment() {
+    public ParticipantPayment() {
     }
 
     /**

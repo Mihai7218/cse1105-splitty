@@ -25,7 +25,7 @@ public class Participant {
      * Empty constructor for object mapper
      */
     @SuppressWarnings("unused")
-    private Participant() {
+    public Participant() {
     }
 
     /**
