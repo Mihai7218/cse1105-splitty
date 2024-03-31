@@ -25,6 +25,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
 
+import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
@@ -185,6 +186,7 @@ public class AddExpenseCtrl implements Initializable {
         if (add != null)
             add.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         loadParticipants();
+        everyone.setSelected(true);
         populateParticipantCheckBoxes();
     }
 
@@ -361,26 +363,35 @@ public class AddExpenseCtrl implements Initializable {
         LocalDate expenseDate = date.getValue();
 
         // Perform validation
-        if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null) {
+        if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null
+            || currency.getValue() == null || payee.getValue() == null) {
+            removeHighlight();
             // Display an alert informing the user about missing input
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
             alert.headerTextProperty().bind(languageManager.bind("addExpense.incompleteHeader"));
             alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
             alert.showAndWait();
+            highlightMissing(expenseTitle.isEmpty(), expensePriceText.isEmpty(), expenseDate==null,
+                    currency.getValue()==null, payee.getValue() == null);
             return;
         }
 
         try {
             // Parse price to double
-            double expensePrice = Double.parseDouble(expensePriceText);
+            double currPrice = Double.parseDouble(expensePriceText);
+            boolean fail = (BigDecimal.valueOf(currPrice).scale() > 2);
+            if(fail || currPrice <= 0) throw new NumberFormatException();
+            int expensePrice = (int)(currPrice * 100);
 
             // Create a new Expense object
             Expense newExpense = createExpense(expenseTitle, expensePrice, expenseDate);
             mainCtrl.getEvent().addExpense(newExpense);
             mainCtrl.showOverview();
+            mainCtrl.showExpenseConfirmation();
 
             // Optionally, clear input fields after adding the expense
+            removeHighlight();
             clearFields();
         } catch (NumberFormatException e) {
             // Display an alert informing the user about incorrect price format
@@ -393,16 +404,50 @@ public class AddExpenseCtrl implements Initializable {
     }
 
     /**
+     * Insert highlight for missing fields in the addexpense scene
+     * @param titleBool boolean if title is present
+     * @param priceText boolean if text for price is present
+     * @param dateBool boolean for date being present
+     * @param currencyBool boolean for currency selected
+     */
+    public void highlightMissing(boolean titleBool,
+                                 boolean priceText, boolean dateBool, boolean currencyBool,
+                                 boolean payeeBool){
+        if(titleBool) title
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(priceText) price
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(dateBool) date
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(currencyBool) currency
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(payeeBool) payee
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+    }
+
+    /**
+     * removes any prior highlighting of required fields
+     */
+    public void removeHighlight() {
+        title.setStyle("-fx-border-color: none;");
+        price.setStyle("-fx-border-color: none; ");
+        date.setStyle("-fx-border-color: none; ");
+        currency.setStyle("-fx-border-color: none;");
+        payee.setStyle("-fx-border-color: none");
+    }
+
+    /**
      * Method to create a new Expense object
      */
 
-    public Expense createExpense(String title, double price, LocalDate date) {
+    public Expense createExpense(String title, int price, LocalDate date) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
+        double priceVal = ((double)price)/100;
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        Expense expense = new Expense(price, currency.getValue(), title, "testing",
+        Expense expense = new Expense(priceVal, currency.getValue(), title, "testing",
                 java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
 
         return expense;
@@ -414,12 +459,12 @@ public class AddExpenseCtrl implements Initializable {
      * @param actualPayee - payee of the expense.
      * @return  - list of participant payments.
      */
-    private List<ParticipantPayment> getParticipantPayments(double price, Participant actualPayee) {
+    private List<ParticipantPayment> getParticipantPayments(int price, Participant actualPayee) {
         List<ParticipantPayment> participantPayments = new ArrayList<>();
-        if (everyone.isSelected()) {
+        if (only.isSelected()) {
+            onlyCase(price, participantPayments, actualPayee);
+        } else {
             everyoneCase(price, actualPayee, participantPayments);
-        } else if (only.isSelected()) {
-            onlyCase(price, participantPayments);
         }
         return participantPayments;
     }
@@ -429,19 +474,46 @@ public class AddExpenseCtrl implements Initializable {
      * @param price - price of the expense
      * @param participantPayments - list of participant payments.
      */
-    private void onlyCase(double price, List<ParticipantPayment> participantPayments) {
+    private void onlyCase(int price, List<ParticipantPayment> participantPayments,
+                          Participant actualPayee) {
         int numberOfParticipants = 1;
         for (var pair : participantCheckBoxMap.entrySet()) {
             if (pair.getKey().isSelected()) {
                 numberOfParticipants++;
             }
         }
+
+        Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
+        List<Participant> currParticipants = new ArrayList<>();
+
+        double amtAdded = (double)(price/numberOfParticipants)/100.0;
+        ParticipantPayment payeePayment = new ParticipantPayment(actualPayee, amtAdded);
+        participantSplits.put(actualPayee, payeePayment);
+        participantPayments.add(payeePayment);
+        currParticipants.add(actualPayee);
+
+        //System.out.println(amtAdded);
+        int remainder = price % numberOfParticipants;
         for (var pair : participantCheckBoxMap.entrySet()) {
+            ParticipantPayment newP = new ParticipantPayment(pair.getValue(), amtAdded);
             if (pair.getKey().isSelected()) {
-                participantPayments.add(new ParticipantPayment(pair.getValue(),
-                        price / numberOfParticipants));
+                currParticipants.add(pair.getValue());
+                participantPayments.add(newP);
             }
+            participantSplits.put(pair.getValue(), newP);
+
         }
+        Collections.shuffle(currParticipants);
+        int counter = 0;
+        while(remainder > 0){
+            Participant subject = currParticipants.get(counter);
+            double initAmt = participantSplits.get(subject).getPaymentAmount();
+            participantSplits.get(currParticipants.get(counter)).setPaymentAmount(initAmt + 0.01);
+            remainder--;
+            counter++;
+            //System.out.println(subject.toString() + " got the extra cent!");
+        }
+
     }
 
     /**
@@ -450,13 +522,31 @@ public class AddExpenseCtrl implements Initializable {
      * @param actualPayee - payee of the expense.
      * @param participantPayments - list of participant payments.
      */
-    private void everyoneCase(double price, Participant actualPayee,
+    private void everyoneCase(int price, Participant actualPayee,
                               List<ParticipantPayment> participantPayments) {
+        Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
+        double amtAdded = (double)(price/mainCtrl.getEvent().getParticipantsList().size())/100.0;
+        //System.out.println(amtAdded);
+        int remainder = price % mainCtrl.getEvent().getParticipantsList().size();
         for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
+            ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
             if (!p.equals(actualPayee)) {
-                participantPayments.add(new ParticipantPayment(p,
-                        price / (mainCtrl.getEvent().getParticipantsList().size())));
+                participantPayments.add(newP);
             }
+            participantSplits.put(p, newP);
+
+        }
+        List<Participant> currParticipants = mainCtrl.getEvent().getParticipantsList();
+        Collections.shuffle(currParticipants);
+        int counter = 0;
+        while(remainder > 0){
+            Participant subject = currParticipants.get(counter);
+            double initAmt = participantSplits.get(subject).getPaymentAmount();
+            participantSplits.get(currParticipants.get(counter)).setPaymentAmount(initAmt + 0.01);
+            remainder--;
+            counter++;
+            //System.out.println(subject.toString() + " got the extra cent!");
+
         }
     }
 
@@ -508,7 +598,7 @@ public class AddExpenseCtrl implements Initializable {
      */
     public void abort() {
         //alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
-
+        removeHighlight();
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
         confirmation.contentTextProperty().bind(languageManager.bind("addExpense.abortAlert"));
         confirmation.titleProperty().bind(languageManager.bind("commons.warning"));

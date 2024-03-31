@@ -7,4 +7,6 @@ First download (and unzip) an OpenJFX SDK from https://openjfx.io that matches y
 Tip: Make sure you adapt the path to the lib(!) directory (not just the directory that you unzipped).
 Tip: Double check that the path is correct. You will receive abstract error messages otherwise.
 
+```bash
 --module-path="C:\Program Files (x86)\JavaFX\javafx-sdk-21.0.2\lib" --add-modules=javafx.controls,javafx.fxml
+```
