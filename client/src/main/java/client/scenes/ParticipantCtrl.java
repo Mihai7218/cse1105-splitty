@@ -91,6 +91,7 @@ public class ParticipantCtrl {
         }
         try {
             server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
+            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
