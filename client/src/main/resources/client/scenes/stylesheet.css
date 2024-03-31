@@ -76,6 +76,16 @@
     -fx-text-fill: RGB(58,147, 195);
 }
 
+#hciFeedback{
+    -fx-text-fill: black;
+    -fx-font-size: 14px;
+    -fx-text-alignment: center;
+    -fx-padding: 5px;
+    -fx-background-color: rgba(194, 194, 194, 0.4);
+    -fx-border-radius: 25px;
+    -fx-background-radius: 25px;
+}
+
 #languages:hover{
     -fx-cursor: hand;
 }
