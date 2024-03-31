@@ -8,6 +8,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.*;
 
 public class AdminConsoleTest {
     @Test
@@ -33,5 +34,18 @@ public class AdminConsoleTest {
         assertEquals(1, adminConsole.getEvents().size());
         assertEquals(events, adminConsole.getEvents());
     }
+
+    /* @Test
+    void deleteEventTest() {
+        AdminConsole adminConsole = new AdminConsole();
+        assertEquals(0, adminConsole.getEvents().size());
+        List<Event> events = new ArrayList<>();
+        events.add(new Event("test",null,null));
+        adminConsole.setEvents(events);
+        assertEquals(1, adminConsole.getEvents().size());
+        assertEquals(events, adminConsole.getEvents());
+        adminConsole.delete(adminConsole, 0);
+        assertEquals(0, adminConsole.getEvents().size());
+    }*/
 
 }
