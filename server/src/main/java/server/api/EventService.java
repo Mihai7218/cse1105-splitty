@@ -185,6 +185,26 @@ public class EventService {
         return ResponseEntity.ok(eventRepository.save(event));
     }
 
+    /**
+     * Sums the total of all expenses within an event
+     * @param id the id of the event
+     * @return whether the total could be returned
+     */
+    public ResponseEntity<Double> getTotal(long id) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        Event event = eventRepository.findById(id).get();
+        List<Expense> expenses = event.getExpensesList();
+        double totalExpense = 0.0;
+        for (Expense expense : expenses) {
+            totalExpense += expense.getAmount();
+        }
+        return ResponseEntity.ok(totalExpense);
+    }
 
     /**
      * Endpoint to calculate the share/total that a certain participant owes/is owed

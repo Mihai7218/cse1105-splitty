@@ -86,16 +86,20 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
-
     private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
+    @FXML
+    private Label sumExpense;
+    @FXML
+    private Label sumLabel;
 
 
     /**
      * Constructs a new OverviewCtrl object.
+     *
      * @param languageManager LanguageManager object
-     * @param config Config object
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
+     * @param config          Config object
+     * @param server          ServerUtils object
+     * @param mainCtrl        MainCtrl object
      */
     @Inject
     public OverviewCtrl(LanguageManager languageManager, ConfigInterface config,
@@ -127,16 +131,31 @@ public class OverviewCtrl implements Initializable {
                     var subscription = server.registerForMessages(dest, Expense.class,
                             exp -> {
                                 all.getItems().remove(expense);
+                                mainCtrl.getEvent().getExpensesList().remove(expense);
                                 all.refresh();
                                 if (!"deleted".equals(exp.getDescription())) {
                                     all.getItems().add(exp);
+                                    mainCtrl.getEvent().getExpensesList().add(exp);
                                     all.getItems().sort((o1, o2) ->
                                             -o1.getDate().compareTo(o2.getDate()));
-                                } else {
-                                    mainCtrl.getEvent().getExpensesList().remove(expense);
                                 }
                                 filterViews();
                                 all.refresh();
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                Platform.runLater(() -> {
+                                    participants.refresh();
+                                });
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                                Platform.runLater(() ->
+                                        sumExpense.setText(String.format("%.2f", getSum())));
                             });
                     expenseSubscriptionMap.put(expense, subscription);
                 }
@@ -145,6 +164,7 @@ public class OverviewCtrl implements Initializable {
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
         }
+        sumExpense.setText(String.format("%.2f", getSum()));
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
@@ -157,6 +177,8 @@ public class OverviewCtrl implements Initializable {
                     participants.getItems().add(p);
                 if (!expenseparticipants.getItems().contains(p))
                     expenseparticipants.getItems().add(p);
+                participants.getItems().sort(Comparator.comparing(Participant::getName));
+                expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
             }
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
@@ -165,8 +187,23 @@ public class OverviewCtrl implements Initializable {
                             all.getItems().add(expense);
                             mainCtrl.getEvent().getExpensesList().add(expense);
                             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
-                            all.refresh();
                             filterViews();
+                            all.refresh();
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            Platform.runLater(() -> {
+                                participants.refresh();
+                            });
+                            try {
+                                Thread.sleep(100);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            Platform.runLater(() ->
+                                    sumExpense.setText(String.format("%.2f", getSum())));
                         });
         }
     }
@@ -184,6 +221,7 @@ public class OverviewCtrl implements Initializable {
      */
     public void addExpense() {
         mainCtrl.showAddExpense();
+        refresh();
     }
 
     /**
@@ -329,7 +367,8 @@ public class OverviewCtrl implements Initializable {
      * Initialize method for the Overview scene.
      * Sets the language currently in the config file as the selected one.
      * Sets the cell factories for all ListViews.
-     * @param url - URL
+     *
+     * @param url            - URL
      * @param resourceBundle - ResourceBundle
      */
     @Override
@@ -344,12 +383,14 @@ public class OverviewCtrl implements Initializable {
         Label includingLabel = new Label();
         participantFrom = new Label();
         participantIncluding = new Label();
+        sumLabel.textProperty().bind(languageManager.bind("overview.totalSum"));
         fromLabel.textProperty().bind(languageManager.bind("overview.fromTab"));
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
-        participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
         participants.getItems().addAll(getParticipants());
+        participants.getItems().sort(Comparator.comparing(Participant::getName));
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
@@ -426,7 +467,23 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
+     * method to calculate the sum of all expenses in the event
+     *
+     * @return double for the event total
+     */
+    public double getSum() {
+        double sum = 0;
+        if (mainCtrl.getEvent() == null) return sum;
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for (Expense e : expenses) {
+            sum += e.getAmount();
+        }
+        return sum;
+    }
+
+    /**
      * Getter for the language manager observable map.
+     *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -435,6 +492,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Setter for the language manager observable map.
+     *
      * @param languageManager - the language manager observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
@@ -443,6 +501,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Getter for the language manager property.
+     *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
@@ -477,11 +536,17 @@ public class OverviewCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+    /**
+     *
+     */
+    public ListView<Participant> getParticipantsListView() {
+        return participants;
+    }
 
     /**
      * Gets the List of participants of the event
      */
-    private List<Participant> getParticipants() {
+    public List<Participant> getParticipants() {
         if (mainCtrl.getEvent() == null) return new ArrayList<>();
         List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
         return participantsList;
@@ -489,6 +554,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Method that updates the language combo box with the correct flag.
+     *
      * @param language - code of the new language
      */
     public void updateLanguageComboBox(String language) {
@@ -497,6 +563,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Getter for the expense subscription map.
+     *
      * @return - the expense subscription map of the overview controller.
      */
     public Map<Expense, StompSession.Subscription> getExpenseSubscriptionMap() {

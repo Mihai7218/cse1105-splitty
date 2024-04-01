@@ -51,27 +51,6 @@ public class ExpenseService {
     }
 
     /**
-     * Sums the total of all expenses within an event
-     * @param id the id of the event
-     * @return whether the total could be returned
-     */
-    public ResponseEntity<Double> getTotal(long id) {
-        if (id < 0){
-            return ResponseEntity.badRequest().build();
-        }
-        if (!eventRepo.existsById(id)){
-            return ResponseEntity.notFound().build();
-        }
-        Event event = eventRepo.findById(id).get();
-        List<Expense> expenses = event.getExpensesList();
-        double totalExpense = 0.0;
-        for (Expense expense : expenses) {
-            totalExpense += expense.getAmount();
-        }
-        return ResponseEntity.ok(totalExpense);
-    }
-
-    /**
      * Adds an expense to the event
      *
      * @param id         the id of the event to be added to

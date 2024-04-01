@@ -52,15 +52,6 @@ public class ExpenseController {
         return expenseService.getExpense(id, expenseID);
     }
 
-    /***
-     * @param id the event of which we want to sum the total of expenses
-     * @return the sum of all expenses
-     */
-    @GetMapping(path = { "/total" })
-    public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
-        return expenseService.getTotal(id);
-    }
-
     /**
      * @param id the id of the event we want to add the expense to
      * @param expense the expense to be added to the event
@@ -128,7 +119,7 @@ public class ExpenseController {
      * @param id the id of the event
      * @return whether the payee could be updated
      */
-    @PutMapping(path = {"/{expenseId}/payee"})
+    @PutMapping(path = {"/{expenseId}/title"})
     public ResponseEntity<Void> changeTitle(@RequestBody String title,
                                             @PathVariable("expenseId") long expenseId,
                                             @PathVariable("id") long id){

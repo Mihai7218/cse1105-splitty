@@ -58,6 +58,16 @@ public class EventController {
         return event;
     }
 
+    /***
+     * @param id the event of which we want to sum the total of expenses
+     * @return the sum of all expenses
+     */
+    @GetMapping(path = { "/{id}/total" })
+    public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
+        return eventService.getTotal(id);
+    }
+
+
     /**
      * Get method to get a specific event from the database
      * @param inviteCode the invite code of that specific event
