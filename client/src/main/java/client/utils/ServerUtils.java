@@ -353,4 +353,18 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .get(Expense.class);
     }
+
+    /**
+     * Method that removes an expense from the server.
+     * @param eventID - the id of the event.
+     * @param expenseID - the id of the expense.
+     */
+    public void removeExpense(int eventID, long expenseID) {
+        ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/expenses/%s",
+                        eventID, expenseID))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete();
+    }
 }

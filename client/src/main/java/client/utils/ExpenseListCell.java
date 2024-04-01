@@ -2,6 +2,7 @@ package client.utils;
 
 import client.scenes.MainCtrl;
 import commons.Expense;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final ServerUtils server;
     private Label expenseName;
     private Label paidLabel;
     private Label payeeName;
@@ -33,9 +35,12 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Constructor for the RecentEventCell.
      */
-    public ExpenseListCell(MainCtrl mainCtrl, LanguageManager languageManager) {
+    public ExpenseListCell(MainCtrl mainCtrl,
+                           ServerUtils server,
+                           LanguageManager languageManager) {
         super();
         this.mainCtrl = mainCtrl;
+        this.server = server;
         this.languageManager = languageManager;
     }
 
@@ -65,7 +70,19 @@ public class ExpenseListCell extends ListCell<Expense> {
         remove.setText("\uD83D\uDDD1");
         remove.setId("cancel");
         remove.setOnAction(param -> {
-            //mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
+            try {
+                server.removeExpense(mainCtrl.getEvent().getInviteCode(), item.getId());
+            }
+            catch (WebApplicationException e) {
+                switch (e.getResponse().getStatus()) {
+                    case 400 -> {
+
+                    }
+                    case 404 -> {
+//                        Alert alert = new
+                    }
+                }
+            }
         });
 
         autogrowLeft = new Region();

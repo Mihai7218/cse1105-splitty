@@ -221,16 +221,10 @@ public class ExpenseService {
      */
     public ResponseEntity<Expense> deleteExpense(long expenseId, long id,
                                                  GerneralServerUtil serverUtil){
-        if (id < 0){
+        if (id < 0 || expenseId < 0){
             return ResponseEntity.badRequest().build();
         }
-        if (!eventRepo.existsById(id)) {
-            return ResponseEntity.notFound().build();
-        }
-        if (expenseId < 0){
-            return ResponseEntity.badRequest().build();
-        }
-        if (!expenseRepo.existsById(expenseId)) {
+        if (!eventRepo.existsById(id) || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
         Event event = eventRepo.findById(id).get();

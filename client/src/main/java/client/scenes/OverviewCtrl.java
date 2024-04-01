@@ -128,10 +128,12 @@ public class OverviewCtrl implements Initializable {
                             exp -> {
                                 all.getItems().remove(expense);
                                 all.refresh();
-                                if (exp != null) {
+                                if (!"deleted".equals(exp.getDescription())) {
                                     all.getItems().add(exp);
                                     all.getItems().sort((o1, o2) ->
                                             -o1.getDate().compareTo(o2.getDate()));
+                                } else {
+                                    mainCtrl.getEvent().getExpensesList().remove(expense);
                                 }
                                 all.refresh();
                                 filterViews();
@@ -335,9 +337,9 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
         Label fromLabel = new Label();
         Label includingLabel = new Label();
         participantFrom = new Label();

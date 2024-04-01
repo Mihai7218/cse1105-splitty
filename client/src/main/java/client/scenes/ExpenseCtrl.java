@@ -116,9 +116,12 @@ public abstract class ExpenseCtrl implements Initializable {
         scrollNames.setVisible(false);
         instructions.setVisible(false);
         newTag.setVisible(false);
-        cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
-        addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
-        addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
+        if (cancelButton != null)
+            cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
+        if (addExpense != null)
+            addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
+        if (addTag != null)
+            addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
         currency.getItems().addAll(currencies);
         payee.setConverter(new StringConverter<>() {
             @Override

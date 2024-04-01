@@ -130,7 +130,15 @@ public class ExpenseController {
     @DeleteMapping(path = {"/{expenseId}"})
     public ResponseEntity<Expense> deleteExpense(@PathVariable("expenseId") long expenseId,
                                               @PathVariable("id") long id){
-        return expenseService.deleteExpense(expenseId, id,serverUtil);
+        var resp = expenseService.deleteExpense(expenseId, id,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            String dest = "/topic/events/" + id + "/expenses/" + expenseId;
+            System.out.println(dest);
+            Expense del = new Expense();
+            del.setDescription("deleted");
+            messagingTemplate.convertAndSend(dest, del);
+        }
+        return resp;
     }
 
 
