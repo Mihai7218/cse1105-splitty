@@ -130,6 +130,12 @@ public class MainCtrl {
      */
     public void showStatistics(){
         primaryStage.titleProperty().bind(languageManager.bind("statistics.windowTitle"));
+        try {
+            statistics.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(statistics);
         if (statisticsCtrl != null) statisticsCtrl.refresh();
     }
