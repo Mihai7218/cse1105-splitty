@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import server.database.ParticipantRepository;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +26,15 @@ class EventServiceTest {
     public Event event1;
     public Event event2;
     public Event event3;
+    public Event event4;
+    public Participant p;
+    public Participant other;
+    ParticipantPayment p1;
+    ParticipantPayment p2;
+    ParticipantPayment p3;
+    ParticipantPayment p4;
+    Expense exp1;
+    Expense exp2;
 
 
     @BeforeEach
@@ -37,10 +47,83 @@ class EventServiceTest {
         event1 = new Event("Title1",null,null);
         event2 = new Event("Title2",null,null);
         event3 = new Event("Title3",null,null);
+        event4 = new Event("Title4", null,null);
+
+        p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        p1 = new ParticipantPayment(p, 5);
+        p2 = new ParticipantPayment(other,5);
+        exp1 = new Expense(10, "USD", "title", "desc", null, List.of(p1,p2), new Tag("yellow", "yellow"),p);
+
+        p3 = new ParticipantPayment(p, 10);
+        p4 = new ParticipantPayment(other,10);
+        exp2 = new Expense(20, "USD", "title2", "desc", null, List.of(p3,p4), new Tag("yellow", "yellow"),other);
 
         eventService.addEvent(event1);
         eventService.addEvent(event2);
         eventService.addEvent(event3);
+    }
+
+    @Test
+    public void getExpenseWithParticipant(){
+        ParticipantRepository participantRepo = new TestParticipantRepository();
+
+        Participant uninvolved = new Participant("name", null, null, null);
+
+        event4.getParticipantsList().add(p);
+        event4.getParticipantsList().add(other);
+        event4.getExpensesList().add(exp1);
+        event4.getExpensesList().add(exp2);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event4.setTagsList(List.of(one, two, three));
+        eventRepository.save(event4);
+        participantRepo.save(p);
+        participantRepo.save(other);
+        participantRepo.save(uninvolved);
+
+        assertEquals(eventService.getExpensesInvolvingParticipant(event4.getInviteCode(), p.getId()).getBody(), List.of(exp1, exp2));
+        assertEquals(eventService.getExpensesInvolvingParticipant(event4.getInviteCode(), other.getId()).getBody(), List.of(exp1, exp2));
+        assertEquals(eventService.getExpensesInvolvingParticipant(event4.getInviteCode(), uninvolved.getId()).getBody(), new ArrayList<>());
+
+        // testing bad requests:
+
+        assertEquals(eventService.getExpensesInvolvingParticipant(-1, other.getId()).getStatusCode(), BAD_REQUEST);
+        assertEquals(eventService.getExpensesInvolvingParticipant(event4.getInviteCode()+5, other.getId()).getStatusCode(), NOT_FOUND);
+
+    }
+
+    @Test
+    public void getExpenseWithPayee(){
+        ParticipantRepository participantRepo = new TestParticipantRepository();
+
+        Participant uninvolved = new Participant("name", null, null, null);
+
+        event4.getParticipantsList().add(p);
+        event4.getParticipantsList().add(other);
+        event4.getExpensesList().add(exp1);
+        event4.getExpensesList().add(exp2);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event4.setTagsList(List.of(one, two, three));
+        eventRepository.save(event4);
+        participantRepo.save(p);
+        participantRepo.save(other);
+        participantRepo.save(uninvolved);
+
+        assertEquals(eventService.getExpensesInvolvingPayee(event4.getInviteCode(), p.getId()).getBody(), List.of(exp1));
+        assertEquals(eventService.getExpensesInvolvingPayee(event4.getInviteCode(), other.getId()).getBody(), List.of(exp2));
+        assertEquals(eventService.getExpensesInvolvingPayee(event4.getInviteCode(), uninvolved.getId()).getBody(), new ArrayList<>());
+
+        // testing bad requests:
+
+        assertEquals(eventService.getExpensesInvolvingPayee(-1, other.getId()).getStatusCode(), BAD_REQUEST);
+        assertEquals(eventService.getExpensesInvolvingPayee(event4.getInviteCode()+5, other.getId()).getStatusCode(), NOT_FOUND);
+
     }
 
     @Test
@@ -51,10 +134,7 @@ class EventServiceTest {
     @Test
     public void calculateTotalSumOne(){
         Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
+
         ParticipantPayment pp = new ParticipantPayment(other, 25);
         List<ParticipantPayment> split = List.of(pp);
         Tag t = new Tag("red", "red");
@@ -68,10 +148,6 @@ class EventServiceTest {
     @Test
     public void calculateTotalSumMult(){
         Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
         ParticipantPayment pp = new ParticipantPayment(other, 25);
         List<ParticipantPayment> split = List.of(pp);
         Tag t = new Tag("red", "red");
@@ -92,12 +168,10 @@ class EventServiceTest {
     public void calculateDebtsTest(){
         ParticipantRepository participantRepo = new TestParticipantRepository();
         Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
+
         ParticipantPayment pp = new ParticipantPayment(other, 25);
-        List<ParticipantPayment> split = List.of(pp);
+        ParticipantPayment pp1 = new ParticipantPayment(p, 25);
+        List<ParticipantPayment> split = List.of(pp,pp1);
         Tag t = new Tag("red", "red");
         Expense e= new Expense(50, "USD", "exampleExpense", "description",
                 null,split ,t, p);
@@ -114,7 +188,7 @@ class EventServiceTest {
         participantRepo.save(p);
         participantRepo.save(other);
         assertEquals(eventService.getShare(3L,1L).getBody(), -25.0);
-        assertEquals(eventService.getShare(3L, 0L).getBody(), 50.0);
+        assertEquals(eventService.getShare(3L, 0L).getBody(), 25.00);
 
     }
 
@@ -122,10 +196,7 @@ class EventServiceTest {
     public void invalidDebtsTest(){
         ParticipantRepository participantRepo = new TestParticipantRepository();
         Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
+
         ParticipantPayment pp = new ParticipantPayment(other, 25);
         List<ParticipantPayment> split = List.of(pp);
         Tag t = new Tag("red", "red");
@@ -153,18 +224,17 @@ class EventServiceTest {
     public void calculateComplexDebts(){
         ParticipantRepository participantRepo = new TestParticipantRepository();
         Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
-        ParticipantPayment pp = new ParticipantPayment(other, 25);
-        List<ParticipantPayment> split = List.of(pp);
+
+        ParticipantPayment pp1_1 = new ParticipantPayment(other, 25);
+        ParticipantPayment pp1_2 = new ParticipantPayment(p, 25);
+
         Tag t = new Tag("red", "red");
         Expense e= new Expense(50, "USD", "exampleExpense", "description",
-                null,split ,t, p);
-        ParticipantPayment pp1 = new ParticipantPayment(p, 15);
+                null,List.of(pp1_1,pp1_2) ,t, p);
+        ParticipantPayment pp2_1 = new ParticipantPayment(other, 15);
+        ParticipantPayment pp2_2 = new ParticipantPayment(p, 15);
         Expense ee = new Expense(15, "USD", "secondExpense", "description",
-                null, List.of(pp1), t, other);
+                null, List.of(pp2_1,pp2_2), t, other);
         event.getParticipantsList().add(p);
         event.getParticipantsList().add(other);
         event.getExpensesList().add(e);
@@ -178,8 +248,10 @@ class EventServiceTest {
         participantRepo.save(p);
         participantRepo.save(other);
         assertEquals(eventService.getShare(3L,1L).getBody(), -10.0);
-        assertEquals(eventService.getShare(3L, 0L).getBody(), 35.0);
-
+        assertEquals(eventService.getShare(3L, 0L).getBody(), 10.0);
+        assertEquals(eventService.getDebt(3l, 1l).getBody(),25.0);
+        assertEquals(eventService.getOwed(3L, 1L).getBody(), 15);
+        assertEquals(eventService.getOwed(3L, 0L).getBody(), 25);
     }
 
     @Test

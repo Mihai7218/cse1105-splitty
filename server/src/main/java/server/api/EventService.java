@@ -228,14 +228,13 @@ public class EventService {
                 .toList().getFirst();
         List<Expense> expenses = e.getExpensesList();
         double balance = 0;
-        for(Expense expense: expenses){
-            if(expense.getPayee().equals(current)){
-                balance += expense.getAmount();
-            }else{
-                for(ParticipantPayment p: expense.getSplit()){
-                    if(p.getParticipant().equals(current)){
-                        balance -= p.getPaymentAmount();
-                    }
+        for (Expense expense : expenses) {
+
+            for (ParticipantPayment p : expense.getSplit()) {
+                if (p.getParticipant().equals(current) && expense.getPayee().equals(current)) {
+                    balance += p.getPaymentAmount();
+                } else if (p.getParticipant().equals(current)) {
+                    balance -= p.getPaymentAmount();
                 }
             }
         }
@@ -262,7 +261,7 @@ public class EventService {
             if(!expense.getPayee().equals(current)){
                 for(ParticipantPayment p: expense.getSplit()){
                     if(p.getParticipant().equals(current)){
-                        debt -= p.getPaymentAmount();
+                        debt += p.getPaymentAmount();
                     }
                 }
             }
@@ -289,7 +288,11 @@ public class EventService {
         double owed = 0;
         for(Expense expense: expenses){
             if(expense.getPayee().equals(current)){
-                owed += expense.getAmount();
+                for(ParticipantPayment p : expense.getSplit()){
+                    if(!p.getParticipant().equals(current)) {
+                        owed += p.getPaymentAmount();
+                    }
+                }
             }
         }
         return ResponseEntity.ok(owed);
@@ -356,10 +359,12 @@ public class EventService {
      */
     public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode,
                                                                          long partId) {
-        if(inviteCode < 0 || !eventRepository.findById(inviteCode).isPresent()){
+        if(inviteCode < 0 ){
             return ResponseEntity.badRequest().build();
         } else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
+        }else if(!eventRepository.findById(inviteCode).isPresent()) {
+            return ResponseEntity.badRequest().build();
         }
         Event event = eventRepository.findById(inviteCode).get();
 
