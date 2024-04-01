@@ -266,6 +266,21 @@ public class ServerUtils {
     }
 
     /**
+     * Method that removes a new participant to the server.
+     * @param inviteCode  - invite code of the event.
+     * @param participant - participant that needs to be added.
+     * @return - the participant added to the server.
+     */
+    public Participant updateParticipant(int inviteCode, Participant participant) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server)
+                .path("api/events/" + inviteCode + "/participants/" + participant.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+    }
+
+    /**
      * Method that gets all participants from the server.
      * @param id - invite code of the event.
      * @return - a list of all participants associated with that event.

@@ -109,6 +109,7 @@ public class EditParticipantCtrl {
             participant.setEmail(email.getText());
             participant.setIban(iban.getText());
             participant.setBic(bic.getText());
+            server.updateParticipant(mainCtrl.getEvent().getInviteCode(),participant);
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);

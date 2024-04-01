@@ -114,10 +114,8 @@ public class OverviewCtrl implements Initializable {
             all.getItems().clear();
             participants.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
-            List<Participant> serverparticipants = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
-                serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
             }
             catch (WebApplicationException e) {
                 e.printStackTrace();
@@ -125,7 +123,6 @@ public class OverviewCtrl implements Initializable {
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
-            participants.getItems().addAll(serverparticipants);
 
         }
         if (mainCtrl != null && mainCtrl.getEvent() != null
@@ -148,7 +145,8 @@ public class OverviewCtrl implements Initializable {
         clearFields();
         if (event != null) {
             title.setText(event.getTitle());
-            expenseparticipants.getItems().addAll(event.getParticipantsList());
+            expenseparticipants.getItems()
+                    .addAll(server.getAllParticipants(mainCtrl.getEvent().getInviteCode()));
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -341,7 +339,6 @@ public class OverviewCtrl implements Initializable {
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
         participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
-        participants.getItems().addAll(getParticipants());
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
