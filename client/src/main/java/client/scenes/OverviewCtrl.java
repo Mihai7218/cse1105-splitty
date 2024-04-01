@@ -87,6 +87,12 @@ public class OverviewCtrl implements Initializable {
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
 
+    @FXML
+    private Label sumExpense;
+    @FXML
+    private Label sumLabel;
+
+
 
     /**
      * Constructs a new OverviewCtrl object.
@@ -127,6 +133,7 @@ public class OverviewCtrl implements Initializable {
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
+        sumExpense.setText(String.format("%.2f",getSum()));
         clearFields();
         if (event != null) {
             title.setText(event.getTitle());
@@ -162,6 +169,7 @@ public class OverviewCtrl implements Initializable {
      */
     public void addExpense() {
         mainCtrl.showAddExpense();
+        refresh();
     }
 
     /**
@@ -317,11 +325,12 @@ public class OverviewCtrl implements Initializable {
         Label includingLabel = new Label();
         participantFrom = new Label();
         participantIncluding = new Label();
+        sumLabel.textProperty().bind(languageManager.bind("overview.totalSum"));
         fromLabel.textProperty().bind(languageManager.bind("overview.fromTab"));
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
-        participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
         participants.getItems().addAll(getParticipants());
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
@@ -395,6 +404,20 @@ public class OverviewCtrl implements Initializable {
         participants.getItems().remove(participant);
         participants.refresh();
 
+    }
+
+    /**
+     * method to calculate the sum of all expenses in the event
+     * @return double for the event total
+     */
+    public double getSum(){
+        double sum = 0;
+        if(mainCtrl.getEvent() == null) return sum;
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for(Expense e: expenses){
+            sum += e.getAmount();
+        }
+        return sum;
     }
 
     /**
