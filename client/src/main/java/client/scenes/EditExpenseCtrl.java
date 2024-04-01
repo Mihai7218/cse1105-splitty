@@ -148,6 +148,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             }
         }
         mainCtrl.showOverview();
+        mainCtrl.showEditConfirmation();
 
         // Optionally, clear input fields after adding the expense
         clearFields();
