@@ -411,7 +411,7 @@ public class OverviewCtrl implements Initializable {
                 }
             }
         }
-
+        server.removeParticipant(mainCtrl.getEvent().getInviteCode(),participant);
         participants.getItems().remove(participant);
         participants.refresh();
 
