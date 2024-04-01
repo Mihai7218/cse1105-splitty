@@ -9,6 +9,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
 
+import java.text.DateFormat;
+
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
@@ -21,6 +23,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     private Label date;
     private Label payers;
     private Button edit;
+    private Button remove;
     private FlowPane details;
     private VBox vBox;
     private HBox hBox;
@@ -52,15 +55,24 @@ public class ExpenseListCell extends ListCell<Expense> {
         date = new Label();
         payers = new Label();
         edit = new Button();
-        edit.setText("✎");
+        edit.setText("\uD83D\uDD89");
         edit.setOnAction(param -> {
-            //TODO: add edit expense functionality
+            mainCtrl.getEditExpenseCtrl().setExpense(item);
+            mainCtrl.showEditExpense();
+            //System.out.println(item);
         });
+        remove = new Button();
+        remove.setText("\uD83D\uDDD1");
+        remove.setId("cancel");
+        remove.setOnAction(param -> {
+            //mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
+        });
+
         autogrowLeft = new Region();
         autogrowRight = new Region();
         details = new FlowPane(payeeName, paidLabel, price, currency, forLabel, expenseName);
         vBox = new VBox(details, payers);
-        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit);
+        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit, remove);
         hBox.setSpacing(5);
         vBox.setSpacing(5);
         details.setHgap(3);
@@ -134,12 +146,11 @@ public class ExpenseListCell extends ListCell<Expense> {
                     .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
             sb.append(")");
         }
-        else {
-            sb.append("none");
-        }
+        else sb.append("none");
         payers.setText(sb.toString());
         try {
-            date.setText(String.valueOf(this.getItem().getDate()));
+            var dateObj = this.getItem().getDate();
+            date.setText(DateFormat.getDateInstance().format(dateObj));
         }
         catch (NullPointerException e) {
             date.setText("<no date>");

@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Event;
+import commons.Expense;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -57,6 +58,16 @@ public class EventController {
         return event;
     }
 
+    /***
+     * @param id the event of which we want to sum the total of expenses
+     * @return the sum of all expenses
+     */
+    @GetMapping(path = { "/{id}/total" })
+    public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
+        return eventService.getTotal(id);
+    }
+
+
     /**
      * Get method to get a specific event from the database
      * @param inviteCode the invite code of that specific event
@@ -78,6 +89,32 @@ public class EventController {
         } else {
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    /**
+     * @param inviteCode the invite code of the event to check in
+     * @param payeeId the id of the participant to check if they're
+     *                the payee in the expenses
+     * @return the list of expenses the participant was the payee in
+     */
+    @GetMapping(path = {"/{inviteCode}/payee/{payeeId}"})
+    public ResponseEntity<List<Expense>> getInvolvingPayee(@PathVariable("inviteCode")
+                                                               long inviteCode,
+                                             @PathVariable("payeeId") long payeeId){
+        return eventService.getExpensesInvolvingPayee(inviteCode, payeeId);
+    }
+
+    /**
+     * @param inviteCode the invite code of the event to check in
+     * @param partId the id of the participant to check if they're
+     *               involved in the expenses
+     * @return the list of expenses the participant was involved in
+     */
+    @GetMapping(path = {"/{inviteCode}/participant/{partId}"})
+    public ResponseEntity<List<Expense>> getInvolvingPart(@PathVariable("inviteCode")
+                                                              long inviteCode,
+                                             @PathVariable("partId") long partId){
+        return eventService.getExpensesInvolvingParticipant(inviteCode, partId);
     }
 
     /**

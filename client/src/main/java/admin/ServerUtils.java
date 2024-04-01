@@ -20,6 +20,8 @@ import commons.*;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import org.glassfish.jersey.client.ClientConfig;
 
 import java.io.BufferedReader;
@@ -134,12 +136,19 @@ public class ServerUtils {
      * @param i the invite code of the event to be deleted
      *          TODO: check for correctness
      */
-    public Event deleteEvent(int i) {
-        return ClientBuilder.newClient(new ClientConfig())
-                .target(server).path("api/events/" + i)
-                .request(APPLICATION_JSON)
-                .accept(APPLICATION_JSON)
-                .delete(Event.class);
+    public Response deleteEvent(int i) {
+//        return ClientBuilder.newClient(new ClientConfig())
+//                .target(server).path("api/events/" + i)
+//                .request(APPLICATION_JSON)
+//                .accept(APPLICATION_JSON)
+//                .delete(Event.class);
+        Response response = ClientBuilder.newClient(new ClientConfig())
+                .target(server)
+                .path("api/events/" + i)
+                .request()
+                .accept(MediaType.APPLICATION_JSON)
+                .delete();
+        return response;
     }
 
     /**

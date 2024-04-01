@@ -21,6 +21,9 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
+import jakarta.ws.rs.WebApplicationException;
+import javafx.animation.FadeTransition;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -30,13 +33,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class OverviewCtrl implements Initializable {
 
@@ -78,9 +80,17 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Button cancel;
     @FXML
+    private Label expenseAdded;
+    @FXML
     private Button settleDebts;
     @FXML
     private Button addExpenseButton;
+    private StompSession.Subscription expensesSubscription;
+
+    @FXML
+    private Label sumExpense;
+    @FXML
+    private Label sumLabel;
 
 
 
@@ -107,7 +117,14 @@ public class OverviewCtrl implements Initializable {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
-            all.getItems().addAll(mainCtrl.getEvent().getExpensesList());
+            List<Expense> expenses = new ArrayList<>();
+            try {
+                expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+            }
+            catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+            all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
         }
@@ -116,48 +133,145 @@ public class OverviewCtrl implements Initializable {
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
+        sumExpense.setText(String.format("%.2f",getSum()));
         clearFields();
-        if(event != null){
+        if (event != null) {
             title.setText(event.getTitle());
-            participants.getItems().addAll(event.getParticipantsList());
+            participants.getItems().clear();
+            participants.getItems().addAll(server.getAllParticipants(
+                    mainCtrl.getEvent().getInviteCode()));
+            mainCtrl.getEvent().getParticipantsList().clear();
+            mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
             expenseparticipants.getItems().addAll(event.getParticipantsList());
+            if (expensesSubscription == null)
+                expensesSubscription = server.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
+                        expense -> {
+                            all.getItems().add(expense);
+                            mainCtrl.getEvent().getExpensesList().add(expense);
+                            all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+                            all.refresh();
+                            filterViews();
+                        });
         }
     }
-
 
 
     /**
      * Opens the addparticipant scene to be able to add participants to the event.
      */
-    public void addParticipant(){
+    public void addParticipant() {
         mainCtrl.showParticipant();
     }
 
     /**
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
-    public void addExpense(){
+    public void addExpense() {
         mainCtrl.showAddExpense();
+        refresh();
     }
 
     /**
      * Goes back to the startMenu.
      */
-    public void startMenu(){
+    public void startMenu() {
+        if (expensesSubscription != null) {
+            expensesSubscription.unsubscribe();
+            expensesSubscription = null;
+        }
         mainCtrl.showStartMenu();
     }
 
     /**
      * Opens the sendInvites scene to be able to send Invites to the other people.
      */
-    public void sendInvites(){
+    public void sendInvites() {
         mainCtrl.showInvitation();
     }
 
     /**
+     * method to display a confirmation message for the expense added
+     * this message disappears
+     */
+    public void showConfirmationExpense(){
+        expenseAdded.textProperty().bind(languageManager.bind("overview.confirmExpenseAdd"));
+        expenseAdded.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), expenseAdded);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> expenseAdded.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
+    /**
+     * method to display a confirmation message for participant added
+     * this message disappears
+     */
+    public void showConfirmationParticipant(){
+        expenseAdded.textProperty().bind(languageManager.bind("overview.confirmParticipantAdd"));
+        expenseAdded.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), expenseAdded);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> expenseAdded.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
+    /**
+     * General method to show a confirmation message for any edits
+     */
+    public void showEditConfirmation(){
+        expenseAdded.textProperty().bind(languageManager.bind("overview.confirmEdits"));
+        expenseAdded.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
+
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), expenseAdded);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> expenseAdded.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
+
+        fadeIn.play();
+    }
+
+
+    /**
      * Settles the debts of the event.
      */
-    public void settleDebts(){
+    public void settleDebts() {
         //Should show the sendInvites scene
     }
 
@@ -174,7 +288,7 @@ public class OverviewCtrl implements Initializable {
                 title.setGraphic(null);
                 title.setText(changeable.getText());
                 mainCtrl.getEvent().setTitle(changeable.getText());
-                server.send("/app/events",mainCtrl.getEvent());
+                server.send("/app/events", mainCtrl.getEvent());
             }
         });
     }
@@ -183,17 +297,16 @@ public class OverviewCtrl implements Initializable {
      * Clears all the fields
      */
     private void clearFields() {
-        if(participants!=null){
+        if (participants != null) {
             participants.getItems().clear();
         }
-        if(expenseparticipants!=null){
+        if (expenseparticipants != null) {
             expenseparticipants.getItems().clear();
         }
 
     }
 
     /**
-<<<<<<< HEAD
      * Initialize method for the Overview scene.
      * Sets the language currently in the config file as the selected one.
      * Sets the cell factories for all ListViews.
@@ -212,11 +325,12 @@ public class OverviewCtrl implements Initializable {
         Label includingLabel = new Label();
         participantFrom = new Label();
         participantIncluding = new Label();
+        sumLabel.textProperty().bind(languageManager.bind("overview.totalSum"));
         fromLabel.textProperty().bind(languageManager.bind("overview.fromTab"));
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
-        participants.setCellFactory(x -> new ParticipantCell(mainCtrl));
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
         participants.getItems().addAll(getParticipants());
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
@@ -231,7 +345,7 @@ public class OverviewCtrl implements Initializable {
             }
         });
         refresh();
-        server.registerForMessages("/topic/events", Event.class,q -> {
+        server.registerForMessages("/topic/events", Event.class, q -> {
             mainCtrl.setEvent(q);
             Platform.runLater(() -> refresh());
         });
@@ -242,7 +356,13 @@ public class OverviewCtrl implements Initializable {
      */
     public void filterViews() {
         Participant participant = expenseparticipants.getValue();
-        if (participant == null) return;
+        if (participant == null) {
+            from.getItems().clear();
+            including.getItems().clear();
+            participantFrom.setText("");
+            participantIncluding.setText("");
+            return;
+        }
         participantFrom.setText(participant.getName());
         participantIncluding.setText(participant.getName());
         from.getItems().clear();
@@ -254,17 +374,53 @@ public class OverviewCtrl implements Initializable {
                         .map(ParticipantPayment::getParticipant)
                         .filter(y -> y.equals(participant)).toList().isEmpty())).toList());
     }
+
     /**
-=======
      * Removes a participant from the list
      */
     public void removeParticipant(Participant participant) {
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for(Expense e: expenses){
+            if(!e.getSplit().stream()
+                    .filter(item -> item.getParticipant()
+                            .equals(participant)).toList().isEmpty()
+                || e.getPayee().equals(participant)){
+                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+                confirmation.contentTextProperty().bind(
+                        languageManager.bind("overview.removeParticipant"));
+                confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+                confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+                Optional<ButtonType> result = confirmation.showAndWait();
+                if(result.isPresent() && result.get() == ButtonType.OK) {
+                    participants.getItems().remove(participant);
+                    participants.refresh();
+                    return;
+                }else{
+                    return;
+                }
+            }
+        }
+
         participants.getItems().remove(participant);
         participants.refresh();
+
     }
 
     /**
->>>>>>> c605a63e9bea86de7055e63fa987bc6f19703c64
+     * method to calculate the sum of all expenses in the event
+     * @return double for the event total
+     */
+    public double getSum(){
+        double sum = 0;
+        if(mainCtrl.getEvent() == null) return sum;
+        List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
+        for(Expense e: expenses){
+            sum += e.getAmount();
+        }
+        return sum;
+    }
+
+    /**
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */

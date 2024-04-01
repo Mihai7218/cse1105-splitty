@@ -1,8 +1,8 @@
 package server.api;
+
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
 import org.springframework.http.ResponseEntity;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
@@ -12,7 +12,8 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.*;
 
 public class ExpenseServiceTest {
@@ -29,6 +30,7 @@ public class ExpenseServiceTest {
     public long eventId;
 
     public GerneralServerUtil serverUtil;
+    private TestParticipantPaymentRepository ppRepo;
 
     @BeforeEach
     public void setup(){
@@ -36,7 +38,8 @@ public class ExpenseServiceTest {
         eventRepo = new TestEventRepository();
         expenseRepo = new TestExpenseRepository();
         tagRepo = new TestTagRepository();
-        expenseService = new ExpenseService(eventRepo, expenseRepo);
+        ppRepo = new TestParticipantPaymentRepository();
+        expenseService = new ExpenseService(eventRepo, expenseRepo, ppRepo);
         eventService = new EventService(eventRepo, tagRepo);
         Date date = new Date();
         Timestamp timestamp2 = new Timestamp(date.getTime());
@@ -107,26 +110,6 @@ public class ExpenseServiceTest {
         assertEquals(res.getStatusCode(), NOT_FOUND);
     }
 
-    /***
-     * Tests for the getTotal method
-     */
-    @Test
-    public void getTotalTest(){
-        double total = expenseService.getTotal(eventId).getBody();
-        assertEquals(total, 625.60);
-    }
-
-    @Test
-    public void getTotalTestInvalid(){
-        ResponseEntity<Double> res = expenseService.getTotal(-20);
-        assertEquals(res.getStatusCode(), BAD_REQUEST);
-    }
-
-    @Test
-    public void getTotalTestNonexistent(){
-        ResponseEntity<Double> res = expenseService.getTotal(20);
-        assertEquals(res.getStatusCode(), NOT_FOUND);
-    }
 
     /***
      * Tests for the add method

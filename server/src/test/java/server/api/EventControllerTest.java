@@ -78,6 +78,7 @@ public class EventControllerTest {
         participantRepo.save(other);
         assertEquals(OK, temp.getShare(0L,0L).getStatusCode());
         assertEquals(OK, temp.getShare(0L,1L).getStatusCode());
+        assertEquals(OK, temp.getTotal(0L).getStatusCode());
     }
 
     @Test

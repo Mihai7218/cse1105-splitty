@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import server.database.EventRepository;
 import server.database.ExpenseRepository;
+import server.database.ParticipantPaymentRepository;
 
 
 import java.util.Collections;
@@ -19,6 +20,7 @@ import java.util.Objects;
 public class ExpenseService {
     private final EventRepository eventRepo;
     private final ExpenseRepository expenseRepo;
+    private final ParticipantPaymentRepository ppRepo;
 
     /**
      * Constructor for the ExpenseService
@@ -26,9 +28,12 @@ public class ExpenseService {
      * @param expenseRepo the repo of expenses
      */
     @Autowired
-    public ExpenseService(EventRepository eventRepo, ExpenseRepository expenseRepo){
+    public ExpenseService(EventRepository eventRepo,
+                          ExpenseRepository expenseRepo,
+                          ParticipantPaymentRepository ppRepo){
         this.eventRepo = eventRepo;
         this.expenseRepo = expenseRepo;
+        this.ppRepo = ppRepo;
     }
 
     /**
@@ -49,27 +54,6 @@ public class ExpenseService {
     }
 
     /**
-     * Sums the total of all expenses within an event
-     * @param id the id of the event
-     * @return whether the total could be returned
-     */
-    public ResponseEntity<Double> getTotal(long id) {
-        if (id < 0){
-            return ResponseEntity.badRequest().build();
-        }
-        if (!eventRepo.existsById(id)){
-            return ResponseEntity.notFound().build();
-        }
-        Event event = eventRepo.findById(id).get();
-        List<Expense> expenses = event.getExpensesList();
-        double totalExpense = 0.0;
-        for (Expense expense : expenses) {
-            totalExpense += expense.getAmount();
-        }
-        return ResponseEntity.ok(totalExpense);
-    }
-
-    /**
      * Adds an expense to the event
      *
      * @param id         the id of the event to be added to
@@ -86,10 +70,12 @@ public class ExpenseService {
         }
         if (expense == null || expense.getTitle() == null ||
                 Objects.equals(expense.getTitle(), "") ||
-                expense.getAmount() == 0 || expense.getPayee() == null) {
+                expense.getAmount() <= 0 || expense.getPayee() == null) {
             return ResponseEntity.badRequest().build();
         }
-
+        if (expense.getSplit() != null) {
+            ppRepo.saveAll(expense.getSplit());
+        }
         Event event = eventRepo.findById(id).get();
         List<Expense> expenseList = event.getExpensesList();
         expenseList.add(expense);
