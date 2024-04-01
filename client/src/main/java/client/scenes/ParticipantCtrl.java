@@ -26,6 +26,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.stage.Modality;
 
+import java.util.regex.Pattern;
+
 public class ParticipantCtrl {
 
     private final ServerUtils server;
@@ -74,6 +76,12 @@ public class ParticipantCtrl {
     public void ok() {
         boolean bicPresent = bic.getText().isEmpty();
         boolean ibanPresent = iban.getText().isEmpty();
+        boolean emailPresent = email.getText().isEmpty();
+        String ibanRegex = "^[A-Z]{2}[0-9]{2}[A-Za-z0-9]{11,30}$";
+        String bicRegex = "^[A-Za-z]{6}[0-9A-Za-z]{2}([0-9A-Za-z]{3})?$";
+        String emailRegex = "^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
+                "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+        //Alerts if the name is empty
         if (name.getText().isEmpty()){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
@@ -82,9 +90,40 @@ public class ParticipantCtrl {
             alert.showAndWait();
             return;
         }
+        //Alerts if the Email is not in the right form
+        if(emailPresent == false && Pattern.compile(emailRegex)
+                .matcher(email.getText()).matches() == false){
+            var alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addParticipant.invalidEmail"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            return;
+        }
+        //Alerts if there is only the bic or the iban but not both
         if(bicPresent != ibanPresent){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("addParticipant.invalidPayment"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            return;
+        }
+        //Alerts if the Iban is not in the right form
+        if(ibanPresent == false && Pattern.compile(bicRegex)
+                .matcher(iban.getText()).matches() == false){
+            var alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addParticipant.invalidIban"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.showAndWait();
+            return;
+        }
+        //Alerts if the Bic is not in the right form
+        if(bicPresent == false && Pattern.compile(ibanRegex)
+                .matcher(iban.getText()).matches() == false){
+            var alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addParticipant.invalidBic"));
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.showAndWait();
             return;
