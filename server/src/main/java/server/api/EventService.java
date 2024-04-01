@@ -363,8 +363,6 @@ public class EventService {
             return ResponseEntity.badRequest().build();
         } else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
-        }else if(!eventRepository.findById(inviteCode).isPresent()) {
-            return ResponseEntity.badRequest().build();
         }
         Event event = eventRepository.findById(inviteCode).get();
 

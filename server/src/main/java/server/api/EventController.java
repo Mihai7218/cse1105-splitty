@@ -11,8 +11,6 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.OK;
-
 
 //TODO: debt and owed endpoints
 @RestController
