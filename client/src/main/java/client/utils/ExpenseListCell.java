@@ -46,6 +46,7 @@ public class ExpenseListCell extends ListCell<Expense> {
 
     /**
      * Creates the graphic for the expense.
+     *
      * @param item - expense item
      */
     private void createGraphic(Expense item) {
@@ -72,16 +73,13 @@ public class ExpenseListCell extends ListCell<Expense> {
         remove.setOnAction(param -> {
             try {
                 server.removeExpense(mainCtrl.getEvent().getInviteCode(), item.getId());
-            }
-            catch (WebApplicationException e) {
-                switch (e.getResponse().getStatus()) {
-                    case 400 -> {
-
-                    }
-                    case 404 -> {
-//                        Alert alert = new
-                    }
-                }
+            } catch (WebApplicationException e) {
+                if (mainCtrl.getOverviewCtrl() == null
+                        || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                    return;
+                var sub = mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap().get(item);
+                if (sub != null)
+                    sub.notify();
             }
         });
 
@@ -107,7 +105,8 @@ public class ExpenseListCell extends ListCell<Expense> {
 
     /**
      * Updates the item in the list to have the event name and the open and close buttons.
-     * @param item - item in the list
+     *
+     * @param item  - item in the list
      * @param empty - whether the item is empty or not
      */
     @Override
@@ -128,29 +127,24 @@ public class ExpenseListCell extends ListCell<Expense> {
     private void update() {
         try {
             expenseName.setText(this.getItem().getTitle());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             expenseName.setText("<no title>");
         }
         try {
             payeeName.setText(this.getItem().getPayee().getName());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             payeeName.setText("<no payee>");
         }
         try {
             price.setText(Double.toString(this.getItem().getAmount()));
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             price.setText("<no price>");
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             price.setText("<invalid price>");
         }
         try {
             currency.setText(this.getItem().getCurrency());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             currency.setText("<no currency>");
         }
         StringBuilder sb = new StringBuilder();
@@ -162,14 +156,12 @@ public class ExpenseListCell extends ListCell<Expense> {
             sb.append(this.getItem().getSplit()
                     .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
             sb.append(")");
-        }
-        else sb.append("none");
+        } else sb.append("none");
         payers.setText(sb.toString());
         try {
             var dateObj = this.getItem().getDate();
             date.setText(DateFormat.getDateInstance().format(dateObj));
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             date.setText("<no date>");
         }
         setGraphic(hBox);

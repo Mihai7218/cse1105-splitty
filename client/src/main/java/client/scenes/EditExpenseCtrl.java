@@ -63,6 +63,9 @@ public class EditExpenseCtrl extends ExpenseCtrl {
         date.setValue(LocalDate.ofInstant(expense.getDate().toInstant(), ZoneId.systemDefault()));
         if (!checkAllSelected()) {
             only.setSelected(true);
+            onlyCheck();
+        } else {
+            everyoneCheck();
         }
         expenseType.getItems().clear();
         expenseType.getItems().addAll(mainCtrl.getEvent().getTagsList());

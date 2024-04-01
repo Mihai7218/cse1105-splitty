@@ -111,8 +111,8 @@ public class ExpenseService {
      * @param serverUtil
      * @return whether the title could be changed
      */
-    public ResponseEntity<Void> changeExpense(Expense expense, long expenseId,
-                                              long id, GerneralServerUtil serverUtil) {
+    public ResponseEntity<Void> changeTitle(Expense expense, long expenseId,
+                                            long id, GerneralServerUtil serverUtil) {
         if (id < 0 || expenseId < 0){
             return ResponseEntity.badRequest().build();
         }
@@ -208,6 +208,37 @@ public class ExpenseService {
         }
         Expense change = expenseRepo.findById(expenseId).get();
         change.setPayee(payee);
+        expenseRepo.save(change);
+        serverUtil.updateDate(eventRepo,id);
+        return ResponseEntity.ok(null);
+    }
+
+    /**
+     * @param title      the new title of the expense
+     * @param expenseId  the id of the expense to be edited
+     * @param id         the id of the event
+     * @param serverUtil
+     * @return whether the title could be updated
+     */
+    public ResponseEntity<Void> changeTitle(String title, long expenseId,
+                                            long id, GerneralServerUtil serverUtil){
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        if (expenseId < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!expenseRepo.existsById(expenseId)) {
+            return ResponseEntity.notFound().build();
+        }
+        if (title == null || Objects.equals(title, "")) {
+            return ResponseEntity.badRequest().build();
+        }
+        Expense change = expenseRepo.findById(expenseId).get();
+        change.setTitle(title);
         expenseRepo.save(change);
         serverUtil.updateDate(eventRepo,id);
         return ResponseEntity.ok(null);

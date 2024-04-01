@@ -135,8 +135,8 @@ public class OverviewCtrl implements Initializable {
                                 } else {
                                     mainCtrl.getEvent().getExpensesList().remove(expense);
                                 }
-                                all.refresh();
                                 filterViews();
+                                all.refresh();
                             });
                     expenseSubscriptionMap.put(expense, subscription);
                 }
@@ -150,15 +150,14 @@ public class OverviewCtrl implements Initializable {
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
-        clearFields();
         if (event != null) {
             title.setText(event.getTitle());
-            participants.getItems().clear();
-            participants.getItems().addAll(server.getAllParticipants(
-                    mainCtrl.getEvent().getInviteCode()));
-            mainCtrl.getEvent().getParticipantsList().clear();
-            mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
-            expenseparticipants.getItems().addAll(event.getParticipantsList());
+            for (Participant p : event.getParticipantsList()) {
+                if (!participants.getItems().contains(p))
+                    participants.getItems().add(p);
+                if (!expenseparticipants.getItems().contains(p))
+                    expenseparticipants.getItems().add(p);
+            }
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -199,6 +198,7 @@ public class OverviewCtrl implements Initializable {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
         }
+        clearFields();
         mainCtrl.showStartMenu();
     }
 
@@ -493,5 +493,13 @@ public class OverviewCtrl implements Initializable {
      */
     public void updateLanguageComboBox(String language) {
         if (languages != null) languages.setValue(language);
+    }
+
+    /**
+     * Getter for the expense subscription map.
+     * @return - the expense subscription map of the overview controller.
+     */
+    public Map<Expense, StompSession.Subscription> getExpenseSubscriptionMap() {
+        return expenseSubscriptionMap;
     }
 }

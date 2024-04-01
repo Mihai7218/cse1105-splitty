@@ -87,7 +87,7 @@ public class ExpenseController {
     public ResponseEntity<Void> changeExpense(@RequestBody Expense expense,
                                             @PathVariable("expenseId") long expenseId,
                                             @PathVariable("id") long id){
-        var resp = expenseService.changeExpense(expense, expenseId, id,serverUtil);
+        var resp = expenseService.changeTitle(expense, expenseId, id,serverUtil);
         if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
             String dest = "/topic/events/" + id + "/expenses/" + expenseId;
             System.out.println(dest);
@@ -117,9 +117,22 @@ public class ExpenseController {
      */
     @PutMapping(path = {"/{expenseId}/payee"})
     public ResponseEntity<Void> changePayee(@RequestBody Participant payee,
-                                             @PathVariable("expenseId") long expenseId,
+                                            @PathVariable("expenseId") long expenseId,
                                             @PathVariable("id") long id){
         return expenseService.changePayee(payee, expenseId, id,serverUtil);
+    }
+
+    /**
+     * @param title the new title of the expense
+     * @param expenseId the id of the expense
+     * @param id the id of the event
+     * @return whether the payee could be updated
+     */
+    @PutMapping(path = {"/{expenseId}/payee"})
+    public ResponseEntity<Void> changeTitle(@RequestBody String title,
+                                            @PathVariable("expenseId") long expenseId,
+                                            @PathVariable("id") long id){
+        return expenseService.changeTitle(title, expenseId, id,serverUtil);
     }
 
     /**

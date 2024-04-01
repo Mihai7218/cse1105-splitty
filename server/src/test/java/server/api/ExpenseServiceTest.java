@@ -190,47 +190,47 @@ public class ExpenseServiceTest {
     @Test
     public void changeTitleTest(){
         long expenseId1 = expense1.getId();
-        expenseService.changeExpense("food", expenseId1, eventId, serverUtil);
+        expenseService.changeTitle("food", expenseId1, eventId, serverUtil);
         assertEquals("food", expense1.getTitle());
 
         long expenseId2 = expense2.getId();
-        expenseService.changeExpense("skating", expenseId2, eventId, serverUtil);
+        expenseService.changeTitle("skating", expenseId2, eventId, serverUtil);
         assertEquals("skating", expense2.getTitle());
 
         long expenseId3 = expense3.getId();
-        expenseService.changeExpense("concert", expenseId3, eventId, serverUtil);
+        expenseService.changeTitle("concert", expenseId3, eventId, serverUtil);
         assertEquals("concert", expense3.getTitle());
     }
     @Test
     public void changeTitleEventInvalid() {
         long expenseId1 = expense1.getId();
-        ResponseEntity<Void> res = expenseService.changeExpense("food", expenseId1, -60, serverUtil);
+        ResponseEntity<Void> res = expenseService.changeTitle("food", expenseId1, -60, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changeTitleEventDoesntExist() {
         long expenseId1 = expense1.getId();
-        ResponseEntity<Void> res = expenseService.changeExpense("food", expenseId1, 100, serverUtil);
+        ResponseEntity<Void> res = expenseService.changeTitle("food", expenseId1, 100, serverUtil);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void changeTitleExpenseDoesntExist() {
-        ResponseEntity<Void> res = expenseService.changeExpense("food", 100, eventId, serverUtil);
+        ResponseEntity<Void> res = expenseService.changeTitle("food", 100, eventId, serverUtil);
         assertEquals(NOT_FOUND, res.getStatusCode());
     }
     @Test
     public void changeTitleExpenseInvalid() {
-        ResponseEntity<Void> res = expenseService.changeExpense("food", -100, eventId, serverUtil);
+        ResponseEntity<Void> res = expenseService.changeTitle("food", -100, eventId, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changeTitleExpenseNoTitle() {
-        ResponseEntity<Void> res = expenseService.changeExpense("", expense1.getId(), eventId, serverUtil);
+        ResponseEntity<Void> res = expenseService.changeTitle("", expense1.getId(), eventId, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
     @Test
     public void changeTitleExpenseNullTitle() {
-        ResponseEntity<Void> res = expenseService.changeExpense("", expense1.getId(), eventId, serverUtil);
+        ResponseEntity<Void> res = expenseService.changeTitle("", expense1.getId(), eventId, serverUtil);
         assertEquals(BAD_REQUEST, res.getStatusCode());
     }
 

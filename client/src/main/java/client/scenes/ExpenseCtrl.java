@@ -549,12 +549,6 @@ public abstract class ExpenseCtrl implements Initializable {
                 || currency.getValue() == null || payee.getValue() == null) {
             throwAlert("addExpense.incompleteHeader", "addExpense.incompleteBody");
             removeHighlight();
-            // Display an alert informing the user about missing input
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.titleProperty().bind(languageManager.bind("addExpense.alertTitle"));
-            alert.headerTextProperty().bind(languageManager.bind("addExpense.incompleteHeader"));
-            alert.contentTextProperty().bind(languageManager.bind("addExpense.incompleteBody"));
-            alert.showAndWait();
             highlightMissing(expenseTitle.isEmpty(), expensePriceText.isEmpty(), expenseDate ==null,
                     currency.getValue()==null, payee.getValue() == null);
             return false;
