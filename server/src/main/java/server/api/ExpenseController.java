@@ -42,6 +42,15 @@ public class ExpenseController {
     public ResponseEntity<List<Expense>> getAllExpenses(@PathVariable("id") long id){
         return expenseService.getAllExpenses(id);
     }
+    /**
+     * @param id the id of the event to list all expenses from
+     * @return the list of all expenses within an event
+     */
+    @GetMapping(path = { "/{expenseID}" })
+    public ResponseEntity<Expense> getExpense(@PathVariable("id") long id,
+                                              @PathVariable("expenseID") long expenseID){
+        return expenseService.getExpense(id, expenseID);
+    }
 
     /***
      * @param id the event of which we want to sum the total of expenses
@@ -69,16 +78,22 @@ public class ExpenseController {
     }
 
     /**
-     * @param title the new title for the expense
+     * @param expense the new contents of the expense
      * @param expenseId the id of the expense to be changed
      * @param id the id of the event which the expense is associated with
      * @return whether the title could be changed
      */
-    @PutMapping(path = {"/{expenseId}/title"})
-    public ResponseEntity<Void> changeTitle(@RequestBody String title,
+    @PutMapping(path = {"/{expenseId}"})
+    public ResponseEntity<Void> changeExpense(@RequestBody Expense expense,
                                             @PathVariable("expenseId") long expenseId,
                                             @PathVariable("id") long id){
-        return expenseService.changeTitle(title, expenseId, id,serverUtil);
+        var resp = expenseService.changeExpense(expense, expenseId, id,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            String dest = "/topic/events/" + id + "/expenses/" + expenseId;
+            System.out.println(dest);
+            messagingTemplate.convertAndSend(dest, expense);
+        }
+        return resp;
     }
 
     /**

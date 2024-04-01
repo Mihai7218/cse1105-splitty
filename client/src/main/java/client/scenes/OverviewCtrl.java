@@ -87,6 +87,8 @@ public class OverviewCtrl implements Initializable {
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
 
+    private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
+
 
     /**
      * Constructs a new OverviewCtrl object.
@@ -114,9 +116,28 @@ public class OverviewCtrl implements Initializable {
             List<Expense> expenses = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
-            }
-            catch (WebApplicationException e) {
+            } catch (WebApplicationException e) {
                 e.printStackTrace();
+            }
+            for (Expense expense : expenses) {
+                if (!expenseSubscriptionMap.containsKey(expense)) {
+                    String dest = "/topic/events/" +
+                            mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                            + expense.getId();
+                    var subscription = server.registerForMessages(dest, Expense.class,
+                            exp -> {
+                                all.getItems().remove(expense);
+                                all.refresh();
+                                if (exp != null) {
+                                    all.getItems().add(exp);
+                                    all.getItems().sort((o1, o2) ->
+                                            -o1.getDate().compareTo(o2.getDate()));
+                                }
+                                all.refresh();
+                                filterViews();
+                            });
+                    expenseSubscriptionMap.put(expense, subscription);
+                }
             }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -168,6 +189,10 @@ public class OverviewCtrl implements Initializable {
      * Goes back to the startMenu.
      */
     public void startMenu() {
+        if (expenseSubscriptionMap != null) {
+            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap = new HashMap<>();
+        }
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
@@ -186,7 +211,7 @@ public class OverviewCtrl implements Initializable {
      * method to display a confirmation message for the expense added
      * this message disappears
      */
-    public void showConfirmationExpense(){
+    public void showConfirmationExpense() {
         expenseAdded.textProperty().bind(languageManager.bind("overview.confirmExpenseAdd"));
         expenseAdded.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
@@ -212,7 +237,7 @@ public class OverviewCtrl implements Initializable {
      * method to display a confirmation message for participant added
      * this message disappears
      */
-    public void showConfirmationParticipant(){
+    public void showConfirmationParticipant() {
         expenseAdded.textProperty().bind(languageManager.bind("overview.confirmParticipantAdd"));
         expenseAdded.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
@@ -237,7 +262,7 @@ public class OverviewCtrl implements Initializable {
     /**
      * General method to show a confirmation message for any edits
      */
-    public void showEditConfirmation(){
+    public void showEditConfirmation() {
         expenseAdded.textProperty().bind(languageManager.bind("overview.confirmEdits"));
         expenseAdded.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
@@ -335,6 +360,7 @@ public class OverviewCtrl implements Initializable {
                 return null;
             }
         });
+        expenseSubscriptionMap = new HashMap<>();
         refresh();
         server.registerForMessages("/topic/events", Event.class, q -> {
             mainCtrl.setEvent(q);
@@ -371,22 +397,22 @@ public class OverviewCtrl implements Initializable {
      */
     public void removeParticipant(Participant participant) {
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
-        for(Expense e: expenses){
-            if(!e.getSplit().stream()
+        for (Expense e : expenses) {
+            if (!e.getSplit().stream()
                     .filter(item -> item.getParticipant()
                             .equals(participant)).toList().isEmpty()
-                || e.getPayee().equals(participant)){
+                    || e.getPayee().equals(participant)) {
                 Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
                 confirmation.contentTextProperty().bind(
                         languageManager.bind("overview.removeParticipant"));
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
+                if (result.isPresent() && result.get() == ButtonType.OK) {
                     participants.getItems().remove(participant);
                     participants.refresh();
                     return;
-                }else{
+                } else {
                     return;
                 }
             }

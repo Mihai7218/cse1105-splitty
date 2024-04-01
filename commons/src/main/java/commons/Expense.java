@@ -201,14 +201,7 @@ public class Expense {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Expense expense = (Expense) o;
-        return id == expense.id && Double.compare(amount, expense.amount) == 0
-                && Objects.equals(currency, expense.currency)
-                && Objects.equals(title, expense.title)
-                && Objects.equals(description, expense.description)
-                && Objects.equals(date, expense.date)
-                && Objects.equals(split, expense.split)
-                && Objects.equals(tag, expense.tag)
-                && Objects.equals(payee, expense.payee);
+        return id == expense.id;
     }
 
     /**

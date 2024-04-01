@@ -16,7 +16,7 @@
 
 <AnchorPane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditExpenseCtrl">
     <children>
-        <Label fx:id="mainLabel" layoutX="29.0" layoutY="14.0" prefHeight="42.0" prefWidth="421.0" text="${controller.languageManager.addExpense.mainLabel}">
+        <Label fx:id="mainLabel" layoutX="29.0" layoutY="14.0" prefHeight="42.0" prefWidth="421.0" text="${controller.languageManager.editExpense.mainLabel}">
             <font>
                 <Font size="24.0" />
             </font>

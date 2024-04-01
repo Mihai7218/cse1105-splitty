@@ -1,8 +1,6 @@
 package server.api;
 
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
+import commons.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -10,9 +8,8 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 import server.database.ParticipantPaymentRepository;
 
-
 import java.util.Collections;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -108,31 +105,43 @@ public class ExpenseService {
     }
 
     /**
-     * @param title      the new title of the expense
+     * @param expense    the new contents of the expense
      * @param expenseId  the id of the expense to be edited
      * @param id         the id of the event which contains the expense
      * @param serverUtil
      * @return whether the title could be changed
      */
-    public ResponseEntity<Void> changeTitle(String title, long expenseId,
-                                            long id, GerneralServerUtil serverUtil) {
-        if (id < 0){
+    public ResponseEntity<Void> changeExpense(Expense expense, long expenseId,
+                                              long id, GerneralServerUtil serverUtil) {
+        if (id < 0 || expenseId < 0){
             return ResponseEntity.badRequest().build();
         }
-        if (!eventRepo.existsById(id)) {
+        if (!eventRepo.existsById(id) || !expenseRepo.existsById(expenseId)) {
             return ResponseEntity.notFound().build();
         }
-        if (expenseId < 0){
-            return ResponseEntity.badRequest().build();
-        }
-        if (!expenseRepo.existsById(expenseId)) {
-            return ResponseEntity.notFound().build();
-        }
+
+        String title = expense.getTitle();
+        double amount = expense.getAmount();
+        Participant payee = expense.getPayee();
+        String currency = expense.getCurrency();
+        Tag tag = expense.getTag();
+        Date date = expense.getDate();
+
         if (title == null || Objects.equals(title, "")) {
             return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
+        change.getSplit().clear();
+        if (expense.getSplit() != null) {
+            ppRepo.saveAll(expense.getSplit());
+        }
+        change.getSplit().addAll(expense.getSplit());
         change.setTitle(title);
+        change.setAmount(amount);
+        change.setPayee(payee);
+        change.setCurrency(currency);
+        change.setTag(tag);
+        change.setDate(date);
         expenseRepo.save(change);
         Event event = eventRepo.findById(id).get();
         serverUtil.updateDate(eventRepo,id);
@@ -261,4 +270,21 @@ public class ExpenseService {
     }
 
 
+    /**
+     * Method that gets an expense from the database by id.
+     * @param id - the id of the parent event.
+     * @param expenseID - the id of the expense.
+     * @return - the expense.
+     */
+    public ResponseEntity<Expense> getExpense(long id, long expenseID) {
+        if (id < 0 || expenseID < 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepo.existsById(id)
+                || !expenseRepo.existsById(expenseID)){
+            return ResponseEntity.notFound().build();
+        }
+        var expense = expenseRepo.findById(expenseID).get();
+        return ResponseEntity.ok(expense);
+    }
 }
