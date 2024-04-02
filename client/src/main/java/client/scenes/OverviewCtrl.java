@@ -87,6 +87,8 @@ public class OverviewCtrl implements Initializable {
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
     private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
+    private StompSession.Subscription participantSubscription;
+
     @FXML
     private Label sumExpense;
     @FXML
@@ -129,6 +131,21 @@ public class OverviewCtrl implements Initializable {
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
+
+        }
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null) {
+            participants.getItems().clear();
+            expenseparticipants.getItems().clear();
+            List<Participant> serverparticipants = new ArrayList<>();
+            try {
+                serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
+            }
+            catch (WebApplicationException e) {
+                e.printStackTrace();
+            }
+            participants.getItems().addAll(serverparticipants);
+            expenseparticipants.getItems().addAll(serverparticipants);
         }
         sumExpense.setText(String.format("%.2f", getSum()));
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
@@ -138,14 +155,8 @@ public class OverviewCtrl implements Initializable {
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
-            for (Participant p : event.getParticipantsList()) {
-                if (!participants.getItems().contains(p))
-                    participants.getItems().add(p);
-                if (!expenseparticipants.getItems().contains(p))
-                    expenseparticipants.getItems().add(p);
-                participants.getItems().sort(Comparator.comparing(Participant::getName));
-                expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
-            }
+            participants.getItems().sort(Comparator.comparing(Participant::getName));
+            expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
             server.registerForMessages(String.format("/topic/events/%s",
                     mainCtrl.getEvent().getInviteCode()), Event.class, q -> Platform.runLater(() ->{
                         mainCtrl.getEvent().setTitle(q.getTitle());
@@ -166,6 +177,15 @@ public class OverviewCtrl implements Initializable {
                                 sumExpense.setText(String.format("%.2f", getSum()));
                                 subscribeToExpense(expense);
                             });
+                        });
+            if (participantSubscription == null)
+                participantSubscription = server.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent()
+                                        .getInviteCode() + "/participants", Participant.class,
+                        participant -> {
+                            participants.getItems().add(participant);
+                            mainCtrl.getEvent().getParticipantsList().add(participant);
+                            participants.refresh();
                         });
         }
     }
@@ -346,9 +366,6 @@ public class OverviewCtrl implements Initializable {
      * Clears all the fields
      */
     private void clearFields() {
-        if (participants != null) {
-            participants.getItems().clear();
-        }
         if (expenseparticipants != null) {
             expenseparticipants.getItems().clear();
         }
@@ -381,8 +398,6 @@ public class OverviewCtrl implements Initializable {
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
         participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
-        participants.getItems().addAll(getParticipants());
-        participants.getItems().sort(Comparator.comparing(Participant::getName));
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
@@ -428,38 +443,38 @@ public class OverviewCtrl implements Initializable {
      */
     public void removeParticipant(Participant participant) {
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
-        for (Expense e : expenses) {
-            if (!e.getSplit().stream()
+        for(Expense e: expenses){
+            if(!e.getSplit().stream()
                     .filter(item -> item.getParticipant()
                             .equals(participant)).toList().isEmpty()
-                    || e.getPayee().equals(participant)) {
+                || e.getPayee().equals(participant)){
                 Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
                 confirmation.contentTextProperty().bind(
                         languageManager.bind("overview.removeParticipant"));
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if (result.isPresent() && result.get() == ButtonType.OK) {
+                if(result.isPresent() && result.get() == ButtonType.OK) {
                     participants.getItems().remove(participant);
                     participants.refresh();
                     return;
-                } else {
+                }else{
                     return;
                 }
             }
         }
-
+        server.removeParticipant(mainCtrl.getEvent().getInviteCode(),participant);
         participants.getItems().remove(participant);
+        expenseparticipants.getItems().remove(participant);
         participants.refresh();
 
     }
 
     /**
      * method to calculate the sum of all expenses in the event
-     *
      * @return double for the event total
      */
-    public double getSum() {
+    public double getSum(){
         double sum = 0;
         if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
