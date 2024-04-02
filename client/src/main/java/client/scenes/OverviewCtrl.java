@@ -119,10 +119,12 @@ public class OverviewCtrl implements Initializable {
         this.currencyConverter = currencyConverter;
     }
 
+    /**
+     * Method that populates the expenses panels.
+     */
     public void populateExpenses() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
-            all.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
@@ -147,8 +149,6 @@ public class OverviewCtrl implements Initializable {
     public void populateParticipants() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null) {
-            participants.getItems().clear();
-            expenseparticipants.getItems().clear();
             List<Participant> serverparticipants = new ArrayList<>();
             try {
                 serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
@@ -156,8 +156,17 @@ public class OverviewCtrl implements Initializable {
             catch (WebApplicationException e) {
                 e.printStackTrace();
             }
+            participants.getItems().clear();
             participants.getItems().addAll(serverparticipants);
-            expenseparticipants.getItems().addAll(serverparticipants);
+            for (Participant p : serverparticipants) {
+                if (!expenseparticipants.getItems().contains(p)) {
+                    expenseparticipants.getItems().add(p);
+                }
+            }
+            for (Participant p : expenseparticipants.getItems()) {
+                if (!serverparticipants.contains(p))
+                    expenseparticipants.getItems().remove(p);
+            }
         }
     }
 
