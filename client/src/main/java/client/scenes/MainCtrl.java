@@ -79,8 +79,9 @@ public class MainCtrl {
      * @param statistics
      */
     public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
-                           Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
-                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant,
+                           Pair<AddQuoteCtrl, Parent> add,
+                           Pair<StartScreenCtrl, Parent> startScreen,
+                           Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
@@ -135,7 +136,7 @@ public class MainCtrl {
      * shows scene for statistics
      */
     public void showStatistics(){
-        primaryStage.titleProperty().bind(languageManager.bind("statistics.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("statistics.sceneTitle"));
         try {
             statistics.getStylesheets().add(getClass()
                     .getResource("stylesheet.css").toExternalForm());
