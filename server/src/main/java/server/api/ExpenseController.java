@@ -43,15 +43,6 @@ public class ExpenseController {
         return expenseService.getAllExpenses(id);
     }
 
-    /***
-     * @param id the event of which we want to sum the total of expenses
-     * @return the sum of all expenses
-     */
-    @GetMapping(path = { "/total" })
-    public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
-        return expenseService.getTotal(id);
-    }
-
     /**
      * @param id the id of the event we want to add the expense to
      * @param expense the expense to be added to the event
