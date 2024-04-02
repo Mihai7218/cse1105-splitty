@@ -251,6 +251,36 @@ public class ServerUtils {
     }
 
     /**
+     * Method that removes a new participant to the server.
+     * @param inviteCode  - invite code of the event.
+     * @param participant - participant that needs to be added.
+     * @return - the participant added to the server.
+     */
+    public Participant removeParticipant(int inviteCode, Participant participant) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server)
+                .path("api/events/" + inviteCode + "/participants/" + participant.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete(Participant.class);
+    }
+
+    /**
+     * Method that removes a new participant to the server.
+     * @param inviteCode  - invite code of the event.
+     * @param participant - participant that needs to be added.
+     * @return - the participant added to the server.
+     */
+    public Participant updateParticipant(int inviteCode, Participant participant) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server)
+                .path("api/events/" + inviteCode + "/participants/" + participant.getId())
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+    }
+
+    /**
      * Method that gets all participants from the server.
      * @param id - invite code of the event.
      * @return - a list of all participants associated with that event.
@@ -322,5 +352,63 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(tag, APPLICATION_JSON), Tag.class);
+    }
+
+    /**
+<<<<<<< HEAD
+     * Method that sends a change of an event to the server.
+     * @param event - the event
+     * @return - the updated event
+     */
+    public Event changeEvent(Event event) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s",
+                        event.getInviteCode()))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
+    }
+    /**
+     * Method that updates the expense on the server.
+     * @param id - the id of the event.
+     * @param expense -
+     * @return
+     */
+    public Expense updateExpense(int id, Expense expense) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/expenses/%s",
+                        id, expense.getId()))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+    }
+
+    /**
+     * Method that gets an expense from the server.
+     * @param eventID - the id of the event.
+     * @param expenseID - the id of the expense.
+     * @return - the expense.
+     */
+    public Expense getExpense(int eventID, long expenseID) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/expenses/%s",
+                        eventID, expenseID))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .get(Expense.class);
+    }
+
+    /**
+     * Method that removes an expense from the server.
+     * @param eventID - the id of the event.
+     * @param expenseID - the id of the expense.
+     */
+    public void removeExpense(int eventID, long expenseID) {
+        ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/expenses/%s",
+                        eventID, expenseID))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete();
     }
 }

@@ -192,7 +192,7 @@ public class Expense {
     }
 
     /**
-     * Equals method of an expense
+     * Equals method of an expense - based only on id.
      * @param o - Object to check equality with.
      * @return true if equal and false otherwise.
      */
@@ -201,7 +201,20 @@ public class Expense {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Expense expense = (Expense) o;
-        return id == expense.id && Double.compare(amount, expense.amount) == 0
+        return id == expense.id;
+    }
+
+    /**
+     * Equals method of an expense - based on all attributes.
+     * @param o - Object to check equality with.
+     * @return true if equal and false otherwise.
+     */
+    public boolean fullEquals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Expense expense = (Expense) o;
+        return id == expense.id
+                && Double.compare(amount, expense.amount) == 0
                 && Objects.equals(currency, expense.currency)
                 && Objects.equals(title, expense.title)
                 && Objects.equals(description, expense.description)
@@ -210,6 +223,7 @@ public class Expense {
                 && Objects.equals(tag, expense.tag)
                 && Objects.equals(payee, expense.payee);
     }
+
 
     /**
      * hashCode method for the Expense.
