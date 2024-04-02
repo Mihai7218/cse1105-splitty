@@ -3,6 +3,7 @@ package admin;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Event;
+import jakarta.ws.rs.core.Response;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -89,6 +90,18 @@ public class AdminConsole {
         showOptions(userInput, adminConsole);
     }
 
+
+    /**
+     * Prints the options of the adminConsole
+     */
+    public static void printOptions(){
+        System.out.println("What would you like to do?");
+        System.out.println("\t 1 - Show events in the database");
+        System.out.println("\t 2 - Dump database to json file");
+        System.out.println("\t 3 - Import events from json file");
+        System.out.println("\t 4 - Delete an event from the database"); //TODO
+        System.out.println("\t 5 - exit");
+    }
     /**
      * show menu with options for user
      *
@@ -96,32 +109,32 @@ public class AdminConsole {
      * @param adminConsole the currently running admin console
      */
     public static void showOptions(Scanner userInput, AdminConsole adminConsole) {
-        System.out.println("What would you like to do?");
-        System.out.println("\t 1 - Show events in the database");
-        System.out.println("\t 2 - Dump database to json file");
-        System.out.println("\t 3 - Import events from json file");
-        System.out.println("\t 4 - Delete an event from the database"); //TODO
-        System.out.println("\t 5 - exit");
-        switch (userInput.nextInt()) {
-            case 1:
-                printerMenu(userInput, adminConsole);
-                break;
-            case 2:
-                adminConsole.updateEvents();
-                adminConsole.getDump(userInput);
-                showOptions(userInput, adminConsole);
-                break;
-            case 3:
-                List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
-                if(importedEvents == null || importedEvents.isEmpty()) break;
-                for(Event e: importedEvents) adminConsole.setNewEvents(e);
-                break;
-            case 4:
-                adminConsole.deleteEventMenu(userInput, adminConsole);
-                break;
-            default:
-                exit();
+        boolean running = true;
+        while (running){
+            printOptions();
+            switch (userInput.nextInt()) {
+                case 1:
+                    printerMenu(userInput, adminConsole);
+                    break;
+                case 2:
+                    adminConsole.updateEvents();
+                    adminConsole.getDump(userInput);
+                    showOptions(userInput, adminConsole);
+                    break;
+                case 3:
+                    List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
+                    if(importedEvents == null || importedEvents.isEmpty()) break;
+                    for(Event e: importedEvents) adminConsole.setNewEvents(e);
+                    break;
+                case 4:
+                    adminConsole.deleteEventMenu(userInput, adminConsole);
+                    break;
+                default:
+                    running = false;
+                    exit();
+            }
         }
+
     }
 
     /**
@@ -203,11 +216,29 @@ public class AdminConsole {
         int invCode = userInput.nextInt();
         boolean deletion = confirmationMenu(userInput, invCode);
         if (deletion){
-            Event event = utils.deleteEvent(invCode);
-            System.out.println("Event" + event.toString() + "deleted successfully");
+            Response event = delete(adminConsole, invCode);
+            if (event.getStatus() == 200) {
+                System.out.println("Event " +
+                        ((Event) event.getEntity()).getInviteCode() +
+                        " deleted successfully");
+            } else if (event.getStatus() == 404) {
+                System.out.println("Event was not found on the server");
+            } else {
+                System.out.println("Something went wrong on the server");
+            }
+
         } else {
             System.out.println("Event remains in the database");
         }
+    }
+
+    /**
+     * Split for testing purposes
+     * @param invCode the invite code of the event to delete
+     * @return  the deleted event
+     */
+    public Response delete(AdminConsole adminConsole, int invCode){
+        return utils.deleteEvent(invCode);
     }
 
 
@@ -491,4 +522,11 @@ public class AdminConsole {
         System.exit(0);
     }
 
+    /**
+     * Mainly for testing purposes
+     * @param util the util to change to
+     */
+    public void setUtils(ServerUtils util) {
+        this.utils = util;
+    }
 }

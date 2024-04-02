@@ -21,7 +21,7 @@ public class Tag {
      * Empty constructor for object mapper
      */
     @SuppressWarnings("unused")
-    private Tag() {
+    public Tag() {
     }
 
     /**

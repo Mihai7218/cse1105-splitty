@@ -73,7 +73,7 @@ public class AddExpenseCtrlTest {
         languageManager = mock(LanguageManager.class);
         currencyConverter = mock(CurrencyConverter.class);
         sut = new AddExpenseCtrl(mainCtrl, config, languageManager,
-                serverUtils, currencyConverter, alert);
+                serverUtils, alert, currencyConverter);
         payee = mock(ChoiceBox.class);
         currency = mock(ChoiceBox.class);
         expenseType = mock(ComboBox.class);
@@ -127,7 +127,6 @@ public class AddExpenseCtrlTest {
     void initialize() {
         assertFalse(question.isVisible());
         assertNotNull(sut.getNamesContainer());
-        assertNotNull(sut.getTags());
         assertEquals(0, namesContainer.getChildren().size());
     }
 

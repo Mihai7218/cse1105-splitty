@@ -44,6 +44,51 @@ class EventServiceTest {
     }
 
     @Test
+    public void calculateTotalSumZero(){
+        assertEquals(0, eventService.getTotal(0).getBody());
+    }
+
+    @Test
+    public void calculateTotalSumOne(){
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+        event.getExpensesList().add(e);
+        eventRepository.save(event);
+        assertEquals(50, eventService.getTotal(3).getBody());
+    }
+
+    @Test
+    public void calculateTotalSumMult(){
+        Event event = new Event("Title4", null, null);
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        List<ParticipantPayment> split = List.of(pp);
+        Tag t = new Tag("red", "red");
+        Expense e= new Expense(50, "USD", "exampleExpense", "description",
+                null,split ,t, p);
+        Expense e2 = new Expense(40, "USD", "secondExample", "desc",
+                null, split, t, p);
+        Expense e3 = new Expense(10, "USD", "secondExample", "desc",
+                null, split, t, p);
+        event.getExpensesList().add(e);
+        event.getExpensesList().add(e2);
+        event.getExpensesList().add(e3);
+        eventRepository.save(event);
+        assertEquals(100, eventService.getTotal(3).getBody());
+    }
+
+    @Test
     public void calculateDebtsTest(){
         ParticipantRepository participantRepo = new TestParticipantRepository();
         Event event = new Event("Title4", null, null);
@@ -210,7 +255,7 @@ class EventServiceTest {
         event.setTagsList(List.of(t, one, two, three));
         event.setInviteCode(5);
         assertEquals(OK, eventService.validateEvent(event).getStatusCode());
-        eventService.addEvent(event);
+        assertEquals(eventService.addCreatedEvent(event).getStatusCode(), OK);
         assertEquals(eventService.getAllEvents().getBody().size(), 4);
     }
 

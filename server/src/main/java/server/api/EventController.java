@@ -1,14 +1,18 @@
 package server.api;
 
 import commons.Event;
+import commons.Expense;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -23,15 +27,19 @@ public class EventController {
 
     private final GerneralServerUtil serverUtil;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     /**
      * constructor for the EventController
      * @param eventService the service with all the necessary functions for the api
      */
     public EventController(EventService eventService,
-                           @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
+                           @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil,
+                           SimpMessagingTemplate messagingTemplate) {
         this.eventService = eventService;
         this.serverUtil = serverUtil;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -57,6 +65,16 @@ public class EventController {
         return event;
     }
 
+    /***
+     * @param id the event of which we want to sum the total of expenses
+     * @return the sum of all expenses
+     */
+    @GetMapping(path = { "/{id}/total" })
+    public ResponseEntity<Double> getTotal(@PathVariable("id") long id) {
+        return eventService.getTotal(id);
+    }
+
+
     /**
      * Get method to get a specific event from the database
      * @param inviteCode the invite code of that specific event
@@ -81,6 +99,32 @@ public class EventController {
     }
 
     /**
+     * @param inviteCode the invite code of the event to check in
+     * @param payeeId the id of the participant to check if they're
+     *                the payee in the expenses
+     * @return the list of expenses the participant was the payee in
+     */
+    @GetMapping(path = {"/{inviteCode}/payee/{payeeId}"})
+    public ResponseEntity<List<Expense>> getInvolvingPayee(@PathVariable("inviteCode")
+                                                               long inviteCode,
+                                             @PathVariable("payeeId") long payeeId){
+        return eventService.getExpensesInvolvingPayee(inviteCode, payeeId);
+    }
+
+    /**
+     * @param inviteCode the invite code of the event to check in
+     * @param partId the id of the participant to check if they're
+     *               involved in the expenses
+     * @return the list of expenses the participant was involved in
+     */
+    @GetMapping(path = {"/{inviteCode}/participant/{partId}"})
+    public ResponseEntity<List<Expense>> getInvolvingPart(@PathVariable("inviteCode")
+                                                              long inviteCode,
+                                             @PathVariable("partId") long partId){
+        return eventService.getExpensesInvolvingParticipant(inviteCode, partId);
+    }
+
+    /**
      * A post method to add and event to the repository
      * @param event an event in the requestBody to add to the repository
      * @return the event if succesfully made
@@ -99,7 +143,12 @@ public class EventController {
     @PutMapping(path = {"/{inviteCode}" })
     public ResponseEntity<Event> change(@PathVariable("inviteCode") long inviteCode,
                                         @RequestBody Event event) {
-        return eventService.changeEvent(inviteCode,event,serverUtil);
+        var resp = eventService.changeEvent(inviteCode,event,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + inviteCode,
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /**

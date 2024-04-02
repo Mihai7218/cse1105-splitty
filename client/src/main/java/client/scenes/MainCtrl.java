@@ -43,6 +43,8 @@ public class MainCtrl {
 
     private EditParticipantCtrl editparticipantCtrl;
     private Scene editparticipant;
+    private EditExpenseCtrl editExpenseCtrl;
+    private Scene editExpense;
     private OverviewCtrl overviewCtrl;
     private Scene overview;
     private AddExpenseCtrl addExpenseCtrl;
@@ -84,7 +86,8 @@ public class MainCtrl {
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
                            Pair<EditParticipantCtrl, Parent> editparticipant,
-                           Pair<SettingsCtrl, Parent> settings) {
+                           Pair<SettingsCtrl, Parent> settings,
+                           Pair<EditExpenseCtrl, Parent> editExpense) {
         this.primaryStage = primaryStage;
         this.quoteOverviewCtrl = quoteOverview.getKey();
         this.quoteOverview = new Scene(quoteOverview.getValue());
@@ -113,8 +116,10 @@ public class MainCtrl {
         this.settingsCtrl = settings.getKey();
         this.settings = new Scene(settings.getValue());
 
+        this.editExpenseCtrl = editExpense.getKey();
+        this.editExpense = new Scene(editExpense.getValue());
+
         showStartMenu();
-//        showSettings();
         primaryStage.show();
     }
 
@@ -122,9 +127,40 @@ public class MainCtrl {
      * shows scene to send invitations
      */
     public void showInvitation(){
-        primaryStage.titleProperty().bind(languageManager.bind("startScreen.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
+    }
+
+    /**
+     * shows the edit expense scene
+     */
+    public void showEditExpense(){
+        primaryStage.titleProperty().bind(languageManager.bind("editExpense.windowTitle"));
+        try {
+            editExpense.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(editExpense);
+        if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
+    }
+
+    /**
+     *
+     * @return the controller for editing an expense
+     */
+    public EditExpenseCtrl getEditExpenseCtrl() {
+        return editExpenseCtrl;
+    }
+
+    /**
+     *
+     * @return the scene for editing and expense
+     */
+    public Scene getEditExpense() {
+        return editExpense;
     }
 
     /**
@@ -155,6 +191,27 @@ public class MainCtrl {
         }
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
+    }
+
+    /**
+     * Calls the method to display successful expense added message
+     */
+    public void showExpenseConfirmation(){
+        overviewCtrl.showConfirmationExpense();
+    }
+
+    /**
+     * calls the method to display a participant being added successfully
+     */
+    public void showParticipantConfirmation(){
+        overviewCtrl.showConfirmationParticipant();
+    }
+
+    /**
+     * calls the method to display an edit being made successfully
+     */
+    public void showEditConfirmation(){
+        overviewCtrl.showEditConfirmation();
     }
 
     /**
@@ -199,6 +256,12 @@ public class MainCtrl {
      */
     public void showEditParticipant() {
         primaryStage.titleProperty().bind(languageManager.bind("editParticipant.windowTitle"));
+        try {
+            editparticipant.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(editparticipant);
         if (overviewCtrl != null) editparticipantCtrl.refresh();
     }

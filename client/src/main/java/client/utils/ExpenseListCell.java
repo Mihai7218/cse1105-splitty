@@ -2,6 +2,7 @@ package client.utils;
 
 import client.scenes.MainCtrl;
 import commons.Expense;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -9,11 +10,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
 
+import java.text.DateFormat;
+
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
+    private final ServerUtils server;
     private Label expenseName;
     private Label paidLabel;
     private Label payeeName;
@@ -23,6 +27,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     private Label date;
     private Label payers;
     private Button edit;
+    private Button remove;
     private FlowPane details;
     private VBox vBox;
     private HBox hBox;
@@ -35,9 +40,11 @@ public class ExpenseListCell extends ListCell<Expense> {
     public ExpenseListCell(MainCtrl mainCtrl,
                            LanguageManager languageManager,
                            CurrencyConverter currencyConverter,
-                           ConfigInterface config) {
+                           ConfigInterface config,
+                           ServerUtils server) {
         super();
         this.mainCtrl = mainCtrl;
+        this.server = server;
         this.languageManager = languageManager;
         this.currencyConverter = currencyConverter;
         this.config = config;
@@ -45,6 +52,7 @@ public class ExpenseListCell extends ListCell<Expense> {
 
     /**
      * Creates the graphic for the expense.
+     *
      * @param item - expense item
      */
     private void createGraphic(Expense item) {
@@ -59,15 +67,33 @@ public class ExpenseListCell extends ListCell<Expense> {
         date = new Label();
         payers = new Label();
         edit = new Button();
-        edit.setText("✎");
+        edit.setText("\uD83D\uDD89");
         edit.setOnAction(param -> {
-            //TODO: add edit expense functionality
+            mainCtrl.getEditExpenseCtrl().setExpense(item);
+            mainCtrl.showEditExpense();
+            //System.out.println(item);
         });
+        remove = new Button();
+        remove.setText("\uD83D\uDDD1");
+        remove.setId("cancel");
+        remove.setOnAction(param -> {
+            try {
+                server.removeExpense(mainCtrl.getEvent().getInviteCode(), item.getId());
+            } catch (WebApplicationException e) {
+                if (mainCtrl.getOverviewCtrl() == null
+                        || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                    return;
+                var sub = mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap().get(item);
+                if (sub != null)
+                    sub.notify();
+            }
+        });
+
         autogrowLeft = new Region();
         autogrowRight = new Region();
         details = new FlowPane(payeeName, paidLabel, price, currency, forLabel, expenseName);
         vBox = new VBox(details, payers);
-        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit);
+        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit, remove);
         hBox.setSpacing(5);
         vBox.setSpacing(5);
         details.setHgap(3);
@@ -85,7 +111,8 @@ public class ExpenseListCell extends ListCell<Expense> {
 
     /**
      * Updates the item in the list to have the event name and the open and close buttons.
-     * @param item - item in the list
+     *
+     * @param item  - item in the list
      * @param empty - whether the item is empty or not
      */
     @Override
@@ -107,14 +134,12 @@ public class ExpenseListCell extends ListCell<Expense> {
         boolean setCurrency = false;
         try {
             expenseName.setText(this.getItem().getTitle());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             expenseName.setText("<no title>");
         }
         try {
             payeeName.setText(this.getItem().getPayee().getName());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             payeeName.setText("<no payee>");
         }
         String currencyString = config.getProperty("currency");
@@ -130,8 +155,7 @@ public class ExpenseListCell extends ListCell<Expense> {
         }
         catch (NullPointerException e) {
             price.setText("<no price>");
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             price.setText("<invalid price>");
         }
         catch (CouldNotConvertException e) {
@@ -157,15 +181,12 @@ public class ExpenseListCell extends ListCell<Expense> {
             sb.append(this.getItem().getSplit()
                     .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
             sb.append(")");
-        }
-        else {
-            sb.append("none");
-        }
+        } else sb.append("none");
         payers.setText(sb.toString());
         try {
-            date.setText(String.valueOf(this.getItem().getDate()));
-        }
-        catch (NullPointerException e) {
+            var dateObj = this.getItem().getDate();
+            date.setText(DateFormat.getDateInstance().format(dateObj));
+        } catch (NullPointerException e) {
             date.setText("<no date>");
         }
         setGraphic(hBox);
