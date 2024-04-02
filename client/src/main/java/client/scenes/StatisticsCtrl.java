@@ -146,13 +146,19 @@ public class StatisticsCtrl implements Initializable {
         List<Pair<Tag, List<Expense>>> stats = pairListMaker();
         System.out.println(stats);
 
+        double total = 0;
+        for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
+            total += expense.getAmount();
+        }
+
         for (Pair<Tag, List<Expense>> pair : stats) {
             String catagoryName = pair.getKey().getName();
             double value = 0;
             for (Expense expense : pair.getValue()) {
                 value += expense.getAmount();
             }
-            PieChart.Data slice = new PieChart.Data(catagoryName, value);
+            PieChart.Data slice = new PieChart.Data(catagoryName + ": "
+                    + value + "(" + (int)(value/total*100) + "%)", value);
             pieChart.getData().add(slice);
             try {
                 slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
@@ -170,10 +176,7 @@ public class StatisticsCtrl implements Initializable {
 
         updateOwnLegend();
 
-        double total = 0;
-        for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
-            total += expense.getAmount();
-        }
+
         StringBinding test = languageManager.bind("statistics.chartTitle");
         pieChart.setTitle(mainCtrl.getEvent().getTitle() +
                 "\n" + test.getValue() + " " + total);
