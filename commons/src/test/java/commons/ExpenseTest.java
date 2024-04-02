@@ -1,12 +1,9 @@
 package commons;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import org.junit.jupiter.api.Test;
+
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -136,7 +133,7 @@ public class ExpenseTest {
         Participant payee = new Participant("Rudolf", "rudolf@gmail.com",
                 "NL27RABO2766662000", "RABONL2U");
         Expense expense2 = new Expense(amount, currency, title, description, date, split, tag, payee);
-        assertNotEquals(expense2, expense);
+        assertFalse(expense2.fullEquals(expense));
     }
     @Test
     void EqualHashCodeTest(){

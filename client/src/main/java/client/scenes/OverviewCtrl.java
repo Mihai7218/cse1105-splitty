@@ -86,7 +86,7 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
-
+    private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
     @FXML
     private Label sumExpense;
     @FXML
@@ -123,25 +123,52 @@ public class OverviewCtrl implements Initializable {
             } catch (WebApplicationException e) {
                 e.printStackTrace();
             }
+            for (Expense expense : expenses) {
+                if (!expenseSubscriptionMap.containsKey(expense)) {
+                    String dest = "/topic/events/" +
+                            mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                            + expense.getId();
+                    var subscription = server.registerForMessages(dest, Expense.class,
+                            exp -> {
+                                Platform.runLater(() -> {
+                                    all.getItems().remove(expense);
+                                    mainCtrl.getEvent().getExpensesList().remove(expense);
+                                    all.refresh();
+                                    if (!"deleted".equals(exp.getDescription())) {
+                                        all.getItems().add(exp);
+                                        mainCtrl.getEvent().getExpensesList().add(exp);
+                                        all.getItems().sort((o1, o2) ->
+                                                -o1.getDate().compareTo(o2.getDate()));
+                                    }
+                                    filterViews();
+                                    all.refresh();
+                                    participants.refresh();
+                                    sumExpense.setText(String.format("%.2f", getSum()));
+                                });
+                            });
+                    expenseSubscriptionMap.put(expense, subscription);
+                }
+            }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
         }
+        sumExpense.setText(String.format("%.2f", getSum()));
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
-        sumExpense.setText(String.format("%.2f", getSum()));
-        clearFields();
         if (event != null) {
             title.setText(event.getTitle());
-            participants.getItems().clear();
-            participants.getItems().addAll(server.getAllParticipants(
-                    mainCtrl.getEvent().getInviteCode()));
-            mainCtrl.getEvent().getParticipantsList().clear();
-            mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
-            expenseparticipants.getItems().addAll(event.getParticipantsList());
+            for (Participant p : event.getParticipantsList()) {
+                if (!participants.getItems().contains(p))
+                    participants.getItems().add(p);
+                if (!expenseparticipants.getItems().contains(p))
+                    expenseparticipants.getItems().add(p);
+                participants.getItems().sort(Comparator.comparing(Participant::getName));
+                expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
+            }
             server.registerForMessages(String.format("/topic/events/%s",
                     mainCtrl.getEvent().getInviteCode()), Event.class, q -> Platform.runLater(() ->{
                         mainCtrl.getEvent().setTitle(q.getTitle());
@@ -151,11 +178,16 @@ public class OverviewCtrl implements Initializable {
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
                         expense -> {
-                            all.getItems().add(expense);
-                            mainCtrl.getEvent().getExpensesList().add(expense);
-                            all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
-                            all.refresh();
-                            filterViews();
+                            Platform.runLater(() -> {
+                                all.getItems().add(expense);
+                                mainCtrl.getEvent().getExpensesList().add(expense);
+                                all.getItems().sort((o1, o2) ->
+                                        -o1.getDate().compareTo(o2.getDate()));
+                                filterViews();
+                                all.refresh();
+                                participants.refresh();
+                                sumExpense.setText(String.format("%.2f", getSum()));
+                            });
                         });
         }
     }
@@ -180,10 +212,15 @@ public class OverviewCtrl implements Initializable {
      * Goes back to the startMenu.
      */
     public void startMenu() {
+        if (expenseSubscriptionMap != null) {
+            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap = new HashMap<>();
+        }
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
         }
+        clearFields();
         mainCtrl.showStartMenu();
     }
 
@@ -324,9 +361,9 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
         Label fromLabel = new Label();
         Label includingLabel = new Label();
         participantFrom = new Label();
@@ -338,6 +375,7 @@ public class OverviewCtrl implements Initializable {
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
         participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
         participants.getItems().addAll(getParticipants());
+        participants.getItems().sort(Comparator.comparing(Participant::getName));
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
@@ -350,6 +388,7 @@ public class OverviewCtrl implements Initializable {
                 return null;
             }
         });
+        expenseSubscriptionMap = new HashMap<>();
         refresh();
     }
 
@@ -478,11 +517,17 @@ public class OverviewCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+    /**
+     *
+     */
+    public ListView<Participant> getParticipantsListView() {
+        return participants;
+    }
 
     /**
      * Gets the List of participants of the event
      */
-    private List<Participant> getParticipants() {
+    public List<Participant> getParticipants() {
         if (mainCtrl.getEvent() == null) return new ArrayList<>();
         List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
         return participantsList;
@@ -495,5 +540,14 @@ public class OverviewCtrl implements Initializable {
      */
     public void updateLanguageComboBox(String language) {
         if (languages != null) languages.setValue(language);
+    }
+
+    /**
+     * Getter for the expense subscription map.
+     *
+     * @return - the expense subscription map of the overview controller.
+     */
+    public Map<Expense, StompSession.Subscription> getExpenseSubscriptionMap() {
+        return expenseSubscriptionMap;
     }
 }
