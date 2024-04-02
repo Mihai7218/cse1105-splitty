@@ -120,7 +120,7 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
-     * Method that populates the expenses panels.
+     * Method that populates the lists related to expenses.
      */
     public void populateExpenses() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
@@ -146,6 +146,9 @@ public class OverviewCtrl implements Initializable {
         sumExpense.setText(String.format("%.2f %s", getSum(), base));
     }
 
+    /**
+     * Method that populates the lists related to participants.
+     */
     public void populateParticipants() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null) {

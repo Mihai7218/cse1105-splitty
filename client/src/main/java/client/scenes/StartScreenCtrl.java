@@ -303,8 +303,10 @@ public class StartScreenCtrl implements Initializable {
         }
         addRecentEvent(e);
         mainCtrl.setEvent(e);
-        mainCtrl.getOverviewCtrl().populateExpenses();
-        mainCtrl.getOverviewCtrl().populateParticipants();
+        if (mainCtrl.getOverviewCtrl() != null) {
+            mainCtrl.getOverviewCtrl().populateExpenses();
+            mainCtrl.getOverviewCtrl().populateParticipants();
+        }
         mainCtrl.showOverview();
         serverUtils.stop();
     }
@@ -353,8 +355,10 @@ public class StartScreenCtrl implements Initializable {
         }
         mainCtrl.setEvent(e);
         mainCtrl.showOverview();
-        mainCtrl.getOverviewCtrl().populateExpenses();
-        mainCtrl.getOverviewCtrl().populateParticipants();
+        if (mainCtrl.getOverviewCtrl() != null) {
+            mainCtrl.getOverviewCtrl().populateExpenses();
+            mainCtrl.getOverviewCtrl().populateParticipants();
+        }
         serverUtils.stop();
     }
 

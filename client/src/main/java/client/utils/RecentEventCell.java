@@ -59,8 +59,10 @@ public class RecentEventCell extends ListCell<Event> {
         open.setOnAction(param -> {
             mainCtrl.getStartScreenCtrl().addRecentEvent(item);
             mainCtrl.setEvent(item);
-            mainCtrl.getOverviewCtrl().populateExpenses();
-            mainCtrl.getOverviewCtrl().populateParticipants();
+            if (mainCtrl.getOverviewCtrl() != null) {
+                mainCtrl.getOverviewCtrl().populateExpenses();
+                mainCtrl.getOverviewCtrl().populateParticipants();
+            }
             mainCtrl.showOverview();
         });
         close = new Button();

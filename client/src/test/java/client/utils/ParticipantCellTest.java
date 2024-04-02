@@ -136,8 +136,8 @@ class ParticipantCellTest {
         boolean empty = false;
         sut.updateItem(item, empty);
         assertEquals(participant.getText(), item.getName());
-        assertEquals(share.getText(), "0.00");
-        assertEquals(owe.getText(), "0.00");
-        assertEquals(owed.getText(), "0.00");
+        assertEquals(share.getText(), "0.00 EUR");
+        assertEquals(owe.getText(), "0.00 EUR");
+        assertEquals(owed.getText(), "0.00 EUR");
     }
 }
