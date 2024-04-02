@@ -80,9 +80,6 @@ public class EventService {
 
     }
 
-
-
-
     /**
      * A post method to add and event to the repository
      * @param event an event in the requestBody to add to the repository
@@ -188,6 +185,26 @@ public class EventService {
         return ResponseEntity.ok(eventRepository.save(event));
     }
 
+    /**
+     * Sums the total of all expenses within an event
+     * @param id the id of the event
+     * @return whether the total could be returned
+     */
+    public ResponseEntity<Double> getTotal(long id) {
+        if (id < 0){
+            return ResponseEntity.badRequest().build();
+        }
+        if (!eventRepository.existsById(id)){
+            return ResponseEntity.notFound().build();
+        }
+        Event event = eventRepository.findById(id).get();
+        List<Expense> expenses = event.getExpensesList();
+        double totalExpense = 0.0;
+        for (Expense expense : expenses) {
+            totalExpense += expense.getAmount();
+        }
+        return ResponseEntity.ok(totalExpense);
+    }
 
     /**
      * Endpoint to calculate the share/total that a certain participant owes/is owed
@@ -295,5 +312,58 @@ public class EventService {
                 .toList().getFirst();
         if(current == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(0.0);
+    }
+
+    /**
+     * @param inviteCode the invite code of the event to check in
+     * @param payeeId the id of the participant to check if they're the payee
+     * @return a list of expenses where the given participant was the payee
+     */
+    public ResponseEntity<List<Expense>> getExpensesInvolvingPayee(long inviteCode,
+                                                                   long payeeId) {
+        if(inviteCode < 0){
+            return ResponseEntity.badRequest().build();
+        }else if (!eventRepository.existsById(inviteCode)){
+            return ResponseEntity.notFound().build();
+        } else if(!eventRepository.findById(inviteCode).isPresent()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Event event = eventRepository.findById(inviteCode).get();
+
+        List<Expense> expensesInvolvingPayee = new ArrayList<>();
+        for (Expense expense : event.getExpensesList()) {
+            if (expense.getPayee().getId() == (payeeId)) {
+                expensesInvolvingPayee.add(expense);
+            }
+        }
+        return ResponseEntity.ok(expensesInvolvingPayee);
+    }
+
+    /**
+     * @param inviteCode the invite code of the event to check in
+     * @param partId the id of the participant to check if they're
+     *               involved in the expenses
+     * @return the list of expenses the participant was involved in
+     */
+    public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode,
+                                                                         long partId) {
+        if(inviteCode < 0 || !eventRepository.findById(inviteCode).isPresent()){
+            return ResponseEntity.badRequest().build();
+        } else if (!eventRepository.existsById(inviteCode)){
+            return ResponseEntity.notFound().build();
+        }
+        Event event = eventRepository.findById(inviteCode).get();
+
+        List<Expense> expensesInvolvingPart = new ArrayList<>();
+        for (Expense expense : event.getExpensesList()) {
+            List<ParticipantPayment> split = expense.getSplit();
+            for (ParticipantPayment pay : split){
+                if (pay.getParticipant().getId() == partId){
+                    expensesInvolvingPart.add(expense);
+                }
+            }
+        }
+        return ResponseEntity.ok(expensesInvolvingPart);
     }
 }

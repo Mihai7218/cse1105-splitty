@@ -120,6 +120,7 @@ public class EditParticipantCtrl {
 
         clearFields();
         mainCtrl.showOverview();
+        mainCtrl.showEditConfirmation();
     }
 
     /**

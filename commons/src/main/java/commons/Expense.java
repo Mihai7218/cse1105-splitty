@@ -28,7 +28,7 @@ public class Expense {
      * No-arg constructor of Expense
      */
     @SuppressWarnings("unused")
-    private Expense() {
+    public Expense() {
     }
 
     /**
@@ -237,5 +237,13 @@ public class Expense {
                 ", tag=" + tag +
                 ", payee=" + payee +
                 '}';
+    }
+
+    /**
+     * sets payment split among participants
+     * @param split
+     */
+    public void setSplit(List<ParticipantPayment> split) {
+        this.split = split;
     }
 }

@@ -109,6 +109,12 @@ class MainCtrlTest {
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
+    @Test
+    void showEditExpense(){
+        sut.showEditExpense();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
 
     /**
      * Tests that the stage that was set is returned when calling the getter for it.
@@ -135,22 +141,26 @@ class MainCtrlTest {
         OverviewCtrl overviewCtrl = mock(OverviewCtrl.class);
         Parent overview = spy(Parent.class);
         AddExpenseCtrl addExpenseCtrl = mock(AddExpenseCtrl.class);
-        Parent addexpense = spy(Parent.class);
+        Parent addExpense = spy(Parent.class);
         InvitationCtrl invitationCtrl = mock(InvitationCtrl.class);
         Parent invitation = spy(Parent.class);
         EditParticipantCtrl editParticipantCtrl = mock(EditParticipantCtrl.class);
         Parent editParticipant = spy(Parent.class);
         StatisticsCtrl statisticsCtrl = mock(StatisticsCtrl.class);
         Parent statistics = spy(Parent.class);
+        EditExpenseCtrl editExpenseCtrl = mock(EditExpenseCtrl.class);
+        Parent editExpense = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
-                new Pair<>(addExpenseCtrl, addexpense),
+                new Pair<>(addExpenseCtrl, addExpense),
                 new Pair<>(invitationCtrl,invitation),
-                new Pair<>(editParticipantCtrl,editParticipant), new Pair<>(statisticsCtrl,statistics));
+                new Pair<>(editParticipantCtrl,editParticipant),
+                new Pair<>(statisticsCtrl,statistics),
+                new Pair<>(editExpenseCtrl, editExpense));
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
@@ -162,6 +172,14 @@ class MainCtrlTest {
         assertEquals(participant, sut.getParticipant().getRoot());
         assertEquals(overviewCtrl, sut.getOverviewCtrl());
         assertEquals(overview, sut.getOverview().getRoot());
+        assertEquals(invitationCtrl, sut.getInvitationCtrl());
+        assertEquals(invitation, sut.getInvitation().getRoot());
+        assertEquals(editParticipantCtrl, sut.getEditparticipantCtrl());
+        assertEquals(editParticipant, sut.getEditparticipant().getRoot());
+        assertEquals(editExpenseCtrl, sut.getEditExpenseCtrl());
+        assertEquals(editExpense, sut.getEditExpense().getRoot());
+        assertEquals(addExpenseCtrl, sut.getAddExpenseCtrl());
+        assertEquals(addExpense, sut.getAddExpense().getRoot());
     }
 
     @Test

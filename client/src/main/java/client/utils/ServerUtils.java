@@ -16,8 +16,7 @@
 package client.utils;
 
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Quote;
+import commons.*;
 import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
@@ -198,8 +197,10 @@ public class ServerUtils {
      * @param dest the destination on the server
      * @param consumer a consumer who waits for a response
      */
-    public <T> void registerForMessages(String dest, Class<T> type, Consumer<T> consumer) {
-        session.subscribe(dest, new StompFrameHandler() {
+    public <T> StompSession.Subscription registerForMessages(String dest,
+                                                             Class<T> type,
+                                                             Consumer<T> consumer) {
+        return session.subscribe(dest, new StompFrameHandler() {
             @Override
             public Type getPayloadType(StompHeaders headers) {
                 return type;
@@ -217,7 +218,109 @@ public class ServerUtils {
      * @param dest destination to send the data to
      * @param o object to send
      */
-    public void send(String dest, Object o) {
-        session.send(dest,o);
+    public Object send(String dest, Object o) {
+        return session.send(dest,o);
+    }
+
+    /**
+     * Method that gets all expenses from the server.
+     * @param id - invite code of the event.
+     * @return - a list of all expenses associated with that event.
+     */
+    public List<Expense> getAllExpenses(int id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/" + id + "/expenses") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<>() {
+                });
+    }
+
+    /**
+     * Method that adds a new participant to the server.
+     * @param inviteCode - invite code of the event.
+     * @param participant - participant that needs to be added.
+     * @return - the participant added to the server.
+     */
+    public Participant addParticipant(int inviteCode, Participant participant) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + inviteCode + "/participants")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(participant, APPLICATION_JSON), Participant.class);
+    }
+
+    /**
+     * Method that gets all participants from the server.
+     * @param id - invite code of the event.
+     * @return - a list of all participants associated with that event.
+     */
+    public List<Participant> getAllParticipants(int id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/" + id + "/participants") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<>() {
+                });
+    }
+
+    /**
+     * Method that adds a participant payment to the server.
+     * @param inviteCode - invite code of the event.
+     * @param expenseId - id of the expense.
+     * @param pp - the participant payment to be added.
+     * @return - the participant payment that was added.
+     */
+    public ParticipantPayment addParticipantPayment(int inviteCode,
+                                                    long expenseId,
+                                                    ParticipantPayment pp) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + inviteCode +
+                        "/expenses/" + expenseId + "/participantpayment")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(pp, APPLICATION_JSON), ParticipantPayment.class);
+    }
+
+    /**
+     * Method that adds an expense to the server.
+     * @param inviteCode - invite code of the event.
+     * @param expense - expense that needs to be added.
+     * @return - the expense that was added.
+     */
+    public Expense addExpense(int inviteCode, Expense expense) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + inviteCode + "/expenses")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(expense, APPLICATION_JSON), Expense.class);
+    }
+
+    /**
+     * Method that gets all tags from the server.
+     * @param id - invite code of the event.
+     * @return - a list of all tags associated with that event.
+     */
+    public List<Tag> getAllTags(int id) {
+        return ClientBuilder.newClient(new ClientConfig()) //
+                .target(server).path("api/events/" + id + "/tags") //
+                .request(APPLICATION_JSON) //
+                .accept(APPLICATION_JSON) //
+                .get(new GenericType<>() {
+                });
+    }
+
+    /**
+     * Method that adds a tag to the server.
+     * @param id - invite code of the event.
+     * @param tag - tag that needs to be added.
+     * @return - the tag that was added.
+     */
+    public Tag addTag(int id, Tag tag) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path("api/events/" + id + "/tags")
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .post(Entity.entity(tag, APPLICATION_JSON), Tag.class);
     }
 }

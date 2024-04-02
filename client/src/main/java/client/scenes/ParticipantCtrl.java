@@ -90,7 +90,7 @@ public class ParticipantCtrl {
             return;
         }
         try {
-            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
+            server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
@@ -102,6 +102,7 @@ public class ParticipantCtrl {
 
         clearFields();
         mainCtrl.showOverview();
+        mainCtrl.showParticipantConfirmation();
     }
 
     /**

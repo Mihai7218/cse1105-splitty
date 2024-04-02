@@ -124,7 +124,6 @@ public class AddExpenseCtrlTest {
         assertFalse(question.isVisible());
         assertNotNull(sut.getNamesContainer());
         assertNotNull(sut.getCurrencies());
-        assertNotNull(sut.getTags());
         assertEquals(0, namesContainer.getChildren().size());
     }
 
