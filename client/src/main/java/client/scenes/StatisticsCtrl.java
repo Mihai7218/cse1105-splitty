@@ -8,6 +8,7 @@ import commons.Event;
 import commons.Expense;
 import commons.Tag;
 import javafx.application.Platform;
+import javafx.beans.binding.StringBinding;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -78,9 +79,6 @@ public class StatisticsCtrl implements Initializable {
             mainCtrl.setEvent(q);
             Platform.runLater(() -> refresh());
         });
-
-
-
 
 
     }
@@ -176,8 +174,9 @@ public class StatisticsCtrl implements Initializable {
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
             total += expense.getAmount();
         }
-        pieChart.titleProperty().set(mainCtrl.getEvent().getTitle() +
-                "\nThe total sum is: " + total);
+        StringBinding test = languageManager.bind("statistics.chartTitle");
+        pieChart.setTitle(mainCtrl.getEvent().getTitle() +
+                "\n" + test.getValue() + " " + total);
     }
 
     /**

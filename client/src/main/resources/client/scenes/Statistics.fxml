@@ -7,6 +7,6 @@
 
 <Pane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
    <PieChart fx:id="pieChart" layoutX="14.0" layoutY="14.0" legendVisible="false" onMouseClicked="#setStatistics" prefHeight="344.0" prefWidth="422.0" title="Chart" />
-   <VBox fx:id="ownLegend" layoutX="251.0" layoutY="303.0" prefHeight="158.0" prefWidth="185.0" />
+   <VBox fx:id="ownLegend" layoutX="277.0" layoutY="286.0" prefHeight="175.0" prefWidth="159.0" />
    <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="86.0" layoutY="414.0" mnemonicParsing="false" onAction="#backToOverview" text="${controller.languageManager.statistics.backButton}" />
 </Pane>
