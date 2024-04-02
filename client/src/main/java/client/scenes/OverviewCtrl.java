@@ -231,7 +231,7 @@ public class OverviewCtrl implements Initializable {
                         }
                         filterViews();
                         all.refresh();
-                        participants.refresh();
+                        populateParticipants();
                         String baseCurrency = getCurrency();
                         sumExpense.setText(String.format("%.2f %s", getSum(), baseCurrency));
                     }));
