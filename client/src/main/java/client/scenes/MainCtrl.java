@@ -242,6 +242,12 @@ public class MainCtrl {
      */
     public void showEditParticipant() {
         primaryStage.titleProperty().bind(languageManager.bind("editParticipant.windowTitle"));
+        try {
+            editparticipant.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(editparticipant);
         if (overviewCtrl != null) editparticipantCtrl.refresh();
     }
