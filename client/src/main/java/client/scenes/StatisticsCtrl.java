@@ -126,7 +126,7 @@ public class StatisticsCtrl implements Initializable {
      */
     public void refresh() {
         pieChart.titleProperty().set(mainCtrl.getEvent().getTitle());
-        cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
+        cancel.setGraphic(new ImageView(new Image("icons/arrowback.png")));
         setStatistics();
     }
 
@@ -143,6 +143,7 @@ public class StatisticsCtrl implements Initializable {
      */
     public void setStatistics() {
         pieChart.getData().clear();
+        List<Pair<Tag, Double>> legendList = new ArrayList<>();
         List<Pair<Tag, List<Expense>>> stats = pairListMaker();
         System.out.println(stats);
 
@@ -157,8 +158,7 @@ public class StatisticsCtrl implements Initializable {
             for (Expense expense : pair.getValue()) {
                 value += expense.getAmount();
             }
-            PieChart.Data slice = new PieChart.Data(catagoryName + ": "
-                    + value + "(" + (int)(value/total*100) + "%)", value);
+            PieChart.Data slice = new PieChart.Data(catagoryName, value);
             pieChart.getData().add(slice);
             try {
                 slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
@@ -166,7 +166,7 @@ public class StatisticsCtrl implements Initializable {
             } catch (Exception e) {
                 System.out.println(e);
             }
-
+            legendList.add(new Pair<>(pair.getKey(),value));
         }
 
 
@@ -174,7 +174,7 @@ public class StatisticsCtrl implements Initializable {
         pieChart.getData().get(0).getNode().getParent().getParent()
                 .lookup(".chart-legend").setStyle(legendStyle);
 
-        updateOwnLegend();
+        updateOwnLegend(legendList,total);
 
 
         StringBinding test = languageManager.bind("statistics.chartTitle");
@@ -213,7 +213,7 @@ public class StatisticsCtrl implements Initializable {
     /**
      * Update own legend version
      */
-    private void updateOwnLegend() {
+    private void updateOwnLegend2() {
         ownLegend.getChildren().clear();
         for (PieChart.Data data : pieChart.getData()) {
             Label item = new Label(data.getName());
@@ -221,6 +221,19 @@ public class StatisticsCtrl implements Initializable {
             String colorString = style.substring(style.indexOf("-fx-pie-color:") + 15,
                     style.indexOf(";"));
             item.setTextFill(Color.web(colorString));
+            ownLegend.getChildren().add(item);
+        }
+    }/**
+     * Update own legend version
+     */
+    private void updateOwnLegend(List<Pair<Tag, Double>> stats, double total) {
+        ownLegend.getChildren().clear();
+        for (Pair<Tag, Double> data : stats) {
+            double precentage = (data.getValue()/total*100);
+            String withRightDigits = String.format("%.1f",precentage);
+            Label item = new Label(data.getKey().getName() + ": "
+                    + data.getValue() + " (" + withRightDigits + "%)");
+            item.setTextFill(Color.web(data.getKey().getColor()));
             ownLegend.getChildren().add(item);
         }
     }
