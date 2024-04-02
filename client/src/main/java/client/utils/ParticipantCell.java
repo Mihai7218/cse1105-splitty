@@ -62,9 +62,7 @@ public class ParticipantCell extends ListCell<Participant> {
         remove = new Button();
         remove.setText("\uD83D\uDDD1");
         remove.setId("cancel");
-        remove.setOnAction(param -> {
-            mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
-        });
+        remove.setOnAction(param -> mainCtrl.getOverviewCtrl().removeParticipant(this.getItem()));
         autogrow = new Region();
         autogrow2 = new Region();
         autogrow3 = new Region();
@@ -170,9 +168,11 @@ public class ParticipantCell extends ListCell<Participant> {
         for (Expense expense : expenses) {
 
             for (ParticipantPayment p : expense.getSplit()) {
-                if (p.getParticipant().equals(current)) {
+                if (p.getParticipant().equals(current)
+                        && !expense.getPayee().equals(current)) {
                     participantShare -= p.getPaymentAmount();
-                } else if (expense.getPayee().equals(current)) {
+                } else if (expense.getPayee().equals(current)
+                        && !p.getParticipant().equals(current)) {
                     participantShare += p.getPaymentAmount();
                 }
             }
