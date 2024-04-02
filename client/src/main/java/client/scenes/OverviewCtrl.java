@@ -86,20 +86,20 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
-
+    private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
     @FXML
     private Label sumExpense;
     @FXML
     private Label sumLabel;
 
 
-
     /**
      * Constructs a new OverviewCtrl object.
+     *
      * @param languageManager LanguageManager object
-     * @param config Config object
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
+     * @param config          Config object
+     * @param server          ServerUtils object
+     * @param mainCtrl        MainCtrl object
      */
     @Inject
     public OverviewCtrl(LanguageManager languageManager, ConfigInterface config,
@@ -120,38 +120,69 @@ public class OverviewCtrl implements Initializable {
             List<Expense> expenses = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
-            }
-            catch (WebApplicationException e) {
+            } catch (WebApplicationException e) {
                 e.printStackTrace();
+            }
+            for (Expense expense : expenses) {
+                if (!expenseSubscriptionMap.containsKey(expense)) {
+                    String dest = "/topic/events/" +
+                            mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                            + expense.getId();
+                    var subscription = server.registerForMessages(dest, Expense.class,
+                            exp -> {
+                                Platform.runLater(() -> {
+                                    all.getItems().remove(expense);
+                                    mainCtrl.getEvent().getExpensesList().remove(expense);
+                                    all.refresh();
+                                    if (!"deleted".equals(exp.getDescription())) {
+                                        all.getItems().add(exp);
+                                        mainCtrl.getEvent().getExpensesList().add(exp);
+                                        all.getItems().sort((o1, o2) ->
+                                                -o1.getDate().compareTo(o2.getDate()));
+                                    }
+                                    filterViews();
+                                    all.refresh();
+                                    participants.refresh();
+                                    sumExpense.setText(String.format("%.2f", getSum()));
+                                });
+                            });
+                    expenseSubscriptionMap.put(expense, subscription);
+                }
             }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
         }
+        sumExpense.setText(String.format("%.2f", getSum()));
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
-        sumExpense.setText(String.format("%.2f",getSum()));
-        clearFields();
         if (event != null) {
             title.setText(event.getTitle());
-            participants.getItems().clear();
-            participants.getItems().addAll(server.getAllParticipants(
-                    mainCtrl.getEvent().getInviteCode()));
-            mainCtrl.getEvent().getParticipantsList().clear();
-            mainCtrl.getEvent().getParticipantsList().addAll(participants.getItems());
-            expenseparticipants.getItems().addAll(event.getParticipantsList());
+            for (Participant p : event.getParticipantsList()) {
+                if (!participants.getItems().contains(p))
+                    participants.getItems().add(p);
+                if (!expenseparticipants.getItems().contains(p))
+                    expenseparticipants.getItems().add(p);
+                participants.getItems().sort(Comparator.comparing(Participant::getName));
+                expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
+            }
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
                         expense -> {
-                            all.getItems().add(expense);
-                            mainCtrl.getEvent().getExpensesList().add(expense);
-                            all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
-                            all.refresh();
-                            filterViews();
+                            Platform.runLater(() -> {
+                                all.getItems().add(expense);
+                                mainCtrl.getEvent().getExpensesList().add(expense);
+                                all.getItems().sort((o1, o2) ->
+                                        -o1.getDate().compareTo(o2.getDate()));
+                                filterViews();
+                                all.refresh();
+                                participants.refresh();
+                                sumExpense.setText(String.format("%.2f", getSum()));
+                            });
                         });
         }
     }
@@ -176,10 +207,15 @@ public class OverviewCtrl implements Initializable {
      * Goes back to the startMenu.
      */
     public void startMenu() {
+        if (expenseSubscriptionMap != null) {
+            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap = new HashMap<>();
+        }
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
         }
+        clearFields();
         mainCtrl.showStartMenu();
     }
 
@@ -194,7 +230,7 @@ public class OverviewCtrl implements Initializable {
      * method to display a confirmation message for the expense added
      * this message disappears
      */
-    public void showConfirmationExpense(){
+    public void showConfirmationExpense() {
         expenseAdded.textProperty().bind(languageManager.bind("overview.confirmExpenseAdd"));
         expenseAdded.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
@@ -220,7 +256,7 @@ public class OverviewCtrl implements Initializable {
      * method to display a confirmation message for participant added
      * this message disappears
      */
-    public void showConfirmationParticipant(){
+    public void showConfirmationParticipant() {
         expenseAdded.textProperty().bind(languageManager.bind("overview.confirmParticipantAdd"));
         expenseAdded.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
@@ -245,7 +281,7 @@ public class OverviewCtrl implements Initializable {
     /**
      * General method to show a confirmation message for any edits
      */
-    public void showEditConfirmation(){
+    public void showEditConfirmation() {
         expenseAdded.textProperty().bind(languageManager.bind("overview.confirmEdits"));
         expenseAdded.setVisible(true);
         FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), expenseAdded);
@@ -310,7 +346,8 @@ public class OverviewCtrl implements Initializable {
      * Initialize method for the Overview scene.
      * Sets the language currently in the config file as the selected one.
      * Sets the cell factories for all ListViews.
-     * @param url - URL
+     *
+     * @param url            - URL
      * @param resourceBundle - ResourceBundle
      */
     @Override
@@ -318,9 +355,9 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
-        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, languageManager));
+        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
         Label fromLabel = new Label();
         Label includingLabel = new Label();
         participantFrom = new Label();
@@ -332,6 +369,7 @@ public class OverviewCtrl implements Initializable {
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
         participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
         participants.getItems().addAll(getParticipants());
+        participants.getItems().sort(Comparator.comparing(Participant::getName));
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
@@ -344,6 +382,7 @@ public class OverviewCtrl implements Initializable {
                 return null;
             }
         });
+        expenseSubscriptionMap = new HashMap<>();
         refresh();
         server.registerForMessages("/topic/events", Event.class, q -> {
             mainCtrl.setEvent(q);
@@ -380,22 +419,22 @@ public class OverviewCtrl implements Initializable {
      */
     public void removeParticipant(Participant participant) {
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
-        for(Expense e: expenses){
-            if(!e.getSplit().stream()
+        for (Expense e : expenses) {
+            if (!e.getSplit().stream()
                     .filter(item -> item.getParticipant()
                             .equals(participant)).toList().isEmpty()
-                || e.getPayee().equals(participant)){
+                    || e.getPayee().equals(participant)) {
                 Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
                 confirmation.contentTextProperty().bind(
                         languageManager.bind("overview.removeParticipant"));
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
+                if (result.isPresent() && result.get() == ButtonType.OK) {
                     participants.getItems().remove(participant);
                     participants.refresh();
                     return;
-                }else{
+                } else {
                     return;
                 }
             }
@@ -408,13 +447,14 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * method to calculate the sum of all expenses in the event
+     *
      * @return double for the event total
      */
-    public double getSum(){
+    public double getSum() {
         double sum = 0;
-        if(mainCtrl.getEvent() == null) return sum;
+        if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
-        for(Expense e: expenses){
+        for (Expense e : expenses) {
             sum += e.getAmount();
         }
         return sum;
@@ -422,6 +462,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Getter for the language manager observable map.
+     *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -430,6 +471,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Setter for the language manager observable map.
+     *
      * @param languageManager - the language manager observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
@@ -438,6 +480,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Getter for the language manager property.
+     *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
@@ -472,11 +515,17 @@ public class OverviewCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+    /**
+     *
+     */
+    public ListView<Participant> getParticipantsListView() {
+        return participants;
+    }
 
     /**
      * Gets the List of participants of the event
      */
-    private List<Participant> getParticipants() {
+    public List<Participant> getParticipants() {
         if (mainCtrl.getEvent() == null) return new ArrayList<>();
         List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
         return participantsList;
@@ -484,9 +533,19 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Method that updates the language combo box with the correct flag.
+     *
      * @param language - code of the new language
      */
     public void updateLanguageComboBox(String language) {
         if (languages != null) languages.setValue(language);
+    }
+
+    /**
+     * Getter for the expense subscription map.
+     *
+     * @return - the expense subscription map of the overview controller.
+     */
+    public Map<Expense, StompSession.Subscription> getExpenseSubscriptionMap() {
+        return expenseSubscriptionMap;
     }
 }
