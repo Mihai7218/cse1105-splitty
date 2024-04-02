@@ -323,4 +323,19 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .post(Entity.entity(tag, APPLICATION_JSON), Tag.class);
     }
+
+    /**
+     * Method that sends a change of an event to the server.
+     * @param event - the event
+     * @return - the updated event
+     */
+    public Event changeEvent(Event event) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s",
+                        event.getInviteCode()))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
+
+    }
 }
