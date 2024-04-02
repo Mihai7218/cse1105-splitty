@@ -117,10 +117,7 @@ public class OverviewCtrl implements Initializable {
         this.currencyConverter = currencyConverter;
     }
 
-    /**
-     * Refreshes all shown items in the overview.
-     */
-    public void refresh() {
+    public void populateExpenses() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
@@ -131,14 +128,24 @@ public class OverviewCtrl implements Initializable {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
-                subscribeToExpense(expense);
+                if (!expenseSubscriptionMap.containsKey(expense))
+                    subscribeToExpense(expense);
+                if (!all.getItems().contains(expense))
+                    all.getItems().add(expense);
             }
-            all.getItems().addAll(expenses);
+            mainCtrl.getEvent().setExpensesList(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
             filterViews();
         }
-        sumExpense.setText(String.format("%.2f", getSum()));
+        String base = getCurrency();
+        sumExpense.setText(String.format("%.2f %s", getSum(), base));
+    }
+
+    /**
+     * Refreshes all shown items in the overview.
+     */
+    public void refresh() {
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
@@ -172,7 +179,8 @@ public class OverviewCtrl implements Initializable {
                                 filterViews();
                                 all.refresh();
                                 participants.refresh();
-                                sumExpense.setText(String.format("%.2f", getSum()));
+                                sumExpense.setText(String.format(
+                                        "%.2f %s", getSum(), getCurrency()));
                                 subscribeToExpense(expense);
                             });
                         });
@@ -202,10 +210,21 @@ public class OverviewCtrl implements Initializable {
                         filterViews();
                         all.refresh();
                         participants.refresh();
-                        sumExpense.setText(String.format("%.2f", getSum()));
+                        String baseCurrency = getCurrency();
+                        sumExpense.setText(String.format("%.2f %s", getSum(), baseCurrency));
                     }));
             expenseSubscriptionMap.put(expense, subscription);
         }
+    }
+
+    /**
+     * Method that gets the code of the currency that is currently set.
+     * @return - the currency code.
+     */
+    private String getCurrency() {
+        String currencyString = config.getProperty("currency");
+        if (currencyString == null || currencyString.isEmpty()) currencyString = "EUR";
+        return currencyString;
     }
 
 
@@ -221,7 +240,6 @@ public class OverviewCtrl implements Initializable {
      */
     public void addExpense() {
         mainCtrl.showAddExpense();
-        refresh();
     }
 
     /**
@@ -392,7 +410,8 @@ public class OverviewCtrl implements Initializable {
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
-        participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl,
+                languageManager, config, currencyConverter));
         participants.getItems().addAll(getParticipants());
         participants.getItems().sort(Comparator.comparing(Participant::getName));
         expenseparticipants.setConverter(new StringConverter<Participant>() {
@@ -476,7 +495,10 @@ public class OverviewCtrl implements Initializable {
         if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
         for (Expense e : expenses) {
-            sum += e.getAmount();
+            String currency = e.getCurrency();
+            Date date = e.getDate();
+            String base = getCurrency();
+            sum += currencyConverter.convert(date, currency, base, e.getAmount());
         }
         return sum;
     }

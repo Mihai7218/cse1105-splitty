@@ -14,9 +14,12 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
+import java.util.Date;
 import java.util.List;
 
 public class ParticipantCell extends ListCell<Participant> {
+    private final ConfigInterface config;
+    private final CurrencyConverter currencyConverter;
     private Label participant;
     private Button edit;
     private Region autogrow;
@@ -39,10 +42,13 @@ public class ParticipantCell extends ListCell<Participant> {
     /**
      * Constructor for the ParticipantCell.
      */
-    public ParticipantCell(MainCtrl mainCtrl, LanguageManager languageManager) {
+    public ParticipantCell(MainCtrl mainCtrl, LanguageManager languageManager,
+                           ConfigInterface config, CurrencyConverter currencyConverter) {
         super();
         this.mainCtrl = mainCtrl;
         this.languageManager = languageManager;
+        this.config = config;
+        this.currencyConverter = currencyConverter;
         shareLabel = new Label();
         owe = new Label();
         owed = new Label();
@@ -97,11 +103,11 @@ public class ParticipantCell extends ListCell<Participant> {
             double itemShare = calculateShare(item);
             double itemOwes = calculateOwe(item);
             double itemOwed = calulateOwed(item);
-            share.setText(String.format("%.2f", itemShare));
+            share.setText(String.format("%.2f %s", itemShare, getCurrency()));
             shareLabel.setStyle("-fx-font-style: italic");
-            owe.setText(String.format("%.2f", itemOwes));
+            owe.setText(String.format("%.2f %s", itemOwes, getCurrency()));
             oweLabel.setStyle("-fx-font-style: italic");
-            owed.setText(String.format("%.2f", itemOwed));
+            owed.setText(String.format("%.2f %s", itemOwed, getCurrency()));
             owedLabel.setStyle("-fx-font-style: italic");
             if (itemShare < 0) share.setStyle("-fx-text-fill: red");
             else if (itemShare > 0) share.setStyle("-fx-text-fill: green");
@@ -121,10 +127,14 @@ public class ParticipantCell extends ListCell<Participant> {
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
 
         for(Expense expense: expenses){
+            String currency = expense.getCurrency();
+            Date date = expense.getDate();
+            String base = getCurrency();
             if(!expense.getPayee().equals(current)){
                 for(ParticipantPayment p: expense.getSplit()){
                     if(p.getParticipant().equals(current)){
-                        debt += p.getPaymentAmount();
+                        debt += currencyConverter.convert(date,
+                                currency, base, p.getPaymentAmount());
                     }
                 }
             }
@@ -132,7 +142,15 @@ public class ParticipantCell extends ListCell<Participant> {
         return debt;
     }
 
-
+    /**
+     * Method that gets the code of the currency that is currently set.
+     * @return - the currency code.
+     */
+    private String getCurrency() {
+        String currencyString = config.getProperty("currency");
+        if (currencyString == null || currencyString.isEmpty()) currencyString = "EUR";
+        return currencyString;
+    }
 
     /**
      * calculates the amount a participant is owed
@@ -143,10 +161,14 @@ public class ParticipantCell extends ListCell<Participant> {
         double owed = 0;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
         for(Expense expense: expenses){
+            String currency = expense.getCurrency();
+            Date date = expense.getDate();
+            String base = getCurrency();
             if(expense.getPayee().equals(current)){
                 for(ParticipantPayment p : expense.getSplit()){
                     if(!p.getParticipant().equals(current)) {
-                        owed += p.getPaymentAmount();
+                        owed += currencyConverter.convert(date,
+                                currency, base, p.getPaymentAmount());
                     }
                 }
             }
@@ -166,14 +188,18 @@ public class ParticipantCell extends ListCell<Participant> {
         Event curr = mainCtrl.getEvent();
         List<Expense> expenses = curr.getExpensesList();
         for (Expense expense : expenses) {
-
+            String currency = expense.getCurrency();
+            Date date = expense.getDate();
+            String base = getCurrency();
             for (ParticipantPayment p : expense.getSplit()) {
                 if (p.getParticipant().equals(current)
                         && !expense.getPayee().equals(current)) {
-                    participantShare -= p.getPaymentAmount();
+                    participantShare -= currencyConverter.convert(date,
+                            currency, base, p.getPaymentAmount());
                 } else if (expense.getPayee().equals(current)
                         && !p.getParticipant().equals(current)) {
-                    participantShare += p.getPaymentAmount();
+                    participantShare += currencyConverter.convert(date,
+                            currency, base, p.getPaymentAmount());
                 }
             }
         }
