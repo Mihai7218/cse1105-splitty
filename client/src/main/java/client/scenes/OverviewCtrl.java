@@ -176,7 +176,8 @@ public class OverviewCtrl implements Initializable {
                             Platform.runLater(() -> {
                                 all.getItems().add(expense);
                                 mainCtrl.getEvent().getExpensesList().add(expense);
-                                all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+                                all.getItems().sort((o1, o2) ->
+                                        -o1.getDate().compareTo(o2.getDate()));
                                 filterViews();
                                 all.refresh();
                                 participants.refresh();
