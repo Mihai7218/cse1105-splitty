@@ -42,11 +42,11 @@ public class CurrencyService {
             return ResponseEntity.ok(new Scanner(file).nextDouble());
         } catch (FileNotFoundException | NoSuchElementException e) {
             try {
-                InputStream in = new URI(String.format("https://cdn.jsdelivr.net/npm/@fawazahmed0" +
-                                "/currency-api@%s/v1/currencies/%s.json",
-                        date, from.toLowerCase())).toURL().openStream();
+                InputStream in = new URI(String.format(
+                        "https://api.fxratesapi.com/historical?date=%s&base=%s",
+                        date, from)).toURL().openStream();
                 var obj = objectMapper.readTree(in);
-                double rate = obj.get(from.toLowerCase()).get(to.toLowerCase()).asDouble();
+                double rate = obj.get("rates").get(to).asDouble();
                 new File(String.valueOf(Path.of("server", "src",
                         "main", "resources", "rates", date, from))).mkdirs();
                 PrintWriter pw = new PrintWriter(file);
