@@ -147,6 +147,8 @@ public class SettingsCtrl implements Initializable {
         config.setProperty("recentEventsLimit", noRecentEvents.getValue().toString());
         config.setProperty("currency", currency.getValue());
         mainCtrl.getStartScreenCtrl().removeExcess();
+        mainCtrl.getOverviewCtrl().populateExpenses();
+        mainCtrl.getOverviewCtrl().populateParticipants();
         changeLanguage();
         clearAndReturn();
     }

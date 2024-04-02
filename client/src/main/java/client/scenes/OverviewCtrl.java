@@ -125,6 +125,7 @@ public class OverviewCtrl implements Initializable {
     public void populateExpenses() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
+            all.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
@@ -160,7 +161,7 @@ public class OverviewCtrl implements Initializable {
                 e.printStackTrace();
             }
             participants.getItems().clear();
-            participants.getItems().addAll(serverparticipants);
+            participants.getItems(). addAll(serverparticipants);
             for (Participant p : serverparticipants) {
                 if (!expenseparticipants.getItems().contains(p)) {
                     expenseparticipants.getItems().add(p);
@@ -170,6 +171,7 @@ public class OverviewCtrl implements Initializable {
                 if (!serverparticipants.contains(p))
                     expenseparticipants.getItems().remove(p);
             }
+            participants.refresh();
         }
     }
 
