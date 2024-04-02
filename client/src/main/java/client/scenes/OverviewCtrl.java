@@ -126,30 +126,7 @@ public class OverviewCtrl implements Initializable {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
-                if (!expenseSubscriptionMap.containsKey(expense)) {
-                    String dest = "/topic/events/" +
-                            mainCtrl.getEvent().getInviteCode() + "/expenses/"
-                            + expense.getId();
-                    var subscription = server.registerForMessages(dest, Expense.class,
-                            exp -> {
-                                Platform.runLater(() -> {
-                                    all.getItems().remove(expense);
-                                    mainCtrl.getEvent().getExpensesList().remove(expense);
-                                    all.refresh();
-                                    if (!"deleted".equals(exp.getDescription())) {
-                                        all.getItems().add(exp);
-                                        mainCtrl.getEvent().getExpensesList().add(exp);
-                                        all.getItems().sort((o1, o2) ->
-                                                -o1.getDate().compareTo(o2.getDate()));
-                                    }
-                                    filterViews();
-                                    all.refresh();
-                                    participants.refresh();
-                                    sumExpense.setText(String.format("%.2f", getSum()));
-                                });
-                            });
-                    expenseSubscriptionMap.put(expense, subscription);
-                }
+                subscribeToExpense(expense);
             }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -180,7 +157,11 @@ public class OverviewCtrl implements Initializable {
             title.setText(event.getTitle());
             participants.getItems().sort(Comparator.comparing(Participant::getName));
             expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
-
+            server.registerForMessages(String.format("/topic/events/%s",
+                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> Platform.runLater(() ->{
+                        mainCtrl.getEvent().setTitle(q.getTitle());
+                        title.setText(q.getTitle());
+                    }));
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -194,6 +175,7 @@ public class OverviewCtrl implements Initializable {
                                 all.refresh();
                                 participants.refresh();
                                 sumExpense.setText(String.format("%.2f", getSum()));
+                                subscribeToExpense(expense);
                             });
                         });
             if (participantSubscription == null)
@@ -205,6 +187,35 @@ public class OverviewCtrl implements Initializable {
                             mainCtrl.getEvent().getParticipantsList().add(participant);
                             participants.refresh();
                         });
+        }
+    }
+
+    /**
+     * Method that subscribes to updates for an expense.
+     * @param expense - the expense to subscribe to.
+     */
+    private void subscribeToExpense(Expense expense) {
+        if (!expenseSubscriptionMap.containsKey(expense)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                    + expense.getId();
+            var subscription = server.registerForMessages(dest, Expense.class,
+                    exp -> Platform.runLater(() -> {
+                        all.getItems().remove(expense);
+                        mainCtrl.getEvent().getExpensesList().remove(expense);
+                        all.refresh();
+                        if (!"deleted".equals(exp.getDescription())) {
+                            all.getItems().add(exp);
+                            mainCtrl.getEvent().getExpensesList().add(exp);
+                            all.getItems().sort((o1, o2) ->
+                                    -o1.getDate().compareTo(o2.getDate()));
+                        }
+                        filterViews();
+                        all.refresh();
+                        participants.refresh();
+                        sumExpense.setText(String.format("%.2f", getSum()));
+                    }));
+            expenseSubscriptionMap.put(expense, subscription);
         }
     }
 
@@ -343,8 +354,9 @@ public class OverviewCtrl implements Initializable {
         changeable.setOnKeyReleased(e -> {
             if (e.getCode().equals(KeyCode.ENTER)) {
                 title.setGraphic(null);
-                title.setText(changeable.getText());
-                mainCtrl.getEvent().setTitle(changeable.getText());
+                Event event = mainCtrl.getEvent();
+                event.setTitle(changeable.getText());
+                server.changeEvent(event);
                 server.send("/app/events", mainCtrl.getEvent());
             }
         });
@@ -400,10 +412,6 @@ public class OverviewCtrl implements Initializable {
         });
         expenseSubscriptionMap = new HashMap<>();
         refresh();
-        server.registerForMessages("/topic/events", Event.class, q -> {
-            mainCtrl.setEvent(q);
-            Platform.runLater(() -> refresh());
-        });
     }
 
     /**
@@ -468,9 +476,9 @@ public class OverviewCtrl implements Initializable {
      */
     public double getSum(){
         double sum = 0;
-        if(mainCtrl.getEvent() == null) return sum;
+        if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
-        for(Expense e: expenses){
+        for (Expense e : expenses) {
             sum += e.getAmount();
         }
         return sum;
@@ -478,6 +486,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Getter for the language manager observable map.
+     *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -486,6 +495,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Setter for the language manager observable map.
+     *
      * @param languageManager - the language manager observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
@@ -494,6 +504,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Getter for the language manager property.
+     *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
@@ -528,11 +539,17 @@ public class OverviewCtrl implements Initializable {
         languageManager.changeLanguage(Locale.of(language));
     }
 
+    /**
+     *
+     */
+    public ListView<Participant> getParticipantsListView() {
+        return participants;
+    }
 
     /**
      * Gets the List of participants of the event
      */
-    private List<Participant> getParticipants() {
+    public List<Participant> getParticipants() {
         if (mainCtrl.getEvent() == null) return new ArrayList<>();
         List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
         return participantsList;
@@ -540,6 +557,7 @@ public class OverviewCtrl implements Initializable {
 
     /**
      * Method that updates the language combo box with the correct flag.
+     *
      * @param language - code of the new language
      */
     public void updateLanguageComboBox(String language) {

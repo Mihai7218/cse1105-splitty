@@ -18,6 +18,7 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
 
@@ -27,6 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.*;
 import static server.api.PasswordService.setPassword;
 
@@ -44,7 +46,7 @@ public class EventControllerTest {
         EventService ev = new EventService(repo, tagRepo);
         ps=new PasswordService();
         setPassword("password");
-        sut = new EventController(ev, test);
+        sut = new EventController(ev, test, mock(SimpMessagingTemplate.class));
     }
 
 

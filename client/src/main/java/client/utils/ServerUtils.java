@@ -355,6 +355,20 @@ public class ServerUtils {
     }
 
     /**
+<<<<<<< HEAD
+     * Method that sends a change of an event to the server.
+     * @param event - the event
+     * @return - the updated event
+     */
+    public Event changeEvent(Event event) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s",
+                        event.getInviteCode()))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(event, APPLICATION_JSON), Event.class);
+    }
+    /**
      * Method that updates the expense on the server.
      * @param id - the id of the event.
      * @param expense -
