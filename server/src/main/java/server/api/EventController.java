@@ -3,13 +3,16 @@ package server.api;
 import commons.Event;
 import commons.Expense;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -24,15 +27,19 @@ public class EventController {
 
     private final GerneralServerUtil serverUtil;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
 
     /**
      * constructor for the EventController
      * @param eventService the service with all the necessary functions for the api
      */
     public EventController(EventService eventService,
-                           @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
+                           @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil,
+                           SimpMessagingTemplate messagingTemplate) {
         this.eventService = eventService;
         this.serverUtil = serverUtil;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -136,7 +143,12 @@ public class EventController {
     @PutMapping(path = {"/{inviteCode}" })
     public ResponseEntity<Event> change(@PathVariable("inviteCode") long inviteCode,
                                         @RequestBody Event event) {
-        return eventService.changeEvent(inviteCode,event,serverUtil);
+        var resp = eventService.changeEvent(inviteCode,event,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + inviteCode,
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /**

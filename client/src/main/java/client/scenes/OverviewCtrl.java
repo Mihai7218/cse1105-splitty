@@ -124,30 +124,7 @@ public class OverviewCtrl implements Initializable {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
-                if (!expenseSubscriptionMap.containsKey(expense)) {
-                    String dest = "/topic/events/" +
-                            mainCtrl.getEvent().getInviteCode() + "/expenses/"
-                            + expense.getId();
-                    var subscription = server.registerForMessages(dest, Expense.class,
-                            exp -> {
-                                Platform.runLater(() -> {
-                                    all.getItems().remove(expense);
-                                    mainCtrl.getEvent().getExpensesList().remove(expense);
-                                    all.refresh();
-                                    if (!"deleted".equals(exp.getDescription())) {
-                                        all.getItems().add(exp);
-                                        mainCtrl.getEvent().getExpensesList().add(exp);
-                                        all.getItems().sort((o1, o2) ->
-                                                -o1.getDate().compareTo(o2.getDate()));
-                                    }
-                                    filterViews();
-                                    all.refresh();
-                                    participants.refresh();
-                                    sumExpense.setText(String.format("%.2f", getSum()));
-                                });
-                            });
-                    expenseSubscriptionMap.put(expense, subscription);
-                }
+                subscribeToExpense(expense);
             }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -169,6 +146,11 @@ public class OverviewCtrl implements Initializable {
                 participants.getItems().sort(Comparator.comparing(Participant::getName));
                 expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
             }
+            server.registerForMessages(String.format("/topic/events/%s",
+                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> Platform.runLater(() ->{
+                        mainCtrl.getEvent().setTitle(q.getTitle());
+                        title.setText(q.getTitle());
+                    }));
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -182,8 +164,38 @@ public class OverviewCtrl implements Initializable {
                                 all.refresh();
                                 participants.refresh();
                                 sumExpense.setText(String.format("%.2f", getSum()));
+                                subscribeToExpense(expense);
                             });
                         });
+        }
+    }
+
+    /**
+     * Method that subscribes to updates for an expense.
+     * @param expense - the expense to subscribe to.
+     */
+    private void subscribeToExpense(Expense expense) {
+        if (!expenseSubscriptionMap.containsKey(expense)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                    + expense.getId();
+            var subscription = server.registerForMessages(dest, Expense.class,
+                    exp -> Platform.runLater(() -> {
+                        all.getItems().remove(expense);
+                        mainCtrl.getEvent().getExpensesList().remove(expense);
+                        all.refresh();
+                        if (!"deleted".equals(exp.getDescription())) {
+                            all.getItems().add(exp);
+                            mainCtrl.getEvent().getExpensesList().add(exp);
+                            all.getItems().sort((o1, o2) ->
+                                    -o1.getDate().compareTo(o2.getDate()));
+                        }
+                        filterViews();
+                        all.refresh();
+                        participants.refresh();
+                        sumExpense.setText(String.format("%.2f", getSum()));
+                    }));
+            expenseSubscriptionMap.put(expense, subscription);
         }
     }
 
@@ -322,8 +334,9 @@ public class OverviewCtrl implements Initializable {
         changeable.setOnKeyReleased(e -> {
             if (e.getCode().equals(KeyCode.ENTER)) {
                 title.setGraphic(null);
-                title.setText(changeable.getText());
-                mainCtrl.getEvent().setTitle(changeable.getText());
+                Event event = mainCtrl.getEvent();
+                event.setTitle(changeable.getText());
+                server.changeEvent(event);
                 server.send("/app/events", mainCtrl.getEvent());
             }
         });
@@ -384,10 +397,6 @@ public class OverviewCtrl implements Initializable {
         });
         expenseSubscriptionMap = new HashMap<>();
         refresh();
-        server.registerForMessages("/topic/events", Event.class, q -> {
-            mainCtrl.setEvent(q);
-            Platform.runLater(() -> refresh());
-        });
     }
 
     /**
