@@ -93,6 +93,8 @@ public class OverviewCtrl implements Initializable {
     private Label sumLabel;
     @FXML
     private Label code;
+    @FXML
+    private Label invite_lang;
 
 
     /**
@@ -163,7 +165,7 @@ public class OverviewCtrl implements Initializable {
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
-            code.setText("Invite code: " + String.valueOf(event.getInviteCode()));
+            code.setText(String.valueOf(event.getInviteCode()));
             for (Participant p : event.getParticipantsList()) {
                 if (!participants.getItems().contains(p))
                     participants.getItems().add(p);

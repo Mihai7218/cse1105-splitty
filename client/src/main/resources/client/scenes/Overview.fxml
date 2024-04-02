@@ -9,7 +9,6 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -45,6 +44,7 @@
                                     </tooltip>
                                 </Button>
                                 <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="invite_lang" text="${controller.languageManager.overview.invite_lang}"/>
                         <Label fx:id="code" />
                                 <Button id="sendmail" fx:id="sendMailButton" layoutX="175.0" layoutY="76.0" mnemonicParsing="false" onAction="#sendInvites" text="${controller.languageManager.overview.sendInvitesButton}" />
                             </children>
