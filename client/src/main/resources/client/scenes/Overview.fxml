@@ -44,7 +44,7 @@
                                     </tooltip>
                                 </Button>
                                 <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                        <Label fx:id="invite_lang" text="${controller.languageManager.overview.invite_lang}"/>
+                        <Label fx:id="inviteLang" text="${controller.languageManager.overview.inviteLang}"/>
                         <Label fx:id="code" />
                                 <Button id="sendmail" fx:id="sendMailButton" layoutX="175.0" layoutY="76.0" mnemonicParsing="false" onAction="#sendInvites" text="${controller.languageManager.overview.sendInvitesButton}" />
                             </children>

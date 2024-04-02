@@ -94,7 +94,7 @@ public class OverviewCtrl implements Initializable {
     @FXML
     private Label code;
     @FXML
-    private Label invite_lang;
+    private Label inviteLang;
 
 
     /**
