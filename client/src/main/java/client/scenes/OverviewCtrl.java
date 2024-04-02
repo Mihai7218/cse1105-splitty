@@ -124,30 +124,7 @@ public class OverviewCtrl implements Initializable {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
-                if (!expenseSubscriptionMap.containsKey(expense)) {
-                    String dest = "/topic/events/" +
-                            mainCtrl.getEvent().getInviteCode() + "/expenses/"
-                            + expense.getId();
-                    var subscription = server.registerForMessages(dest, Expense.class,
-                            exp -> {
-                                Platform.runLater(() -> {
-                                    all.getItems().remove(expense);
-                                    mainCtrl.getEvent().getExpensesList().remove(expense);
-                                    all.refresh();
-                                    if (!"deleted".equals(exp.getDescription())) {
-                                        all.getItems().add(exp);
-                                        mainCtrl.getEvent().getExpensesList().add(exp);
-                                        all.getItems().sort((o1, o2) ->
-                                                -o1.getDate().compareTo(o2.getDate()));
-                                    }
-                                    filterViews();
-                                    all.refresh();
-                                    participants.refresh();
-                                    sumExpense.setText(String.format("%.2f", getSum()));
-                                });
-                            });
-                    expenseSubscriptionMap.put(expense, subscription);
-                }
+                subscribeToExpense(expense);
             }
             all.getItems().addAll(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -187,8 +164,38 @@ public class OverviewCtrl implements Initializable {
                                 all.refresh();
                                 participants.refresh();
                                 sumExpense.setText(String.format("%.2f", getSum()));
+                                subscribeToExpense(expense);
                             });
                         });
+        }
+    }
+
+    /**
+     * Method that subscribes to updates for an expense.
+     * @param expense - the expense to subscribe to.
+     */
+    private void subscribeToExpense(Expense expense) {
+        if (!expenseSubscriptionMap.containsKey(expense)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                    + expense.getId();
+            var subscription = server.registerForMessages(dest, Expense.class,
+                    exp -> Platform.runLater(() -> {
+                        all.getItems().remove(expense);
+                        mainCtrl.getEvent().getExpensesList().remove(expense);
+                        all.refresh();
+                        if (!"deleted".equals(exp.getDescription())) {
+                            all.getItems().add(exp);
+                            mainCtrl.getEvent().getExpensesList().add(exp);
+                            all.getItems().sort((o1, o2) ->
+                                    -o1.getDate().compareTo(o2.getDate()));
+                        }
+                        filterViews();
+                        all.refresh();
+                        participants.refresh();
+                        sumExpense.setText(String.format("%.2f", getSum()));
+                    }));
+            expenseSubscriptionMap.put(expense, subscription);
         }
     }
 
