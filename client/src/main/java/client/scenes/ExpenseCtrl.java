@@ -119,7 +119,7 @@ public abstract class ExpenseCtrl implements Initializable {
         if (cancelButton != null)
             cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         if (addExpense != null)
-            addExpense.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
+            addExpense.setGraphic(new ImageView(new Image("icons/savewhite.png")));
         if (addTag != null)
             addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
         currency.getItems().addAll(currencies);

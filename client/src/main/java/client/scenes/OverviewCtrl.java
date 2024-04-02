@@ -130,32 +130,21 @@ public class OverviewCtrl implements Initializable {
                             + expense.getId();
                     var subscription = server.registerForMessages(dest, Expense.class,
                             exp -> {
-                                all.getItems().remove(expense);
-                                mainCtrl.getEvent().getExpensesList().remove(expense);
-                                all.refresh();
-                                if (!"deleted".equals(exp.getDescription())) {
-                                    all.getItems().add(exp);
-                                    mainCtrl.getEvent().getExpensesList().add(exp);
-                                    all.getItems().sort((o1, o2) ->
-                                            -o1.getDate().compareTo(o2.getDate()));
-                                }
-                                filterViews();
-                                all.refresh();
-                                try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
                                 Platform.runLater(() -> {
+                                    all.getItems().remove(expense);
+                                    mainCtrl.getEvent().getExpensesList().remove(expense);
+                                    all.refresh();
+                                    if (!"deleted".equals(exp.getDescription())) {
+                                        all.getItems().add(exp);
+                                        mainCtrl.getEvent().getExpensesList().add(exp);
+                                        all.getItems().sort((o1, o2) ->
+                                                -o1.getDate().compareTo(o2.getDate()));
+                                    }
+                                    filterViews();
+                                    all.refresh();
                                     participants.refresh();
+                                    sumExpense.setText(String.format("%.2f", getSum()));
                                 });
-                                try {
-                                    Thread.sleep(100);
-                                } catch (InterruptedException e) {
-                                    e.printStackTrace();
-                                }
-                                Platform.runLater(() ->
-                                        sumExpense.setText(String.format("%.2f", getSum())));
                             });
                     expenseSubscriptionMap.put(expense, subscription);
                 }
@@ -184,26 +173,15 @@ public class OverviewCtrl implements Initializable {
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
                         expense -> {
-                            all.getItems().add(expense);
-                            mainCtrl.getEvent().getExpensesList().add(expense);
-                            all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
-                            filterViews();
-                            all.refresh();
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
                             Platform.runLater(() -> {
+                                all.getItems().add(expense);
+                                mainCtrl.getEvent().getExpensesList().add(expense);
+                                all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
+                                filterViews();
+                                all.refresh();
                                 participants.refresh();
+                                sumExpense.setText(String.format("%.2f", getSum()));
                             });
-                            try {
-                                Thread.sleep(100);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                            Platform.runLater(() ->
-                                    sumExpense.setText(String.format("%.2f", getSum())));
                         });
         }
     }

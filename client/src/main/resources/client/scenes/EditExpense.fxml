@@ -121,7 +121,7 @@
             <children>
                 <Button id="cancel" fx:id="cancelButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}" HBox.hgrow="ALWAYS" />
                 <Region prefHeight="50.0" prefWidth="10.0" />
-                <Button id="addEntity" fx:id="addExpense" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#doneExpense" text="${controller.languageManager.addExpense.addButton}" HBox.hgrow="ALWAYS" />
+                <Button id="addEntity" fx:id="addExpense" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#doneExpense" text="${controller.languageManager.editExpense.saveButton}" HBox.hgrow="ALWAYS" />
             </children>
         </HBox>
         <Label fx:id="question" layoutX="29.0" layoutY="292.0" prefHeight="26.0" prefWidth="392.0" text="${controller.languageManager.addExpense.selectAllMessage}" wrapText="true">

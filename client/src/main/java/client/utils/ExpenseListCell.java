@@ -136,7 +136,7 @@ public class ExpenseListCell extends ListCell<Expense> {
             payeeName.setText("<no payee>");
         }
         try {
-            price.setText(Double.toString(this.getItem().getAmount()));
+            price.setText(String.format("%.2f", this.getItem().getAmount()));
         } catch (NullPointerException e) {
             price.setText("<no price>");
         } catch (NumberFormatException e) {
