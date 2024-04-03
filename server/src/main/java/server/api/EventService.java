@@ -304,7 +304,7 @@ public class EventService {
      * @return responseentity indicating if the event and participant could be
      * verified.
      */
-    private ResponseEntity<Double> validateDebt(Long eventId, Long participantId) {
+    public ResponseEntity<Double> validateDebt(Long eventId, Long participantId) {
         if(eventId<0 || participantId<0){
             return ResponseEntity.badRequest().build();
         }else if(!eventRepository.existsById(eventId)){
