@@ -226,8 +226,7 @@ public class Expense {
                 && Objects.equals(title, expense.title)
                 && Objects.equals(description, expense.description)
                 && Objects.equals(date, expense.date)
-                && Objects.equals(split, expense.split)
-                && Objects.equals(tag, expense.tag)
+                && tag.fullEquals(tag)
                 && payee.fullEquals(expense.getPayee());
     }
 
