@@ -43,6 +43,8 @@ public class CurrencyConverter {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateString = dateFormat.format(date);
         try {
+            if (date.compareTo(new Date()) > 0)
+                throw new WebApplicationException(404);
             return sum * getRate(dateString, from, to);
         } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
