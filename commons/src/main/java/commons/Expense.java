@@ -213,6 +213,13 @@ public class Expense {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Expense expense = (Expense) o;
+        for(ParticipantPayment pp: expense.getSplit()){
+            for(ParticipantPayment pp1: this.getSplit()){
+                if(!pp.fullEquals(pp1)){
+                    return false;
+                }
+            }
+        }
         return id == expense.id
                 && Double.compare(amount, expense.amount) == 0
                 && Objects.equals(currency, expense.currency)
@@ -221,7 +228,7 @@ public class Expense {
                 && Objects.equals(date, expense.date)
                 && Objects.equals(split, expense.split)
                 && Objects.equals(tag, expense.tag)
-                && Objects.equals(payee, expense.payee);
+                && payee.fullEquals(expense.getPayee());
     }
 
 

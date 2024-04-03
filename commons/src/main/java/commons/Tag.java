@@ -95,12 +95,24 @@ public class Tag {
     }
 
     /**
-     * Checks equality of this tag against another object
+     * Checks equality of this tag based on Id against another object
      * @param o other object to compare with
      * @return boolean equality value
      */
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Tag tag = (Tag) o;
+        return id == tag.getId();
+    }
+
+    /**
+     * Checks equality of tag based on all attributes with another object
+     * @param o object to compare with
+     * @return true if all attributes are equal
+     */
+    public boolean fullEquals(Object o){
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Tag tag = (Tag) o;
