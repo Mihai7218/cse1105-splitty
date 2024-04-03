@@ -332,7 +332,7 @@ public class EventService {
      */
     public ResponseEntity<List<Expense>> getExpensesInvolvingPayee(long inviteCode,
                                                                    long payeeId) {
-        if(inviteCode < 0){
+        if(inviteCode < 0 || payeeId < 0){
             return ResponseEntity.badRequest().build();
         }else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
@@ -359,7 +359,7 @@ public class EventService {
      */
     public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode,
                                                                          long partId) {
-        if(inviteCode < 0 ){
+        if(inviteCode < 0 || partId < 0){
             return ResponseEntity.badRequest().build();
         } else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
