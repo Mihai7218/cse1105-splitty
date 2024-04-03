@@ -2,6 +2,7 @@ package client.utils;
 
 import client.scenes.MainCtrl;
 import commons.Expense;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final ServerUtils server;
     private Label expenseName;
     private Label paidLabel;
     private Label payeeName;
@@ -33,14 +35,18 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Constructor for the RecentEventCell.
      */
-    public ExpenseListCell(MainCtrl mainCtrl, LanguageManager languageManager) {
+    public ExpenseListCell(MainCtrl mainCtrl,
+                           ServerUtils server,
+                           LanguageManager languageManager) {
         super();
         this.mainCtrl = mainCtrl;
+        this.server = server;
         this.languageManager = languageManager;
     }
 
     /**
      * Creates the graphic for the expense.
+     *
      * @param item - expense item
      */
     private void createGraphic(Expense item) {
@@ -65,7 +71,16 @@ public class ExpenseListCell extends ListCell<Expense> {
         remove.setText("\uD83D\uDDD1");
         remove.setId("cancel");
         remove.setOnAction(param -> {
-            //mainCtrl.getOverviewCtrl().removeParticipant(this.getItem());
+            try {
+                server.removeExpense(mainCtrl.getEvent().getInviteCode(), item.getId());
+            } catch (WebApplicationException e) {
+                if (mainCtrl.getOverviewCtrl() == null
+                        || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                    return;
+                var sub = mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap().get(item);
+                if (sub != null)
+                    sub.notify();
+            }
         });
 
         autogrowLeft = new Region();
@@ -90,7 +105,8 @@ public class ExpenseListCell extends ListCell<Expense> {
 
     /**
      * Updates the item in the list to have the event name and the open and close buttons.
-     * @param item - item in the list
+     *
+     * @param item  - item in the list
      * @param empty - whether the item is empty or not
      */
     @Override
@@ -111,29 +127,24 @@ public class ExpenseListCell extends ListCell<Expense> {
     private void update() {
         try {
             expenseName.setText(this.getItem().getTitle());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             expenseName.setText("<no title>");
         }
         try {
             payeeName.setText(this.getItem().getPayee().getName());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             payeeName.setText("<no payee>");
         }
         try {
-            price.setText(Double.toString(this.getItem().getAmount()));
-        }
-        catch (NullPointerException e) {
+            price.setText(String.format("%.2f", this.getItem().getAmount()));
+        } catch (NullPointerException e) {
             price.setText("<no price>");
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             price.setText("<invalid price>");
         }
         try {
             currency.setText(this.getItem().getCurrency());
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             currency.setText("<no currency>");
         }
         StringBuilder sb = new StringBuilder();
@@ -145,14 +156,12 @@ public class ExpenseListCell extends ListCell<Expense> {
             sb.append(this.getItem().getSplit()
                     .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
             sb.append(")");
-        }
-        else sb.append("none");
+        } else sb.append("none");
         payers.setText(sb.toString());
         try {
             var dateObj = this.getItem().getDate();
             date.setText(DateFormat.getDateInstance().format(dateObj));
-        }
-        catch (NullPointerException e) {
+        } catch (NullPointerException e) {
             date.setText("<no date>");
         }
         setGraphic(hBox);
