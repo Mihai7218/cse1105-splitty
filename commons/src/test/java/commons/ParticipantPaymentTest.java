@@ -1,16 +1,22 @@
 package commons;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ParticipantPaymentTest {
 
-    public static final Participant PARTICIPANT = new Participant("name",
+    public Participant PARTICIPANT = new Participant("name",
             "email@gmail", "123456789", "12345");
-    public static final Participant PARTICIPANT_2 = new Participant("newName",
+    public Participant PARTICIPANT_2 = new Participant("newName",
             "email2@gmail", "123456779", "23456");
 
+    @BeforeEach
+    public void init(){
+        PARTICIPANT.setId(0);
+        PARTICIPANT_2.setId(1);
+    }
     @Test
     public void checkConstructor(){
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);

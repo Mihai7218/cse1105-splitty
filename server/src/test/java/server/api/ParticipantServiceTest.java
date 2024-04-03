@@ -108,7 +108,9 @@ class ParticipantServiceTest {
     @Test
     public void addParticipantvalidPaymentDetails(){
         Participant validNoPayment = new Participant("Jane", null, null, null);
+        validNoPayment.setId(2);
         Participant validNoPayment2=new Participant("Jeff", "","","");
+        validNoPayment2.setId(3);
         assertEquals(participantService.addParticipant(0,validNoPayment, mock(ServerUtilModule.class)).getStatusCode(), OK);
         assertEquals(participantService.addParticipant(0,validNoPayment2, mock(ServerUtilModule.class)).getStatusCode(), OK);
     }
@@ -143,6 +145,7 @@ class ParticipantServiceTest {
     public void addValidParticipantTest(){
         Participant three = new Participant("Ethan", "eyoung@gmail.com",
                 "NL85RABO5253446745", "HBUKGB4B");
+        three.setId(2);
         ResponseEntity<Participant> response = participantService.addParticipant(0, three, serverUtil);
         Participant result = response.getBody();
         assertEquals(result, three);
@@ -279,8 +282,10 @@ class ParticipantServiceTest {
         Event event = eventRepository.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        participantService.addParticipant(0L,new Participant("Christina Smith", "cmsmith@yahoo.com",
-                "NL85ABNA5253446745", "AMUKGB7B"), serverUtil);
+        Participant toAdd = new Participant("Christina Smith", "cmsmith@yahoo.com",
+                "NL85ABNA5253446745", "AMUKGB7B");
+        toAdd.setId(2);
+        participantService.addParticipant(0L,toAdd, serverUtil);
         event = eventRepository.getById(0L);
         Date kip = event.getLastActivity();
         assertTrue(kip.after(tmpdate));

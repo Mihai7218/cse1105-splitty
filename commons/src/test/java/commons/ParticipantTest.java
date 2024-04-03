@@ -15,10 +15,9 @@
  */
 package commons;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ParticipantTest {
 
@@ -42,13 +41,13 @@ public class ParticipantTest {
     public void EqualsTest() {
         var participant1 = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
         var participant2 = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
-        assertEquals(participant1, participant2);
+        assertTrue(participant1.fullEquals(participant2));
     }
     @Test
     public void NotEqualsTest() {
         var participant1 = new Participant("Joe", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
         var participant2 = new Participant("Jo", "joe.doe@gmail.com", "NL12 1923 1237 8374 02", "ALSUENBG");
-        assertNotEquals(participant1, participant2);
+        assertFalse(participant1.fullEquals(participant2));
     }
 
     @Test
