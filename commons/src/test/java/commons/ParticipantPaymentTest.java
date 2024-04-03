@@ -55,7 +55,7 @@ class ParticipantPaymentTest {
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
         ParticipantPayment PP2 = new ParticipantPayment(PARTICIPANT_2, 20.00);
 
-        assertNotEquals(PP1, PP2);
+        assertFalse(PP1.fullEquals(PP2));
         assertNotEquals(PP1.hashCode(), PP2.hashCode());
     }
 
@@ -86,7 +86,7 @@ class ParticipantPaymentTest {
     public void equalsHashcodeNullField(){
         ParticipantPayment PP3 = new ParticipantPayment(PARTICIPANT_2, 5.00);
         ParticipantPayment PP4 = new ParticipantPayment(null, 5.00);
-        assertNotEquals(PP3, PP4);
+        assertFalse(PP3.fullEquals(PP4));
         assertNotEquals(PP3.hashCode(), PP4.hashCode());
     }
 
