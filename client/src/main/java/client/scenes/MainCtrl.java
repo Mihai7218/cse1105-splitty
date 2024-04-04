@@ -30,6 +30,9 @@ public class MainCtrl {
     private ConnectToServerCtrl connectCtrl;
     private Scene connectToServer;
 
+    private AddQuoteCtrl addCtrl;
+    private Scene add;
+
     private StartScreenCtrl startScreenCtrl;
     private Scene startScreen;
 
@@ -79,6 +82,7 @@ public class MainCtrl {
      * @param connectToServer connecting to server scene
      */
     public void initialize(Stage primaryStage,
+                           Pair<AddQuoteCtrl, Parent> add,
                            Pair<StartScreenCtrl, Parent> startScreen,
                            Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
@@ -90,6 +94,10 @@ public class MainCtrl {
                            Pair<EditExpenseCtrl, Parent> editExpense,
                            Pair<ConnectToServerCtrl, Parent> connectToServer) {
         this.primaryStage = primaryStage;
+
+        this.addCtrl = add.getKey();
+        this.add = new Scene(add.getValue());
+
         this.startScreenCtrl = startScreen.getKey();
         this.startScreen = new Scene(startScreen.getValue());
 
@@ -244,6 +252,14 @@ public class MainCtrl {
         primaryStage.setScene(startScreen);
     }
 
+    /**
+     * Shows the add quote scene.
+     */
+    public void showAdd() {
+        primaryStage.setTitle("Quotes: Adding Quote");
+        primaryStage.setScene(add);
+        if (add != null) add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+    }
 
     /**
      * Shows the add participant scene.

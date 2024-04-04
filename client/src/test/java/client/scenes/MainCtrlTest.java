@@ -161,14 +161,10 @@ class MainCtrlTest {
                 new Pair<>(addExpenseCtrl, addExpense),
                 new Pair<>(invitationCtrl,invitation),
                 new Pair<>(editParticipantCtrl,editParticipant),
-<<<<<<< HEAD
-                new Pair<>(editExpenseCtrl, editExpense),
-                new Pair<>(connectToServerCtrl, connectToServer));
-=======
                 new Pair<>(settingsCtrl, settings),
                 new Pair<>(statisticsCtrl,statistics),
-                new Pair<>(editExpenseCtrl, editExpense));
->>>>>>> d0398f960c60fc13781b5a51444eea1fb26badcf
+                new Pair<>(editExpenseCtrl, editExpense),
+                new Pair<>(connectToServerCtrl, connectToServer));
         assertEquals(stage, sut.getPrimaryStage());
         //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
