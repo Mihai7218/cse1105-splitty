@@ -49,6 +49,55 @@ public class EventControllerTest {
         sut = new EventController(ev, test, mock(SimpMessagingTemplate.class));
     }
 
+    @Test
+    public void adminTestPassword(){
+        setPassword("testPs");
+        assertEquals(sut.get("testPs").getStatusCode(), OK);
+        assertEquals(sut.get("wrongPs").getStatusCode(), BAD_REQUEST);
+    }
+
+    @Test
+    public void getInvolvedPayTest(){
+        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment p1 = new ParticipantPayment(p, 5);
+        ParticipantPayment p2 = new ParticipantPayment(other,5);
+        Expense exp1 = new Expense(10, "USD", "title", "desc", null, List.of(p1,p2), new Tag("yellow", "yellow"),p);
+
+        ParticipantPayment p3 = new ParticipantPayment(p, 10);
+        ParticipantPayment p4 = new ParticipantPayment(other,10);
+        Expense exp2 = new Expense(20, "USD", "title2", "desc", null, List.of(p3,p4), new Tag("yellow", "yellow"),other);
+
+        Event event4 = new Event("test1", null, null);
+        ParticipantRepository participantRepo = new TestParticipantRepository();
+
+        Participant uninvolved = new Participant("name", null, null, null);
+
+        event4.getParticipantsList().add(p);
+        event4.getParticipantsList().add(other);
+        event4.getExpensesList().add(exp1);
+        event4.getExpensesList().add(exp2);
+        Tag one = new Tag("food", "#93c47d");
+        Tag two = new Tag("entrance fees", "#4a86e8");
+        Tag three = new Tag("travel", "#e06666");
+        event4.setTagsList(List.of(one, two, three));
+        repo.save(event4);
+        participantRepo.save(p);
+        participantRepo.save(other);
+        participantRepo.save(uninvolved);
+        assertEquals(OK, sut.getInvolvingPayee(event4.getInviteCode(), 0L).getStatusCode());
+        assertEquals(OK, sut.getInvolvingPayee(event4.getInviteCode(), uninvolved.getId()).getStatusCode());
+        assertEquals(OK, sut.getInvolvingPayee(event4.getInviteCode(), uninvolved.getId()+5).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getInvolvingPayee(event4.getInviteCode(), -1L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getInvolvingPayee(-1, 1L).getStatusCode());
+
+        assertEquals(OK, sut.getInvolvingPart(event4.getInviteCode(), 0L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getInvolvingPart(event4.getInviteCode(), -1L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getInvolvingPart(-1, 1L).getStatusCode());
+    }
+
 
     @Test
     public void calculateDebts(){
@@ -75,12 +124,27 @@ public class EventControllerTest {
         EventRepository eventRepository = new TestEventRepository();
         TestTagRepository tagRepo = new TestTagRepository();
         EventService temp = new EventService(eventRepository, tagRepo);
+        EventController ec = new EventController(temp, new ServerUtilModule(), mock(SimpMessagingTemplate.class));
         eventRepository.save(event);
         participantRepo.save(p);
         participantRepo.save(other);
-        assertEquals(OK, temp.getShare(0L,0L).getStatusCode());
-        assertEquals(OK, temp.getShare(0L,1L).getStatusCode());
-        assertEquals(OK, temp.getTotal(0L).getStatusCode());
+        assertEquals(OK, ec.getShare(0L,0L).getStatusCode());
+        assertEquals(OK, ec.getOwed(0L,0L).getStatusCode());
+        assertEquals(OK, ec.getShare(0L,1L).getStatusCode());
+        assertEquals(OK, ec.getTotal(0L).getStatusCode());
+
+    }
+
+    @Test
+    public void calculateInvalidDebts(){
+        assertEquals(BAD_REQUEST, sut.getDebt(-1L, -1L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getShare(-1L, 1L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getDebt(1L, -1L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getOwed(-1L, 0L).getStatusCode());
+        assertEquals(BAD_REQUEST, sut.getOwed(1L, -1L).getStatusCode());
+        assertEquals(NOT_FOUND, sut.getOwed(50L, 0L).getStatusCode());
+        assertEquals(NOT_FOUND, sut.getShare(50L, 0L).getStatusCode());
+        assertEquals(NOT_FOUND, sut.getDebt(50L, 0L).getStatusCode());
     }
 
     @Test
