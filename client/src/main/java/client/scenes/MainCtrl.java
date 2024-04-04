@@ -70,8 +70,6 @@ public class MainCtrl {
      * Initialize the main controller with the primary stage,
      *
      * @param primaryStage    primary stage of the controller.
-     * @param qouteoverview   qoute overview controller and scene
-     * @param add             add quote controller and scene
      * @param startScreen     start screen controller and scene
      * @param participant     participant controller and scene
      * @param overview        overview controller and scene
@@ -79,8 +77,6 @@ public class MainCtrl {
      * @param editparticipant
      */
     public void initialize(Stage primaryStage,
-                           Pair<QuoteOverviewCtrl, Parent> qouteoverview,
-                           Pair<AddQuoteCtrl, Parent> add,
                            Pair<StartScreenCtrl, Parent> startScreen,
                            Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
@@ -92,11 +88,11 @@ public class MainCtrl {
         this.primaryStage = primaryStage;
 
 
-        this.qouteoverviewCtrl = qouteoverview.getKey();
-        this.qouteoverview = new Scene(qouteoverview.getValue());
+        //this.qouteoverviewCtrl = qouteoverview.getKey();
+        //this.qouteoverview = new Scene(qouteoverview.getValue());
 
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
+        //this.addCtrl = add.getKey();
+        //this.add = new Scene(add.getValue());
 
         this.startScreenCtrl = startScreen.getKey();
         this.startScreen = new Scene(startScreen.getValue());
@@ -275,7 +271,8 @@ public class MainCtrl {
     public void showConnectToServer(){
         primaryStage.setTitle("Splitty: Connect to a server");
         try {
-            connectToServer.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
+            connectToServer.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
         } catch (NullPointerException e) {
             System.out.println("exception caught: Null Pointer Exception");
         }
