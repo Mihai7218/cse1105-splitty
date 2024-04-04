@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+//import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -21,7 +22,9 @@ public class ConnectToServerCtrl {
     private Button connectButton;
 
     /**
-     *
+     * The handler when the connect button is pressed.
+     * The server address is retrieved from the responsible text field and
+     * the config file is updated accordingly.
      */
     @FXML
     private void connectButtonHandler() {
@@ -30,7 +33,8 @@ public class ConnectToServerCtrl {
 
         // Redirect to the next scene (StartScreen.fxml)
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/client/scenes/StartScreen.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass()
+                    .getResource("/client/scenes/StartScreen.fxml"));
             Parent root = loader.load();
             Stage stage = (Stage) connectButton.getScene().getWindow();
             Scene scene = new Scene(root);
