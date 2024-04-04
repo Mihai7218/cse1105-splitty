@@ -17,6 +17,7 @@ package client;
 
 import client.scenes.*;
 import client.utils.Config;
+import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import com.google.inject.Binder;
 import com.google.inject.Module;
@@ -39,6 +40,7 @@ public class MyModule implements Module {
         binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
         binder.bind(StartScreenCtrl.class).in(Scopes.SINGLETON);
         binder.bind(LanguageManager.class).in(Scopes.SINGLETON);
+        binder.bind(CurrencyConverter.class).in(Scopes.SINGLETON);
         binder.bind(QuoteOverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(ParticipantCtrl.class).in(Scopes.SINGLETON);
         binder.bind(OverviewCtrl.class).in(Scopes.SINGLETON);

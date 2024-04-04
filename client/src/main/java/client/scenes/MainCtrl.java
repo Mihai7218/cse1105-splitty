@@ -27,8 +27,8 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl qouteoverviewCtrl;
-    private Scene qouteoverview;
+    private QuoteOverviewCtrl quoteOverviewCtrl;
+    private Scene quoteOverview;
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
@@ -52,6 +52,8 @@ public class MainCtrl {
     private InvitationCtrl invitationCtrl;
     private StatisticsCtrl statisticsCtrl;
     private Scene invitation;
+    private SettingsCtrl settingsCtrl;
+    private Scene settings;
     private Scene statistics;
 
     private Event event;
@@ -69,16 +71,19 @@ public class MainCtrl {
      * Initialize the main controller with the primary stage,
      *
      * @param primaryStage    primary stage of the controller.
-     * @param qouteoverview   qoute overview controller and scene
+     * @param quoteOverview   quote overview controller and scene
      * @param add             add quote controller and scene
      * @param startScreen     start screen controller and scene
      * @param participant     participant controller and scene
      * @param overview        overview controller and scene
      * @param addExpense      addExpense controller and scene
-     * @param editparticipant
+     * @param invitation      invitation controller and scene
+     * @param editparticipant edit participant controller and scene
+     * @param settings        settings controller and scene
      * @param statistics
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
+    public void initialize(Stage primaryStage,
+                           Pair<QuoteOverviewCtrl, Parent> quoteOverview,
                            Pair<AddQuoteCtrl, Parent> add,
                            Pair<StartScreenCtrl, Parent> startScreen,
                            Pair<ParticipantCtrl, Parent> participant,
@@ -86,11 +91,12 @@ public class MainCtrl {
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
                            Pair<EditParticipantCtrl, Parent> editparticipant,
+                           Pair<SettingsCtrl, Parent> settings,
                            Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense) {
         this.primaryStage = primaryStage;
-        this.qouteoverviewCtrl = qouteoverview.getKey();
-        this.qouteoverview = new Scene(qouteoverview.getValue());
+        this.quoteOverviewCtrl = quoteOverview.getKey();
+        this.quoteOverview = new Scene(quoteOverview.getValue());
 
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
@@ -112,6 +118,9 @@ public class MainCtrl {
 
         this.invitationCtrl = invitation.getKey();
         this.invitation = new Scene(invitation.getValue());
+
+        this.settingsCtrl = settings.getKey();
+        this.settings = new Scene(settings.getValue());
 
         this.editExpenseCtrl = editExpense.getKey();
         this.editExpense = new Scene(editExpense.getValue());
@@ -282,6 +291,21 @@ public class MainCtrl {
     }
 
     /**
+     * Shows the settings scene.
+     */
+    public void showSettings() {
+        primaryStage.titleProperty().bind(languageManager.bind("settings.windowTitle"));
+        try {
+            settings.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(settings);
+        if (settingsCtrl != null) settingsCtrl.refresh();
+    }
+
+    /**
      * Getter for the primary stage.
      * Package-access getter for testing purposes.
      * @return - primary stage.
@@ -296,7 +320,7 @@ public class MainCtrl {
      * @return - overview controller.
      */
     QuoteOverviewCtrl getQuoteOverviewCtrl() {
-        return qouteoverviewCtrl;
+        return quoteOverviewCtrl;
     }
 
     /**
@@ -305,7 +329,7 @@ public class MainCtrl {
      * @return - overview scene.
      */
     Scene getQuoteOverview() {
-        return qouteoverview;
+        return quoteOverview;
     }
 
     /**
@@ -451,5 +475,21 @@ public class MainCtrl {
      */
     public Scene getInvitation() {
         return invitation;
+    }
+
+    /**
+     * Getter for the settings controller.
+     * @return - the settings controller.
+     */
+    public SettingsCtrl getSettingsCtrl() {
+        return settingsCtrl;
+    }
+
+    /**
+     * Getter for the settings scene.
+     * @return - the settings scene.
+     */
+    Scene getSettings() {
+        return settings;
     }
 }

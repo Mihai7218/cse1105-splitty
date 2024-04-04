@@ -15,6 +15,8 @@ import java.text.DateFormat;
 public class ExpenseListCell extends ListCell<Expense> {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final CurrencyConverter currencyConverter;
+    private final ConfigInterface config;
     private final ServerUtils server;
     private Label expenseName;
     private Label paidLabel;
@@ -36,12 +38,16 @@ public class ExpenseListCell extends ListCell<Expense> {
      * Constructor for the RecentEventCell.
      */
     public ExpenseListCell(MainCtrl mainCtrl,
-                           ServerUtils server,
-                           LanguageManager languageManager) {
+                           LanguageManager languageManager,
+                           CurrencyConverter currencyConverter,
+                           ConfigInterface config,
+                           ServerUtils server) {
         super();
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.languageManager = languageManager;
+        this.currencyConverter = currencyConverter;
+        this.config = config;
     }
 
     /**
@@ -125,6 +131,7 @@ public class ExpenseListCell extends ListCell<Expense> {
      * Updates the labels and sets the graphic to the HBox.
      */
     private void update() {
+        boolean setCurrency = false;
         try {
             expenseName.setText(this.getItem().getTitle());
         } catch (NullPointerException e) {
@@ -135,16 +142,34 @@ public class ExpenseListCell extends ListCell<Expense> {
         } catch (NullPointerException e) {
             payeeName.setText("<no payee>");
         }
+        String currencyString = config.getProperty("currency");
+        if (currencyString == null || currencyString.isEmpty()) currencyString = "EUR";
         try {
-            price.setText(String.format("%.2f", this.getItem().getAmount()));
-        } catch (NullPointerException e) {
+            double amountInEUR = this.getItem().getAmount();
+            double converted = currencyConverter.convert(
+                    this.getItem().getDate(),
+                    this.getItem().getCurrency(),
+                    currencyString,
+                    amountInEUR);
+            price.setText(String.format("%.2f", converted));
+        }
+        catch (NullPointerException e) {
             price.setText("<no price>");
         } catch (NumberFormatException e) {
             price.setText("<invalid price>");
         }
+        catch (CouldNotConvertException e) {
+            price.setText(Double.toString(this.getItem().getAmount()));
+            setCurrency = true;
+        }
         try {
-            currency.setText(this.getItem().getCurrency());
-        } catch (NullPointerException e) {
+            if (setCurrency) {
+                currency.setText(this.getItem().getCurrency());
+            } else {
+                currency.setText(currencyString);
+            }
+        }
+        catch (NullPointerException e) {
             currency.setText("<no currency>");
         }
         StringBuilder sb = new StringBuilder();

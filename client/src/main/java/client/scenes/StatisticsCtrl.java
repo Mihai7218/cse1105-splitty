@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ConfigInterface;
+import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
@@ -20,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -33,12 +35,15 @@ public class StatisticsCtrl implements Initializable {
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final CurrencyConverter currencyConverter;
+    private StompSession.Subscription subscription;
     @FXML
     public javafx.scene.chart.PieChart pieChart;
     @FXML
     public Button cancel;
     @FXML
     public VBox ownLegend;
+    private String currency;
 
 
     /**
@@ -51,11 +56,13 @@ public class StatisticsCtrl implements Initializable {
     public StatisticsCtrl(MainCtrl mainCtrl,
                           ConfigInterface config,
                           LanguageManager languageManager,
-                          ServerUtils serverUtils) {
+                          ServerUtils serverUtils,
+                          CurrencyConverter currencyConverter) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
+        this.currencyConverter = currencyConverter;
     }
 
     /**
@@ -75,12 +82,6 @@ public class StatisticsCtrl implements Initializable {
             mainCtrl.setEvent(e);
         }
         this.refreshLanguage();
-        serverUtils.registerForMessages("/topic/events", Event.class, q -> {
-            mainCtrl.setEvent(q);
-            Platform.runLater(() -> refresh());
-        });
-
-
     }
 
     /**
@@ -125,8 +126,17 @@ public class StatisticsCtrl implements Initializable {
      * Refreshes the statistics
      */
     public void refresh() {
+        if (mainCtrl.getEvent() != null) {
+            subscription = serverUtils.registerForMessages(String.format("/topic/events/%s",
+                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
+                    mainCtrl.getEvent().setTitle(q.getTitle());
+                    Platform.runLater(() -> refresh());
+                });
+        }
         pieChart.titleProperty().set(mainCtrl.getEvent().getTitle());
         cancel.setGraphic(new ImageView(new Image("icons/arrowback.png")));
+        currency = config.getProperty("currency");
+        if (currency == null || currency.isEmpty()) currency = "EUR";
         setStatistics();
     }
 
@@ -134,6 +144,7 @@ public class StatisticsCtrl implements Initializable {
      * Back to the overview of the expenses of the Event
      */
     public void backToOverview() {
+        subscription.unsubscribe();
         mainCtrl.showOverview();
     }
 
@@ -149,14 +160,20 @@ public class StatisticsCtrl implements Initializable {
 
         double total = 0;
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
-            total += expense.getAmount();
+            total += currencyConverter.convert(expense.getDate(),
+                    expense.getCurrency(),
+                    currency,
+                    expense.getAmount());
         }
 
         for (Pair<Tag, List<Expense>> pair : stats) {
             String catagoryName = pair.getKey().getName();
             double value = 0;
             for (Expense expense : pair.getValue()) {
-                value += expense.getAmount();
+                value += currencyConverter.convert(expense.getDate(),
+                        expense.getCurrency(),
+                        currency,
+                        expense.getAmount());
             }
             PieChart.Data slice = new PieChart.Data(catagoryName, value);
             pieChart.getData().add(slice);
@@ -179,7 +196,7 @@ public class StatisticsCtrl implements Initializable {
 
         StringBinding test = languageManager.bind("statistics.chartTitle");
         pieChart.setTitle(mainCtrl.getEvent().getTitle() +
-                "\n" + test.getValue() + " " + total);
+                "\n" + test.getValue() + " " + String.format("%.2f %s", total, currency));
     }
 
     /**
@@ -232,7 +249,8 @@ public class StatisticsCtrl implements Initializable {
             double precentage = (data.getValue()/total*100);
             String withRightDigits = String.format("%.1f",precentage);
             Label item = new Label(data.getKey().getName() + ": "
-                    + data.getValue() + " (" + withRightDigits + "%)");
+                    + String.format("%.2f %s", data.getValue(), currency)
+                    + " (" + withRightDigits + "%)");
             item.setTextFill(Color.web(data.getKey().getColor()));
             ownLegend.getChildren().add(item);
         }
