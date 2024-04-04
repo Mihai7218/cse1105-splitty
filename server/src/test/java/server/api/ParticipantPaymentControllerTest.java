@@ -1,8 +1,13 @@
 package server.api;
 
 import commons.*;
+import org.aspectj.weaver.ast.Not;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.ResponseEntity;
+import server.database.EventRepository;
+import server.database.ParticipantPaymentRepository;
+import server.database.ParticipantRepository;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -10,10 +15,77 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 import static server.api.PasswordService.setPassword;
 
 public class ParticipantPaymentControllerTest {
+
+    List<ParticipantPayment> participantPayments;
+    boolean validPp;
+    public class ParticipantPaymentServiceStub extends ParticipantPaymentService{
+
+        /**
+         * Constructor for the participantpayment service
+         *
+         * @param participantRepository        repository for participants
+         * @param participantPaymentRepository repository for the participantPayments
+         * @param eventRepository              repository for events
+         */
+        public ParticipantPaymentServiceStub(ParticipantRepository participantRepository, ParticipantPaymentRepository participantPaymentRepository, EventRepository eventRepository) {
+            super(participantRepository, participantPaymentRepository, eventRepository);
+        }
+
+        public ResponseEntity<List<ParticipantPayment>> getAllParticipantPayment(
+                long eventId, long expenseId){
+            if(eventId < 0 || expenseId < 0 ) return ResponseEntity.badRequest().build();
+            else if (eventId > 40 || expenseId > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(participantPayments);
+        }
+
+        public ResponseEntity<ParticipantPayment> getParticipantPayment(
+                long eventId, long expenseId, long id){
+            if(eventId < 0 || expenseId < 0 || id <0 ) return ResponseEntity.badRequest().build();
+            else if (eventId > 40 || expenseId > 40 || id > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(null);
+        }
+
+        public ResponseEntity<ParticipantPayment> createParticipantPayment(
+                long eventId, long expenseId, ParticipantPayment participantPayment,
+                GerneralServerUtil serverUtil){
+            if(eventId < 0 || expenseId < 0 ) return ResponseEntity.badRequest().build();
+            else if (eventId > 40 || expenseId > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(null);
+        }
+
+        public ResponseEntity<ParticipantPayment> updateParticipantPayment(
+                long eventId, long expenseId, long id, ParticipantPayment participantPayment,
+                GerneralServerUtil serverUtil){
+            if(eventId < 0 || expenseId < 0 || id < 0) return ResponseEntity.badRequest().build();
+            else if (eventId > 40 || expenseId > 40 || id > 40) return ResponseEntity.notFound().build();
+            else if(participantPayment.getParticipant() == null || participantPayment.getPaymentAmount() <= 0){
+                return ResponseEntity.badRequest().build();
+            }
+            return ResponseEntity.ok(participantPayment);
+        }
+
+        public ResponseEntity<ParticipantPayment> deleteParticipantPayment(
+                long eventId, long expenseId, long id, GerneralServerUtil serverUtil) {
+            if(eventId < 0 || expenseId < 0 || id < 0) return ResponseEntity.badRequest().build();
+            else if (eventId > 40 || expenseId > 40 || id > 40) return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(null);
+        }
+
+        public ResponseEntity<ParticipantPayment> validateParticipantPayment(ParticipantPayment p) {
+            if(validPp) return ResponseEntity.ok(p);
+            else return ResponseEntity.badRequest().build();
+        }
+
+        public ResponseEntity<ParticipantPayment> addCreatedParticipantPayment(ParticipantPayment p) {
+            return ResponseEntity.ok(p);
+        }
+
+    }
+
     TestEventRepository eventRepository;
     TestExpenseRepository expenseRepository;
     TestParticipantPaymentRepository participantPaymentRepository;
@@ -43,6 +115,8 @@ public class ParticipantPaymentControllerTest {
     public Expense expense;
 
     public GerneralServerUtil serverUtil;
+    public ParticipantPaymentController ctrlStubbed;
+    public ParticipantPaymentService serviceStubbed;
 
 
     @BeforeEach
@@ -89,70 +163,85 @@ public class ParticipantPaymentControllerTest {
         eventRepository.save(baseEvent);
         eventRepository.getById(0L).setParticipantsList(participantList);
         participantPaymentController = new ParticipantPaymentController(participantPaymentService,serverUtil);
+
+        serviceStubbed = new ParticipantPaymentServiceStub(participantRepository, participantPaymentRepository, eventRepository);
+        ctrlStubbed = new ParticipantPaymentController(serviceStubbed, serverUtil);
     }
 
     @Test
     public void importParticipantPayment(){
-        Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
         Participant other = new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
                 "HBUKGB4B");
         ParticipantPayment pp = new ParticipantPayment(other, 25);
-        List<ParticipantPayment> split = List.of(pp);
-        Tag t = new Tag("red", "red");
-        Expense e= new Expense(50, "USD", "exampleExpense", "description",
-                null,split ,t, p);
-        event.getParticipantsList().add(p);
-        event.getParticipantsList().add(other);
-        event.getExpensesList().add(e);
-        Tag one = new Tag("food", "#93c47d");
-        Tag two = new Tag("entrance fees", "#4a86e8");
-        Tag three = new Tag("travel", "#e06666");
-        event.setTagsList(List.of(t, one, two, three));
-        event.setInviteCode(5);
         setPassword("password");
-        assertEquals(OK, participantPaymentController.addJsonImport("password", pp).getStatusCode());
+        assertEquals(OK,participantPaymentController.addJsonImport("password", pp).getStatusCode());
+        assertEquals(BAD_REQUEST, participantPaymentController.addJsonImport("wrongpassword", pp).getStatusCode());
     }
 
     @Test
     public void testGetAll(){
-        participantPaymentController.getParticipantPayment(0,0);
-        assertEquals(participantPaymentRepository.calledMethods, List.of("save","save"));
-        assertEquals(participantPaymentRepository.calledMethods.size(), 2);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,0).getStatusCode(), OK);
+        assertEquals(ctrlStubbed.getParticipantPayment(-1,0).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,-1).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.getParticipantPayment(60,0).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,60).getStatusCode(), NOT_FOUND);
     }
 
     @Test
     public void testGetOne(){
-        participantPaymentController.getParticipantPayment(0,0,0);
-        assertEquals(participantPaymentRepository.calledMethods, List.of("save","save"));
-        assertEquals(participantPaymentRepository.calledMethods.size(), 2);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,0,0).getStatusCode(), OK);
+        assertEquals(ctrlStubbed.getParticipantPayment(-1,0,0).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,-1,0).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,0,-1).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.getParticipantPayment(100,0,0).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,100,0).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.getParticipantPayment(0,0,100).getStatusCode(), NOT_FOUND);
     }
 
     @Test
     public void testCreate(){
-        ParticipantPayment newPP = new ParticipantPayment(valid3, 5);
-        participantPaymentController.createParticipantPayment(0,0, newPP);
-        assertEquals(participantPaymentRepository.calledMethods, List.of("save","save", "save"));
-        assertEquals(participantPaymentRepository.calledMethods.size(), 3);
-        assertEquals(participantPaymentRepository.participantPayments.size(), 3);
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        setPassword("password");
+        assertEquals(ctrlStubbed.createParticipantPayment(0,0, pp).getStatusCode(), OK);
+        assertEquals(ctrlStubbed.createParticipantPayment(-1,0, pp).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.createParticipantPayment(0,-1, pp).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.createParticipantPayment(100,0, pp).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.createParticipantPayment(0,100, pp).getStatusCode(), NOT_FOUND);
     }
 
     @Test
     public void testUpdate(){
-        ParticipantPayment updatePP = new ParticipantPayment(valid2, 3);
-        participantPaymentController.updateParticipantPayment(0,0,1, updatePP);
-        assertEquals(participantPaymentRepository.calledMethods, List.of("save", "save"));
-        assertEquals(participantPaymentRepository.participantPayments.size(), 2);
-        assertEquals(participantPaymentRepository.participantPayments.get(1).getPaymentAmount(), 3);
+        Participant other = new Participant("John Doe",
+                "jdoe@gmail.com","NL85RABO5253446745",
+                "HBUKGB4B");
+        ParticipantPayment pp = new ParticipantPayment(other, 25);
+        setPassword("password");
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,0,0,pp).getStatusCode(), OK);
+        assertEquals(ctrlStubbed.updateParticipantPayment(-1,0,0,pp).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,-1,0,pp).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,0,-1,pp).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.updateParticipantPayment(100,0,0,pp).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,100,0,pp).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,0,100,pp).getStatusCode(), NOT_FOUND);
+        ParticipantPayment bad1 = new ParticipantPayment(null, 10);
+        ParticipantPayment bad2 = new ParticipantPayment(other, -10);
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,0,0,bad1).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.updateParticipantPayment(0,0,0,bad2).getStatusCode(), BAD_REQUEST);
     }
 
     @Test
     public void testDelete(){
-        participantPaymentController.deleteParticipantPayment(0,0,1);
-        assertEquals(participantPaymentRepository.calledMethods, List.of("save", "save"));
-        assertEquals(participantPaymentRepository.participantPayments.size(), 1);
-        assertEquals(participantPaymentRepository.participantPayments.get(0), p1);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(0,0,0).getStatusCode(), OK);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(-1,0,0).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(0,-1,0).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(0,0,-1).getStatusCode(), BAD_REQUEST);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(100,0,0).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(0,100,0).getStatusCode(), NOT_FOUND);
+        assertEquals(ctrlStubbed.deleteParticipantPayment(0,0,100).getStatusCode(), NOT_FOUND);
     }
 
     @Test
