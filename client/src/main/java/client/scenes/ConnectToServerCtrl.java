@@ -1,17 +1,13 @@
 package client.scenes;
 
+import client.utils.ConfigInterface;
+import client.utils.LanguageManager;
+import com.google.inject.Inject;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 //These imports are for testing if the connection works
 import java.net.HttpURLConnection;
@@ -24,6 +20,28 @@ public class ConnectToServerCtrl {
     @FXML
     private Button connectButton;
 
+    @Inject
+    private MainCtrl mainCtrl;
+    @Inject
+    protected final ConfigInterface configInterface;
+    @Inject
+    private LanguageManager languageManager;
+
+    /**
+     * @param mainCtrl
+     * @param configInterface
+     * @param languageManager
+     */
+    @Inject
+    public ConnectToServerCtrl (MainCtrl mainCtrl, ConfigInterface configInterface,
+                                LanguageManager languageManager){
+        this.mainCtrl = mainCtrl;
+        this.configInterface = configInterface;
+        this.languageManager = languageManager;
+
+    }
+
+
     /**
      * The handler when the connect button is pressed.
      * The server address is retrieved from the responsible text field and
@@ -35,12 +53,11 @@ public class ConnectToServerCtrl {
             If the user leaves the server field empty, we break out of the method so the user
             can enter a new address
          */
-        if (emptyServer(serverAddressField)) {
+        String serverAddress = serverAddressField.getText();
+        if (emptyServer(serverAddress)) {
             showAlert("Server Address Required", "Please enter a server address.");
             return;
         }
-
-        String serverAddress = serverAddressField.getText();
 
         /*
             Test whether the server is available for connection
@@ -52,17 +69,7 @@ public class ConnectToServerCtrl {
         }
         // Update config if everything is fine and redirect to start screen
         updateConfigFile(serverAddress);
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass()
-                    .getResource("/client/scenes/StartScreen.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) connectButton.getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        mainCtrl.showStartMenu();
     }
 
     /**
@@ -70,14 +77,7 @@ public class ConnectToServerCtrl {
      * @param serverAddress the server address to be replaced in the config file
      */
     private void updateConfigFile(String serverAddress) {
-        String filePath = "client/config.properties"; // Path relative to the project root
-        try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {
-            writer.println("#Splitty Config File");
-            writer.println("#" + java.time.LocalDateTime.now());
-            writer.println("server=" + serverAddress);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        configInterface.setProperty("server", serverAddress);
     }
 
     /**
@@ -101,9 +101,9 @@ public class ConnectToServerCtrl {
     private boolean isServerAvailable(String serverAddress) {
         try {
             URL url = new URL(serverAddress);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestMethod("HEAD");
-            int responseCode = connection.getResponseCode();
+            HttpURLConnection testConnection = (HttpURLConnection) url.openConnection();
+            testConnection.setRequestMethod("HEAD");
+            int responseCode = testConnection.getResponseCode();
             return responseCode == HttpURLConnection.HTTP_OK;
         } catch (IOException e) {
             return false;
@@ -111,10 +111,10 @@ public class ConnectToServerCtrl {
     }
 
     /**
-     * @param textField the server address textField
+     * @param serverAddr the server address String
      * @return whether the field was left empty by the user
      */
-    private boolean emptyServer(TextField textField) {
-        return textField.getText().trim().isEmpty();
+    private boolean emptyServer(String serverAddr) {
+        return serverAddr.isEmpty() || serverAddr.equals("");
     }
 }

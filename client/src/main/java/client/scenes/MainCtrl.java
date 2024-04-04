@@ -33,6 +33,9 @@ public class MainCtrl {
     private AddQuoteCtrl addCtrl;
     private Scene add;
 
+    private ConnectToServerCtrl connectCtrl;
+    private Scene connectToServer;
+
     private StartScreenCtrl startScreenCtrl;
     private Scene startScreen;
 
@@ -75,15 +78,20 @@ public class MainCtrl {
      * @param addExpense      addExpense controller and scene
      * @param editparticipant
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> qouteoverview,
-                           Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
-                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant,
+    public void initialize(Stage primaryStage,
+                           Pair<QuoteOverviewCtrl, Parent> qouteoverview,
+                           Pair<AddQuoteCtrl, Parent> add,
+                           Pair<StartScreenCtrl, Parent> startScreen,
+                           Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
                            Pair<EditParticipantCtrl, Parent> editparticipant,
-                           Pair<EditExpenseCtrl, Parent> editExpense) {
+                           Pair<EditExpenseCtrl, Parent> editExpense,
+                           Pair<ConnectToServerCtrl, Parent> connectToServer) {
         this.primaryStage = primaryStage;
+
+
         this.qouteoverviewCtrl = qouteoverview.getKey();
         this.qouteoverview = new Scene(qouteoverview.getValue());
 
@@ -111,7 +119,10 @@ public class MainCtrl {
         this.editExpenseCtrl = editExpense.getKey();
         this.editExpense = new Scene(editExpense.getValue());
 
-        showStartMenu();
+        this.connectCtrl = connectToServer.getKey();
+        this.connectToServer = new Scene(connectToServer.getValue());
+
+        showConnectToServer();
         primaryStage.show();
     }
 
@@ -256,6 +267,19 @@ public class MainCtrl {
         }
         primaryStage.setScene(editparticipant);
         if (overviewCtrl != null) editparticipantCtrl.refresh();
+    }
+
+    /**
+     * Displays the scene for connecting to a server
+     */
+    public void showConnectToServer(){
+        primaryStage.setTitle("Splitty: Connect to a server");
+        try {
+            connectToServer.getStylesheets().add(getClass().getResource("stylesheet.css").toExternalForm());
+        } catch (NullPointerException e) {
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(connectToServer);
     }
 
     /**

@@ -19,7 +19,7 @@
                   <Font name="System Bold" size="14.0" />
                </font>
             </Label>
-            <TextField fx:id="serverAddress" promptText="Enter the server address here..." />
+            <TextField fx:id="serverAddressField" promptText="Enter the server address here..." />
             <Button id="joinButton" fx:id="connectServerButton" graphicTextGap="8.0" mnemonicParsing="false" onAction="#connectButtonHandler" text="Connect" />
          </children>
       </VBox>
