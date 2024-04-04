@@ -113,7 +113,7 @@ public class ParticipantPaymentServiceTest {
         expenseRepository.save(e);
         assertEquals(participantPaymentService.validateParticipantPayment(pp).getStatusCode(), OK );
         participantPaymentService.addCreatedParticipantPayment(pp);
-        assertEquals(participantPaymentService.getParticipantPayment(1, 1,2).getBody(), pp);
+        assertTrue(participantPaymentService.getParticipantPayment(1, 1,2).getBody().fullEquals(pp));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ParticipantPaymentServiceTest {
     public void testGetSingleParticipantPayment(){
         ParticipantPayment pp = participantPaymentService
                 .getParticipantPayment(0,0,1).getBody();
-        assertEquals(pp, p2);
+        assertTrue(pp.fullEquals(p2));
     }
 
     @Test

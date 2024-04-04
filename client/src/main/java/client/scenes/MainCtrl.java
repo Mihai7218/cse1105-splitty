@@ -50,9 +50,11 @@ public class MainCtrl {
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     private InvitationCtrl invitationCtrl;
+    private StatisticsCtrl statisticsCtrl;
     private Scene invitation;
     private SettingsCtrl settingsCtrl;
     private Scene settings;
+    private Scene statistics;
 
     private Event event;
 
@@ -78,15 +80,19 @@ public class MainCtrl {
      * @param invitation      invitation controller and scene
      * @param editparticipant edit participant controller and scene
      * @param settings        settings controller and scene
+     * @param statistics
      */
-    public void initialize(Stage primaryStage, Pair<QuoteOverviewCtrl, Parent> quoteOverview,
-                           Pair<AddQuoteCtrl, Parent> add, Pair<StartScreenCtrl,
-                           Parent> startScreen, Pair<ParticipantCtrl, Parent> participant,
+    public void initialize(Stage primaryStage,
+                           Pair<QuoteOverviewCtrl, Parent> quoteOverview,
+                           Pair<AddQuoteCtrl, Parent> add,
+                           Pair<StartScreenCtrl, Parent> startScreen,
+                           Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
                            Pair<EditParticipantCtrl, Parent> editparticipant,
                            Pair<SettingsCtrl, Parent> settings,
+                           Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense) {
         this.primaryStage = primaryStage;
         this.quoteOverviewCtrl = quoteOverview.getKey();
@@ -119,6 +125,10 @@ public class MainCtrl {
         this.editExpenseCtrl = editExpense.getKey();
         this.editExpense = new Scene(editExpense.getValue());
 
+        this.statisticsCtrl = statistics.getKey();
+        this.statistics = new Scene(statistics.getValue());
+
+
         showStartMenu();
         primaryStage.show();
     }
@@ -130,6 +140,20 @@ public class MainCtrl {
         primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
+    }
+    /**
+     * shows scene for statistics
+     */
+    public void showStatistics(){
+        primaryStage.titleProperty().bind(languageManager.bind("statistics.sceneTitle"));
+        try {
+            statistics.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(statistics);
+        if (statisticsCtrl != null) statisticsCtrl.refresh();
     }
 
     /**

@@ -48,6 +48,8 @@ public class OverviewCtrl implements Initializable {
     private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
     @FXML
+    public Button showStatisticsButton;
+    @FXML
     private Tab fromTab;
     @FXML
     private Tab includingTab;
@@ -95,6 +97,10 @@ public class OverviewCtrl implements Initializable {
     private Label sumExpense;
     @FXML
     private Label sumLabel;
+    @FXML
+    private Label code;
+    @FXML
+    private Label inviteLang;
 
 
     /**
@@ -183,10 +189,12 @@ public class OverviewCtrl implements Initializable {
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
+        showStatisticsButton.setGraphic(new ImageView(new Image("icons/graph.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
+            code.setText(String.valueOf(event.getInviteCode()));
             participants.getItems().sort(Comparator.comparing(Participant::getName));
             expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
             server.registerForMessages(String.format("/topic/events/%s",
@@ -299,6 +307,12 @@ public class OverviewCtrl implements Initializable {
      */
     public void sendInvites() {
         mainCtrl.showInvitation();
+    }
+    /**
+     * Opens the statistics scene to be able to see the statistics.
+     */
+    public void statistics(){
+        mainCtrl.showStatistics();
     }
 
     /**
