@@ -169,7 +169,7 @@ public class EventService {
         List<Event> allEvents = eventRepository.findAll();
         for(Event e: allEvents){
             event.setInviteCode(e.getInviteCode());
-            if(e.equals(event)){
+            if(e.fullEquals(event)){
                 return ResponseEntity.badRequest().build();
             }
         }
