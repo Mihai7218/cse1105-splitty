@@ -93,6 +93,10 @@ public class OverviewCtrl implements Initializable {
     private Label sumExpense;
     @FXML
     private Label sumLabel;
+    @FXML
+    private Label code;
+    @FXML
+    private Label inviteLang;
 
 
     /**
@@ -155,6 +159,7 @@ public class OverviewCtrl implements Initializable {
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
+            code.setText(String.valueOf(event.getInviteCode()));
             participants.getItems().sort(Comparator.comparing(Participant::getName));
             expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
             server.registerForMessages(String.format("/topic/events/%s",
