@@ -84,12 +84,24 @@ public class ParticipantPayment {
 
 
     /**
-     * Checks the equality between this and another object
+     * Checks the equality based on id for this and another object
      * @param o the other object to check
      * @return boolean true for equal, false for not equal
      */
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ParticipantPayment participantPayment = (ParticipantPayment) o;
+        return id == participantPayment.getId();
+    }
+
+    /**
+     * performs a full equality check for two participant payments
+     * @param o other object to check with
+     * @return true if the objects are entirely equal
+     */
+    public boolean fullEquals(Object o){
         if (this == o) {
             return true;
         }
@@ -101,7 +113,6 @@ public class ParticipantPayment {
         boolean valueEqual = paymentAmount == that.paymentAmount;
 
         return  participantEqual && valueEqual;
-
     }
 
     /**

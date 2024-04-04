@@ -149,7 +149,7 @@ public class TagService {
         event.getTagsList().remove(test.get());
         eventRepo.save(event);
         tagRepo.deleteAllById(Collections.singleton(tagId));
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(test.get());
     }
 
 

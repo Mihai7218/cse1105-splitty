@@ -1,8 +1,8 @@
 package commons;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 
 class TagTest {
@@ -26,7 +26,7 @@ class TagTest {
     @Test
     public void notEqualsHashcode(){
         Tag NOT_EQUAL = new Tag("b", "blue");
-        assertNotEquals(NOT_EQUAL, SOME_TAG);
+        assertFalse(NOT_EQUAL.fullEquals(SOME_TAG));
         assertNotEquals(NOT_EQUAL.hashCode(), SOME_TAG.hashCode());
     }
 

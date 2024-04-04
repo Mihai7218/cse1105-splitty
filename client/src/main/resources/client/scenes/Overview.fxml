@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import client.utils.LanguageComboBox?>
 
 <?import javafx.geometry.Insets?>
@@ -44,6 +43,8 @@
                                     </tooltip>
                                 </Button>
                                 <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Label fx:id="inviteLang" text="${controller.languageManager.overview.inviteLang}"/>
+                        <Label fx:id="code" />
                                 <Button id="sendmail" fx:id="sendMailButton" layoutX="175.0" layoutY="76.0" mnemonicParsing="false" onAction="#sendInvites" text="${controller.languageManager.overview.sendInvitesButton}" />
                             </children>
                         </HBox>
@@ -58,8 +59,10 @@
                         <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="350.0">
                             <children>
                                 <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="177.0" onAction="#filterViews" prefWidth="150.0" />
-                                <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                <Button id="addExpense" fx:id="addExpenseButton" layoutX="209.0" layoutY="169.0" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
+                                 <Region prefHeight="26.0" prefWidth="5.0" HBox.hgrow="ALWAYS" />
+                        <Button id="showStatistics" fx:id="showStatisticsButton" mnemonicParsing="false" onAction="#statistics" text="${controller.languageManager.overview.showStatisticsButton}" />
+                        <Region prefHeight="26.0" prefWidth="5.0" />
+                                <Button id="addExpense" fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
                             </children>
                         </HBox>
                     </children>
