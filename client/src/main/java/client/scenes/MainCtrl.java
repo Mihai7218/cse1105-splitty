@@ -364,6 +364,25 @@ public class MainCtrl {
         return editparticipant;
     }
 
+    /**
+     * Getter for the add quote controller.
+     * Package-access getter for testing purposes.
+     * @return - add quote controller.
+     */
+    AddQuoteCtrl getAddCtrl() {
+        return addCtrl;
+    }
+
+    /**
+     * Getter for the add quote scene.
+     * Package-access getter for testing purposes.
+     * @return - add quote scene.
+     */
+    Scene getAdd() {
+        return add;
+    }
+
+
 
     /**
      * Getter for the start screen controller.

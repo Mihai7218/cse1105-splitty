@@ -132,8 +132,8 @@ class MainCtrlTest {
     void initialize() {
         //QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);
         //Parent quoteOverview = spy(Parent.class);
-        //AddQuoteCtrl addQuoteCtrl = mock(AddQuoteCtrl.class);
-        //Parent addQuote = spy(Parent.class);
+        AddQuoteCtrl addQuoteCtrl = mock(AddQuoteCtrl.class);
+        Parent addQuote = spy(Parent.class);
         StartScreenCtrl startScreenCtrl = mock(StartScreenCtrl.class);
         Parent startScreen = spy(Parent.class);
         ParticipantCtrl participantCtrl = mock(ParticipantCtrl.class);
@@ -155,6 +155,7 @@ class MainCtrlTest {
         ConnectToServerCtrl connectToServerCtrl = mock(ConnectToServerCtrl.class);
         Parent connectToServer = spy(Parent.class);
         sut.initialize(stage,
+                new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
@@ -168,8 +169,8 @@ class MainCtrlTest {
         assertEquals(stage, sut.getPrimaryStage());
         //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
-        //assertEquals(addQuoteCtrl, sut.getAddCtrl());
-        //assertEquals(addQuote, sut.getAdd().getRoot());
+        assertEquals(addQuoteCtrl, sut.getAddCtrl());
+        assertEquals(addQuote, sut.getAdd().getRoot());
         assertEquals(startScreenCtrl, sut.getStartScreenCtrl());
         assertEquals(startScreen, sut.getStartScreen().getRoot());
         assertEquals(participantCtrl, sut.getParticipantCtrl());
