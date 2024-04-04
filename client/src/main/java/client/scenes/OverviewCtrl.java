@@ -47,6 +47,8 @@ public class OverviewCtrl implements Initializable {
     private final LanguageManager languageManager;
     private final ConfigInterface config;
     @FXML
+    public Button showStatisticsButton;
+    @FXML
     private Tab fromTab;
     @FXML
     private Tab includingTab;
@@ -155,6 +157,7 @@ public class OverviewCtrl implements Initializable {
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
+        showStatisticsButton.setGraphic(new ImageView(new Image("icons/graph.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
         if (event != null) {
@@ -261,6 +264,12 @@ public class OverviewCtrl implements Initializable {
      */
     public void sendInvites() {
         mainCtrl.showInvitation();
+    }
+    /**
+     * Opens the statistics scene to be able to see the statistics.
+     */
+    public void statistics(){
+        mainCtrl.showStatistics();
     }
 
     /**
