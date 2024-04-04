@@ -42,10 +42,6 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) {
-
-        //var qouteoverview = FXML.load(QuoteOverviewCtrl.class, "client"
-                //, "scenes", "QuoteOverview.fxml");
-       // var add = FXML.load(AddQuoteCtrl.class, "client", "scenes", "AddQuote.fxml");
         var startScreen = FXML.load(StartScreenCtrl.class, "client", "scenes", "StartScreen.fxml");
         var participant = FXML.load(ParticipantCtrl.class, "client", "scenes", "Participant.fxml");
         var overview = FXML.load(OverviewCtrl.class, "client", "scenes", "Overview.fxml");
@@ -53,7 +49,8 @@ public class Main extends Application {
         var editparticipant =
                 FXML.load(EditParticipantCtrl.class, "client", "scenes", "EditParticipant.fxml");
         var invitation = FXML.load(InvitationCtrl.class, "client", "scenes", "Invitation.fxml");
-
+        var settings = FXML.load(SettingsCtrl.class, "client", "scenes", "Settings.fxml");
+        var statistics = FXML.load(StatisticsCtrl.class, "client", "scenes", "Statistics.fxml");
         var editExpense = FXML.load(EditExpenseCtrl.class, "client", "scenes", "EditExpense.fxml");
         var connectToServer = FXML.load(ConnectToServerCtrl.class, "client", "scenes",
                 "ConnectToServer.fxml");
@@ -61,7 +58,11 @@ public class Main extends Application {
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage, startScreen,
                 participant, overview, addExpense,
-                invitation, editparticipant, editExpense, connectToServer);
+                invitation, editparticipant, settings, statistics,
+                editExpense, connectToServer);
+        primaryStage.setOnCloseRequest(e -> {
+            startScreen.getKey().stop();
+        });
     }
 
     /**

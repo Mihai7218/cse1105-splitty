@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<?import client.utils.LanguageComboBox?>
+
+<AnchorPane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SettingsCtrl">
+    <children>
+        <Label layoutX="29.0" layoutY="14.0" prefHeight="42.0" prefWidth="421.0" text="${controller.languageManager.settings.title}">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+        <VBox layoutX="29.0" layoutY="66.0" prefHeight="90.0" prefWidth="392.0">
+            <children>
+                <HBox prefHeight="22.0" prefWidth="392.0">
+                    <children>
+                        <Label fx:id="noRecentEventsLabel" prefHeight="22.0" prefWidth="250.0" text="${controller.languageManager.settings.noRecentEvents}">
+                            <font>
+                                <Font size="15.0" />
+                            </font>
+                        </Label>
+                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <Spinner fx:id="noRecentEvents" prefHeight="26.0" prefWidth="120.0" />
+                    </children>
+                </HBox>
+                <Region prefHeight="50.0" prefWidth="10.0" />
+                <HBox layoutX="10.0" layoutY="80.0" prefHeight="14.0" prefWidth="392.0">
+                    <children>
+                        <Label prefHeight="22.0" prefWidth="212.0" text="${controller.languageManager.settings.currency}">
+                            <font>
+                                <Font size="15.0" />
+                            </font>
+                        </Label>
+                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <ChoiceBox fx:id="currency" prefHeight="26.0" prefWidth="62.0" />
+                    </children>
+                </HBox>
+            <Region prefHeight="50.0" prefWidth="10.0" />
+            <HBox layoutX="10.0" layoutY="44.0" prefHeight="14.0" prefWidth="392.0">
+               <children>
+                  <Label prefHeight="22.0" prefWidth="212.0" text="${controller.languageManager.settings.language}">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Label>
+                  <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                  <LanguageComboBox fx:id="languages" prefHeight="26.0" prefWidth="170.0" />
+               </children>
+            </HBox>
+            </children>
+        </VBox>
+        <HBox alignment="CENTER_RIGHT" layoutX="29.0" layoutY="426.0" prefHeight="26.0" prefWidth="392.0">
+            <children>
+                <Button id="cancel" fx:id="cancelButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#cancel" text="${controller.languageManager.settings.cancel}" HBox.hgrow="ALWAYS" />
+                <Region prefHeight="50.0" prefWidth="10.0" />
+                <Button id="save" fx:id="saveButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#save" text="${controller.languageManager.settings.save}" HBox.hgrow="ALWAYS" />
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

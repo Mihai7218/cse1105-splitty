@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ConfigInterface;
+import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import commons.Participant;
@@ -62,6 +63,7 @@ public class AddExpenseCtrlTest {
     Label instructions;
     Button cancelButton;
     Button addExpenseButton;
+    private CurrencyConverter currencyConverter;
 
 
     @Start
@@ -69,7 +71,9 @@ public class AddExpenseCtrlTest {
         mainCtrl = mock(MainCtrl.class);
         serverUtils = mock(ServerUtils.class);
         languageManager = mock(LanguageManager.class);
-        sut = new AddExpenseCtrl(mainCtrl, config, languageManager, serverUtils, alert);
+        currencyConverter = mock(CurrencyConverter.class);
+        sut = new AddExpenseCtrl(mainCtrl, config, languageManager,
+                serverUtils, alert, currencyConverter);
         payee = mock(ChoiceBox.class);
         currency = mock(ChoiceBox.class);
         expenseType = mock(ComboBox.class);
@@ -123,7 +127,6 @@ public class AddExpenseCtrlTest {
     void initialize() {
         assertFalse(question.isVisible());
         assertNotNull(sut.getNamesContainer());
-        assertNotNull(sut.getCurrencies());
         assertEquals(0, namesContainer.getChildren().size());
     }
 

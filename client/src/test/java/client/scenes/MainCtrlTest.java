@@ -146,6 +146,10 @@ class MainCtrlTest {
         Parent invitation = spy(Parent.class);
         EditParticipantCtrl editParticipantCtrl = mock(EditParticipantCtrl.class);
         Parent editParticipant = spy(Parent.class);
+        SettingsCtrl settingsCtrl = mock(SettingsCtrl.class);
+        Parent settings = spy(Parent.class);
+        StatisticsCtrl statisticsCtrl = mock(StatisticsCtrl.class);
+        Parent statistics = spy(Parent.class);
         EditExpenseCtrl editExpenseCtrl = mock(EditExpenseCtrl.class);
         Parent editExpense = spy(Parent.class);
         ConnectToServerCtrl connectToServerCtrl = mock(ConnectToServerCtrl.class);
@@ -157,8 +161,14 @@ class MainCtrlTest {
                 new Pair<>(addExpenseCtrl, addExpense),
                 new Pair<>(invitationCtrl,invitation),
                 new Pair<>(editParticipantCtrl,editParticipant),
+<<<<<<< HEAD
                 new Pair<>(editExpenseCtrl, editExpense),
                 new Pair<>(connectToServerCtrl, connectToServer));
+=======
+                new Pair<>(settingsCtrl, settings),
+                new Pair<>(statisticsCtrl,statistics),
+                new Pair<>(editExpenseCtrl, editExpense));
+>>>>>>> d0398f960c60fc13781b5a51444eea1fb26badcf
         assertEquals(stage, sut.getPrimaryStage());
         //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());

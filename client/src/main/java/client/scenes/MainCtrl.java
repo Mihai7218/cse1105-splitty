@@ -27,12 +27,6 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl qouteoverviewCtrl;
-    private Scene qouteoverview;
-
-    private AddQuoteCtrl addCtrl;
-    private Scene add;
-
     private ConnectToServerCtrl connectCtrl;
     private Scene connectToServer;
 
@@ -53,7 +47,11 @@ public class MainCtrl {
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     private InvitationCtrl invitationCtrl;
+    private StatisticsCtrl statisticsCtrl;
     private Scene invitation;
+    private SettingsCtrl settingsCtrl;
+    private Scene settings;
+    private Scene statistics;
 
     private Event event;
 
@@ -74,7 +72,11 @@ public class MainCtrl {
      * @param participant     participant controller and scene
      * @param overview        overview controller and scene
      * @param addExpense      addExpense controller and scene
-     * @param editparticipant
+     * @param invitation      invitation controller and scene
+     * @param editparticipant edit participant controller and scene
+     * @param settings        settings controller and scene
+     * @param statistics      statistics scene
+     * @param connectToServer connecting to server scene
      */
     public void initialize(Stage primaryStage,
                            Pair<StartScreenCtrl, Parent> startScreen,
@@ -83,17 +85,11 @@ public class MainCtrl {
                            Pair<AddExpenseCtrl, Parent> addExpense,
                            Pair<InvitationCtrl, Parent> invitation,
                            Pair<EditParticipantCtrl, Parent> editparticipant,
+                           Pair<SettingsCtrl, Parent> settings,
+                           Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense,
                            Pair<ConnectToServerCtrl, Parent> connectToServer) {
         this.primaryStage = primaryStage;
-
-
-        //this.qouteoverviewCtrl = qouteoverview.getKey();
-        //this.qouteoverview = new Scene(qouteoverview.getValue());
-
-        //this.addCtrl = add.getKey();
-        //this.add = new Scene(add.getValue());
-
         this.startScreenCtrl = startScreen.getKey();
         this.startScreen = new Scene(startScreen.getValue());
 
@@ -112,11 +108,18 @@ public class MainCtrl {
         this.invitationCtrl = invitation.getKey();
         this.invitation = new Scene(invitation.getValue());
 
+        this.settingsCtrl = settings.getKey();
+        this.settings = new Scene(settings.getValue());
+
         this.editExpenseCtrl = editExpense.getKey();
         this.editExpense = new Scene(editExpense.getValue());
 
         this.connectCtrl = connectToServer.getKey();
         this.connectToServer = new Scene(connectToServer.getValue());
+
+        this.statisticsCtrl = statistics.getKey();
+        this.statistics = new Scene(statistics.getValue());
+
 
         showConnectToServer();
         primaryStage.show();
@@ -129,6 +132,20 @@ public class MainCtrl {
         primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
+    }
+    /**
+     * shows scene for statistics
+     */
+    public void showStatistics(){
+        primaryStage.titleProperty().bind(languageManager.bind("statistics.sceneTitle"));
+        try {
+            statistics.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(statistics);
+        if (statisticsCtrl != null) statisticsCtrl.refresh();
     }
 
     /**
@@ -227,14 +244,6 @@ public class MainCtrl {
         primaryStage.setScene(startScreen);
     }
 
-    /**
-     * Shows the add quote scene.
-     */
-    public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
-        primaryStage.setScene(add);
-        if (add != null) add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
-    }
 
     /**
      * Shows the add participant scene.
@@ -268,7 +277,7 @@ public class MainCtrl {
     /**
      * Displays the scene for connecting to a server
      */
-    public void showConnectToServer(){
+    public void showConnectToServer() {
         primaryStage.setTitle("Splitty: Connect to a server");
         try {
             connectToServer.getStylesheets().add(getClass()
@@ -280,30 +289,27 @@ public class MainCtrl {
     }
 
     /**
+     * Shows the settings scene.
+     */
+    public void showSettings() {
+        primaryStage.titleProperty().bind(languageManager.bind("settings.windowTitle"));
+        try {
+            settings.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(settings);
+        if (settingsCtrl != null) settingsCtrl.refresh();
+    }
+
+    /**
      * Getter for the primary stage.
      * Package-access getter for testing purposes.
      * @return - primary stage.
      */
     Stage getPrimaryStage() {
         return primaryStage;
-    }
-
-    /**
-     * Getter for the overview controller.
-     * Package-access getter for testing purposes.
-     * @return - overview controller.
-     */
-    QuoteOverviewCtrl getQuoteOverviewCtrl() {
-        return qouteoverviewCtrl;
-    }
-
-    /**
-     * Getter for the overview scene.
-     * Package-access getter for testing purposes.
-     * @return - overview scene.
-     */
-    Scene getQuoteOverview() {
-        return qouteoverview;
     }
 
     /**
@@ -342,23 +348,6 @@ public class MainCtrl {
         return editparticipant;
     }
 
-    /**
-     * Getter for the add quote controller.
-     * Package-access getter for testing purposes.
-     * @return - add quote controller.
-     */
-    AddQuoteCtrl getAddCtrl() {
-        return addCtrl;
-    }
-
-    /**
-     * Getter for the add quote scene.
-     * Package-access getter for testing purposes.
-     * @return - add quote scene.
-     */
-    Scene getAdd() {
-        return add;
-    }
 
     /**
      * Getter for the start screen controller.
@@ -449,5 +438,21 @@ public class MainCtrl {
      */
     public Scene getInvitation() {
         return invitation;
+    }
+
+    /**
+     * Getter for the settings controller.
+     * @return - the settings controller.
+     */
+    public SettingsCtrl getSettingsCtrl() {
+        return settingsCtrl;
+    }
+
+    /**
+     * Getter for the settings scene.
+     * @return - the settings scene.
+     */
+    Scene getSettings() {
+        return settings;
     }
 }

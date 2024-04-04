@@ -19,8 +19,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
@@ -76,6 +74,7 @@ class StartScreenCtrlTest {
     DoubleProperty createEventButtonPrefWidthProperty;
     DoubleProperty joinEventButtonPrefWidthProperty;
     DoubleProperty widthAfter;
+    Button settings;
 
     @Start
     void setUp(Stage stage) {
@@ -89,6 +88,7 @@ class StartScreenCtrlTest {
         alert = mock(Alert.class);
         createEventButton = mock(Button.class);
         joinEventButton = mock(Button.class);
+        settings = mock(Button.class);
         createButtonHBox = mock(HBox.class);
         joinButtonHBox = mock(HBox.class);
         recentEvents = mock(ListView.class);
@@ -110,10 +110,12 @@ class StartScreenCtrlTest {
         sut.joinEventButton = joinEventButton;
         sut.createButtonHBox = createButtonHBox;
         sut.joinButtonHBox = joinButtonHBox;
+        sut.settings = settings;
 
         mock = spy(sut);
         doNothing().when(createEventButton).setGraphic(any(Node.class));
         doNothing().when(joinEventButton).setGraphic(any(Node.class));
+        doNothing().when(settings).setGraphic(any(Node.class));
 
         sut.setRecentEvents(recentEvents);
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));

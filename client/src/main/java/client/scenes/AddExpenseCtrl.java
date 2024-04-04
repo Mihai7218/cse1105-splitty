@@ -1,8 +1,6 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Expense;
 import commons.Participant;
@@ -15,12 +13,12 @@ import javafx.scene.control.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
 
 public class AddExpenseCtrl extends ExpenseCtrl {
-
     @FXML
     private Button addExpense;
 
@@ -37,8 +35,10 @@ public class AddExpenseCtrl extends ExpenseCtrl {
                           ConfigInterface config,
                           LanguageManager languageManager,
                           ServerUtils serverUtils,
-                          Alert alert) {
-        super(mainCtrl, config, languageManager, serverUtils, alert);
+                          Alert alert,
+                          CurrencyConverter currencyConverter) {
+
+        super(mainCtrl, config, languageManager, serverUtils, alert, currencyConverter);
     }
 
     /**
@@ -125,12 +125,14 @@ public class AddExpenseCtrl extends ExpenseCtrl {
     public Expense createExpense(String title, int price, LocalDate date) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
+        Date actualDate = java.sql.Date.valueOf(date);
+        String currencyString = currency.getValue();
         double priceVal = ((double)price)/100;
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        return new Expense(priceVal, currency.getValue(), title, "testing",
-                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
+        return new Expense(priceVal, currencyString, title, "testing",
+                actualDate, participantPayments, tag, actualPayee);
     }
 
     /**
