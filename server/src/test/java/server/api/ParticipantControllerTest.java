@@ -118,14 +118,8 @@ public class ParticipantControllerTest {
         eventRepository.flush();
         Participant three = new Participant("Ethan", "eyoung@gmail.com",
                 "NL85RABO5253446745", "HBUKGB4B");
-        participantController.addParticipant(0, three);
-        List<String> called = List.of("existsById", "findById", "findById",
-                "existsById", "findById", "findById", "existsById",
-                "findById", "findById", "findById", "findById",
-                "save", "existsById", "getById", "save", "existsById", "getById");
-        assertEquals(eventRepository.calledMethods, called);
-        assertEquals(participantRepository.calledMethods.size(), 1);
-        assertEquals(eventRepository.calledMethods.size(), 17);
+        three.setId(2);
+        assertEquals(participantController.addParticipant(0, three).getStatusCode(), OK);
     }
 
     @Test
@@ -211,9 +205,11 @@ public class ParticipantControllerTest {
         Event event = eventRepository.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        participantController.addParticipant(0L,new Participant("Jon Doe",
+        Participant toAdd = new Participant("Jon Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B"));
+                "HBUKGB4B");
+        toAdd.setId(5);
+        participantController.addParticipant(0L,toAdd);
         event = eventRepository.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }

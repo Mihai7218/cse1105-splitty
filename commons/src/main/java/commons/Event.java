@@ -177,12 +177,24 @@ public class Event {
     }
 
     /**
-     * An equals methode for to compare 2 event
+     * An equals method to compare 2 event by event id
      * @param o The object to compare to the event
      * @return returns if the other event is the same as the one this function is called on
      */
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Event event = (Event) o;
+        return this.getInviteCode() == event.getInviteCode();
+    }
+
+    /**
+     * equals method to check all attributes of an event are the same
+     * @param o The object to compare the event to
+     * @return true if objects are equal
+     */
+    public boolean fullEquals(Object o){
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event that = (Event) o;
