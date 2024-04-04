@@ -161,14 +161,15 @@ public class EventService {
      * @return event if it is valid or error code if not
      */
     public ResponseEntity<Event> validateEvent(Event event) {
-        if(event == null || event.getInviteCode()<0
+        if(event == null
                 || Objects.equals(event.getTitle(), "")
                 || event.getTitle() == null){
             return ResponseEntity.badRequest().build();
         }
         List<Event> allEvents = eventRepository.findAll();
         for(Event e: allEvents){
-            if(e.equals(event)){
+            event.setInviteCode(e.getInviteCode());
+            if(e.fullEquals(event)){
                 return ResponseEntity.badRequest().build();
             }
         }
@@ -182,7 +183,11 @@ public class EventService {
      * @return the event in a ResponseEntity
      */
     public ResponseEntity<Event> addCreatedEvent(Event event) {
-        return ResponseEntity.ok(eventRepository.save(event));
+        if(validateEvent(event).getStatusCode().equals(OK)){
+            return ResponseEntity.ok(eventRepository.save(event));
+        }else{
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     /**
@@ -223,14 +228,13 @@ public class EventService {
                 .toList().getFirst();
         List<Expense> expenses = e.getExpensesList();
         double balance = 0;
-        for(Expense expense: expenses){
-            if(expense.getPayee().equals(current)){
-                balance += expense.getAmount();
-            }else{
-                for(ParticipantPayment p: expense.getSplit()){
-                    if(p.getParticipant().equals(current)){
-                        balance -= p.getPaymentAmount();
-                    }
+        for (Expense expense : expenses) {
+
+            for (ParticipantPayment p : expense.getSplit()) {
+                if (p.getParticipant().equals(current) && expense.getPayee().equals(current)) {
+                    balance += p.getPaymentAmount();
+                } else if (p.getParticipant().equals(current)) {
+                    balance -= p.getPaymentAmount();
                 }
             }
         }
@@ -257,7 +261,7 @@ public class EventService {
             if(!expense.getPayee().equals(current)){
                 for(ParticipantPayment p: expense.getSplit()){
                     if(p.getParticipant().equals(current)){
-                        debt -= p.getPaymentAmount();
+                        debt += p.getPaymentAmount();
                     }
                 }
             }
@@ -284,7 +288,11 @@ public class EventService {
         double owed = 0;
         for(Expense expense: expenses){
             if(expense.getPayee().equals(current)){
-                owed += expense.getAmount();
+                for(ParticipantPayment p : expense.getSplit()){
+                    if(!p.getParticipant().equals(current)) {
+                        owed += p.getPaymentAmount();
+                    }
+                }
             }
         }
         return ResponseEntity.ok(owed);
@@ -306,12 +314,15 @@ public class EventService {
             return ResponseEntity.notFound().build();
         }
         Event e = eventRepository.findById(eventId).get();
-        Participant current = e.getParticipantsList()
-                .stream()
-                .filter(item -> item.getId()==participantId)
-                .toList().getFirst();
-        if(current == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(0.0);
+        try {
+            Participant current = e.getParticipantsList()
+                    .stream()
+                    .filter(item -> item.getId() == participantId)
+                    .toList().getFirst();
+        }catch(NoSuchElementException notFound){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(1.0);
     }
 
     /**
@@ -321,7 +332,7 @@ public class EventService {
      */
     public ResponseEntity<List<Expense>> getExpensesInvolvingPayee(long inviteCode,
                                                                    long payeeId) {
-        if(inviteCode < 0){
+        if(inviteCode < 0 || payeeId < 0){
             return ResponseEntity.badRequest().build();
         }else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
@@ -348,7 +359,7 @@ public class EventService {
      */
     public ResponseEntity<List<Expense>> getExpensesInvolvingParticipant(long inviteCode,
                                                                          long partId) {
-        if(inviteCode < 0 || !eventRepository.findById(inviteCode).isPresent()){
+        if(inviteCode < 0 || partId < 0){
             return ResponseEntity.badRequest().build();
         } else if (!eventRepository.existsById(inviteCode)){
             return ResponseEntity.notFound().build();
