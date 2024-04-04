@@ -20,6 +20,10 @@ public class ConnectToServerCtrl {
     @FXML
     private Button connectButton;
 
+    /**
+     *
+     */
+    @FXML
     private void connectButtonHandler() {
         String serverAddress = serverAddressField.getText();
         updateConfigFile(serverAddress);
@@ -37,6 +41,9 @@ public class ConnectToServerCtrl {
         }
     }
 
+    /**
+     * @param serverAddress
+     */
     private void updateConfigFile(String serverAddress) {
         String filePath = "client/config.properties"; // Path relative to the project root
         try (PrintWriter writer = new PrintWriter(new FileWriter(filePath))) {

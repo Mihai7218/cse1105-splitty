@@ -3,53 +3,24 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <!--<?import client.utils.LanguageComboBox?>-->
 
-<Pane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartScreenCtrl">
+<Pane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ConnectToServerCtrl">
    <children>
-      <VBox alignment="TOP_CENTER" layoutX="70.0" layoutY="64.0" prefHeight="410.0" prefWidth="310.0">
+      <VBox alignment="TOP_CENTER" layoutX="71.0" layoutY="68.0" prefHeight="128.0" prefWidth="310.0">
          <children>
-            <VBox id="joinEventContainer" alignment="CENTER_LEFT" prefHeight="69.0" prefWidth="312.0">
-               <children>
-                  <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
-                     <children>
-                        <VBox id="createEventContainer" alignment="CENTER_LEFT" prefHeight="70.0" prefWidth="312.0">
-                           <children>
-                              <Label id="startLabels" fx:id="createNewEventLabel" text="${controller.languageManager.startScreen.createNewEventLabel}">
-                                 <font>
-                                    <Font name="System Bold" size="18.0" />
-                                 </font>
-                              </Label>
-                              <Label id="startLabels" fx:id="joinEventLabel" prefHeight="58.0" prefWidth="311.0" text="Please enter a Splitty Server to connect to">
-                                 <font>
-                                    <Font name="System Bold" size="14.0" />
-                                 </font>
-                              </Label>
-                              <Line endX="209.69285583496094" endY="0.592908501625061" startX="-100.0" />
-                              <Region prefHeight="125.0" prefWidth="312.0" />
-                              <HBox alignment="CENTER" prefHeight="26.0" prefWidth="350.0">
-                                 <children>
-                                    <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                    <HBox id="buttonContainerStart" fx:id="createButtonHBox" alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
-            <Region prefHeight="18.0" prefWidth="310.0" />
-            <TextField fx:id="newEventTitle" onKeyPressed="#createEventTextFieldHandler" promptText="Enter the server address here..." />
+            <Label id="startLabels" fx:id="connectToServerLabel" prefHeight="26.0" prefWidth="623.0" text="Please enter a Splitty Server to connect to">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
+            <TextField fx:id="serverAddress" promptText="Enter the server address here..." />
+            <Button id="joinButton" fx:id="connectServerButton" graphicTextGap="8.0" mnemonicParsing="false" onAction="#connectButtonHandler" text="Connect" />
          </children>
       </VBox>
       <Pane layoutX="26.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0">
@@ -63,6 +34,5 @@
             <!--<LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />-->
          </children>
       </Pane>
-      <Button id="joinButton" fx:id="createEventButton" graphicTextGap="8.0" layoutX="351.0" layoutY="183.0" mnemonicParsing="false" onAction="#createEventButtonHandler" text="Connect" />
    </children>
 </Pane>
