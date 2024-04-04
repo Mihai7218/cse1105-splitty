@@ -130,10 +130,10 @@ class MainCtrlTest {
      */
     @Test
     void initialize() {
-        QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);
-        Parent quoteOverview = spy(Parent.class);
-        AddQuoteCtrl addQuoteCtrl = mock(AddQuoteCtrl.class);
-        Parent addQuote = spy(Parent.class);
+        //QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);
+        //Parent quoteOverview = spy(Parent.class);
+        //AddQuoteCtrl addQuoteCtrl = mock(AddQuoteCtrl.class);
+        //Parent addQuote = spy(Parent.class);
         StartScreenCtrl startScreenCtrl = mock(StartScreenCtrl.class);
         Parent startScreen = spy(Parent.class);
         ParticipantCtrl participantCtrl = mock(ParticipantCtrl.class);
@@ -148,21 +148,22 @@ class MainCtrlTest {
         Parent editParticipant = spy(Parent.class);
         EditExpenseCtrl editExpenseCtrl = mock(EditExpenseCtrl.class);
         Parent editExpense = spy(Parent.class);
+        ConnectToServerCtrl connectToServerCtrl = mock(ConnectToServerCtrl.class);
+        Parent connectToServer = spy(Parent.class);
         sut.initialize(stage,
-                new Pair<>(quoteOverviewCtrl, quoteOverview),
-                new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
                 new Pair<>(overviewCtrl, overview),
                 new Pair<>(addExpenseCtrl, addExpense),
                 new Pair<>(invitationCtrl,invitation),
                 new Pair<>(editParticipantCtrl,editParticipant),
-                new Pair<>(editExpenseCtrl, editExpense));
+                new Pair<>(editExpenseCtrl, editExpense),
+                new Pair<>(connectToServerCtrl, connectToServer));
         assertEquals(stage, sut.getPrimaryStage());
-        assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
-        assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
-        assertEquals(addQuoteCtrl, sut.getAddCtrl());
-        assertEquals(addQuote, sut.getAdd().getRoot());
+        //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
+        //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
+        //assertEquals(addQuoteCtrl, sut.getAddCtrl());
+        //assertEquals(addQuote, sut.getAdd().getRoot());
         assertEquals(startScreenCtrl, sut.getStartScreenCtrl());
         assertEquals(startScreen, sut.getStartScreen().getRoot());
         assertEquals(participantCtrl, sut.getParticipantCtrl());
