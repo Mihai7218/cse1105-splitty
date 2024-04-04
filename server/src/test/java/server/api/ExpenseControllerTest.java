@@ -200,6 +200,21 @@ public class ExpenseControllerTest {
     }
 
     @Test
+    public void changeExpenseTest(){
+        Expense e = new Expense(10, "USD", "title", "desc", null, null, null, null);
+        assertEquals(OK, stubbedCtrl.changeExpense(e, 0,0).getStatusCode());
+        verify(smt).convertAndSend("/topic/events/0/expenses/0", e);
+
+        assertEquals(BAD_REQUEST, stubbedCtrl.changeExpense(e, -1, 0).getStatusCode());
+        assertEquals(BAD_REQUEST, stubbedCtrl.changeExpense(e, 0, -1).getStatusCode());
+
+        assertEquals(NOT_FOUND, stubbedCtrl.changeExpense(e, 100, 0).getStatusCode());
+        assertEquals(NOT_FOUND, stubbedCtrl.changeExpense(e, 0, 100).getStatusCode());
+
+
+    }
+
+    @Test
     public void importExpense(){
         Expense sample  = new Expense(10, "EUR", "test", "desc", null, null, null, null);
         assertEquals(stubbedCtrl.addJsonImport(0, "password", sample).getStatusCode(), BAD_REQUEST);

@@ -17,6 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.http.HttpStatus.*;
+import static server.api.PasswordService.setPassword;
 
 public class TagControllerTest {
 
@@ -238,6 +239,18 @@ public class TagControllerTest {
         assertEquals(BAD_REQUEST, ctrlStub.deleteTagFromEvent(0,-1).getStatusCode());
         assertEquals(NOT_FOUND, ctrlStub.deleteTagFromEvent(100,0).getStatusCode());
         assertEquals(NOT_FOUND, ctrlStub.deleteTagFromEvent(0,100).getStatusCode());
+    }
+
+    @Test
+    public void importJsonTest(){
+        Tag tester = new Tag("cool", "#000000");
+        setPassword("password");
+        validTag = true;
+        assertEquals(OK, ctrlStub.addJsonImport("password", tester).getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.addJsonImport("wrongpassword", tester).getStatusCode());
+        validTag = false;
+        assertEquals(BAD_REQUEST, ctrlStub.addJsonImport("password", tester).getStatusCode());
+
     }
 
     @Test

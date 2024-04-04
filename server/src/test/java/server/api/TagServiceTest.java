@@ -101,6 +101,13 @@ public class TagServiceTest {
 
     }
 
+    @Test
+    public void addingImportTest(){
+        Tag validT = new Tag("red", "#d03283");
+        assertEquals(OK, tagService.addCreatedTag(validT).getStatusCode());
+        assertEquals(tagRepo.tags.size(), 3);
+    }
+
     /***
      * Tests for getAllExpensesWithTag method
      */
