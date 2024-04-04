@@ -7,6 +7,8 @@ import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import server.database.EventRepository;
+import server.database.TagRepository;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -14,11 +16,67 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
-//TODO
 public class TagControllerTest {
+
+    List<Tag> tagList;
+    boolean validTag;
+
+    public class TagServiceStub extends TagService{
+
+        /**
+         * Constructor of the tagservice
+         *
+         * @param eventRepo The repository in which the events are stored
+         * @param tagRepo
+         */
+        public TagServiceStub(EventRepository eventRepo, TagRepository tagRepo) {
+            super(eventRepo, tagRepo);
+        }
+
+        public ResponseEntity<List<Expense>> getAllExpensesWithTag(long inviteCode, String tagName){
+            if(inviteCode < 0 || tagName == null || tagName.isEmpty()) return ResponseEntity.badRequest().build();
+            else if (inviteCode > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(null);
+        }
+
+        public ResponseEntity<List<Tag>> getTagsFromEvent(long inviteCode){
+            if(inviteCode < 0 ) return ResponseEntity.badRequest().build();
+            else if (inviteCode > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(tagList);
+        }
+
+        public ResponseEntity<Tag> addNewToEvent(long inviteCode, Tag tag,
+                                                 GerneralServerUtil serverUtil){
+            if(inviteCode < 0 || !validTag) return ResponseEntity.badRequest().build();
+            else if (inviteCode > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(tag);
+        }
+
+        public ResponseEntity<Tag> changeTag(long inviteCode, long tagId, Tag tag,
+                                             GerneralServerUtil serverUtil){
+            if(inviteCode < 0 || tagId <0 || !validTag) return ResponseEntity.badRequest().build();
+            else if (inviteCode > 40 || tagId > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(tag);
+        }
+
+        public ResponseEntity<Tag> deleteTagFromEvent(long inviteCode, long tagId,
+                                                      GerneralServerUtil serverUtil){
+            if(inviteCode < 0 || tagId < 0 ) return ResponseEntity.badRequest().build();
+            else if (inviteCode > 40 || tagId > 40) return ResponseEntity.notFound().build();
+            else return ResponseEntity.ok(null);
+        }
+
+        public ResponseEntity<Tag> validateTag(Tag tag){
+            if(validTag) return ResponseEntity.ok(tag);
+            else return ResponseEntity.badRequest().build();
+        }
+
+        public ResponseEntity<Tag> addCreatedTag(Tag tag){
+            return ResponseEntity.ok(tag);
+        }
+    }
     private TagController ctrl;
     public TestEventRepository eventRepo;
     public TestTagRepository tagRepo;
@@ -33,6 +91,9 @@ public class TagControllerTest {
     public Expense expense2;
 
     public GerneralServerUtil serverUtil;
+
+    public TagService serviceStub;
+    public TagController ctrlStub;
 
     @BeforeEach
     public void setup(){
@@ -70,6 +131,9 @@ public class TagControllerTest {
 
         expenseRepo.save(expense1);
         expenseRepo.save(expense2);
+
+        serviceStub = new TagServiceStub(eventRepo, tagRepo);
+        ctrlStub = new TagController(serviceStub, serverUtil);
     }
 
     /***
@@ -77,31 +141,19 @@ public class TagControllerTest {
      */
     @Test
     public void getAllExpensesWithTagTest(){
-        List<Expense> expenseList = ctrl.getAllExpensesWithTag(event1.getInviteCode(), "food").getBody();
-        assertEquals(1, expenseList.size());
-    }
-
-    @Test
-    public void getAllExpensesWithTagTest2(){
-        ResponseEntity<List<Expense>> res = ctrl.getAllExpensesWithTag(0, "picnic");
-        assertEquals(0, res.getBody().size());
+        assertEquals(OK, ctrlStub.getAllExpensesWithTag(0, "valid").getStatusCode());
     }
 
     @Test
     public void getAllExpensesWithTagTestInvalid(){
-        ResponseEntity<List<Expense>> res = ctrl.getAllExpensesWithTag(-10, "picnic");
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.getAllExpensesWithTag(-1, "valid").getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.getAllExpensesWithTag(0, "").getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.getAllExpensesWithTag(0, null).getStatusCode());
     }
 
     @Test
     public void getAllExpensesWithTagTestDoesntExist(){
-        ResponseEntity<List<Expense>> res = ctrl.getAllExpensesWithTag(10, "picnic");
-        assertEquals(NOT_FOUND, res.getStatusCode());
-    }
-    @Test
-    public void getAllExpensesWithTagTestDoesntExist2(){
-        ResponseEntity<List<Expense>> res = ctrl.getAllExpensesWithTag(1, "fishing");
-        assertEquals(0, res.getBody().size());
+        assertEquals(NOT_FOUND, ctrlStub.getAllExpensesWithTag(100, "valid").getStatusCode());
     }
 
     /***
@@ -110,20 +162,15 @@ public class TagControllerTest {
 
     @Test
     public void getTagsFromEventTest(){
-        ResponseEntity<List<Tag>> res = ctrl.getTagsFromEvent(0);
-        assertEquals(2, res.getBody().size());
-        ResponseEntity<List<Tag>> res2 = ctrl.getTagsFromEvent(1);
-        assertEquals(1, res2.getBody().size());
+        assertEquals(OK, ctrlStub.getTagsFromEvent(0).getStatusCode());
     }
     @Test
     public void getTagsFromEventTestDoesntExist() {
-        ResponseEntity<List<Tag>> res = ctrl.getTagsFromEvent(10);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(NOT_FOUND, ctrlStub.getTagsFromEvent(100).getStatusCode());
     }
     @Test
     public void getTagsFromEventTestInvalid() {
-        ResponseEntity<List<Tag>> res = ctrl.getTagsFromEvent(-10);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.getTagsFromEvent(-1).getStatusCode());
     }
 
     /***
@@ -131,39 +178,66 @@ public class TagControllerTest {
      */
     @Test
     public void addNewToEventTest(){
+        validTag = true;
         Tag tester = new Tag("cool", "#000000");
-        ResponseEntity<Tag> res = ctrl.addNewToEvent(0, tester);
-        assertEquals(3, event1.getTagsList().size());
+
+        assertEquals(OK, ctrlStub.addNewToEvent(0,tester).getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.addNewToEvent(-1,tester).getStatusCode());
+        assertEquals(NOT_FOUND, ctrlStub.addNewToEvent(100,tester).getStatusCode());
     }
     @Test
     public void addNewToEventTestNull(){
         Tag tester = null;
-        ResponseEntity<Tag> res = ctrl.addNewToEvent(0, tester);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        validTag = false;
+        assertEquals(BAD_REQUEST, ctrlStub.addNewToEvent(0, tester).getStatusCode());
     }
     @Test
     public void addNewToEventTestNoName(){
         Tag tester = new Tag("", "#000000");
-        ResponseEntity<Tag> res = ctrl.addNewToEvent(0, tester);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        validTag = false;
+        assertEquals(BAD_REQUEST, ctrlStub.addNewToEvent(0, tester).getStatusCode());
     }
     @Test
     public void addNewToEventTestNullName(){
         Tag tester = new Tag(null, "#000000");
-        ResponseEntity<Tag> res = ctrl.addNewToEvent(0, tester);
-        assertEquals(BAD_REQUEST, res.getStatusCode());
+        validTag = false;
+        assertEquals(BAD_REQUEST, ctrlStub.addNewToEvent(0, tester).getStatusCode());
     }
     @Test
     public void addNewToEventTestDNE(){
         Tag tester = new Tag("cool", "#000000");
-        ResponseEntity<Tag> res = ctrl.addNewToEvent(10, tester);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        validTag = true;
+        assertEquals(NOT_FOUND, ctrlStub.addNewToEvent(100, tester).getStatusCode());
     }
     @Test
     public void addNewToEventTestInvalid(){
         Tag tester = new Tag("cool", "#000000");
-        ResponseEntity<Tag> res = ctrl.addNewToEvent(-10, tester);
-        assertEquals(NOT_FOUND, res.getStatusCode());
+        validTag = true;
+        assertEquals(BAD_REQUEST, ctrlStub.addNewToEvent(-1, tester).getStatusCode());
+    }
+
+    @Test
+    public void updateTagTest(){
+        Tag tester = new Tag("cool", "#000000");
+        validTag = true;
+        assertEquals(OK, ctrlStub.changeTag(0,0,tester).getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.changeTag(-1,0,tester).getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.changeTag(0,-1,tester).getStatusCode());
+        assertEquals(NOT_FOUND, ctrlStub.changeTag(100,0,tester).getStatusCode());
+        assertEquals(NOT_FOUND, ctrlStub.changeTag(0,100,tester).getStatusCode());
+
+        validTag = false;
+        assertEquals(BAD_REQUEST, ctrlStub.changeTag(0,0,tester).getStatusCode());
+
+    }
+
+    @Test
+    public void deleteTagTest(){
+        assertEquals(OK, ctrlStub.deleteTagFromEvent(0,0).getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.deleteTagFromEvent(-1,0).getStatusCode());
+        assertEquals(BAD_REQUEST, ctrlStub.deleteTagFromEvent(0,-1).getStatusCode());
+        assertEquals(NOT_FOUND, ctrlStub.deleteTagFromEvent(100,0).getStatusCode());
+        assertEquals(NOT_FOUND, ctrlStub.deleteTagFromEvent(0,100).getStatusCode());
     }
 
     @Test
