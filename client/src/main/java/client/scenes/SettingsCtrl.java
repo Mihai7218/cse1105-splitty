@@ -11,6 +11,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 
 import java.net.URL;
 import java.util.Locale;
@@ -202,5 +203,24 @@ public class SettingsCtrl implements Initializable {
             language = "en";
         }
         languageManager.changeLanguage(Locale.of(language));
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it adds the participant.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                save();
+                break;
+            case ESCAPE:
+                cancel();
+                break;
+            default:
+                break;
+        }
     }
 }

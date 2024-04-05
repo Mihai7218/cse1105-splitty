@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
@@ -156,7 +157,6 @@ public class StatisticsCtrl implements Initializable {
         pieChart.getData().clear();
         List<Pair<Tag, Double>> legendList = new ArrayList<>();
         List<Pair<Tag, List<Expense>>> stats = pairListMaker();
-        System.out.println(stats);
 
         double total = 0;
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
@@ -253,6 +253,21 @@ public class StatisticsCtrl implements Initializable {
                     + " (" + withRightDigits + "%)");
             item.setTextFill(Color.web(data.getKey().getColor()));
             ownLegend.getChildren().add(item);
+        }
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                backToOverview();
+                break;
+            default:
+                break;
         }
     }
 

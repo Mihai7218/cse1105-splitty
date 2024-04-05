@@ -24,6 +24,7 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
 import java.util.regex.Pattern;
@@ -193,5 +194,24 @@ public class ParticipantCtrl {
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it adds the participant.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                ok();
+                break;
+            case ESCAPE:
+                abort();
+                break;
+            default:
+                break;
+        }
     }
 }

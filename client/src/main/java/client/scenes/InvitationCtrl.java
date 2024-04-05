@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import java.awt.*;
 import java.net.URL;
@@ -82,5 +83,24 @@ public class InvitationCtrl implements Initializable{
     public void goBack(){
         mainCtrl.showOverview();
         mailSpace.setText("");
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then send the invites.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                sendInvites();
+                break;
+            case ESCAPE:
+                goBack();
+                break;
+            default:
+                break;
+        }
     }
 }

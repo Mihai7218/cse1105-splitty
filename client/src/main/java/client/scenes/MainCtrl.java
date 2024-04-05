@@ -140,6 +140,8 @@ public class MainCtrl {
         primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
+        if (invitation != null) invitation.setOnKeyPressed(e -> invitationCtrl.keyPressed(e));
+
     }
     /**
      * shows scene for statistics
@@ -154,6 +156,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(statistics);
         if (statisticsCtrl != null) statisticsCtrl.refresh();
+        if (statistics != null) statistics.setOnKeyPressed(e -> statisticsCtrl.keyPressed(e));
+
     }
 
     /**
@@ -169,6 +173,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(editExpense);
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
+        if (editExpense != null) editExpense.setOnKeyPressed(e -> editExpenseCtrl.keyPressed(e));
+
     }
 
     /**
@@ -200,6 +206,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(addExpense);
         addExpenseCtrl.refresh();
+        if (addExpense != null) addExpense.setOnKeyPressed(e -> addExpenseCtrl.keyPressed(e));
+
     }
 
     /**
@@ -215,6 +223,7 @@ public class MainCtrl {
         }
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
+        if (overview != null) overview.setOnKeyPressed(e -> overviewCtrl.keyPressed(e));
     }
 
     /**
@@ -273,6 +282,7 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(participant);
+        if (participant != null) participant.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**
@@ -288,6 +298,9 @@ public class MainCtrl {
         }
         primaryStage.setScene(editparticipant);
         if (overviewCtrl != null) editparticipantCtrl.refresh();
+        if (editparticipant != null) editparticipant
+                .setOnKeyPressed(e -> editparticipantCtrl.keyPressed(e));
+
     }
 
     /**
@@ -302,6 +315,9 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(connectToServer);
+        if (connectToServer != null) connectToServer
+                .setOnKeyPressed(e -> connectCtrl.keyPressed(e));
+
     }
 
     /**
@@ -317,6 +333,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(settings);
         if (settingsCtrl != null) settingsCtrl.refresh();
+        if (settings != null) settings.setOnKeyPressed(e -> settingsCtrl.keyPressed(e));
+
     }
 
     /**

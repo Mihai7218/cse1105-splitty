@@ -32,6 +32,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
@@ -642,5 +643,27 @@ public class OverviewCtrl implements Initializable {
      */
     public Map<Expense, StompSession.Subscription> getExpenseSubscriptionMap() {
         return expenseSubscriptionMap;
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it goes to settle debts.
+     *  - if ESCAPE is pressed, then it cancels and returns to the startscreen.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                settleDebts();
+                break;
+            case ESCAPE:
+                startMenu();
+                break;
+            case DELETE:
+                addExpense();
+                break;
+            default:
+                break;
+        }
     }
 }
