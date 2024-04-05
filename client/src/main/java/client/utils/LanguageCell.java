@@ -85,7 +85,7 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
         try {
             String path = String.format("/client/languages_%s.properties", languageCode);
             language.load(new FileInputStream(getClass().getResource(path).getFile()));
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             return "Language not found";
         }
         return language.getProperty("language.name");

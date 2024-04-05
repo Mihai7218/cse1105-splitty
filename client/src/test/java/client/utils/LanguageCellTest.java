@@ -35,7 +35,7 @@ class LanguageCellTest {
     @Test
     void updateItemNonEmptyLanguageFlagFound() {
         languageCell.updateItem("en", false);
-        assertEquals("Language not found", languageCell.getText());
+        assertEquals("English", languageCell.getText());
         assertNotNull(languageCell.getGraphic());
     }
 
