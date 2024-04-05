@@ -212,8 +212,19 @@ public class AdminConsole {
      */
     public void deleteEventMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("Please enter the inviteCode of the " +
-                "Event you would like to delete from the database:");
-        int invCode = userInput.nextInt();
+                "Event you would like to delete from the database (or type 'cancel' to cancel):");
+        String nextInput = userInput.next();
+        int invCode;
+        if(nextInput.equals("cancel")){
+            return;
+        }else{
+            try {
+                invCode = Integer.parseInt(nextInput);
+            }catch (Exception e){
+                System.out.println("Invalid Event ID.");
+                return;
+            }
+        }
         boolean deletion = confirmationMenu(userInput, invCode);
         if (deletion){
             Response event = delete(adminConsole, invCode);
@@ -272,8 +283,12 @@ public class AdminConsole {
      * @param userInput input from the user
      */
     public void getDump(Scanner userInput) {
-        System.out.println("Where do you want to save the dump? Give the folder");
+        System.out.println("Where do you want to save the dump? " +
+                "Give the folder or type 'cancel' to cancel: ");
         String path = userInput.next();
+        if(path.equals("cancel")){
+            return;
+        }
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         String formattedDateTime = now.format(timeFormat);
@@ -366,17 +381,24 @@ public class AdminConsole {
      */
     public List<Event> readFromFile(Scanner inputScanner) {
         System.out.println("Enter the filepath containing" +
-                " the JSON for the event you would like to add: ");
+                " the JSON for the event you would like to add (Or type 'cancel' to escape): ");
         Scanner fileScan = inputScanner;
+        String line;
         try {
-            File file = new File(fileScan.nextLine());
+            line = fileScan.nextLine();
+        }catch(NoSuchElementException n){
+            System.out.println("Unable to locate the requested file (empty filepath). ");
+            return null;
+        }
+        if(line.equals("cancel")){
+            return null;
+        }
+        try {
+            File file = new File(line);
             Scanner textScan = new Scanner(file);
             return importWithJson(textScan);
         }catch (FileNotFoundException f){
             System.out.println("Unable to locate the requested file. ");
-            return null;
-        }catch (NoSuchElementException e){
-            System.out.println("Unable to locate the requested file (empty filepath). ");
             return null;
         }
     }
