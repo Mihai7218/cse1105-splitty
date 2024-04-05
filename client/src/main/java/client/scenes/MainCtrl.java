@@ -193,6 +193,22 @@ public class MainCtrl {
 
     /**
      *
+     * @return controller for Open Debts
+     */
+    public DebtsCtrl getDebtsCtrl() {
+        return debtsCtrl;
+    }
+
+    /**
+     *
+     * @return the scene with Open Debts
+     */
+    public Scene getDebts() {
+        return debts;
+    }
+
+    /**
+     *
      * @return the controller for editing an expense
      */
     public EditExpenseCtrl getEditExpenseCtrl() {
