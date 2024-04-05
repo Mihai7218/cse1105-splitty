@@ -140,10 +140,10 @@ public class StatisticsCtrl implements Initializable {
     public void refresh() {
         if (mainCtrl.getEvent() != null) {
             subscription = serverUtils.registerForMessages(String.format("/topic/events/%s",
-                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
-                mainCtrl.getEvent().setTitle(q.getTitle());
-                Platform.runLater(() -> refresh());
-            });
+                            mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
+                                mainCtrl.getEvent().setTitle(q.getTitle());
+                                Platform.runLater(() -> refresh());
+                            });
             if (expensesSubscription == null)
                 expensesSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
