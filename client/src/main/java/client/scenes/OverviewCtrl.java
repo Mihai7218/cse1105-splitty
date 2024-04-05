@@ -28,9 +28,6 @@ import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -40,14 +37,10 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.*;
 
-public class OverviewCtrl implements Initializable {
+public class OverviewCtrl implements Initializable, LanguageSwitcher {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -266,6 +259,14 @@ public class OverviewCtrl implements Initializable {
                     }));
             expenseSubscriptionMap.put(expense, subscription);
         }
+    }
+
+    /**
+     * changes language
+     */
+    @Override
+    public void changeLanguage() {
+        LanguageSwitcher.super.changeLanguage();
     }
 
     /**
@@ -574,53 +575,39 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
+     * Getter for the main controller
+     * @return MainCtrl object
+     */
+    @Override
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Getter for the languages combo box.
+     * @return LanguageComboBox object
+     */
+    @Override
+    public LanguageComboBox getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Getter for the config.
+     * @return - the config
+     */
+    @Override
+    public ConfigInterface getConfig() {
+        return config;
+    }
+
+    /**
      * Getter for the language manager property.
      *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
-    }
-
-
-    /**
-     * Changes language
-     */
-    public void changeLanguage() {
-        String language = "";
-        if (languages != null) language = languages.getValue();
-        if (language.equals("template")) {
-            languages.setValue(config.getProperty("language"));
-            System.out.println();
-            try {
-                Desktop.getDesktop().edit(new File(
-                        getClass().getResource("/template.properties").getFile()));
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            config.setProperty("language", language);
-            if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                    && mainCtrl.getStartScreenCtrl() != null) {
-                mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-                mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
-            }
-            this.refreshLanguage();
-        }
-    }
-
-    /**
-     * Method that refreshes the language.
-     */
-    private void refreshLanguage() {
-        String language = config.getProperty("language");
-        if (language == null) {
-            language = "en";
-        }
-        updateLanguageComboBox(language);
-        languageManager.changeLanguage(Locale.of(language));
     }
 
     /**

@@ -81,11 +81,10 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
      * @param languageCode - ISO 639-1 code of the language.
      * @return - a String containing the name of the language.
      */
-    private static String getLanguageName(String languageCode) {
+    private String getLanguageName(String languageCode) {
         try {
-            language.load(new FileInputStream(
-                    String.valueOf(Path.of("client", "src", "main",
-                            "resources", "client", "languages_" + languageCode +".properties"))));
+            String path = String.format("/client/languages_%s.properties", languageCode);
+            language.load(new FileInputStream(getClass().getResource(path).getFile()));
         } catch (IOException e) {
             return "Language not found";
         }

@@ -17,14 +17,10 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 
-import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.*;
-import java.util.List;
 
-public class StartScreenCtrl implements Initializable {
+public class StartScreenCtrl implements Initializable, LanguageSwitcher {
 
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
@@ -152,41 +148,9 @@ public class StartScreenCtrl implements Initializable {
     /**
      * Changes language
      */
+    @Override
     public void changeLanguage() {
-        String language = "";
-        if (languages != null) language = languages.getValue();
-        if (language.equals("template")) {
-            languages.setValue(config.getProperty("language"));
-            System.out.println();
-            try {
-                Desktop.getDesktop().edit(new File(
-                        getClass().getResource("/template.properties").getFile()));
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            config.setProperty("language", language);
-            if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                    && mainCtrl.getStartScreenCtrl() != null) {
-                mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-                mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
-            }
-            this.refreshLanguage();
-        }
-    }
-
-    /**
-     * Method that refreshes the language.
-     */
-    private void refreshLanguage() {
-        String language = config.getProperty("language");
-        if (language == null) {
-            language = "en";
-        }
-        updateLanguageComboBox(language);
-        languageManager.changeLanguage(Locale.of(language));
+        LanguageSwitcher.super.changeLanguage();
     }
 
     /**
@@ -203,6 +167,33 @@ public class StartScreenCtrl implements Initializable {
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
         this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the main controller
+     * @return MainCtrl object
+     */
+    @Override
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Getter for the languages combo box.
+     * @return LanguageComboBox object
+     */
+    @Override
+    public LanguageComboBox getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Getter for the config.
+     * @return - the config
+     */
+    @Override
+    public ConfigInterface getConfig() {
+        return config;
     }
 
     /**
