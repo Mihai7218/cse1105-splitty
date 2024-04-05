@@ -24,8 +24,7 @@ public interface LanguageSwitcher {
             try {
                 File savedByUser = getMainCtrl().pickLocation(
                         "languages_<ISO639-1 Code>.properties");
-                var template = getClass().getResourceAsStream(
-                        String.format("/client/languages_%s.properties",getLanguages().getValue()));
+                var template = getClass().getResourceAsStream("/template.properties");
                 assert template != null;
                 Files.copy(template, savedByUser.toPath(), StandardCopyOption.REPLACE_EXISTING);
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
