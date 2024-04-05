@@ -807,6 +807,14 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      *
+     * @param colorPicker
+     */
+    public void setColorPicker(ColorPicker colorPicker) {
+        this.colorPicker = colorPicker;
+    }
+
+    /**
+     *
      * @param instructions
      */
     public void setInstructions(Label instructions) {
