@@ -35,6 +35,11 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
         if (empty || languageCode == null) {
             setText(null);
             setGraphic(null);
+        } else if (languageCode.equals("template")) {
+            setText("Add new language...");
+            ImageView imageView = new ImageView(new Image(
+                    String.valueOf(Path.of("flags", "template.png"))));
+            setGraphic(imageView);
         } else {
             String languageName = getLanguageName(languageCode);
             setText(languageName);

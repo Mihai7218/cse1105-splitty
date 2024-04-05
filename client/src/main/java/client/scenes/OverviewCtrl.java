@@ -28,6 +28,9 @@ import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -37,7 +40,11 @@ import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.util.List;
 import java.util.*;
 
 public class OverviewCtrl implements Initializable {
@@ -582,13 +589,26 @@ public class OverviewCtrl implements Initializable {
     public void changeLanguage() {
         String language = "";
         if (languages != null) language = languages.getValue();
-        config.setProperty("language", language);
-        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                && mainCtrl.getStartScreenCtrl() != null) {
-            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
+        if (language.equals("template")) {
+            languages.setValue(config.getProperty("language"));
+            System.out.println();
+            try {
+                Desktop.getDesktop().edit(new File(
+                        getClass().getResource("/template.properties").getFile()));
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        this.refreshLanguage();
+        else {
+            config.setProperty("language", language);
+            if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
+                    && mainCtrl.getStartScreenCtrl() != null) {
+                mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
+                mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
+            }
+            this.refreshLanguage();
+        }
     }
 
     /**

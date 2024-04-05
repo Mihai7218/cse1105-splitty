@@ -10,14 +10,13 @@ import java.util.List;
 
 public class LanguageComboBox extends ComboBox<String> {
 
-    private List<String> languageCodes;
+    private List<String> languageCodes = List.of("de", "en", "fr", "nl", "template");
 
     /**
      * Constructor for a LanguageComboBox.
      */
     public LanguageComboBox() {
         super();
-        languageCodes = getLanguageCodes();
         this.getItems().addAll(languageCodes);
         this.setCellFactory(param -> new LanguageCell());
         this.setButtonCell(new LanguageCell());
