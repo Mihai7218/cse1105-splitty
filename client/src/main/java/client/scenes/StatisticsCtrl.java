@@ -77,11 +77,16 @@ public class StatisticsCtrl implements Initializable {
         if (language == null) {
             language = "en";
         }
-        if (mainCtrl.getEvent() != null) {
-            Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
-            mainCtrl.setEvent(e);
-        }
         this.refreshLanguage();
+    }
+
+    /**
+     * Extra setup to fix statistic refresh
+     */
+    public void setup() {
+        Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
+        mainCtrl.setEvent(e);
+        refresh();
     }
 
     /**

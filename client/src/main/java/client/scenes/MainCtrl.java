@@ -153,7 +153,7 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(statistics);
-        if (statisticsCtrl != null) statisticsCtrl.refresh();
+        if (statisticsCtrl != null) statisticsCtrl.setup();
     }
 
     /**
