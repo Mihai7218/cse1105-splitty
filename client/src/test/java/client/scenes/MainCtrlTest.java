@@ -130,8 +130,8 @@ class MainCtrlTest {
      */
     @Test
     void initialize() {
-        QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);
-        Parent quoteOverview = spy(Parent.class);
+        //QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);
+        //Parent quoteOverview = spy(Parent.class);
         AddQuoteCtrl addQuoteCtrl = mock(AddQuoteCtrl.class);
         Parent addQuote = spy(Parent.class);
         StartScreenCtrl startScreenCtrl = mock(StartScreenCtrl.class);
@@ -152,8 +152,9 @@ class MainCtrlTest {
         Parent statistics = spy(Parent.class);
         EditExpenseCtrl editExpenseCtrl = mock(EditExpenseCtrl.class);
         Parent editExpense = spy(Parent.class);
+        ConnectToServerCtrl connectToServerCtrl = mock(ConnectToServerCtrl.class);
+        Parent connectToServer = spy(Parent.class);
         sut.initialize(stage,
-                new Pair<>(quoteOverviewCtrl, quoteOverview),
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
@@ -163,10 +164,11 @@ class MainCtrlTest {
                 new Pair<>(editParticipantCtrl,editParticipant),
                 new Pair<>(settingsCtrl, settings),
                 new Pair<>(statisticsCtrl,statistics),
-                new Pair<>(editExpenseCtrl, editExpense));
+                new Pair<>(editExpenseCtrl, editExpense),
+                new Pair<>(connectToServerCtrl, connectToServer));
         assertEquals(stage, sut.getPrimaryStage());
-        assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
-        assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
+        //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
+        //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
         assertEquals(addQuoteCtrl, sut.getAddCtrl());
         assertEquals(addQuote, sut.getAdd().getRoot());
         assertEquals(startScreenCtrl, sut.getStartScreenCtrl());

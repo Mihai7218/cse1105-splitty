@@ -222,10 +222,10 @@ public class Event {
      */
     @Override
     public String toString() {
-        return this.getInviteCode() + "\t\t" +
-                this.getTitle() + "\t\t" +
-                this.getParticipantsList().size() + "\t\t" +
-                this.getExpensesList().size() + "\t\t" +
+        return this.getInviteCode() + "\t\t\t\t" +
+                this.getTitle() + "\t\t\t" +
+                this.getParticipantsList().size() + "\t\t\t\t\t\t" +
+                this.getExpensesList().size() + "\t\t\t\t\t" +
                 this.getLastActivity() + "\n";
     }
 }
