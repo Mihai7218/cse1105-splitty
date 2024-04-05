@@ -275,7 +275,8 @@ public abstract class ExpenseCtrl implements Initializable {
                 if (!tag.isEmpty()) {
                     //tags.add(new Tag(tag, "black"));
 
-                    Tag newTag = new Tag(tag, "#" + colorPicker.getValue().toString().substring(2,8));
+                    Tag newTag = new Tag(tag, "#" +
+                            colorPicker.getValue().toString().substring(2,8));
                     try {
                         newTag = serverUtils.addTag(mainCtrl.getEvent().getInviteCode(), newTag);
                     }
