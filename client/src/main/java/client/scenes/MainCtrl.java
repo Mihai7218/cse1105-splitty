@@ -137,7 +137,13 @@ public class MainCtrl {
      * shows scene to send invitations
      */
     public void showInvitation(){
-        primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("invitation.windowTitle"));
+        try {
+            invitation.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
     }
