@@ -95,7 +95,7 @@ public class MainCtrl {
                            Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense,
                            Pair<ConnectToServerCtrl, Parent> connectToServer,
-                           Pair<DebtsCtrl, Parent> debts) {
+                           Pair<DebtsCtrl, Parent> debts ) {
         this.primaryStage = primaryStage;
 
         this.addCtrl = add.getKey();
