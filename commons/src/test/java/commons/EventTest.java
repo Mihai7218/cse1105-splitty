@@ -209,10 +209,10 @@ class EventTest {
      */
     @Test
     void testEquals() {
-        assertTrue(event.equals(sameEvent) && sameEvent.equals(event));
-        assertTrue(event.equals(event) && sameEvent.equals(sameEvent)
-                && differentEvent.equals(differentEvent));
-        assertFalse(event.equals(differentEvent) && differentEvent.equals(sameEvent));
+        assertTrue(event.fullEquals(sameEvent) && sameEvent.fullEquals(event));
+        assertTrue(event.fullEquals(event) && sameEvent.fullEquals(sameEvent)
+                && differentEvent.fullEquals(differentEvent));
+        assertFalse(event.fullEquals(differentEvent) && differentEvent.fullEquals(sameEvent));
     }
 
     /**

@@ -1,7 +1,7 @@
 package client.utils;
 
 import client.scenes.MainCtrl;
-import com.sun.javafx.binding.SelectBinding;
+import client.scenes.TestConfig;
 import commons.Event;
 import commons.Expense;
 import commons.Participant;
@@ -15,17 +15,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -115,7 +112,7 @@ class ParticipantCellTest {
         doNothing().when(oweLabel).setStyle(any());
         doNothing().when(owedLabel).setStyle(any());
 
-        sut = new ParticipantCell(mainCtrl, languageManager);
+        sut = new ParticipantCell(mainCtrl, languageManager, new TestConfig(), mock(CurrencyConverter.class));
 
         sut.setParticipant(participant);
         sut.setEdit(edit);
@@ -139,8 +136,8 @@ class ParticipantCellTest {
         boolean empty = false;
         sut.updateItem(item, empty);
         assertEquals(participant.getText(), item.getName());
-        assertEquals(share.getText(), "0.00");
-        assertEquals(owe.getText(), "0.00");
-        assertEquals(owed.getText(), "0.00");
+        assertEquals(share.getText(), "0.00 EUR");
+        assertEquals(owe.getText(), "0.00 EUR");
+        assertEquals(owed.getText(), "0.00 EUR");
     }
 }

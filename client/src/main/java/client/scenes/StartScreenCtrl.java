@@ -13,7 +13,8 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 
 import java.net.URL;
@@ -43,6 +44,8 @@ public class StartScreenCtrl implements Initializable {
     Button joinEventButton;
     @FXML
     Button logo;
+    @FXML
+    Button settings;
     private Alert alert;
 
     /**
@@ -73,6 +76,7 @@ public class StartScreenCtrl implements Initializable {
         String language = config.getProperty("language");
         createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
+        settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         if (language == null) {
             language = "en";
         }
@@ -81,6 +85,7 @@ public class StartScreenCtrl implements Initializable {
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
         List<Event> currentlyInConfig = getRecentEventsFromConfig();
         recentEvents.getItems().addAll(currentlyInConfig);
+        removeExcess();
         this.refreshConfig();
         updateLanguageComboBox(language);
         this.refreshLanguage();
@@ -199,6 +204,15 @@ public class StartScreenCtrl implements Initializable {
         newThreadForMethod(event);
         recentEvents.getItems().remove(event);
         recentEvents.getItems().addFirst(event);
+        removeExcess();
+        recentEvents.refresh();
+        refreshConfig();
+    }
+
+    /**
+     * Method that removes excess recent events.
+     */
+    public void removeExcess() {
         int limit;
         try {
             limit = Integer.parseInt(config.getProperty("recentEventsLimit"));
@@ -209,8 +223,6 @@ public class StartScreenCtrl implements Initializable {
         while (recentEvents.getItems().size() > limit) {
             recentEvents.getItems().removeLast();
         }
-        recentEvents.refresh();
-        refreshConfig();
     }
 
     /**
@@ -291,6 +303,10 @@ public class StartScreenCtrl implements Initializable {
         }
         addRecentEvent(e);
         mainCtrl.setEvent(e);
+        if (mainCtrl.getOverviewCtrl() != null) {
+            mainCtrl.getOverviewCtrl().populateExpenses();
+            mainCtrl.getOverviewCtrl().populateParticipants();
+        }
         mainCtrl.showOverview();
         serverUtils.stop();
     }
@@ -339,6 +355,10 @@ public class StartScreenCtrl implements Initializable {
         }
         mainCtrl.setEvent(e);
         mainCtrl.showOverview();
+        if (mainCtrl.getOverviewCtrl() != null) {
+            mainCtrl.getOverviewCtrl().populateExpenses();
+            mainCtrl.getOverviewCtrl().populateParticipants();
+        }
         serverUtils.stop();
     }
 
@@ -390,5 +410,13 @@ public class StartScreenCtrl implements Initializable {
      */
     public void stop() {
         serverUtils.stop();
+    }
+
+    /**
+     * Method that opens the settings scene.
+     */
+    public void settings() {
+        mainCtrl.getSettingsCtrl().setPrevScene(false);
+        mainCtrl.showSettings();
     }
 }

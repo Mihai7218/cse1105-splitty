@@ -152,7 +152,7 @@ public class ParticipantPaymentControllerTest {
         participantPaymentController.deleteParticipantPayment(0,0,1);
         assertEquals(participantPaymentRepository.calledMethods, List.of("save", "save"));
         assertEquals(participantPaymentRepository.participantPayments.size(), 1);
-        assertEquals(participantPaymentRepository.participantPayments.get(0), p1);
+        assertTrue(participantPaymentRepository.participantPayments.get(0).fullEquals(p1));
     }
 
     @Test

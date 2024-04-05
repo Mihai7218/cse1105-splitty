@@ -45,7 +45,10 @@ public class OverviewCtrl implements Initializable {
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
+    private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
+    @FXML
+    public Button showStatisticsButton;
     @FXML
     private Tab fromTab;
     @FXML
@@ -69,7 +72,8 @@ public class OverviewCtrl implements Initializable {
 
     @FXML
     private ChoiceBox<Participant> expenseparticipants;
-
+    @FXML
+    private Button settings;
     @FXML
     private Button addparticipant;
     @FXML
@@ -93,29 +97,38 @@ public class OverviewCtrl implements Initializable {
     private Label sumExpense;
     @FXML
     private Label sumLabel;
+    @FXML
+    private Label code;
+    @FXML
+    private Label inviteLang;
 
 
     /**
      * Constructs a new OverviewCtrl object.
      *
      * @param languageManager LanguageManager object
-     * @param config          Config object
-     * @param server          ServerUtils object
-     * @param mainCtrl        MainCtrl object
+     * @param config Config object
+     * @param server ServerUtils object
+     * @param mainCtrl MainCtrl object
+     * @param currencyConverter CurrencyConverter object
      */
     @Inject
-    public OverviewCtrl(LanguageManager languageManager, ConfigInterface config,
-                        ServerUtils server, MainCtrl mainCtrl) {
+    public OverviewCtrl(LanguageManager languageManager,
+                        ConfigInterface config,
+                        ServerUtils server,
+                        MainCtrl mainCtrl,
+                        CurrencyConverter currencyConverter) {
         this.languageManager = languageManager;
         this.config = config;
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.currencyConverter = currencyConverter;
     }
 
     /**
-     * Refreshes all shown items in the overview.
+     * Method that populates the lists related to expenses.
      */
-    public void refresh() {
+    public void populateExpenses() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
@@ -126,17 +139,26 @@ public class OverviewCtrl implements Initializable {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
-                subscribeToExpense(expense);
+                if (!expenseSubscriptionMap.containsKey(expense))
+                    subscribeToExpense(expense);
+                if (!all.getItems().contains(expense))
+                    all.getItems().add(expense);
             }
-            all.getItems().addAll(expenses);
+            mainCtrl.getEvent().setExpensesList(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
-
+            filterViews();
         }
+        String base = getCurrency();
+        sumExpense.setText(String.format("%.2f %s", getSum(), base));
+    }
+
+    /**
+     * Method that populates the lists related to participants.
+     */
+    public void populateParticipants() {
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null) {
-            participants.getItems().clear();
-            expenseparticipants.getItems().clear();
             List<Participant> serverparticipants = new ArrayList<>();
             try {
                 serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
@@ -144,17 +166,35 @@ public class OverviewCtrl implements Initializable {
             catch (WebApplicationException e) {
                 e.printStackTrace();
             }
-            participants.getItems().addAll(serverparticipants);
-            expenseparticipants.getItems().addAll(serverparticipants);
+            participants.getItems().clear();
+            participants.getItems(). addAll(serverparticipants);
+            for (Participant p : serverparticipants) {
+                if (!expenseparticipants.getItems().contains(p)) {
+                    expenseparticipants.getItems().add(p);
+                }
+            }
+            for (Participant p : expenseparticipants.getItems()) {
+                if (!serverparticipants.contains(p))
+                    expenseparticipants.getItems().remove(p);
+            }
+            participants.refresh();
         }
-        sumExpense.setText(String.format("%.2f", getSum()));
+    }
+
+    /**
+     * Refreshes all shown items in the overview.
+     */
+    public void refresh() {
         addparticipant.setGraphic(new ImageView(new Image("icons/addParticipant.png")));
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
+        settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
+        showStatisticsButton.setGraphic(new ImageView(new Image("icons/graph.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
+            code.setText(String.valueOf(event.getInviteCode()));
             participants.getItems().sort(Comparator.comparing(Participant::getName));
             expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
             server.registerForMessages(String.format("/topic/events/%s",
@@ -173,8 +213,9 @@ public class OverviewCtrl implements Initializable {
                                         -o1.getDate().compareTo(o2.getDate()));
                                 filterViews();
                                 all.refresh();
-                                participants.refresh();
-                                sumExpense.setText(String.format("%.2f", getSum()));
+                                populateParticipants();
+                                sumExpense.setText(String.format(
+                                        "%.2f %s", getSum(), getCurrency()));
                                 subscribeToExpense(expense);
                             });
                         });
@@ -185,7 +226,7 @@ public class OverviewCtrl implements Initializable {
                         participant -> {
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
-                            participants.refresh();
+                            populateParticipants();
                         });
         }
     }
@@ -212,11 +253,22 @@ public class OverviewCtrl implements Initializable {
                         }
                         filterViews();
                         all.refresh();
-                        participants.refresh();
-                        sumExpense.setText(String.format("%.2f", getSum()));
+                        populateParticipants();
+                        String baseCurrency = getCurrency();
+                        sumExpense.setText(String.format("%.2f %s", getSum(), baseCurrency));
                     }));
             expenseSubscriptionMap.put(expense, subscription);
         }
+    }
+
+    /**
+     * Method that gets the code of the currency that is currently set.
+     * @return - the currency code.
+     */
+    private String getCurrency() {
+        String currencyString = config.getProperty("currency");
+        if (currencyString == null || currencyString.isEmpty()) currencyString = "EUR";
+        return currencyString;
     }
 
 
@@ -232,7 +284,6 @@ public class OverviewCtrl implements Initializable {
      */
     public void addExpense() {
         mainCtrl.showAddExpense();
-        refresh();
     }
 
     /**
@@ -256,6 +307,12 @@ public class OverviewCtrl implements Initializable {
      */
     public void sendInvites() {
         mainCtrl.showInvitation();
+    }
+    /**
+     * Opens the statistics scene to be able to see the statistics.
+     */
+    public void statistics(){
+        mainCtrl.showStatistics();
     }
 
     /**
@@ -385,9 +442,12 @@ public class OverviewCtrl implements Initializable {
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
-        all.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
-        from.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
-        including.setCellFactory(x -> new ExpenseListCell(mainCtrl, server, languageManager));
+        all.setCellFactory(x ->
+                new ExpenseListCell(mainCtrl, languageManager, currencyConverter, config, server));
+        from.setCellFactory(x ->
+                new ExpenseListCell(mainCtrl, languageManager, currencyConverter, config, server));
+        including.setCellFactory(x ->
+                new ExpenseListCell(mainCtrl, languageManager, currencyConverter, config, server));
         Label fromLabel = new Label();
         Label includingLabel = new Label();
         participantFrom = new Label();
@@ -397,7 +457,8 @@ public class OverviewCtrl implements Initializable {
         includingLabel.textProperty().bind(languageManager.bind("overview.includingTab"));
         fromTab.setGraphic(new HBox(fromLabel, participantFrom));
         includingTab.setGraphic(new HBox(includingLabel, participantIncluding));
-        participants.setCellFactory(x -> new ParticipantCell(mainCtrl, languageManager));
+        participants.setCellFactory(x -> new ParticipantCell(mainCtrl,
+                languageManager, config, currencyConverter));
         expenseparticipants.setConverter(new StringConverter<Participant>() {
             @Override
             public String toString(Participant participant) {
@@ -479,7 +540,10 @@ public class OverviewCtrl implements Initializable {
         if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
         for (Expense e : expenses) {
-            sum += e.getAmount();
+            String currency = e.getCurrency();
+            Date date = e.getDate();
+            String base = getCurrency();
+            sum += currencyConverter.convert(date, currency, base, e.getAmount());
         }
         return sum;
     }
@@ -564,6 +628,13 @@ public class OverviewCtrl implements Initializable {
         if (languages != null) languages.setValue(language);
     }
 
+    /**
+     * Method that handles the settings button.
+     */
+    public void settings() {
+        mainCtrl.getSettingsCtrl().setPrevScene(true);
+        mainCtrl.showSettings();
+    }
     /**
      * Getter for the expense subscription map.
      *

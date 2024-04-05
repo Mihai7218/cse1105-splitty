@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ConfigInterface;
+import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
@@ -39,12 +40,12 @@ public abstract class ExpenseCtrl implements Initializable {
     protected final MainCtrl mainCtrl;
     protected final LanguageManager languageManager;
     protected final Alert alert;
+    protected final CurrencyConverter currencyConverter;
     @FXML
     protected ChoiceBox<Participant> payee;
     protected List<Participant> participantsList;
     @FXML
     protected ChoiceBox<String> currency;
-    protected String[] currencies = {"USD", "EUR", "CHF"};
     protected Map<CheckBox, Participant> checkBoxParticipantMap;
     protected Map<Participant, CheckBox> participantCheckBoxMap;
     @FXML
@@ -89,15 +90,17 @@ public abstract class ExpenseCtrl implements Initializable {
      */
     @Inject
     public ExpenseCtrl(MainCtrl mainCtrl,
-                          ConfigInterface config,
-                          LanguageManager languageManager,
-                          ServerUtils serverUtils,
-                          Alert alert) {
+                       ConfigInterface config,
+                       LanguageManager languageManager,
+                       ServerUtils serverUtils,
+                       Alert alert,
+                       CurrencyConverter currencyConverter) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
         this.alert = alert;
+        this.currencyConverter = currencyConverter;
         checkBoxParticipantMap = new HashMap<>();
         participantCheckBoxMap = new HashMap<>();
         participantsList = new ArrayList<>();
@@ -122,7 +125,7 @@ public abstract class ExpenseCtrl implements Initializable {
             addExpense.setGraphic(new ImageView(new Image("icons/savewhite.png")));
         if (addTag != null)
             addTag.setGraphic(new ImageView(new Image("icons/plus.png")));
-        currency.getItems().addAll(currencies);
+        currency.getItems().addAll(currencyConverter.getCurrencies());
         payee.setConverter(new StringConverter<>() {
             @Override
             public String toString(Participant participant) {
@@ -627,22 +630,6 @@ public abstract class ExpenseCtrl implements Initializable {
      */
     public void setCurrency(ChoiceBox<String> currency) {
         this.currency = currency;
-    }
-
-    /**
-     *
-     * @return
-     */
-    public String[] getCurrencies() {
-        return currencies;
-    }
-
-    /**
-     *
-     * @param currencies
-     */
-    public void setCurrencies(String[] currencies) {
-        this.currencies = currencies;
     }
 
     /**
