@@ -24,10 +24,7 @@ import javafx.util.Pair;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class StatisticsCtrl implements Initializable {
 
@@ -36,6 +33,8 @@ public class StatisticsCtrl implements Initializable {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final CurrencyConverter currencyConverter;
+    @FXML
+    public Button manageTags;
     private StompSession.Subscription subscription;
     @FXML
     public javafx.scene.chart.PieChart pieChart;
@@ -44,6 +43,9 @@ public class StatisticsCtrl implements Initializable {
     @FXML
     public VBox ownLegend;
     private String currency;
+
+    private StompSession.Subscription expensesSubscription;
+    private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
 
 
     /**
@@ -78,6 +80,7 @@ public class StatisticsCtrl implements Initializable {
             language = "en";
         }
         this.refreshLanguage();
+        expenseSubscriptionMap = new HashMap<>();
     }
 
     /**
@@ -86,6 +89,10 @@ public class StatisticsCtrl implements Initializable {
     public void setup() {
         Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
         mainCtrl.setEvent(e);
+        for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
+            if (!expenseSubscriptionMap.containsKey(expense))
+                subscribeToExpense(expense);
+        }
         refresh();
     }
 
@@ -134,15 +141,51 @@ public class StatisticsCtrl implements Initializable {
         if (mainCtrl.getEvent() != null) {
             subscription = serverUtils.registerForMessages(String.format("/topic/events/%s",
                     mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
-                    mainCtrl.getEvent().setTitle(q.getTitle());
-                    Platform.runLater(() -> refresh());
-                });
+                mainCtrl.getEvent().setTitle(q.getTitle());
+                Platform.runLater(() -> refresh());
+            });
+            if (expensesSubscription == null)
+                expensesSubscription = serverUtils.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
+                        expense -> {
+                            Platform.runLater(() -> {
+                                if (!mainCtrl.getEvent().getExpensesList().contains(expense)) {
+                                    mainCtrl.getEvent().getExpensesList().add(expense);
+                                }
+
+                                subscribeToExpense(expense);
+                                setStatistics();
+                            });
+                        });
         }
         pieChart.titleProperty().set(mainCtrl.getEvent().getTitle());
         cancel.setGraphic(new ImageView(new Image("icons/arrowback.png")));
+        manageTags.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         currency = config.getProperty("currency");
         if (currency == null || currency.isEmpty()) currency = "EUR";
         setStatistics();
+    }
+
+    /**
+     * Method that subscribes to updates for an expense.
+     *
+     * @param expense - the expense to subscribe to.
+     */
+    private void subscribeToExpense(Expense expense) {
+        if (!expenseSubscriptionMap.containsKey(expense)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                    + expense.getId();
+            var subscription = serverUtils.registerForMessages(dest, Expense.class,
+                    exp -> Platform.runLater(() -> {
+                        mainCtrl.getEvent().getExpensesList().remove(expense);
+                        if (!"deleted".equals(exp.getDescription())) {
+                            mainCtrl.getEvent().getExpensesList().add(exp);
+                        }
+                        setStatistics();
+                    }));
+            expenseSubscriptionMap.put(expense, subscription);
+        }
     }
 
     /**
@@ -150,6 +193,14 @@ public class StatisticsCtrl implements Initializable {
      */
     public void backToOverview() {
         subscription.unsubscribe();
+        if (expenseSubscriptionMap != null) {
+            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap = new HashMap<>();
+        }
+        if (expensesSubscription != null) {
+            expensesSubscription.unsubscribe();
+            expensesSubscription = null;
+        }
         mainCtrl.showOverview();
     }
 
@@ -172,23 +223,25 @@ public class StatisticsCtrl implements Initializable {
         }
 
         for (Pair<Tag, List<Expense>> pair : stats) {
-            String catagoryName = pair.getKey().getName();
-            double value = 0;
-            for (Expense expense : pair.getValue()) {
-                value += currencyConverter.convert(expense.getDate(),
-                        expense.getCurrency(),
-                        currency,
-                        expense.getAmount());
-            }
-            PieChart.Data slice = new PieChart.Data(catagoryName, value);
-            pieChart.getData().add(slice);
-            try {
-                slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
+            if (pair.getKey() != null) {
+                String catagoryName = pair.getKey().getName();
+                double value = 0;
+                for (Expense expense : pair.getValue()) {
+                    value += currencyConverter.convert(expense.getDate(),
+                            expense.getCurrency(),
+                            currency,
+                            expense.getAmount());
+                }
+                PieChart.Data slice = new PieChart.Data(catagoryName, value);
+                pieChart.getData().add(slice);
+                try {
+                    slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
 
-            } catch (Exception e) {
-                System.out.println(e);
+                } catch (Exception e) {
+                    System.out.println(e);
+                }
+                legendList.add(new Pair<>(pair.getKey(), value));
             }
-            legendList.add(new Pair<>(pair.getKey(),value));
         }
 
 
@@ -196,7 +249,7 @@ public class StatisticsCtrl implements Initializable {
         pieChart.getData().get(0).getNode().getParent().getParent()
                 .lookup(".chart-legend").setStyle(legendStyle);
 
-        updateOwnLegend(legendList,total);
+        updateOwnLegend(legendList, total);
 
 
         StringBinding test = languageManager.bind("statistics.chartTitle");
@@ -212,7 +265,8 @@ public class StatisticsCtrl implements Initializable {
     private List<Pair<Tag, List<Expense>>> pairListMaker() {
         Event event = mainCtrl.getEvent();
         List<Pair<Tag, List<Expense>>> stats = new ArrayList<>();
-        for (Tag tag : event.getTagsList()) {
+        List<Tag> eventTagList = getTagsFromExpenses();
+        for (Tag tag : eventTagList) {
             List<Expense> expensesWithTag = new ArrayList<>();
             for (Expense expense : event.getExpensesList()) {
                 if (expense.getTag() != null && expense.getTag().equals(tag)) {
@@ -227,8 +281,25 @@ public class StatisticsCtrl implements Initializable {
                 expensesWithTag.add(expense);
             }
         }
-        stats.add(new Pair<>(new Tag("NO TAG", "#000000"), expensesWithTag));
+        if (eventTagList.contains(null)) {
+            stats.add(new Pair<>(new Tag("NO TAG", "#000000"), expensesWithTag));
+        }
         return stats;
+    }
+
+    /**
+     * get the tags that are in use from the expenses
+     *
+     * @return returns the list of tags that are in use
+     */
+    private List<Tag> getTagsFromExpenses() {
+        List<Tag> res = new ArrayList<>();
+        for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
+            if (!res.contains(expense.getTag())) {
+                res.add(expense.getTag());
+            }
+        }
+        return res;
     }
 
 
@@ -245,14 +316,16 @@ public class StatisticsCtrl implements Initializable {
             item.setTextFill(Color.web(colorString));
             ownLegend.getChildren().add(item);
         }
-    }/**
+    }
+
+    /**
      * Update own legend version
      */
     private void updateOwnLegend(List<Pair<Tag, Double>> stats, double total) {
         ownLegend.getChildren().clear();
         for (Pair<Tag, Double> data : stats) {
-            double precentage = (data.getValue()/total*100);
-            String withRightDigits = String.format("%.1f",precentage);
+            double precentage = (data.getValue() / total * 100);
+            String withRightDigits = String.format("%.1f", precentage);
             Label item = new Label(data.getKey().getName() + ": "
                     + String.format("%.2f %s", data.getValue(), currency)
                     + " (" + withRightDigits + "%)");
