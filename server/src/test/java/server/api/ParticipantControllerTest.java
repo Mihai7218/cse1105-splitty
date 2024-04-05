@@ -66,7 +66,9 @@ public class ParticipantControllerTest {
             }
             else{
                 participantList.add(participant);
+                Event event = eventRepository.findById(eventId).get();
                 serverUtil.updateDate(eventRepository,eventId);
+                eventRepository.save(event);
                 return ResponseEntity.ok(participantList.getLast());
             }
         }
@@ -282,9 +284,11 @@ public class ParticipantControllerTest {
         Event event = eventRepository.getById(0L);
         Date tmpdate = (Date) event.getLastActivity().clone();
         Thread.sleep(500);
-        participantController.addParticipant(0L,new Participant("Jon Doe",
+        Participant p = new Participant("Jon Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B"));
+                "HBUKGB4B");
+        p.setId(50);
+        participantController.addParticipant(0L, p);
         event = eventRepository.getById(0L);
         assertTrue(event.getLastActivity().after(tmpdate));
     }
