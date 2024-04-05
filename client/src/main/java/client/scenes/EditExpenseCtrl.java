@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ConfigInterface;
+import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
@@ -31,14 +32,16 @@ public class EditExpenseCtrl extends ExpenseCtrl {
      * @param languageManager
      * @param serverUtils
      * @param alert
+     * @param currencyConverter
      */
     @Inject
     public EditExpenseCtrl(MainCtrl mainCtrl,
                            ConfigInterface config,
                            LanguageManager languageManager,
                            ServerUtils serverUtils,
-                           Alert alert) {
-        super(mainCtrl, config, languageManager, serverUtils, alert);
+                           Alert alert,
+                           CurrencyConverter currencyConverter) {
+        super(mainCtrl, config, languageManager, serverUtils, alert, currencyConverter);
     }
 
     /**

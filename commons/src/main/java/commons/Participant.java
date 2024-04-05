@@ -123,12 +123,24 @@ public class Participant {
     }
 
     /**
-     * An equals methode for to compare 2 participants
-     * @param o The object to compare to the participant
-     * @return returns if the other participant is the same as the one this function is called on
+     * Equals method of a participant - based only on id.
+     * @param o - Object to check equality with.
+     * @return true if equal and false otherwise.
      */
     @Override
     public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Participant p = (Participant) o;
+        return id == p.getId();
+    }
+
+    /**
+     * Equals method of a participant - based on all attributes.
+     * @param o - Object to check equality with.
+     * @return true if equal and false otherwise.
+     */
+    public boolean fullEquals(Object o){
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Participant that = (Participant) o;
