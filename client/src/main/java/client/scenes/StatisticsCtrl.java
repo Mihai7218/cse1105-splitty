@@ -49,7 +49,7 @@ public class StatisticsCtrl implements Initializable {
 
 
     /**
-     * Constructor for the StartScreenCtrl
+     * Constructor for the StatisticsCtrl
      *
      * @param mainCtrl - main controller
      * @param config   - config
