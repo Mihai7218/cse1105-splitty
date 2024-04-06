@@ -12,6 +12,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
 
 import java.net.URL;
 import java.util.Locale;
@@ -133,6 +134,25 @@ public class SettingsCtrl implements Initializable {
     }
 
     /**
+     * Method that returns to the startmenu. It's used for the shortcut.
+     */
+    private void startMenu(){
+        if (!noRecentEvents.getValue().toString().equals(config.getProperty("recentEventsLimit"))
+                || !currency.getValue().equals(config.getProperty("currency"))
+                || !languages.getValue().equals(config.getProperty("language"))) {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+            confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+            confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+            confirmation.contentTextProperty()
+                    .bind(languageManager.bind("settings.cancelAlert"));
+            Optional<ButtonType> result = confirmation.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                mainCtrl.showStartMenu();
+            }
+        } else mainCtrl.showStartMenu();
+    }
+
+    /**
      * Method that clears the fields.
      */
     private void clearFields() {
@@ -209,6 +229,7 @@ public class SettingsCtrl implements Initializable {
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ENTER is pressed, then it adds the participant.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -219,6 +240,11 @@ public class SettingsCtrl implements Initializable {
             case ESCAPE:
                 cancel();
                 break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
             default:
                 break;
         }

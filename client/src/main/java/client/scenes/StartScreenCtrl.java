@@ -419,4 +419,27 @@ public class StartScreenCtrl implements Initializable {
         mainCtrl.getSettingsCtrl().setPrevScene(false);
         mainCtrl.showSettings();
     }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if Ctrl + r is pressed, then it creates a new event.
+     *  - if Ctrl + j is pressed, then it joins a event.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case R:
+                if(e.isControlDown()){
+                    createEventButtonHandler();
+                    break;
+                }
+            case J:
+                if(e.isControlDown()){
+                    joinEventButtonHandler();
+                    break;
+                }
+            default:
+                break;
+        }
+    }
 }

@@ -649,6 +649,10 @@ public class OverviewCtrl implements Initializable {
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ENTER is pressed, then it goes to settle debts.
      *  - if ESCAPE is pressed, then it cancels and returns to the startscreen.
+     *  - if Ctrl + p is pressed, then it opens the add participant scene.
+     *  - if Ctrl + e is pressed, then it opens the add expense scene.
+     *  - if Ctrl + s is pressed, then it opens the statistics.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -659,9 +663,26 @@ public class OverviewCtrl implements Initializable {
             case ESCAPE:
                 startMenu();
                 break;
-            case DELETE:
-                addExpense();
-                break;
+            case E:
+                if(e.isControlDown()){
+                    addExpense();
+                    break;
+                }
+            case P:
+                if(e.isControlDown()){
+                    addParticipant();
+                    break;
+                }
+            case S:
+                if(e.isControlDown()){
+                    statistics();
+                    break;
+                }
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
             default:
                 break;
         }

@@ -257,8 +257,16 @@ public class StatisticsCtrl implements Initializable {
     }
 
     /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -266,6 +274,11 @@ public class StatisticsCtrl implements Initializable {
             case ESCAPE:
                 backToOverview();
                 break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
             default:
                 break;
         }

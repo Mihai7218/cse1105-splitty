@@ -86,9 +86,17 @@ public class InvitationCtrl implements Initializable{
     }
 
     /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ENTER is pressed, then send the invites.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -99,6 +107,11 @@ public class InvitationCtrl implements Initializable{
             case ESCAPE:
                 goBack();
                 break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
             default:
                 break;
         }

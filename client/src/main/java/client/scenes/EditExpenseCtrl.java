@@ -181,6 +181,14 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     }
 
     /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        clearFields();
+        mainCtrl.showStartMenu();
+    }
+
+    /**
      * setter for the add button (testing)
      *
      * @param done button for adding expense
@@ -193,6 +201,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ENTER is pressed, then it edits the expense with the current values.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -203,6 +212,11 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             case ESCAPE:
                 abort();
                 break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
             default:
                 break;
         }

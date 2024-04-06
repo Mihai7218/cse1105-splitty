@@ -160,6 +160,14 @@ public class EditParticipantCtrl {
     }
 
     /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        clearFields();
+        mainCtrl.showStartMenu();
+    }
+
+    /**
      * Getter for the language manager observable map.
      * @return - the language manager observable map.
      */
@@ -187,6 +195,7 @@ public class EditParticipantCtrl {
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ENTER is pressed, then it edits the participant with the current values.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -197,6 +206,11 @@ public class EditParticipantCtrl {
             case ESCAPE:
                 abort();
                 break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
             default:
                 break;
         }
