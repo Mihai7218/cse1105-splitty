@@ -14,7 +14,7 @@
       <children>
          <Button id="cancel" fx:id="cancel" cancelButton="true" mnemonicParsing="false" onAction="#backToOverview" text="${controller.languageManager.statistics.backButton}" />
          <Region prefHeight="50.0" prefWidth="10.0" />
-         <Button id="showStatistics" fx:id="manageTags" cancelButton="true" mnemonicParsing="false" onAction="#backToOverview" text="${controller.languageManager.statistics.manageTags}" />
+         <Button id="showStatistics" fx:id="manageTags" cancelButton="true" mnemonicParsing="false" onAction="#showManageTagsScreen" text="${controller.languageManager.statistics.manageTags}" />
       </children>
    </HBox>
 </Pane>

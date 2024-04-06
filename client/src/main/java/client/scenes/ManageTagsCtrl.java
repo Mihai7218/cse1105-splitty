@@ -1,14 +1,12 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.CurrencyConverter;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 
 import java.net.URL;
 import java.util.Locale;
@@ -23,7 +21,7 @@ public class ManageTagsCtrl implements Initializable {
 
     @FXML
     public Button cancel;
-
+    public ListView tagsListView;
 
 
     /**
@@ -57,6 +55,8 @@ public class ManageTagsCtrl implements Initializable {
             language = "en";
         }
         this.refreshLanguage();
+        tagsListView.setCellFactory(x ->
+                new TagListCell(mainCtrl, languageManager, config, serverUtils));
     }
 
     /**
@@ -101,6 +101,7 @@ public class ManageTagsCtrl implements Initializable {
      * Refreshes the list of Tags
      */
     public void refresh() {
-
+        tagsListView.getItems().addAll(mainCtrl.getEvent().getTagsList());
+        tagsListView.refresh();
     }
 }

@@ -35,7 +35,7 @@
       <TextField fx:id="name" layoutX="109.0" layoutY="76.0" prefHeight="26.0" prefWidth="346.0" />
       <Label layoutX="28.0" layoutY="118.0" text="${controller.languageManager.editParticipant.email}" />
       <ColorPicker fx:id="colorPicker" layoutX="109.0" layoutY="121.0" prefHeight="26.0" prefWidth="346.0" />
-      <Button id="cancel" cancelButton="true" layoutX="266.0" layoutY="227.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.editParticipant.cancelButton}" />
-      <Button defaultButton="true" layoutX="395.0" layoutY="227.0" mnemonicParsing="false" onAction="#ok" text="${controller.languageManager.editParticipant.okButton}" />
+      <Button id="cancel" cancelButton="true" layoutX="266.0" layoutY="227.0" mnemonicParsing="false" text="${controller.languageManager.editParticipant.cancelButton}" />
+      <Button defaultButton="true" layoutX="395.0" layoutY="227.0" mnemonicParsing="false" text="${controller.languageManager.editParticipant.okButton}" />
    </children>
 </AnchorPane>

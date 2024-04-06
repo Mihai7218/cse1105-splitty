@@ -203,6 +203,21 @@ public class StatisticsCtrl implements Initializable {
         }
         mainCtrl.showOverview();
     }
+    /**
+     * Manage the tags
+     */
+    public void showManageTagsScreen() {
+        subscription.unsubscribe();
+        if (expenseSubscriptionMap != null) {
+            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap = new HashMap<>();
+        }
+        if (expensesSubscription != null) {
+            expensesSubscription.unsubscribe();
+            expensesSubscription = null;
+        }
+        mainCtrl.showManageTags();
+    }
 
 
     /**
