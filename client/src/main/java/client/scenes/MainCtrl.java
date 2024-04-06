@@ -55,6 +55,8 @@ public class MainCtrl {
     private SettingsCtrl settingsCtrl;
     private Scene settings;
     private Scene statistics;
+    private DebtsCtrl debtsCtrl;
+    private Scene debts;
 
     private Event event;
 
@@ -92,7 +94,8 @@ public class MainCtrl {
                            Pair<SettingsCtrl, Parent> settings,
                            Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense,
-                           Pair<ConnectToServerCtrl, Parent> connectToServer) {
+                           Pair<ConnectToServerCtrl, Parent> connectToServer,
+                           Pair<DebtsCtrl, Parent> debts ) {
         this.primaryStage = primaryStage;
 
         this.addCtrl = add.getKey();
@@ -128,9 +131,26 @@ public class MainCtrl {
         this.statisticsCtrl = statistics.getKey();
         this.statistics = new Scene(statistics.getValue());
 
+        this.debtsCtrl = debts.getKey();
+        this.debts = new Scene(debts.getValue());
 
         showConnectToServer();
         primaryStage.show();
+    }
+
+    /**
+     * shows the Open Debts scene
+     */
+    public void showDebts(){
+        primaryStage.titleProperty().bind(languageManager.bind("debts.sceneTitle"));
+        try {
+            debts.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(debts);
+        if (debtsCtrl != null) debtsCtrl.refresh();
     }
 
     /**
@@ -169,6 +189,22 @@ public class MainCtrl {
         }
         primaryStage.setScene(editExpense);
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
+    }
+
+    /**
+     *
+     * @return controller for Open Debts
+     */
+    public DebtsCtrl getDebtsCtrl() {
+        return debtsCtrl;
+    }
+
+    /**
+     *
+     * @return the scene with Open Debts
+     */
+    public Scene getDebts() {
+        return debts;
     }
 
     /**

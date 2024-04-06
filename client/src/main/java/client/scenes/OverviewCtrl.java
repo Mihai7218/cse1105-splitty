@@ -397,7 +397,7 @@ public class OverviewCtrl implements Initializable {
      * Settles the debts of the event.
      */
     public void settleDebts() {
-        //Should show the sendInvites scene
+        mainCtrl.showDebts();
     }
 
     /**
