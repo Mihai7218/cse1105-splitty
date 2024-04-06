@@ -11,6 +11,10 @@ import javafx.scene.text.Text;
 import java.awt.*;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.scene.control.Label;
+import javafx.scene.control.Button;
+//import javafx.scene.control.*;
+
 
 public class InvitationCtrl implements Initializable{
     @FXML
@@ -19,6 +23,14 @@ public class InvitationCtrl implements Initializable{
     private Text test;
     @FXML
     private TextArea mailSpace;
+    @FXML
+    private Label label1;
+    @FXML
+    private Label label2;
+    @FXML
+    private Button abort;
+    @FXML
+    private Button send;
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
@@ -57,13 +69,16 @@ public class InvitationCtrl implements Initializable{
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     /**
      * loads the title and code of the event
      */
     public void refresh() {
+        label1.textProperty().bind(languageManager.bind("invitation.label1"));
+        label2.textProperty().bind(languageManager.bind("invitation.label2"));
+        abort.textProperty().bind(languageManager.bind("invitation.abort"));
+        send.textProperty().bind(languageManager.bind("invitation.send"));
         test.setText(mainCtrl.getEvent().getTitle());
         code.setText(String.valueOf(mainCtrl.getEvent().getInviteCode()));
     }
@@ -81,6 +96,6 @@ public class InvitationCtrl implements Initializable{
      */
     public void goBack(){
         mainCtrl.showOverview();
-        mailSpace.setText("");
+        if(mailSpace!=null) mailSpace.setText("");
     }
 }
