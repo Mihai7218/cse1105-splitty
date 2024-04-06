@@ -405,7 +405,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher {
      * Settles the debts of the event.
      */
     public void settleDebts() {
-        //Should show the sendInvites scene
+        mainCtrl.showDebts();
     }
 
     /**
