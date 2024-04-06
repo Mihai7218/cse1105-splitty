@@ -217,6 +217,7 @@ public class OverviewCtrl implements Initializable {
                                 sumExpense.setText(String.format(
                                         "%.2f %s", getSum(), getCurrency()));
                                 subscribeToExpense(expense);
+                                mainCtrl.getDebtsCtrl().refresh();
                             });
                         });
             if (participantSubscription == null)
@@ -253,6 +254,7 @@ public class OverviewCtrl implements Initializable {
                         }
                         filterViews();
                         all.refresh();
+                        mainCtrl.getDebtsCtrl().refresh();
                         populateParticipants();
                         String baseCurrency = getCurrency();
                         sumExpense.setText(String.format("%.2f %s", getSum(), baseCurrency));
