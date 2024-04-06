@@ -411,6 +411,19 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .delete();
     }
+    /**
+     * Method that removes a tag from the server.
+     * @param eventID - the id of the event.
+     * @param tagID - the id of the tag.
+     */
+    public void removeTag(int eventID, long tagID) {
+        ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/tags/%s",
+                        eventID, tagID))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete();
+    }
 
     /**
      * Method that gets the rate for the specified date and currency pair.

@@ -54,8 +54,8 @@ public class TagListCell extends ListCell<Tag> {
         edit = new Button();
         edit.setText("\uD83D\uDD89");
         edit.setOnAction(param -> {
-            mainCtrl.getEditExpenseCtrl().setExpense(null);
-            mainCtrl.showEditExpense();
+            mainCtrl.getTagCtrl().setTag(item);
+            mainCtrl.showEditTag();
             //System.out.println(item);
         });
         remove = new Button();
@@ -63,14 +63,9 @@ public class TagListCell extends ListCell<Tag> {
         remove.setId("cancel");
         remove.setOnAction(param -> {
             try {
-                server.removeExpense(mainCtrl.getEvent().getInviteCode(), item.getId());
+                server.removeTag(mainCtrl.getEvent().getInviteCode(), item.getId());
             } catch (WebApplicationException e) {
-                if (mainCtrl.getOverviewCtrl() == null
-                        || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
-                    return;
-                var sub = mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap().get(item);
-                if (sub != null)
-                    sub.notify();
+                System.out.println(e);
             }
         });
 

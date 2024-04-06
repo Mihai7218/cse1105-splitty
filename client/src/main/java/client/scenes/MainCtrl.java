@@ -192,7 +192,7 @@ public class MainCtrl {
     /**
      * shows scene for Manage Tags Screen
      */
-    public void showEditTags(){
+    public void showEditTag(){
         primaryStage.titleProperty().bind(languageManager.bind("editTags.sceneTitle"));
         try {
             editTag.getStylesheets().add(getClass()
@@ -225,6 +225,13 @@ public class MainCtrl {
      */
     public EditExpenseCtrl getEditExpenseCtrl() {
         return editExpenseCtrl;
+    }
+    /**
+     *
+     * @return the controller for editing a tag
+     */
+    public EditTagCtrl getTagCtrl() {
+        return editTagCtrl;
     }
 
     /**
