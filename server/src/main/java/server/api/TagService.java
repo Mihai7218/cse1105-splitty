@@ -120,9 +120,11 @@ public class TagService {
         }
         Event event = eventRepo.findById(inviteCode).get();
         serverUtil.updateDate(eventRepo,inviteCode);
-        Tag change = tag;
+        Tag change = tagRepo.findById(tagId).get();
+        change.setColor(tag.getColor());
+        change.setName(tag.getName());
         tagRepo.save(change);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(change);
     }
 
     /**

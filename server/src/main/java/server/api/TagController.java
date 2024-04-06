@@ -113,7 +113,7 @@ public class TagController {
         if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
             messagingTemplate.convertAndSend("/topic/events/" +
                     inviteCode + "/tags/" + tagId,
-                    new Tag("deleted",null));
+                    new Tag(Objects.requireNonNull(resp.getBody()).getName(),"deleted"));
         }
         return resp;
     }

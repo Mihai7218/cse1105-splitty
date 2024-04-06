@@ -186,7 +186,7 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(manageTags);
-        if (manageTagsCtrl != null) manageTagsCtrl.refresh();
+        if (manageTagsCtrl != null) manageTagsCtrl.setup();
     }
 
     /**
