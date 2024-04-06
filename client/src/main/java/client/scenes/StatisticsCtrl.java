@@ -44,6 +44,10 @@ public class StatisticsCtrl implements Initializable {
     public VBox ownLegend;
     private String currency;
 
+    private StompSession.Subscription tagSubscription;
+
+    private Map<Tag, StompSession.Subscription> tagSubscriptionMap;
+
     private StompSession.Subscription expensesSubscription;
     private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
 
@@ -81,6 +85,16 @@ public class StatisticsCtrl implements Initializable {
         }
         this.refreshLanguage();
         expenseSubscriptionMap = new HashMap<>();
+        tagSubscriptionMap = new HashMap<>();
+    }
+
+    /**
+     * Getter for the tag subscription map.
+     *
+     * @return - the tag subscription map of the overview controller.
+     */
+    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
+        return tagSubscriptionMap;
     }
 
     /**
@@ -93,7 +107,30 @@ public class StatisticsCtrl implements Initializable {
             if (!expenseSubscriptionMap.containsKey(expense))
                 subscribeToExpense(expense);
         }
+        for (Tag tag : mainCtrl.getEvent().getTagsList()) {
+            if (!tagSubscriptionMap.containsKey(tag))
+                subscribeToTag(tag);
+        }
         refresh();
+    }
+
+    /**
+     * Method that subscribes to updates for an tag.
+     * @param tag - the tag to subscribe to.
+     */
+    private void subscribeToTag(Tag tag) {
+        if (!tagSubscriptionMap.containsKey(tag)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/tags/"
+                    + tag.getId();
+            var subscription = serverUtils.registerForMessages(dest, Tag.class,
+                    exp -> Platform.runLater(() -> {
+                        Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
+                        mainCtrl.setEvent(e);
+                        setStatistics();
+                    }));
+            tagSubscriptionMap.put(tag, subscription);
+        }
     }
 
     /**
@@ -144,6 +181,14 @@ public class StatisticsCtrl implements Initializable {
                                 mainCtrl.getEvent().setTitle(q.getTitle());
                                 Platform.runLater(() -> refresh());
                             });
+            if (tagSubscription == null)
+                tagSubscription = serverUtils.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
+                        tag -> {
+                            Platform.runLater(() -> {
+                                subscribeToTag(tag);
+                            });
+                        });
             if (expensesSubscription == null)
                 expensesSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -201,6 +246,14 @@ public class StatisticsCtrl implements Initializable {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
         }
+        if (tagSubscription != null) {
+            tagSubscription.unsubscribe();
+            tagSubscription = null;
+        }
+        if (tagSubscriptionMap != null) {
+            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap = new HashMap<>();
+        }
         mainCtrl.showOverview();
     }
     /**
@@ -215,6 +268,14 @@ public class StatisticsCtrl implements Initializable {
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
+        }
+        if (tagSubscription != null) {
+            tagSubscription.unsubscribe();
+            tagSubscription = null;
+        }
+        if (tagSubscriptionMap != null) {
+            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showManageTags();
     }
