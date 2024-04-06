@@ -25,8 +25,8 @@ public class ManageTagsCtrl implements Initializable {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
 
-    private StompSession.Subscription expensesSubscription;
-    private Map<Tag, StompSession.Subscription> expenseSubscriptionMap;
+    private StompSession.Subscription tagSubscription;
+    private Map<Tag, StompSession.Subscription> tagSubscriptionMap;
 
     @FXML
     public Button cancel;
@@ -66,17 +66,17 @@ public class ManageTagsCtrl implements Initializable {
         this.refreshLanguage();
         tagsListView.setCellFactory(x ->
                 new TagListCell(mainCtrl, languageManager, config, serverUtils));
-        expenseSubscriptionMap = new HashMap<>();
+        tagSubscriptionMap = new HashMap<>();
         refresh();
     }
 
     /**
-     * Getter for the expense subscription map.
+     * Getter for the tag subscription map.
      *
-     * @return - the expense subscription map of the overview controller.
+     * @return - the tag subscription map of the overview controller.
      */
-    public Map<Tag, StompSession.Subscription> getExpenseSubscriptionMap() {
-        return expenseSubscriptionMap;
+    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
+        return tagSubscriptionMap;
     }
 
     /**
@@ -94,13 +94,13 @@ public class ManageTagsCtrl implements Initializable {
      * Goes back to the startMenu.
      */
     public void backToStatistics() {
-        if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
-            expenseSubscriptionMap = new HashMap<>();
+        if (tagSubscriptionMap != null) {
+            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap = new HashMap<>();
         }
-        if (expensesSubscription != null) {
-            expensesSubscription.unsubscribe();
-            expensesSubscription = null;
+        if (tagSubscription != null) {
+            tagSubscription.unsubscribe();
+            tagSubscription = null;
         }
         mainCtrl.showStatistics();
     }
@@ -138,15 +138,15 @@ public class ManageTagsCtrl implements Initializable {
     public void refresh() {
         Event event = mainCtrl.getEvent();
         if (event != null) {
-            if (expensesSubscription == null)
-                expensesSubscription = serverUtils.registerForMessages("/topic/events/" +
+            if (tagSubscription == null)
+                tagSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
                         tag -> {
                             Platform.runLater(() -> {
                                 tagsListView.getItems().add(tag);
                                 mainCtrl.getEvent().getTagsList().add(tag);
                                 tagsListView.refresh();
-                                subscribeToExpense(tag);
+                                subscribeToTag(tag);
                             });
                         });
         }
@@ -159,9 +159,9 @@ public class ManageTagsCtrl implements Initializable {
         tagsListView.getItems().clear();
         Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
         mainCtrl.setEvent(e);
-        for (Tag expense : mainCtrl.getEvent().getTagsList()) {
-            if (!expenseSubscriptionMap.containsKey(expense))
-                subscribeToExpense(expense);
+        for (Tag tag : mainCtrl.getEvent().getTagsList()) {
+            if (!tagSubscriptionMap.containsKey(tag))
+                subscribeToTag(tag);
         }
         tagsListView.getItems().addAll(mainCtrl.getEvent().getTagsList());
         tagsListView.refresh();
@@ -169,18 +169,18 @@ public class ManageTagsCtrl implements Initializable {
     }
 
     /**
-     * Method that subscribes to updates for an expense.
-     * @param expense - the expense to subscribe to.
+     * Method that subscribes to updates for an tag.
+     * @param tag - the tag to subscribe to.
      */
-    private void subscribeToExpense(Tag expense) {
-        if (!expenseSubscriptionMap.containsKey(expense)) {
+    private void subscribeToTag(Tag tag) {
+        if (!tagSubscriptionMap.containsKey(tag)) {
             String dest = "/topic/events/" +
                     mainCtrl.getEvent().getInviteCode() + "/tags/"
-                    + expense.getId();
+                    + tag.getId();
             var subscription = serverUtils.registerForMessages(dest, Tag.class,
                     exp -> Platform.runLater(() -> {
-                        tagsListView.getItems().remove(expense);
-                        mainCtrl.getEvent().getExpensesList().remove(expense);
+                        tagsListView.getItems().remove(tag);
+                        mainCtrl.getEvent().getTagsList().remove(tag);
                         tagsListView.refresh();
                         if (!"deleted".equals(exp.getColor())) {
                             tagsListView.getItems().add(exp);
@@ -188,7 +188,7 @@ public class ManageTagsCtrl implements Initializable {
                         }
                         tagsListView.refresh();
                     }));
-            expenseSubscriptionMap.put(expense, subscription);
+            tagSubscriptionMap.put(tag, subscription);
         }
     }
 }
