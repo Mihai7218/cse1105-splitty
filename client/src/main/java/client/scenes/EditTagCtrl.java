@@ -5,15 +5,10 @@ import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Expense;
-import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 import java.net.URL;
 import java.util.Locale;
