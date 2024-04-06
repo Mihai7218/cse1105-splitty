@@ -7,6 +7,7 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(ApplicationExtension.class)
 class LanguageCellTest {
@@ -15,7 +16,7 @@ class LanguageCellTest {
 
     @Start
     void setUp(Stage stage) {
-        languageCell = new LanguageCell();
+        languageCell = new LanguageCell(mock(LanguageManager.class));
     }
 
     /**

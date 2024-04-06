@@ -73,6 +73,7 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         String language = config.getProperty("language");
         createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));

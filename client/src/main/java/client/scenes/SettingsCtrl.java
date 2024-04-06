@@ -57,6 +57,7 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         saveButton.setGraphic(new ImageView(new Image("icons/savewhite.png")));
         noRecentEvents.setValueFactory(new SpinnerValueFactory

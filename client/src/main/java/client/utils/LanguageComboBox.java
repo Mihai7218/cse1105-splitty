@@ -17,8 +17,6 @@ public class LanguageComboBox extends ComboBox<String> {
         List<String> languageCodes = getLanguageCodes();
         this.getItems().addAll(languageCodes);
         this.getItems().add("template");
-        this.setCellFactory(param -> new LanguageCell());
-        this.setButtonCell(new LanguageCell());
     }
 
     /**
@@ -37,5 +35,14 @@ public class LanguageComboBox extends ComboBox<String> {
                 .map(File::getName)
                 .filter(name -> !name.equals("template.properties"))
                 .map(filename -> filename.substring(10, 12)).sorted().toList();
+    }
+
+    /**
+     * Sets the cell factory with the corresponding language manager.
+     * @param languageManager - the language manager.
+     */
+    public void setCellFactory(LanguageManager languageManager) {
+        this.setCellFactory(param -> new LanguageCell(languageManager));
+        this.setButtonCell(new LanguageCell(languageManager));
     }
 }

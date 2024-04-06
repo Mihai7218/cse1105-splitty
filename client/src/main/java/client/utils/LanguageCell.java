@@ -17,11 +17,13 @@ import java.util.Properties;
 public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     private static final Properties language = new Properties();
+    private final LanguageManager languageManager;
 
     /**
      * Constructor for the LanguageCell.
      */
-    public LanguageCell() {
+    public LanguageCell(LanguageManager languageManager) {
+        this.languageManager = languageManager;
     }
 
     /**
@@ -33,14 +35,16 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
     protected void updateItem(String languageCode, boolean empty) {
         super.updateItem(languageCode, empty);
         if (empty || languageCode == null) {
+            textProperty().unbind();
             setText(null);
             setGraphic(null);
         } else if (languageCode.equals("template")) {
-            setText("Add new language...");
+            textProperty().bind(languageManager.bind("template.label"));
             ImageView imageView = new ImageView(new Image(
                     String.valueOf(Path.of("flags", "template.png"))));
             setGraphic(imageView);
         } else {
+            textProperty().unbind();
             String languageName = getLanguageName(languageCode);
             setText(languageName);
             Image image = getImage(languageCode);

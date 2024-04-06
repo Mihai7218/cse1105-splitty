@@ -447,6 +447,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
