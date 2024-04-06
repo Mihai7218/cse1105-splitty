@@ -12,8 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.VBox;
-
 import java.net.URL;
 import java.util.Locale;
 import java.util.Optional;
