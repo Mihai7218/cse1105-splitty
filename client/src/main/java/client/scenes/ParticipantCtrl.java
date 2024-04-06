@@ -109,7 +109,7 @@ public class ParticipantCtrl {
             return;
         }
         //Alerts if the Iban is not in the right form
-        if(ibanPresent == false && Pattern.compile(bicRegex)
+        if(ibanPresent == false && Pattern.compile(ibanRegex)
                 .matcher(iban.getText()).matches() == false){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
@@ -119,8 +119,8 @@ public class ParticipantCtrl {
             return;
         }
         //Alerts if the Bic is not in the right form
-        if(bicPresent == false && Pattern.compile(ibanRegex)
-                .matcher(iban.getText()).matches() == false){
+        if(bicPresent == false && Pattern.compile(bicRegex)
+                .matcher(bic.getText()).matches() == false){
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("addParticipant.invalidBic"));
@@ -129,8 +129,12 @@ public class ParticipantCtrl {
             return;
         }
         try {
-            server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
-            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
+//            server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
+//            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
+            Participant participant = server.addParticipant(
+                    mainCtrl.getEvent().getInviteCode(), getParticipant());
+            mainCtrl.getEvent().getParticipantsList().add(participant);
+            mainCtrl.getOverviewCtrl().populateParticipants();
         } catch (WebApplicationException e) {
 
             var alert = new Alert(Alert.AlertType.ERROR);
