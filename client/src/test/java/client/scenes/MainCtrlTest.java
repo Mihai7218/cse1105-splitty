@@ -163,7 +163,7 @@ class MainCtrlTest {
                 new Pair<>(editParticipantCtrl,editParticipant),
                 new Pair<>(settingsCtrl, settings),
                 new Pair<>(statisticsCtrl,statistics),
-                new Pair<>(editExpenseCtrl, editExpense));
+                new Pair<>(editExpenseCtrl, editExpense), manageTags, editTag);
         assertEquals(stage, sut.getPrimaryStage());
         assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());

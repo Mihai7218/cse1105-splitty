@@ -50,11 +50,19 @@ public class MainCtrl {
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     private InvitationCtrl invitationCtrl;
-    private StatisticsCtrl statisticsCtrl;
+
     private Scene invitation;
+    private StatisticsCtrl statisticsCtrl;
+    private Scene statistics;
     private SettingsCtrl settingsCtrl;
     private Scene settings;
-    private Scene statistics;
+
+    private EditTagCtrl editTagCtrl;
+    private Scene editTag;
+
+    private ManageTagsCtrl manageTagsCtrl;
+    private Scene manageTags;
+
 
     private Event event;
 
@@ -81,6 +89,8 @@ public class MainCtrl {
      * @param editparticipant edit participant controller and scene
      * @param settings        settings controller and scene
      * @param statistics
+     * @param manageTags
+     * @param editTag
      */
     public void initialize(Stage primaryStage,
                            Pair<QuoteOverviewCtrl, Parent> quoteOverview,
@@ -93,7 +103,9 @@ public class MainCtrl {
                            Pair<EditParticipantCtrl, Parent> editparticipant,
                            Pair<SettingsCtrl, Parent> settings,
                            Pair<StatisticsCtrl, Parent> statistics,
-                           Pair<EditExpenseCtrl, Parent> editExpense) {
+                           Pair<EditExpenseCtrl, Parent> editExpense,
+                           Pair<ManageTagsCtrl, Parent> manageTags,
+                           Pair<EditTagCtrl, Parent> editTag) {
         this.primaryStage = primaryStage;
         this.quoteOverviewCtrl = quoteOverview.getKey();
         this.quoteOverview = new Scene(quoteOverview.getValue());
@@ -128,6 +140,12 @@ public class MainCtrl {
         this.statisticsCtrl = statistics.getKey();
         this.statistics = new Scene(statistics.getValue());
 
+        this.manageTagsCtrl = manageTags.getKey();
+        this.manageTags = new Scene(manageTags.getValue());
+
+        this.editTagCtrl = editTag.getKey();
+        this.editTag = new Scene(editTag.getValue());
+
 
         showStartMenu();
         primaryStage.show();
@@ -154,6 +172,36 @@ public class MainCtrl {
         }
         primaryStage.setScene(statistics);
         if (statisticsCtrl != null) statisticsCtrl.setup();
+    }
+
+    /**
+     * shows scene for Manage Tags Screen
+     */
+    public void showManageTags(){
+        primaryStage.titleProperty().bind(languageManager.bind("manageTags.sceneTitle"));
+        try {
+            manageTags.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(manageTags);
+        if (manageTagsCtrl != null) manageTagsCtrl.refresh();
+    }
+
+    /**
+     * shows scene for Manage Tags Screen
+     */
+    public void showEditTags(){
+        primaryStage.titleProperty().bind(languageManager.bind("editTags.sceneTitle"));
+        try {
+            editTag.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(editTag);
+        if (editTagCtrl != null) editTagCtrl.refresh();
     }
 
     /**
