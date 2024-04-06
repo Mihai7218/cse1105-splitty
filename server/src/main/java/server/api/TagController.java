@@ -3,10 +3,13 @@ package server.api;
 import commons.Expense;
 import commons.Tag;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 import static org.springframework.http.HttpStatus.OK;
 
@@ -21,14 +24,20 @@ public class TagController {
 
     private final GerneralServerUtil serverUtil;
 
+    private final SimpMessagingTemplate messagingTemplate;
+
+
+
     /**
      * Constructor of the tag controller
      * @param tagService the service which will be called
      */
     public TagController(TagService tagService,
-                         @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil) {
+                         @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil,
+                         SimpMessagingTemplate messagingTemplate) {
         this.tagService = tagService;
         this.serverUtil = serverUtil;
+        this.messagingTemplate = messagingTemplate;
     }
 
 
@@ -64,7 +73,12 @@ public class TagController {
     @PostMapping(path = {"/{inviteCode}/tags"})
     public ResponseEntity<Tag> addNewToEvent(@PathVariable("inviteCode") long inviteCode,
                                       @RequestBody Tag tag){
-        return tagService.addNewToEvent(inviteCode, tag,serverUtil);
+        var resp = tagService.addNewToEvent(inviteCode, tag,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + inviteCode + "/tags",
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /**
@@ -78,7 +92,12 @@ public class TagController {
     public ResponseEntity<Tag> changeTag(@PathVariable("inviteCode") long inviteCode,
                                           @PathVariable("tagId") long tagId,
                                           @RequestBody Tag tag){
-        return tagService.changeTag(inviteCode, tagId, tag,serverUtil);
+        var resp = tagService.changeTag(inviteCode, tagId, tag,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + inviteCode + "/tags/" + tagId,
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /***
@@ -90,7 +109,13 @@ public class TagController {
     @DeleteMapping(path = {"/{inviteCode}/tags/{tagId}"})
     public ResponseEntity<Tag> deleteTagFromEvent(@PathVariable("inviteCode") long inviteCode,
                                                   @PathVariable("tagId") long tagId){
-        return tagService.deleteTagFromEvent(inviteCode, tagId,serverUtil);
+        var resp = tagService.deleteTagFromEvent(inviteCode, tagId,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" +
+                    inviteCode + "/tags/" + tagId,
+                    new Tag("deleted",null));
+        }
+        return resp;
     }
 
 

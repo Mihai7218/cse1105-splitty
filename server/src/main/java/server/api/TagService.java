@@ -145,11 +145,16 @@ public class TagService {
         }
         Event event = eventRepo.findById(inviteCode).get();
         serverUtil.updateDate(eventRepo,inviteCode);
-        Optional<Tag> test = tagRepo.findById(tagId);
-        event.getTagsList().remove(test.get());
+        Tag test = tagRepo.findById(tagId).get();
+        for(Expense expense : event.getExpensesList()) {
+            if (expense.getTag().equals(test)) {
+                expense.setTag(null);
+            }
+        }
+        event.getTagsList().remove(test);
         eventRepo.save(event);
         tagRepo.deleteAllById(Collections.singleton(tagId));
-        return ResponseEntity.ok(test.get());
+        return ResponseEntity.ok(test);
     }
 
 

@@ -7,6 +7,7 @@ import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.sql.Timestamp;
 import java.util.Date;
@@ -14,6 +15,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
@@ -34,6 +36,8 @@ public class TagControllerTest {
 
     public GerneralServerUtil serverUtil;
 
+    public SimpMessagingTemplate smt = mock(SimpMessagingTemplate.class);
+
     @BeforeEach
     public void setup(){
         serverUtil = new ServerUtilModule();
@@ -43,7 +47,7 @@ public class TagControllerTest {
         expenseRepo = new TestExpenseRepository();
         tagRepo = new TestTagRepository();
         tagService = new TagService(eventRepo, tagRepo);
-        ctrl = new TagController(tagService,serverUtil);
+        ctrl = new TagController(tagService,serverUtil,smt);
 
         payee = new Participant("joe", null, null, null);
         tag1 = new Tag("food", "#FF1493");
