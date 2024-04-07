@@ -151,11 +151,18 @@ public class DebtsCtrl implements Initializable {
                         });
                     }
                     remind.textProperty().bind(languageManager.bind("debts.remind"));
-                    if (!canRemind || pp.getParticipant().getEmail() == null
-                            || pp.getParticipant().getEmail().isEmpty()) {
+                    if (!canRemind) {
                         Tooltip tooltip = new Tooltip();
                         tooltip.textProperty().bind(languageManager
                                 .bind("debts.unavailableReminder"));
+                        remind.setTooltip(tooltip);
+                        remind.setId("disabledButton");
+                    }
+                    else if (pp.getParticipant().getEmail() == null
+                            || pp.getParticipant().getEmail().isEmpty()) {
+                        Tooltip tooltip = new Tooltip();
+                        tooltip.textProperty().bind(languageManager
+                                .bind("debts.missingEmail"));
                         remind.setTooltip(tooltip);
                         remind.setId("disabledButton");
                     } else {
