@@ -20,8 +20,12 @@ import com.google.inject.Inject;
 import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.util.Optional;
 
 public class MainCtrl {
 
@@ -291,6 +295,7 @@ public class MainCtrl {
         }catch(NullPointerException e){
             System.out.println("exception caught: Null Pointer Exception");
         }
+        if (startScreenCtrl != null) startScreenCtrl.refresh();
         primaryStage.setScene(startScreen);
     }
 
@@ -531,5 +536,32 @@ public class MainCtrl {
      */
     Scene getSettings() {
         return settings;
+    }
+
+    /**
+     * Method that returns an optional password.
+     * @return - the optional password.
+     */
+    public Optional<String> getPassword() {
+        Dialog<String> dialog = new Dialog<>();
+        dialog.titleProperty().bind(languageManager.bind("mail.passwordTitle"));
+        dialog.headerTextProperty().bind(languageManager.bind("mail.passwordHeader"));
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        PasswordField passwordField = new PasswordField();
+        HBox hBox = new HBox();
+        Label passwordLabel = new Label();
+        passwordLabel.textProperty().bind(languageManager.bind("mail.passwordLabel"));
+        hBox.setSpacing(10);
+        hBox.getChildren().addAll(passwordLabel, passwordField);
+        dialog.getDialogPane().setContent(hBox);
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                return passwordField.getText();
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
     }
 }

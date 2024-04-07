@@ -16,9 +16,7 @@
 package client;
 
 import client.scenes.*;
-import client.utils.Config;
-import client.utils.CurrencyConverter;
-import client.utils.LanguageManager;
+import client.utils.*;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
@@ -36,6 +34,8 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.bind(Config.class).in(Scopes.SINGLETON);
+        binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(MailSender.class).in(Scopes.SINGLETON);
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(AddQuoteCtrl.class).in(Scopes.SINGLETON);
         binder.bind(StartScreenCtrl.class).in(Scopes.SINGLETON);

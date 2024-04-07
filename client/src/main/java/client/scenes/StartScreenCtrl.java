@@ -83,12 +83,19 @@ public class StartScreenCtrl implements Initializable {
         alert.titleProperty().bind(languageManager.bind("commons.warning"));
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
+        updateLanguageComboBox(language);
+        this.refreshLanguage();
+    }
+
+    /**
+     *
+     */
+    public void refresh() {
         List<Event> currentlyInConfig = getRecentEventsFromConfig();
+        recentEvents.getItems().clear();
         recentEvents.getItems().addAll(currentlyInConfig);
         removeExcess();
         this.refreshConfig();
-        updateLanguageComboBox(language);
-        this.refreshLanguage();
         setLongPolling(currentlyInConfig);
     }
 
