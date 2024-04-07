@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
+import commons.Participant;
 import jakarta.mail.MessagingException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -141,6 +142,11 @@ public class InvitationCtrl implements Initializable{
             alert.showAndWait();
             return;
         }
+        for (String email : emailList) {
+            serverUtils.addParticipant(mainCtrl.getEvent().getInviteCode(),
+                    new Participant(email, email, null, null));
+        }
+        mainCtrl.getOverviewCtrl().populateParticipants();
         mainCtrl.showOverview();
     }
 
