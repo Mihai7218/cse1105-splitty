@@ -40,15 +40,17 @@ public class MailSender {
      * @param host     - the host.
      * @param port     - the port.
      * @param username - the username.
+     * @param email    - the email.
      * @throws MessagingException - if the message couldn't be sent.
      */
     public void sendTestMail(String host,
                              String port,
-                             String username) throws MessagingException {
+                             String username,
+                             String email) throws MessagingException {
         String subject = "Splitty test message";
         String content = "This is a test message for Splitty. " +
                 "If you received this, your configuration should be working!";
-        sendMessage(List.of(username), host, port, username, subject, content);
+        sendMessage(List.of(email), host, port, username, email, subject, content);
     }
 
     /**
@@ -60,6 +62,7 @@ public class MailSender {
      * @param host       - the host.
      * @param port       - the port.
      * @param username   - the username.
+     * @param email      - the email
      * @throws MessagingException - if the message couldn't be sent.
      */
     public void sendInvite(String address,
@@ -67,14 +70,15 @@ public class MailSender {
                            List<String> recipients,
                            String host,
                            String port,
-                           String username) throws MessagingException {
+                           String username,
+                           String email) throws MessagingException {
         String subject = "Splitty invite";
         String content = String.format("""
                         You have been invited to join an event on Splitty!
 
                         To join, use the following address: %s and the following invite code: %s""",
                 address, invite);
-        sendMessage(recipients, host, port, username, subject, content);
+        sendMessage(recipients, host, port, username, email, subject, content);
     }
 
     /**
@@ -88,6 +92,7 @@ public class MailSender {
      * @param host     - the host.
      * @param port     - the port.
      * @param username - the username.
+     * @param email    - the email.
      * @throws MessagingException - if the message couldn't be sent.
      */
     public void sendReminder(String address,
@@ -97,7 +102,8 @@ public class MailSender {
                              String amount,
                              String host,
                              String port,
-                             String username) throws MessagingException {
+                             String username,
+                             String email) throws MessagingException {
         String subject = "Splitty payment reminder";
         String formatString = """
                 Dear %s,
@@ -108,7 +114,7 @@ public class MailSender {
                 """;
         String content = String.format(formatString, debtor.getName(), amount, creditor.getName(),
                 getPaymentDetails(creditor, amount), address, invite);
-        sendMessage(List.of(debtor.getEmail()), host, port, username, subject, content);
+        sendMessage(List.of(debtor.getEmail()), host, port, username, email, subject, content);
     }
 
     /**
@@ -141,6 +147,7 @@ public class MailSender {
      * @param host       - the host.
      * @param port       - the port.
      * @param username   - the username.
+     * @param email      - the email
      * @param subject    - the subject of the email.
      * @param content    - the contents of the email.
      * @throws MessagingException - if it cannot send the message.
@@ -149,15 +156,16 @@ public class MailSender {
                              String host,
                              String port,
                              String username,
+                             String email,
                              String subject,
                              String content) throws MessagingException {
         Session session = getSession(host, port);
         MimeMessage msg = new MimeMessage(session);
-        msg.setFrom(username);
+        msg.setFrom(email);
         for (String recipient : recipients) {
             msg.setRecipients(Message.RecipientType.TO, recipient);
         }
-        msg.setRecipients(Message.RecipientType.CC, username);
+        msg.setRecipients(Message.RecipientType.CC, email);
         msg.setSubject(subject);
         msg.setSentDate(new Date());
         msg.setText(content);

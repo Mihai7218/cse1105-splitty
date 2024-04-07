@@ -92,9 +92,11 @@ public class InvitationCtrl implements Initializable{
         String host = config.getProperty("mail.host");
         String port = config.getProperty("mail.port");
         String user = config.getProperty("mail.user");
+        String email = config.getProperty("mail.email");
         if (host == null || host.isEmpty()
                 || port == null || port.isEmpty()
-                || user == null || user.isEmpty()) {
+                || user == null || user.isEmpty()
+                || email == null || email.isEmpty()) {
             alert.contentTextProperty().bind(languageManager.bind("invitation.missingConfig"));
             alert.showAndWait();
             mainCtrl.showOverview();
@@ -125,9 +127,10 @@ public class InvitationCtrl implements Initializable{
         String host = config.getProperty("mail.host");
         String port = config.getProperty("mail.port");
         String user = config.getProperty("mail.user");
+        String emailAddress = config.getProperty("mail.email");
         try {
             mailSender.sendInvite(server, mainCtrl.getEvent().getInviteCode(),
-                    emailList, host, port, user);
+                    emailList, host, port, user, emailAddress);
         }
         catch (MessagingException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);

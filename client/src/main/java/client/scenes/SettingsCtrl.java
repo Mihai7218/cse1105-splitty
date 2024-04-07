@@ -27,6 +27,8 @@ public class SettingsCtrl implements Initializable {
     private final CurrencyConverter currencyConverter;
     private final MailSender mailSender;
     @FXML
+    private TextField mailEmail;
+    @FXML
     private Label confirmation;
     @FXML
     private Button testMail;
@@ -122,6 +124,7 @@ public class SettingsCtrl implements Initializable {
         mailHost.setText(config.getProperty("mail.host"));
         mailPort.setText(config.getProperty("mail.port"));
         mailUser.setText(config.getProperty("mail.user"));
+        mailEmail.setText(config.getProperty("mail.email"));
     }
 
     /**
@@ -176,6 +179,7 @@ public class SettingsCtrl implements Initializable {
         config.setProperty("mail.host", mailHost.getText());
         config.setProperty("mail.port", mailPort.getText());
         config.setProperty("mail.user", mailUser.getText());
+        config.setProperty("mail.email", mailEmail.getText());
         mainCtrl.getStartScreenCtrl().removeExcess();
         mainCtrl.getOverviewCtrl().populateExpenses();
         mainCtrl.getOverviewCtrl().populateParticipants();
@@ -243,23 +247,27 @@ public class SettingsCtrl implements Initializable {
         if (mailHost.getText() == null
                 || mailPort.getText() == null
                 || mailUser.getText() == null
+                || mailEmail.getText() == null
                 || mailHost.getText().isEmpty()
                 || mailPort.getText().isEmpty()
-                || mailUser.getText().isEmpty()) {
+                || mailUser.getText().isEmpty()
+                || mailEmail.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
             alert.contentTextProperty().bind(languageManager.bind("mail.missingFields"));
             alert.showAndWait();
             highlightMissing(mailHost.getText().isEmpty(),
                     mailPort.getText().isEmpty(),
-                    mailUser.getText().isEmpty());
+                    mailUser.getText().isEmpty(),
+                    mailEmail.getText().isEmpty());
             return;
         }
         removeHighlight();
         try {
             mailSender.sendTestMail(mailHost.getText(),
                     mailPort.getText(),
-                    mailUser.getText());
+                    mailUser.getText(),
+                    mailEmail.getText());
             showConfirmationTest();
         } catch (MessagingException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -282,12 +290,14 @@ public class SettingsCtrl implements Initializable {
      * @param port boolean if port is present
      * @param user boolean if user is present
      */
-    public void highlightMissing(boolean host, boolean port, boolean user) {
+    public void highlightMissing(boolean host, boolean port, boolean user, boolean email) {
         if (host) mailHost
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
         if (port) mailPort
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
         if (user) mailUser
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if (email) mailEmail
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
     }
 
@@ -298,6 +308,7 @@ public class SettingsCtrl implements Initializable {
         mailHost.setStyle("-fx-border-color: none;");
         mailPort.setStyle("-fx-border-color: none; ");
         mailUser.setStyle("-fx-border-color: none; ");
+        mailEmail.setStyle("-fx-border-color: none; ");
     }
 
     /**

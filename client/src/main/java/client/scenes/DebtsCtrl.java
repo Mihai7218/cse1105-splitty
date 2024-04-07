@@ -101,9 +101,11 @@ public class DebtsCtrl implements Initializable {
         String host = config.getProperty("mail.host");
         String port = config.getProperty("mail.port");
         String user = config.getProperty("mail.user");
+        String email = config.getProperty("mail.email");
         canRemind = host != null && !host.isEmpty()
                 && port != null && !port.isEmpty()
-                && user != null && !user.isEmpty();
+                && user != null && !user.isEmpty()
+                && email != null && !email.isEmpty();
         setTitles(mainCtrl.getEvent());
     }
 
@@ -166,12 +168,13 @@ public class DebtsCtrl implements Initializable {
                             String host = config.getProperty("mail.host");
                             String port = config.getProperty("mail.port");
                             String username = config.getProperty("mail.user");
+                            String email = config.getProperty("mail.email");
                             try {
                                 mailSender.sendReminder(address, event.getInviteCode(),
                                         pp.getParticipant(), expense.getPayee(),
                                         String.format("%.2f %s",
                                                 pp.getPaymentAmount(), expense.getCurrency()),
-                                        host, port, username);
+                                        host, port, username, email);
                                 showConfirmation();
                             } catch (MessagingException e) {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
