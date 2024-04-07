@@ -5,6 +5,14 @@
 }
 
 
+#disabledButton{
+    -fx-background-radius: 50px;
+
+    -fx-background-color: #a2cadd;
+    -fx-text-fill: white;
+}
+
+
 .button{
     -fx-background-radius: 50px;
 

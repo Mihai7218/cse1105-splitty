@@ -1,12 +1,11 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Event;
 import commons.Expense;
 import commons.ParticipantPayment;
+import jakarta.mail.MessagingException;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -14,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -25,6 +25,8 @@ public class DebtsCtrl implements Initializable {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final Alert alert;
+    private final MailSender mailSender;
+    private boolean canRemind;
     @FXML
     private Accordion menu;
     @FXML
@@ -39,15 +41,17 @@ public class DebtsCtrl implements Initializable {
      */
     @Inject
     public DebtsCtrl(MainCtrl mainCtrl,
-                          ConfigInterface config,
-                          LanguageManager languageManager,
-                          ServerUtils serverUtils,
-                          Alert alert) {
+                     ConfigInterface config,
+                     LanguageManager languageManager,
+                     ServerUtils serverUtils,
+                     Alert alert,
+                     MailSender mailSender) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
         this.alert = alert;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -70,6 +74,12 @@ public class DebtsCtrl implements Initializable {
      */
     public void refresh() {
         menu.getPanes().clear();
+        String host = config.getProperty("mail.host");
+        String port = config.getProperty("mail.port");
+        String user = config.getProperty("mail.user");
+        canRemind = host != null && !host.isEmpty()
+                && port != null && !port.isEmpty()
+                && user != null && !user.isEmpty();
         setTitles(mainCtrl.getEvent());
     }
 
@@ -95,6 +105,7 @@ public class DebtsCtrl implements Initializable {
                     AnchorPane anchorPane = new AnchorPane();
                     Label info = new Label();
                     Button mark = new Button();
+                    Button remind = new Button();
                     if(expense.getPayee().getBic().equals("\u2714") ||
                             expense.getPayee().getIban().equals("")){
                         info.textProperty().bind(languageManager.bind("debts.unavailable"));
@@ -111,8 +122,46 @@ public class DebtsCtrl implements Initializable {
                         mark.setOnAction(x ->
                         {mark.textProperty().bind(languageManager.bind("debts.check"));});
                     }
+                    remind.textProperty().bind(languageManager.bind("debts.remind"));
+                    if (!canRemind) {
+                        Tooltip tooltip = new Tooltip();
+                        tooltip.textProperty().bind(languageManager
+                                .bind("debts.unavailableReminder"));
+                        remind.setTooltip(tooltip);
+                        remind.setId("disabledButton");
+                    } else {
+                        remind.setId(null);
+                        remind.setTooltip(null);
+                        remind.setOnAction(x -> {
+                            String address = config.getProperty("server");
+                            if (address == null || address.isEmpty())
+                                address = "http://localhost:8080";
+                            String host = config.getProperty("mail.host");
+                            String port = config.getProperty("mail.port");
+                            String username = config.getProperty("mail.user");
+                            try {
+                                mailSender.sendReminder(address, event.getInviteCode(),
+                                        pp.getParticipant(), expense.getPayee(),
+                                        String.format("%.2f %s",
+                                                pp.getPaymentAmount(), expense.getCurrency()),
+                                        host, port, username);
+                            } catch (MessagingException e) {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.initModality(Modality.APPLICATION_MODAL);
+                                if (e.getClass().equals(MissingPasswordException.class)) {
+                                    alert.contentTextProperty().bind(languageManager.bind("mail.noPassword"));
+                                } else {
+                                    alert.contentTextProperty().unbind();
+                                    alert.setContentText(e.getMessage());
+                                }
+                                alert.showAndWait();
+                                return;
+                            }
+                        });
+                    }
                     anchorPane.getChildren().add(info);
                     anchorPane.getChildren().add(mark);
+                    anchorPane.getChildren().add(remind);
                     anchorPane.setTopAnchor(info, 10.0);
                     anchorPane.setLeftAnchor(info, 10.0);
 
@@ -121,6 +170,10 @@ public class DebtsCtrl implements Initializable {
                             AnchorPane.getTopAnchor(info) + info.getPrefHeight() + 30.0);
                     anchorPane.setLeftAnchor(mark,
                             AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 300.0);
+                    anchorPane.setTopAnchor(remind,
+                            AnchorPane.getTopAnchor(info) + info.getPrefHeight() + 30.0);
+                    anchorPane.setLeftAnchor(remind,
+                            AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 200.0);
                     tp.setContent(anchorPane);
                 }
             }
