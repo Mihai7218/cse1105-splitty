@@ -17,7 +17,7 @@
                 <Font size="15.0" />
             </font>
         </Label>
-        <TextArea layoutX="40.0" layoutY="143.0" prefHeight="200.0" prefWidth="411.0" />
+        <TextArea fx:id="mailSpace" layoutX="40.0" layoutY="143.0" prefHeight="200.0" prefWidth="411.0" />
       <Text fx:id="test" layoutX="40.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="411.0">
          <font>
             <Font size="30.0" />

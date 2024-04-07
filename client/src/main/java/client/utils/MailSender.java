@@ -16,16 +16,19 @@ import java.util.Properties;
 
 public class MailSender {
 
-    private Properties mailProperties;
     private final MainCtrl mainCtrl;
+    private final ConfigInterface config;
+    private Properties mailProperties;
 
     /**
      * Constructor for the mail sender.
+     *
      * @param mainCtrl - the MainCtrl.
      */
     @Inject
-    public MailSender(MainCtrl mainCtrl) {
+    public MailSender(MainCtrl mainCtrl, ConfigInterface config) {
         this.mainCtrl = mainCtrl;
+        this.config = config;
         mailProperties = new Properties();
         mailProperties.put("mail.smtp.auth", "true");
         mailProperties.put("mail.smtp.starttls.enable", "true");
@@ -33,8 +36,9 @@ public class MailSender {
 
     /**
      * Method that sends the test mail.
-     * @param host - the host.
-     * @param port - the port.
+     *
+     * @param host     - the host.
+     * @param port     - the port.
      * @param username - the username.
      * @throws MessagingException - if the message couldn't be sent.
      */
@@ -49,12 +53,13 @@ public class MailSender {
 
     /**
      * Method that sends an invite to join an event.
-     * @param address - the address of the Splitty server.
-     * @param invite - the invite code.
+     *
+     * @param address    - the address of the Splitty server.
+     * @param invite     - the invite code.
      * @param recipients - the list of recipients.
-     * @param host - the host.
-     * @param port - the port.
-     * @param username - the username.
+     * @param host       - the host.
+     * @param port       - the port.
+     * @param username   - the username.
      * @throws MessagingException - if the message couldn't be sent.
      */
     public void sendInvite(String address,
@@ -74,13 +79,14 @@ public class MailSender {
 
     /**
      * Method that sends the payment reminder.
-     * @param address - the Splitty server address.
-     * @param invite - the invite code to the event.
-     * @param debtor - the person who needs to pay.
+     *
+     * @param address  - the Splitty server address.
+     * @param invite   - the invite code to the event.
+     * @param debtor   - the person who needs to pay.
      * @param creditor - the person who needs to be paid back.
-     * @param amount - the amount (including the currency).
-     * @param host - the host.
-     * @param port - the port.
+     * @param amount   - the amount (including the currency).
+     * @param host     - the host.
+     * @param port     - the port.
      * @param username - the username.
      * @throws MessagingException - if the message couldn't be sent.
      */
@@ -93,13 +99,14 @@ public class MailSender {
                              String port,
                              String username) throws MessagingException {
         String subject = "Splitty payment reminder";
-        String content = String.format("""
+        String formatString = """
                 Dear %s,
-                
+                                
                 This is a reminder that you need to pay %s to %s.
-                
+                                
                 %sFor more information, join the Splitty event at: %s using this invite code: %s.
-                """,debtor.getName(), amount, creditor.getName(),
+                """;
+        String content = String.format(formatString, debtor.getName(), amount, creditor.getName(),
                 getPaymentDetails(creditor, amount), address, invite);
         sendMessage(List.of(debtor.getEmail()), host, port, username, subject, content);
     }
@@ -107,8 +114,9 @@ public class MailSender {
     /**
      * Method that returns the payment details as a string,
      * or it returns an empty string if they are missing.
+     *
      * @param creditor - the person who needs to be paid back.
-     * @param amount - the amount (including the currency).
+     * @param amount   - the amount (including the currency).
      * @return - the specified string.
      */
     private String getPaymentDetails(Participant creditor, String amount) {
@@ -122,18 +130,19 @@ public class MailSender {
                 Amount: %s
                 IBAN: %s
                 BIC: %s
-                
+                                
                 """, creditor.getName(), amount, creditor.getIban(), creditor.getBic());
     }
 
     /**
      * Method that sends a message to the list of recipients.
+     *
      * @param recipients - the list of recipients.
-     * @param host - the host.
-     * @param port - the port.
-     * @param username - the username.
-     * @param subject - the subject of the email.
-     * @param content - the contents of the email.
+     * @param host       - the host.
+     * @param port       - the port.
+     * @param username   - the username.
+     * @param subject    - the subject of the email.
+     * @param content    - the contents of the email.
      * @throws MessagingException - if it cannot send the message.
      */
     private void sendMessage(List<String> recipients,
@@ -152,11 +161,14 @@ public class MailSender {
         msg.setSubject(subject);
         msg.setSentDate(new Date());
         msg.setText(content);
-        Transport.send(msg, username, getPassword());
+        String password = getPassword();
+        Transport.send(msg, username, password);
+        config.setProperty("mail.password", password);
     }
 
     /**
      * Method that gets the password from the user.
+     *
      * @return - the password.
      * @throws MessagingException - in case the user doesn't input anything.
      */
@@ -169,6 +181,7 @@ public class MailSender {
 
     /**
      * Method that gets the session with the specified host and port.
+     *
      * @param host - the host.
      * @param port - the port.
      * @return - the session.

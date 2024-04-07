@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
 import commons.Event;
@@ -33,6 +34,8 @@ public class MainCtrl {
 
     private ConnectToServerCtrl connectCtrl;
     private Scene connectToServer;
+
+    private final ConfigInterface config;
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
@@ -69,7 +72,8 @@ public class MainCtrl {
      * @param languageManager - language manager
      */
     @Inject
-    public MainCtrl(LanguageManager languageManager) {
+    public MainCtrl(ConfigInterface config, LanguageManager languageManager) {
+        this.config = config;
         this.languageManager = languageManager;
     }
 
@@ -543,6 +547,9 @@ public class MainCtrl {
      * @return - the optional password.
      */
     public Optional<String> getPassword() {
+        String configPassword = config.getProperty("mail.password");
+        if (configPassword != null && !configPassword.isEmpty())
+            return Optional.of(configPassword);
         Dialog<String> dialog = new Dialog<>();
         dialog.titleProperty().bind(languageManager.bind("mail.passwordTitle"));
         dialog.headerTextProperty().bind(languageManager.bind("mail.passwordHeader"));

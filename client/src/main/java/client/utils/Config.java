@@ -80,4 +80,12 @@ public class Config implements ConfigInterface {
     public void saveProperties() throws IOException {
         prop.store(outputStream, "Splitty Config File");
     }
+
+    /**
+     * Removes a property from the config.
+     * @param key - the key of that property.
+     */
+    public void removeProperty(String key) {
+        prop.remove(key);
+    }
 }
