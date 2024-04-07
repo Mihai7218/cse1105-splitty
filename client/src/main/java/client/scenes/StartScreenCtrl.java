@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import commons.Event;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -418,5 +419,9 @@ public class StartScreenCtrl implements Initializable {
     public void settings() {
         mainCtrl.getSettingsCtrl().setPrevScene(false);
         mainCtrl.showSettings();
+    }
+
+    public void returnToServerSelect(ActionEvent actionEvent) {
+        mainCtrl.showConnectToServer();
     }
 }
