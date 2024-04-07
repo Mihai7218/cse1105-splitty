@@ -12,7 +12,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<?import client.utils.LanguageComboBox?>
+<!--<?import client.utils.LanguageComboBox?>-->
 
 <Pane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartScreenCtrl">
    <children>
@@ -79,13 +79,13 @@
       </VBox>
       <Pane layoutX="26.0" layoutY="14.0" prefHeight="30.0" prefWidth="400.0">
          <children>
-            <Text id="header" layoutX="14.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
+            <Text id="header" layoutX="41.0" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Splitty">
                <font>
                   <Font name="MathJax_SansSerif-Regular" size="30.0" />
                </font>
             </Text>
-            <Button id="logo" fx:id="logo" layoutX="-8.0" onAction="#returnToServerSelect" prefWidth="25.0"/>
-            <LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />
+            <Button id="returnToServerSelect" fx:id="returnToServerSelect" layoutX="-12.0" layoutY="5.0" onAction="#returnToServerSelect" prefWidth="25.0" />
+            <!--<LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />-->
             <Button id="settings" fx:id="settings" layoutX="291.0" layoutY="5.0" onAction="#settings" />
          </children>
       </Pane>

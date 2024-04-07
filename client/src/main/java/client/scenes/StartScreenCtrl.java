@@ -38,6 +38,8 @@ public class StartScreenCtrl implements Initializable {
     @FXML
     Button createEventButton;
     @FXML
+    Button returnToServerSelect;
+    @FXML
     HBox createButtonHBox;
     @FXML
     HBox joinButtonHBox;
@@ -77,6 +79,7 @@ public class StartScreenCtrl implements Initializable {
         String language = config.getProperty("language");
         createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
+        returnToServerSelect.setGraphic(new ImageView(new Image("icons/arrowback.png")));
         settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         if (language == null) {
             language = "en";
@@ -421,6 +424,9 @@ public class StartScreenCtrl implements Initializable {
         mainCtrl.showSettings();
     }
 
+    /**
+     * @param actionEvent returns to the server selection menu
+     */
     public void returnToServerSelect(ActionEvent actionEvent) {
         mainCtrl.showConnectToServer();
     }
