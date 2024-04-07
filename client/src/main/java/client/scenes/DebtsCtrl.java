@@ -149,7 +149,8 @@ public class DebtsCtrl implements Initializable {
                         });
                     }
                     remind.textProperty().bind(languageManager.bind("debts.remind"));
-                    if (!canRemind) {
+                    if (!canRemind || pp.getParticipant().getEmail() == null
+                            || pp.getParticipant().getEmail().isEmpty()) {
                         Tooltip tooltip = new Tooltip();
                         tooltip.textProperty().bind(languageManager
                                 .bind("debts.unavailableReminder"));

@@ -95,7 +95,7 @@ public class InvitationCtrl implements Initializable{
         if (host == null || host.isEmpty()
                 || port == null || port.isEmpty()
                 || user == null || user.isEmpty()) {
-            alert.setContentText("invitation.missingConfig");
+            alert.contentTextProperty().bind(languageManager.bind("invitation.missingConfig"));
             alert.showAndWait();
             mainCtrl.showOverview();
         }
