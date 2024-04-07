@@ -6,9 +6,8 @@ import commons.Event;
 import commons.Expense;
 import commons.ParticipantPayment;
 import jakarta.mail.MessagingException;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -25,14 +24,17 @@ public class DebtsCtrl implements Initializable {
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final Alert alert;
+
     private final MailSender mailSender;
+    @FXML
+    private Label confirmation;
     private boolean canRemind;
     @FXML
     private Accordion menu;
     @FXML
     private Button back;
+
     /**
-     *
      * @param mainCtrl
      * @param config
      * @param languageManager
@@ -55,14 +57,36 @@ public class DebtsCtrl implements Initializable {
     }
 
     /**
+     * trying to get the mark received button into a green checkstyle, throws errors for now
      *
-     * @param url
-     * The location used to resolve relative paths for the root object, or
-     * {@code null} if the location is not known.
-     *
-     * @param resourceBundle
-     * The resources used to localize the root object, or {@code null} if
-     * the root object was not localized.
+     * @param button
+     */
+    public static void animation(Button button) {
+        Label checkMark = new Label("\u2714"); // Unicode for checkmark symbol
+        checkMark.setStyle("-fx-text-fill: green; " +
+                "-fx-font-size: 24px; -fx-opacity: 0;"); // Initially invisible
+        Timeline timeline = new Timeline();
+
+        // Animate button text opacity to 0
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5),
+                new KeyValue(button.opacityProperty(), 0)));
+
+        // Animate check mark opacity to 1
+        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5),
+                new KeyValue(checkMark.opacityProperty(), 1)));
+
+        // Change the button text after animation completes
+        timeline.setOnFinished(e -> button.setText("\u2714"));
+
+        // Play the animation
+        timeline.play();
+    }
+
+    /**
+     * @param url            The location used to resolve relative paths for the root object, or
+     *                       {@code null} if the location is not known.
+     * @param resourceBundle The resources used to localize the root object, or {@code null} if
+     *                       the root object was not localized.
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -86,18 +110,19 @@ public class DebtsCtrl implements Initializable {
     /**
      * return to overview
      */
-    public void goBack(){
+    public void goBack() {
         mainCtrl.showOverview();
     }
 
     /**
      * goes through all participants payments that have to be paid
+     *
      * @param event to search for money splits
      */
-    public void setTitles(Event event){
-        for(Expense expense: event.getExpensesList()){
-            for(ParticipantPayment pp: expense.getSplit()){
-                if(!pp.getParticipant().getName().equals(expense.getPayee().getName())) {
+    public void setTitles(Event event) {
+        for (Expense expense : event.getExpensesList()) {
+            for (ParticipantPayment pp : expense.getSplit()) {
+                if (!pp.getParticipant().getName().equals(expense.getPayee().getName())) {
                     String title = pp.getParticipant().getName() + " : " + pp.getPaymentAmount()
                             + " " + expense.getCurrency() + " => " + expense.getPayee().getName();
                     TitledPane tp = new TitledPane(title, null);
@@ -106,12 +131,11 @@ public class DebtsCtrl implements Initializable {
                     Label info = new Label();
                     Button mark = new Button();
                     Button remind = new Button();
-                    if(expense.getPayee().getBic().equals("\u2714") ||
-                            expense.getPayee().getIban().equals("")){
+                    if (expense.getPayee().getBic().equals("\u2714") ||
+                            expense.getPayee().getIban().equals("")) {
                         info.textProperty().bind(languageManager.bind("debts.unavailable"));
                         mark.setVisible(false);
-                    }
-                    else{
+                    } else {
                         //info.textProperty().bind(languageManager.bind("debts.available"));
                         String data = expense.getPayee().getName() + "\nIBAN: " +
                                 expense.getPayee().getIban() + "\nBIC: " +
@@ -120,7 +144,9 @@ public class DebtsCtrl implements Initializable {
                         info.setText(data);
                         mark.textProperty().bind(languageManager.bind("debts.send"));
                         mark.setOnAction(x ->
-                        {mark.textProperty().bind(languageManager.bind("debts.check"));});
+                        {
+                            mark.textProperty().bind(languageManager.bind("debts.check"));
+                        });
                     }
                     remind.textProperty().bind(languageManager.bind("debts.remind"));
                     if (!canRemind) {
@@ -145,11 +171,13 @@ public class DebtsCtrl implements Initializable {
                                         String.format("%.2f %s",
                                                 pp.getPaymentAmount(), expense.getCurrency()),
                                         host, port, username);
+                                showConfirmation();
                             } catch (MessagingException e) {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
                                 alert.initModality(Modality.APPLICATION_MODAL);
                                 if (e.getClass().equals(MissingPasswordException.class)) {
-                                    alert.contentTextProperty().bind(languageManager.bind("mail.noPassword"));
+                                    alert.contentTextProperty().bind(
+                                            languageManager.bind("mail.noPassword"));
                                 } else {
                                     alert.contentTextProperty().unbind();
                                     alert.setContentText(e.getMessage());
@@ -181,28 +209,45 @@ public class DebtsCtrl implements Initializable {
     }
 
     /**
-     * trying to get the mark received button into a green checkstyle, throws errors for now
-     * @param button
+     * method to display a confirmation message when the reminder is sent
+     * this message disappears
      */
-    public static void animation(Button button){
-        Label checkMark = new Label("\u2714"); // Unicode for checkmark symbol
-        checkMark.setStyle("-fx-text-fill: green; " +
-                "-fx-font-size: 24px; -fx-opacity: 0;"); // Initially invisible
-        Timeline timeline = new Timeline();
+    public void showConfirmation() {
+        confirmation.setVisible(true);
+        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), confirmation);
+        fadeIn.setFromValue(0.0);
+        fadeIn.setToValue(1.0);
 
-        // Animate button text opacity to 0
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5),
-                new KeyValue(button.opacityProperty(), 0)));
+        fadeIn.setOnFinished(event -> {
+            PauseTransition delay = new PauseTransition(Duration.seconds(3));
+            delay.setOnFinished(e -> {
+                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), confirmation);
+                fadeOut.setFromValue(1.0);
+                fadeOut.setToValue(0.0);
+                fadeOut.setOnFinished(f -> confirmation.setVisible(false));
+                fadeOut.play();
+            });
+            delay.play();
+        });
 
-        // Animate check mark opacity to 1
-        timeline.getKeyFrames().add(new KeyFrame(Duration.seconds(0.5),
-                new KeyValue(checkMark.opacityProperty(), 1)));
-
-        // Change the button text after animation completes
-        timeline.setOnFinished(e -> button.setText("\u2714"));
-
-        // Play the animation
-        timeline.play();
+        fadeIn.play();
     }
 
+    /**
+     * Getter for the language manager map.
+     *
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Getter for the language manager property.
+     *
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
+    }
 }

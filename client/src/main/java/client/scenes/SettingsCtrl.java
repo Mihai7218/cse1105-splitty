@@ -301,7 +301,7 @@ public class SettingsCtrl implements Initializable {
     }
 
     /**
-     * method to display a confirmation message for participant added
+     * method to display a confirmation message when the message is sent
      * this message disappears
      */
     public void showConfirmationTest() {
