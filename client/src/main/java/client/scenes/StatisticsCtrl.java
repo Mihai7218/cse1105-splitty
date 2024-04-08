@@ -18,8 +18,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Pair;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -402,11 +404,16 @@ public class StatisticsCtrl implements Initializable {
         for (Pair<Tag, Double> data : stats) {
             double precentage = (data.getValue() / total * 100);
             String withRightDigits = String.format("%.1f", precentage);
-            Label item = new Label(data.getKey().getName() + ": "
+            Rectangle rectangle = new Rectangle(15,15);
+            rectangle.setStroke(Color.BLACK);
+            rectangle.setStrokeWidth(1);
+            rectangle.setFill(Color.web(data.getKey().getColor()));
+            Label item = new Label(" " + data.getKey().getName() + ": "
                     + String.format("%.2f %s", data.getValue(), currency)
                     + " (" + withRightDigits + "%)");
-            item.setTextFill(Color.web(data.getKey().getColor()));
-            ownLegend.getChildren().add(item);
+            //item.setTextFill(Color.web(data.getKey().getColor()));
+            HBox test = new HBox(rectangle,item);
+            ownLegend.getChildren().add(test);
         }
     }
 
