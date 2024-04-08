@@ -111,9 +111,10 @@ public class TagController {
                                                   @PathVariable("tagId") long tagId){
         var resp = tagService.deleteTagFromEvent(inviteCode, tagId,serverUtil);
         if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            Tag toSend = new Tag(resp.getBody().getName(),"deleted");
+            toSend.setId(tagId);
             messagingTemplate.convertAndSend("/topic/events/" +
-                    inviteCode + "/tags/" + tagId,
-                    new Tag(Objects.requireNonNull(resp.getBody()).getName(),"deleted"));
+                    inviteCode + "/tags/" + tagId, toSend);
         }
         return resp;
     }

@@ -149,7 +149,7 @@ public class TagService {
         serverUtil.updateDate(eventRepo,inviteCode);
         Tag test = tagRepo.findById(tagId).get();
         for(Expense expense : event.getExpensesList()) {
-            if (expense.getTag().equals(test)) {
+            if (test.equals(expense.getTag())) {
                 expense.setTag(null);
             }
         }
