@@ -170,25 +170,25 @@ public class ManageTagsCtrl implements Initializable {
 
     /**
      * Method that subscribes to updates for an tag.
-     * @param tag - the tag to subscribe to.
+     * @param item - the tag to subscribe to.
      */
-    private void subscribeToTag(Tag tag) {
-        if (!tagSubscriptionMap.containsKey(tag)) {
+    private void subscribeToTag(Tag item) {
+        if (!tagSubscriptionMap.containsKey(item)) {
             String dest = "/topic/events/" +
                     mainCtrl.getEvent().getInviteCode() + "/tags/"
-                    + tag.getId();
+                    + item.getId();
             var subscription = serverUtils.registerForMessages(dest, Tag.class,
-                    exp -> Platform.runLater(() -> {
+                    tag -> Platform.runLater(() -> {
                         tagsListView.getItems().remove(tag);
                         mainCtrl.getEvent().getTagsList().remove(tag);
                         tagsListView.refresh();
-                        if (!"deleted".equals(exp.getColor())) {
-                            tagsListView.getItems().add(exp);
-                            mainCtrl.getEvent().getTagsList().add(exp);
+                        if (!"deleted".equals(tag.getColor())) {
+                            tagsListView.getItems().add(tag);
+                            mainCtrl.getEvent().getTagsList().add(tag);
                         }
                         tagsListView.refresh();
                     }));
-            tagSubscriptionMap.put(tag, subscription);
+            tagSubscriptionMap.put(item, subscription);
         }
     }
 }

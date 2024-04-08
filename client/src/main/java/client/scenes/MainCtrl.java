@@ -193,7 +193,7 @@ public class MainCtrl {
      * shows scene for Manage Tags Screen
      */
     public void showEditTag(){
-        primaryStage.titleProperty().bind(languageManager.bind("editTags.sceneTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("editTag.sceneTitle"));
         try {
             editTag.getStylesheets().add(getClass()
                     .getResource("stylesheet.css").toExternalForm());

@@ -17,7 +17,7 @@
             <children>
                 <VBox id="titleContainer" alignment="TOP_LEFT" prefHeight="30.0" prefWidth="396.0">
                     <children>
-                        <Label id="EventTitle" fx:id="title" layoutX="35.0" layoutY="23.0" text="${controller.languageManager.overview.backButton}">
+                        <Label id="EventTitle" fx:id="title" layoutX="35.0" layoutY="23.0" text="${controller.languageManager.manageTags.sceneTitle}">
                             <font>
                                 <Font name="System Bold" size="18.0" />
                             </font>
@@ -38,12 +38,11 @@
                 <HBox alignment="BOTTOM_RIGHT" prefHeight="74.0" prefWidth="396.0">
                     <children>
                         <Region prefHeight="74.0" prefWidth="42.0" HBox.hgrow="ALWAYS" />
-                        <Button id="cancel" fx:id="cancel" alignment="CENTER" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#backToStatistics" text="${controller.languageManager.overview.backButton}" wrapText="true">
+                        <Button id="cancel" fx:id="cancel" alignment="CENTER" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#backToStatistics" text="${controller.languageManager.manageTags.backButton}" wrapText="true">
                             <HBox.margin>
                                 <Insets right="5.0" />
                             </HBox.margin>
                         </Button>
-                        <Button fx:id="settleDebts" alignment="CENTER" defaultButton="true" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" text="${controller.languageManager.overview.settleDebtsButton}" wrapText="true" />
                     </children>
                 </HBox>
             </children>

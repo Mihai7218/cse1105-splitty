@@ -14,7 +14,7 @@
    <children>
       <HBox alignment="BOTTOM_LEFT" layoutX="16.0" layoutY="12.0" nodeOrientation="LEFT_TO_RIGHT" prefHeight="46.0" prefWidth="432.0">
          <children>
-            <Label id="addParticipantHeader" text="${controller.languageManager.editParticipant.sceneTitle}">
+            <Label id="addParticipantHeader" text="${controller.languageManager.editTag.sceneTitle}">
                <font>
                   <Font size="24.0" />
                </font>
@@ -22,16 +22,15 @@
          </children>
       </HBox>
       <Line endX="336.60003662109375" endY="1.52587890625E-5" layoutX="117.0" layoutY="67.0" startX="-100.0" />
-      <Label layoutX="28.0" layoutY="81.0" text="${controller.languageManager.editParticipant.name}" />
-      <TextField fx:id="name" layoutX="109.0" layoutY="76.0" prefHeight="26.0" prefWidth="346.0" />
-      <Label layoutX="28.0" layoutY="118.0" text="${controller.languageManager.editParticipant.email}" />
-      <ColorPicker fx:id="colorPicker" layoutX="109.0" layoutY="121.0" prefHeight="26.0" prefWidth="346.0" />
-      <HBox alignment="TOP_RIGHT" layoutX="132.0" layoutY="226.0" prefHeight="26.0" prefWidth="322.0">
+      <Label layoutX="28.0" layoutY="81.0" text="${controller.languageManager.editTag.tagName}" />
+      <TextField fx:id="name" layoutX="205.0" layoutY="76.0" prefHeight="26.0" prefWidth="250.0" />
+      <Label layoutX="28.0" layoutY="125.0" text="${controller.languageManager.editTag.color}" />
+      <ColorPicker fx:id="colorPicker" layoutX="205.0" layoutY="121.0" prefHeight="26.0" prefWidth="250.0" />
+      <HBox alignment="TOP_RIGHT" layoutX="16.0" layoutY="226.0" prefHeight="26.0" prefWidth="438.0">
          <children>
+            <Button id="cancel" fx:id="cancelButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.editTag.cancelButton}" HBox.hgrow="ALWAYS" />
             <Region prefHeight="50.0" prefWidth="38.0" />
-            <Button id="cancel" fx:id="cancelButton" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.addExpense.abortButton}" HBox.hgrow="ALWAYS" />
-            <Region prefHeight="50.0" prefWidth="38.0" />
-            <Button id="addEntity" fx:id="addExpense" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#submitTagChanges" text="${controller.languageManager.editExpense.saveButton}" HBox.hgrow="ALWAYS" />
+            <Button id="addEntity" fx:id="changeTag" alignment="CENTER_RIGHT" mnemonicParsing="false" onAction="#submitTagChanges" text="${controller.languageManager.editTag.saveButton}" HBox.hgrow="ALWAYS" />
          </children>
       </HBox>
    </children>

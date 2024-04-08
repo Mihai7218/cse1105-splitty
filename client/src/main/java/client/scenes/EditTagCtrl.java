@@ -5,19 +5,18 @@ import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Tag;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class EditTagCtrl implements Initializable {
@@ -38,7 +37,7 @@ public class EditTagCtrl implements Initializable {
     @FXML
     public Button cancelButton;
     @FXML
-    public Button addExpense;
+    public Button changeTag;
 
     public Tag editTag;
 
@@ -79,8 +78,8 @@ public class EditTagCtrl implements Initializable {
         this.refreshLanguage();
         if (cancelButton != null)
             cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
-        if (addExpense != null)
-            addExpense.setGraphic(new ImageView(new Image("icons/savewhite.png")));
+        if (changeTag != null)
+            changeTag.setGraphic(new ImageView(new Image("icons/savewhite.png")));
     }
 
     /**
@@ -150,12 +149,60 @@ public class EditTagCtrl implements Initializable {
      * Abort back to the manage Tags sceen
      */
     public void abort() {
+        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+        confirmation.contentTextProperty().bind(languageManager.bind("editTag.abortAlert"));
+        confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+        confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+        Optional<ButtonType> result = confirmation.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            clearFields();
+            mainCtrl.showManageTags();
+        }
     }
 
     /**
      * Function for submitting the changes for the tag
      */
     public void submitTagChanges() {
+        String nameString = name.getText();
+        name.setStyle("-fx-border-color: none;");
+        if(nameString.isEmpty()) {
+            throwAlert("editTag.incompleteHeader", "editTag.incompleteBody");
+            name.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+            return;
+        }
+        editTag.setName(nameString);
+        editTag.setColor("#" +
+                colorPicker.getValue().toString().substring(2,8));
+        try {
+            serverUtils.updateTag(mainCtrl.getEvent().getInviteCode(), editTag);
+        } catch (WebApplicationException e) {
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("editTag.badReqHeader",
+                            "editTag.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("editTag.notFoundHeader",
+                            "editTag.notFoundBody");
+                }
+            }
+        }
+        mainCtrl.showManageTags();
+        mainCtrl.showEditConfirmation();
+        clearFields();
+    }
+
+    /**
+     * Method that throws an alert.
+     * @param header - property associated with the header.
+     * @param body - property associated with the body.
+     */
+    protected void throwAlert(String header, String body) {
+        alert.titleProperty().bind(languageManager.bind("commons.warning"));
+        alert.headerTextProperty().bind(languageManager.bind(header));
+        alert.contentTextProperty().bind(languageManager.bind(body));
+        alert.showAndWait();
     }
 
     /**
