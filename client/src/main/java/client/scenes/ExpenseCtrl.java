@@ -160,8 +160,17 @@ public abstract class ExpenseCtrl implements Initializable {
                     setGraphic(null);
                 } else {
                     rectangle.setFill(Paint.valueOf(item.getColor()));
-                    //setText(item.getName());
-                    StackPane stackPane = new StackPane(rectangle, new Text(item.getName()));
+                    Text tagName = new Text(item.getName());
+                    Color tagColor = Color.web(item.getColor());
+                    if (0.2126 * tagColor.getRed() + 0.7152 * tagColor.getGreen()
+                            + 0.0722* tagColor.getBlue()<0.5) {
+                        tagName.setFill(Color.color(1.0,1.0,1.0));
+                    } else {
+                        tagName.setFill(Color.color(0.0,0.0,0.0));
+                    }
+                    rectangle.setStroke(Color.BLACK);
+                    rectangle.setStrokeWidth(1);
+                    StackPane stackPane = new StackPane(rectangle, tagName);
                     setGraphic(stackPane);
                 }
             }

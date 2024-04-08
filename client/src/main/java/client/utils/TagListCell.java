@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
@@ -70,6 +71,8 @@ public class TagListCell extends ListCell<Tag> {
         });
 
         rectangle= new Rectangle(100, 20);
+        rectangle.setStroke(Color.BLACK);
+        rectangle.setStrokeWidth(1);
         autogrowRight = new Region();
         details = new FlowPane(tagName, tagColor);
         vBox = new VBox(details, rectangle);
