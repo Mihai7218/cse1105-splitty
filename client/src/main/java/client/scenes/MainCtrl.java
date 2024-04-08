@@ -27,8 +27,8 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
-    private QuoteOverviewCtrl quoteOverviewCtrl;
-    private Scene quoteOverview;
+    private ConnectToServerCtrl connectCtrl;
+    private Scene connectToServer;
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
@@ -63,6 +63,8 @@ public class MainCtrl {
     private ManageTagsCtrl manageTagsCtrl;
     private Scene manageTags;
 
+    private DebtsCtrl debtsCtrl;
+    private Scene debts;
 
     private Event event;
 
@@ -79,8 +81,6 @@ public class MainCtrl {
      * Initialize the main controller with the primary stage,
      *
      * @param primaryStage    primary stage of the controller.
-     * @param quoteOverview   quote overview controller and scene
-     * @param add             add quote controller and scene
      * @param startScreen     start screen controller and scene
      * @param participant     participant controller and scene
      * @param overview        overview controller and scene
@@ -88,12 +88,12 @@ public class MainCtrl {
      * @param invitation      invitation controller and scene
      * @param editparticipant edit participant controller and scene
      * @param settings        settings controller and scene
-     * @param statistics
-     * @param manageTags
-     * @param editTag
+     * @param manageTags      Manage tag controller and scene
+     * @param editTag         editTag controller and scene
+     * @param statistics      statistics scene
+     * @param connectToServer connecting to server scene
      */
     public void initialize(Stage primaryStage,
-                           Pair<QuoteOverviewCtrl, Parent> quoteOverview,
                            Pair<AddQuoteCtrl, Parent> add,
                            Pair<StartScreenCtrl, Parent> startScreen,
                            Pair<ParticipantCtrl, Parent> participant,
@@ -104,11 +104,11 @@ public class MainCtrl {
                            Pair<SettingsCtrl, Parent> settings,
                            Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense,
+                           Pair<ConnectToServerCtrl, Parent> connectToServer,
+                           Pair<DebtsCtrl, Parent> debts,
                            Pair<ManageTagsCtrl, Parent> manageTags,
                            Pair<EditTagCtrl, Parent> editTag) {
         this.primaryStage = primaryStage;
-        this.quoteOverviewCtrl = quoteOverview.getKey();
-        this.quoteOverview = new Scene(quoteOverview.getValue());
 
         this.addCtrl = add.getKey();
         this.add = new Scene(add.getValue());
@@ -137,6 +137,9 @@ public class MainCtrl {
         this.editExpenseCtrl = editExpense.getKey();
         this.editExpense = new Scene(editExpense.getValue());
 
+        this.connectCtrl = connectToServer.getKey();
+        this.connectToServer = new Scene(connectToServer.getValue());
+
         this.statisticsCtrl = statistics.getKey();
         this.statistics = new Scene(statistics.getValue());
 
@@ -146,16 +149,39 @@ public class MainCtrl {
         this.editTagCtrl = editTag.getKey();
         this.editTag = new Scene(editTag.getValue());
 
+        this.debtsCtrl = debts.getKey();
+        this.debts = new Scene(debts.getValue());
 
-        showStartMenu();
+        showConnectToServer();
         primaryStage.show();
+    }
+
+    /**
+     * shows the Open Debts scene
+     */
+    public void showDebts(){
+        primaryStage.titleProperty().bind(languageManager.bind("debts.sceneTitle"));
+        try {
+            debts.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(debts);
+        if (debtsCtrl != null) debtsCtrl.refresh();
     }
 
     /**
      * shows scene to send invitations
      */
     public void showInvitation(){
-        primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("invitation.windowTitle"));
+        try {
+            invitation.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
     }
@@ -217,6 +243,22 @@ public class MainCtrl {
         }
         primaryStage.setScene(editExpense);
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
+    }
+
+    /**
+     *
+     * @return controller for Open Debts
+     */
+    public DebtsCtrl getDebtsCtrl() {
+        return debtsCtrl;
+    }
+
+    /**
+     *
+     * @return the scene with Open Debts
+     */
+    public Scene getDebts() {
+        return debts;
     }
 
     /**
@@ -345,6 +387,20 @@ public class MainCtrl {
     }
 
     /**
+     * Displays the scene for connecting to a server
+     */
+    public void showConnectToServer() {
+        primaryStage.setTitle("Splitty: Connect to a server");
+        try {
+            connectToServer.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        } catch (NullPointerException e) {
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(connectToServer);
+    }
+
+    /**
      * Shows the settings scene.
      */
     public void showSettings() {
@@ -366,24 +422,6 @@ public class MainCtrl {
      */
     Stage getPrimaryStage() {
         return primaryStage;
-    }
-
-    /**
-     * Getter for the overview controller.
-     * Package-access getter for testing purposes.
-     * @return - overview controller.
-     */
-    QuoteOverviewCtrl getQuoteOverviewCtrl() {
-        return quoteOverviewCtrl;
-    }
-
-    /**
-     * Getter for the overview scene.
-     * Package-access getter for testing purposes.
-     * @return - overview scene.
-     */
-    Scene getQuoteOverview() {
-        return quoteOverview;
     }
 
     /**
@@ -439,6 +477,8 @@ public class MainCtrl {
     Scene getAdd() {
         return add;
     }
+
+
 
     /**
      * Getter for the start screen controller.
