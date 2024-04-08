@@ -2,23 +2,40 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
+import jakarta.mail.MessagingException;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
 
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SettingsCtrl implements Initializable, LanguageSwitcher {
+public class SettingsCtrl implements Initializable, LanguageSwitcher, NotificationSender {
 
     private final ConfigInterface config;
     private final LanguageManager languageManager;
     private final MainCtrl mainCtrl;
     private final CurrencyConverter currencyConverter;
+    private final MailSender mailSender;
+    @FXML
+    private TextField mailEmail;
+    @FXML
+    private Label confirmation;
+    @FXML
+    private Button testMail;
+    @FXML
+    private TitledPane emailPane;
+    @FXML
+    private TextField mailHost;
+    @FXML
+    private TextField mailPort;
+    @FXML
+    private TextField mailUser;
     @FXML
     private LanguageComboBox languages;
     @FXML
@@ -33,26 +50,30 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
 
     /**
      * Constructor for the settings controller.
-     * @param config - the config.
+     *
+     * @param config          - the config.
      * @param languageManager - the language manager.
-     * @param mainCtrl - the main controller.
+     * @param mainCtrl        - the main controller.
      */
     @Inject
     public SettingsCtrl(ConfigInterface config,
                         LanguageManager languageManager,
                         MainCtrl mainCtrl,
-                        CurrencyConverter currencyConverter) {
+                        CurrencyConverter currencyConverter,
+                        MailSender mailSender) {
         this.config = config;
         this.languageManager = languageManager;
         this.mainCtrl = mainCtrl;
         this.currencyConverter = currencyConverter;
+        this.mailSender = mailSender;
     }
 
     /**
      * The initialize method for the settings controller.
      * Sets the graphics for the buttons, sets a bound to the number of recent events,
      * and sets the available currencies.
-     * @param url - the URL
+     *
+     * @param url            - the URL
      * @param resourceBundle - the resource bundle.
      */
     @Override
@@ -63,11 +84,13 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
         noRecentEvents.setValueFactory(new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(0, 100));
         currency.getItems().addAll(currencyConverter.getCurrencies());
+        emailPane.setExpanded(false);
         languages.getItems().remove("template");
     }
 
     /**
      * Setter for the previous scene value.
+     *
      * @param prevScene - value of the previous scene - true for Overview and false for StartScreen.
      */
     public void setPrevScene(boolean prevScene) {
@@ -96,6 +119,10 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
             configLanguage = "en";
         }
         languages.setValue(configLanguage);
+        mailHost.setText(config.getProperty("mail.host"));
+        mailPort.setText(config.getProperty("mail.port"));
+        mailUser.setText(config.getProperty("mail.user"));
+        mailEmail.setText(config.getProperty("mail.email"));
     }
 
     /**
@@ -136,6 +163,9 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
         noRecentEvents.decrement(noRecentEvents.getValue());
         currency.setValue(null);
         languages.setValue(null);
+        mailHost.setText("");
+        mailPort.setText("");
+        mailUser.setText("");
     }
 
     /**
@@ -144,6 +174,10 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
     public void save() {
         config.setProperty("recentEventsLimit", noRecentEvents.getValue().toString());
         config.setProperty("currency", currency.getValue());
+        config.setProperty("mail.host", mailHost.getText());
+        config.setProperty("mail.port", mailPort.getText());
+        config.setProperty("mail.user", mailUser.getText());
+        config.setProperty("mail.email", mailEmail.getText());
         mainCtrl.getStartScreenCtrl().removeExcess();
         mainCtrl.getOverviewCtrl().populateExpenses();
         mainCtrl.getOverviewCtrl().populateParticipants();
@@ -153,6 +187,7 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
 
     /**
      * Method that gets the language observable map.
+     *
      * @return - the language observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -206,9 +241,91 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
 
     /**
      * Method to set the language observable map.
+     *
      * @param languageManager - the new observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
         this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Method that handles the test mail button.
+     */
+    public void testMail() {
+        if (mailHost.getText() == null
+                || mailPort.getText() == null
+                || mailUser.getText() == null
+                || mailEmail.getText() == null
+                || mailHost.getText().isEmpty()
+                || mailPort.getText().isEmpty()
+                || mailUser.getText().isEmpty()
+                || mailEmail.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.contentTextProperty().bind(languageManager.bind("mail.missingFields"));
+            alert.showAndWait();
+            highlightMissing(mailHost.getText().isEmpty(),
+                    mailPort.getText().isEmpty(),
+                    mailUser.getText().isEmpty(),
+                    mailEmail.getText().isEmpty());
+            return;
+        }
+        removeHighlight();
+        try {
+            showNotification("mail.sending");
+            mailSender.sendTestMail(mailHost.getText(),
+                    mailPort.getText(),
+                    mailUser.getText(),
+                    mailEmail.getText());
+            showNotification("settings.emailTestConfirmation");
+        } catch (MessagingException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            if (e.getClass().equals(MissingPasswordException.class)) {
+                alert.contentTextProperty().bind(languageManager.bind("mail.noPassword"));
+            }
+            else {
+                alert.contentTextProperty().unbind();
+                alert.setContentText(e.getMessage());
+            }
+            alert.showAndWait();
+        }
+    }
+
+    /**
+     * Insert highlight for missing fields in the mail settings
+     *
+     * @param host boolean if host is present
+     * @param port boolean if port is present
+     * @param user boolean if user is present
+     */
+    public void highlightMissing(boolean host, boolean port, boolean user, boolean email) {
+        if (host) mailHost
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if (port) mailPort
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if (user) mailUser
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if (email) mailEmail
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+    }
+
+    /**
+     * removes any prior highlighting of required fields
+     */
+    public void removeHighlight() {
+        mailHost.setStyle("-fx-border-color: none;");
+        mailPort.setStyle("-fx-border-color: none; ");
+        mailUser.setStyle("-fx-border-color: none; ");
+        mailEmail.setStyle("-fx-border-color: none; ");
+    }
+
+    /**
+     * Gets the notification label.
+     * @return - the notification label.
+     */
+    @Override
+    public Label getNotificationLabel() {
+        return confirmation;
     }
 }
