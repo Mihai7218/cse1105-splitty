@@ -75,6 +75,7 @@ class StartScreenCtrlTest {
     DoubleProperty joinEventButtonPrefWidthProperty;
     DoubleProperty widthAfter;
     Button settings;
+    Button returnToServerSelect;
 
     @Start
     void setUp(Stage stage) {
@@ -88,6 +89,7 @@ class StartScreenCtrlTest {
         alert = mock(Alert.class);
         createEventButton = mock(Button.class);
         joinEventButton = mock(Button.class);
+        returnToServerSelect = mock(Button.class);
         settings = mock(Button.class);
         createButtonHBox = mock(HBox.class);
         joinButtonHBox = mock(HBox.class);
@@ -108,6 +110,7 @@ class StartScreenCtrlTest {
         sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils, alert);
         sut.createEventButton = createEventButton;
         sut.joinEventButton = joinEventButton;
+        sut.returnToServerSelect = returnToServerSelect;
         sut.createButtonHBox = createButtonHBox;
         sut.joinButtonHBox = joinButtonHBox;
         sut.settings = settings;

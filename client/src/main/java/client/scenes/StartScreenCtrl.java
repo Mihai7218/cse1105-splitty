@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 import commons.Event;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -36,6 +37,8 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
     private TextField eventInvite;
     @FXML
     Button createEventButton;
+    @FXML
+    Button returnToServerSelect;
     @FXML
     HBox createButtonHBox;
     @FXML
@@ -77,6 +80,7 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
         String language = config.getProperty("language");
         createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
+        returnToServerSelect.setGraphic(new ImageView(new Image("icons/arrowback.png")));
         settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         if (language == null) {
             language = "en";
@@ -434,5 +438,12 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
     public void settings() {
         mainCtrl.getSettingsCtrl().setPrevScene(false);
         mainCtrl.showSettings();
+    }
+
+    /**
+     * @param actionEvent returns to the server selection menu
+     */
+    public void returnToServerSelect(ActionEvent actionEvent) {
+        mainCtrl.showConnectToServer();
     }
 }

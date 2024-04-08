@@ -52,6 +52,10 @@
     -fx-background-color: RGB(235,64,52);
 }
 
+#returnToSel {
+    -fx-background-color: RGB(235,64,52);
+}
+
 #cancel:hover, #backInStats:hover{
     -fx-background-color:RGB(250, 103, 92);
     -fx-underline: true;

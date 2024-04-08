@@ -352,7 +352,10 @@ public class MainCtrl {
      * Displays the scene for connecting to a server
      */
     public void showConnectToServer() {
-        primaryStage.setTitle("Splitty: Connect to a server");
+        if (primaryStage.getTitle() == null || primaryStage.getTitle().isEmpty()) {
+            primaryStage.setTitle("Splitty: Connect to a server");
+        }
+
         try {
             connectToServer.getStylesheets().add(getClass()
                     .getResource("stylesheet.css").toExternalForm());
