@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.CurrencyConverter;
-import client.utils.LanguageComboBox;
-import client.utils.LanguageManager;
+import client.utils.*;
 import com.google.inject.Inject;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
@@ -13,11 +10,10 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.net.URL;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SettingsCtrl implements Initializable {
+public class SettingsCtrl implements Initializable, LanguageSwitcher {
 
     private final ConfigInterface config;
     private final LanguageManager languageManager;
@@ -61,11 +57,13 @@ public class SettingsCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         saveButton.setGraphic(new ImageView(new Image("icons/savewhite.png")));
         noRecentEvents.setValueFactory(new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(0, 100));
         currency.getItems().addAll(currencyConverter.getCurrencies());
+        languages.getItems().remove("template");
     }
 
     /**
@@ -162,11 +160,48 @@ public class SettingsCtrl implements Initializable {
     }
 
     /**
+     * Getter for the main controller
+     * @return MainCtrl object
+     */
+    @Override
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Getter for the languages combo box.
+     * @return LanguageComboBox object
+     */
+    @Override
+    public LanguageComboBox getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Getter for the config.
+     * @return - the config
+     */
+    @Override
+    public ConfigInterface getConfig() {
+        return config;
+    }
+
+    /**
      * Method to get the language manager.
      * @return - the language manager.
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
+    }
+
+
+    /**
+     * Method that updates the language combo box.
+     * @param language - the new language value.
+     */
+    @Override
+    public void updateLanguageComboBox(String language) {
+        languages.setValue(language);
     }
 
     /**
@@ -175,32 +210,5 @@ public class SettingsCtrl implements Initializable {
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
         this.languageManager.set(languageManager);
-    }
-
-
-    /**
-     * Changes language
-     */
-    public void changeLanguage() {
-        String language = "";
-        if (languages != null) language = languages.getValue();
-        config.setProperty("language", language);
-        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                && mainCtrl.getStartScreenCtrl() != null) {
-            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
-        }
-        this.refreshLanguage();
-    }
-
-    /**
-     * Method that refreshes the language.
-     */
-    private void refreshLanguage() {
-        String language = config.getProperty("language");
-        if (language == null) {
-            language = "en";
-        }
-        languageManager.changeLanguage(Locale.of(language));
     }
 }
