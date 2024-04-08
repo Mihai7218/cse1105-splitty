@@ -17,11 +17,13 @@ import java.util.Properties;
 public class LanguageCell extends javafx.scene.control.ListCell<String> {
 
     private static final Properties language = new Properties();
+    private final LanguageManager languageManager;
 
     /**
      * Constructor for the LanguageCell.
      */
-    public LanguageCell() {
+    public LanguageCell(LanguageManager languageManager) {
+        this.languageManager = languageManager;
     }
 
     /**
@@ -33,9 +35,16 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
     protected void updateItem(String languageCode, boolean empty) {
         super.updateItem(languageCode, empty);
         if (empty || languageCode == null) {
+            textProperty().unbind();
             setText(null);
             setGraphic(null);
+        } else if (languageCode.equals("template")) {
+            textProperty().bind(languageManager.bind("template.label"));
+            ImageView imageView = new ImageView(new Image(
+                    String.valueOf(Path.of("flags", "template.png"))));
+            setGraphic(imageView);
         } else {
+            textProperty().unbind();
             String languageName = getLanguageName(languageCode);
             setText(languageName);
             Image image = getImage(languageCode);
@@ -76,12 +85,11 @@ public class LanguageCell extends javafx.scene.control.ListCell<String> {
      * @param languageCode - ISO 639-1 code of the language.
      * @return - a String containing the name of the language.
      */
-    private static String getLanguageName(String languageCode) {
+    private String getLanguageName(String languageCode) {
         try {
-            language.load(new FileInputStream(
-                    String.valueOf(Path.of("client", "src", "main",
-                            "resources", "client", "languages_" + languageCode +".properties"))));
-        } catch (IOException e) {
+            String path = String.format("/client/languages_%s.properties", languageCode);
+            language.load(new FileInputStream(getClass().getResource(path).getFile()));
+        } catch (IOException | NullPointerException e) {
             return "Language not found";
         }
         return language.getProperty("language.name");

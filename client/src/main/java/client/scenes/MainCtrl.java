@@ -27,6 +27,9 @@ import javafx.stage.Stage;
 import javafx.util.Pair;
 
 import java.util.Optional;
+import javafx.stage.FileChooser;
+
+import java.io.File;
 
 public class MainCtrl {
 
@@ -64,6 +67,8 @@ public class MainCtrl {
     private Scene statistics;
     private DebtsCtrl debtsCtrl;
     private Scene debts;
+
+    private FileChooser fileChooser = new FileChooser();
 
     private Event event;
 
@@ -368,6 +373,16 @@ public class MainCtrl {
         }
         primaryStage.setScene(settings);
         if (settingsCtrl != null) settingsCtrl.refresh();
+    }
+
+    /**
+     * Shows the file picker.
+     * @param defaultName - the default name of the file.
+     * @return - the new file.
+     */
+    public File pickLocation(String defaultName) {
+        fileChooser.setInitialFileName(defaultName);
+        return fileChooser.showSaveDialog(primaryStage);
     }
 
     /**

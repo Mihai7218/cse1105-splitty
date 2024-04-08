@@ -40,7 +40,7 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import java.net.URL;
 import java.util.*;
 
-public class OverviewCtrl implements Initializable {
+public class OverviewCtrl implements Initializable, LanguageSwitcher {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
@@ -262,6 +262,14 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
+     * changes language
+     */
+    @Override
+    public void changeLanguage() {
+        LanguageSwitcher.super.changeLanguage();
+    }
+
+    /**
      * Method that gets the code of the currency that is currently set.
      * @return - the currency code.
      */
@@ -439,6 +447,7 @@ public class OverviewCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         String language = config.getProperty("language");
         if (languages != null) languages.setValue(language);
         this.refreshLanguage();
@@ -567,40 +576,39 @@ public class OverviewCtrl implements Initializable {
     }
 
     /**
+     * Getter for the main controller
+     * @return MainCtrl object
+     */
+    @Override
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Getter for the languages combo box.
+     * @return LanguageComboBox object
+     */
+    @Override
+    public LanguageComboBox getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Getter for the config.
+     * @return - the config
+     */
+    @Override
+    public ConfigInterface getConfig() {
+        return config;
+    }
+
+    /**
      * Getter for the language manager property.
      *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
-    }
-
-
-    /**
-     * Changes language
-     */
-    public void changeLanguage() {
-        String language = "";
-        if (languages != null) language = languages.getValue();
-        config.setProperty("language", language);
-        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                && mainCtrl.getStartScreenCtrl() != null) {
-            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
-        }
-        this.refreshLanguage();
-    }
-
-    /**
-     * Method that refreshes the language.
-     */
-    private void refreshLanguage() {
-        String language = config.getProperty("language");
-        if (language == null) {
-            language = "en";
-        }
-        updateLanguageComboBox(language);
-        languageManager.changeLanguage(Locale.of(language));
     }
 
     /**

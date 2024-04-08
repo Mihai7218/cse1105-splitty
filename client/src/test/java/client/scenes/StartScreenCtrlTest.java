@@ -118,6 +118,7 @@ class StartScreenCtrlTest {
         doNothing().when(settings).setGraphic(any(Node.class));
 
         sut.setRecentEvents(recentEvents);
+        sut.setLanguages(new LanguageComboBox());
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         sut.setNewEventTitle(createTextField);
         sut.setEventInvite(joinTextField);

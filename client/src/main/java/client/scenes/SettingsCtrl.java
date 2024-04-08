@@ -15,11 +15,10 @@ import javafx.stage.Modality;
 import javafx.util.Duration;
 
 import java.net.URL;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SettingsCtrl implements Initializable {
+public class SettingsCtrl implements Initializable, LanguageSwitcher {
 
     private final ConfigInterface config;
     private final LanguageManager languageManager;
@@ -82,12 +81,14 @@ public class SettingsCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         saveButton.setGraphic(new ImageView(new Image("icons/savewhite.png")));
         noRecentEvents.setValueFactory(new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(0, 100));
         currency.getItems().addAll(currencyConverter.getCurrencies());
         emailPane.setExpanded(false);
+        languages.getItems().remove("template");
     }
 
     /**
@@ -197,47 +198,57 @@ public class SettingsCtrl implements Initializable {
     }
 
     /**
-     * Method to set the language observable map.
-     *
-     * @param languageManager - the new observable map.
+     * Getter for the main controller
+     * @return MainCtrl object
      */
-    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
-        this.languageManager.set(languageManager);
+    @Override
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Getter for the languages combo box.
+     * @return LanguageComboBox object
+     */
+    @Override
+    public LanguageComboBox getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Getter for the config.
+     * @return - the config
+     */
+    @Override
+    public ConfigInterface getConfig() {
+        return config;
     }
 
     /**
      * Method to get the language manager.
-     *
      * @return - the language manager.
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
     }
 
+
     /**
-     * Changes language
+     * Method that updates the language combo box.
+     * @param language - the new language value.
      */
-    public void changeLanguage() {
-        String language = "";
-        if (languages != null) language = languages.getValue();
-        config.setProperty("language", language);
-        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                && mainCtrl.getStartScreenCtrl() != null) {
-            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
-        }
-        this.refreshLanguage();
+    @Override
+    public void updateLanguageComboBox(String language) {
+        languages.setValue(language);
     }
 
     /**
-     * Method that refreshes the language.
+     * Method to set the language observable map.
+     *
+     * @param languageManager - the new observable map.
      */
-    private void refreshLanguage() {
-        String language = config.getProperty("language");
-        if (language == null) {
-            language = "en";
-        }
-        languageManager.changeLanguage(Locale.of(language));
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
     }
 
     /**
