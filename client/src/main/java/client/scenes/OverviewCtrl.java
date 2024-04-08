@@ -264,20 +264,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         if (!"deleted".equals(exp.getColor())) {
                             mainCtrl.getEvent().getTagsList().add(exp);
                         }
-                        for (Object object : all.getItems()) {
-                            Expense expense = (Expense) object;
-                            if (exp.equals(expense.getTag())) {
-                                if ("deleted".equals(exp.getColor())) {
-                                    expense.setTag(null);
-                                } else {
-                                    expense.setTag(exp);
-                                }
-                            }
-                        }
-                        all.getItems().sort((o1, o2) ->
-                                -o1.getDate().compareTo(o2.getDate()));
-                        filterViews();
-                        all.refresh();
+                        populateExpenses();
                         populateParticipants();
                     }));
             tagSubscriptionMap.put(tag, subscription);
