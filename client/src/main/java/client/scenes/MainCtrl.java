@@ -220,7 +220,6 @@ public class MainCtrl {
     }
 
     /**
-     *
      * @return the controller for editing an expense
      */
     public EditExpenseCtrl getEditExpenseCtrl() {
