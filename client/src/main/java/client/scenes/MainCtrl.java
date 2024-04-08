@@ -15,13 +15,23 @@
  */
 package client.scenes;
 
+import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
 import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+
+import java.io.File;
+import java.util.Optional;
 
 public class MainCtrl {
 
@@ -29,6 +39,8 @@ public class MainCtrl {
 
     private ConnectToServerCtrl connectCtrl;
     private Scene connectToServer;
+
+    private final ConfigInterface config;
 
     private AddQuoteCtrl addCtrl;
     private Scene add;
@@ -58,6 +70,8 @@ public class MainCtrl {
     private DebtsCtrl debtsCtrl;
     private Scene debts;
 
+    private FileChooser fileChooser = new FileChooser();
+
     private Event event;
 
     /**
@@ -65,7 +79,8 @@ public class MainCtrl {
      * @param languageManager - language manager
      */
     @Inject
-    public MainCtrl(LanguageManager languageManager) {
+    public MainCtrl(ConfigInterface config, LanguageManager languageManager) {
+        this.config = config;
         this.languageManager = languageManager;
     }
 
@@ -157,7 +172,13 @@ public class MainCtrl {
      * shows scene to send invitations
      */
     public void showInvitation(){
-        primaryStage.titleProperty().bind(languageManager.bind("sendInvitations.windowTitle"));
+        primaryStage.titleProperty().bind(languageManager.bind("invitation.windowTitle"));
+        try {
+            invitation.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
     }
@@ -257,21 +278,21 @@ public class MainCtrl {
      * Calls the method to display successful expense added message
      */
     public void showExpenseConfirmation(){
-        overviewCtrl.showConfirmationExpense();
+        overviewCtrl.showNotification("overview.confirmExpenseAdd");
     }
 
     /**
      * calls the method to display a participant being added successfully
      */
     public void showParticipantConfirmation(){
-        overviewCtrl.showConfirmationParticipant();
+        overviewCtrl.showNotification("overview.confirmParticipantAdd");
     }
 
     /**
      * calls the method to display an edit being made successfully
      */
     public void showEditConfirmation(){
-        overviewCtrl.showEditConfirmation();
+        overviewCtrl.showNotification("overview.confirmEdits");
     }
 
     /**
@@ -285,6 +306,7 @@ public class MainCtrl {
         }catch(NullPointerException e){
             System.out.println("exception caught: Null Pointer Exception");
         }
+        if (startScreenCtrl != null) startScreenCtrl.refresh();
         primaryStage.setScene(startScreen);
     }
 
@@ -353,6 +375,16 @@ public class MainCtrl {
         }
         primaryStage.setScene(settings);
         if (settingsCtrl != null) settingsCtrl.refresh();
+    }
+
+    /**
+     * Shows the file picker.
+     * @param defaultName - the default name of the file.
+     * @return - the new file.
+     */
+    public File pickLocation(String defaultName) {
+        fileChooser.setInitialFileName(defaultName);
+        return fileChooser.showSaveDialog(primaryStage);
     }
 
     /**
@@ -525,5 +557,35 @@ public class MainCtrl {
      */
     Scene getSettings() {
         return settings;
+    }
+
+    /**
+     * Method that returns an optional password.
+     * @return - the optional password.
+     */
+    public Optional<String> getPassword() {
+        String configPassword = config.getProperty("mail.password");
+        if (configPassword != null && !configPassword.isEmpty())
+            return Optional.of(configPassword);
+        Dialog<String> dialog = new Dialog<>();
+        dialog.titleProperty().bind(languageManager.bind("mail.passwordTitle"));
+        dialog.headerTextProperty().bind(languageManager.bind("mail.passwordHeader"));
+        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+
+        PasswordField passwordField = new PasswordField();
+        HBox hBox = new HBox();
+        Label passwordLabel = new Label();
+        passwordLabel.textProperty().bind(languageManager.bind("mail.passwordLabel"));
+        hBox.setSpacing(10);
+        hBox.getChildren().addAll(passwordLabel, passwordField);
+        dialog.getDialogPane().setContent(hBox);
+        dialog.setResultConverter(dialogButton -> {
+            if (dialogButton == ButtonType.OK) {
+                return passwordField.getText();
+            }
+            return null;
+        });
+
+        return dialog.showAndWait();
     }
 }

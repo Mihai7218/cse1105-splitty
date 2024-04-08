@@ -13,18 +13,26 @@ public class Config implements ConfigInterface {
     /**
      * Constructor for the config with a default file path.
      */
-    public Config() throws FileNotFoundException {
+    public Config() {
         this(new File(String.valueOf(Path.of("client", "config.properties"))));
     }
 
     /**
      * Constructor for the config with specified file
      * @param file - file that needs to be written to
-     * @throws FileNotFoundException - in case the file is not found
      */
-    public Config(File file) throws FileNotFoundException {
+    public Config(File file) {
         this(ignoreFileNotFoundException(file), null);
-        this.outputStream = new FileOutputStream(file);
+        try {
+            this.outputStream = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            file.getParentFile().mkdirs();
+            try {
+                this.outputStream = new FileOutputStream(file);
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -79,5 +87,13 @@ public class Config implements ConfigInterface {
      */
     public void saveProperties() throws IOException {
         prop.store(outputStream, "Splitty Config File");
+    }
+
+    /**
+     * Removes a property from the config.
+     * @param key - the key of that property.
+     */
+    public void removeProperty(String key) {
+        prop.remove(key);
     }
 }

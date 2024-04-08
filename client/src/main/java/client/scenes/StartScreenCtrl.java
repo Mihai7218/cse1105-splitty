@@ -20,7 +20,7 @@ import javafx.scene.layout.HBox;
 import java.net.URL;
 import java.util.*;
 
-public class StartScreenCtrl implements Initializable {
+public class StartScreenCtrl implements Initializable, LanguageSwitcher {
 
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
@@ -73,6 +73,7 @@ public class StartScreenCtrl implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        languages.setCellFactory(languageManager);
         String language = config.getProperty("language");
         createEventButton.setGraphic(new ImageView(new Image("icons/whiteplus.png")));
         joinEventButton.setGraphic(new ImageView(new Image("icons/joinwhite.png")));
@@ -83,12 +84,19 @@ public class StartScreenCtrl implements Initializable {
         alert.titleProperty().bind(languageManager.bind("commons.warning"));
         alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
         recentEvents.setCellFactory(x -> new RecentEventCell(mainCtrl));
+        updateLanguageComboBox(language);
+        this.refreshLanguage();
+    }
+
+    /**
+     *
+     */
+    public void refresh() {
         List<Event> currentlyInConfig = getRecentEventsFromConfig();
+        recentEvents.getItems().clear();
         recentEvents.getItems().addAll(currentlyInConfig);
         removeExcess();
         this.refreshConfig();
-        updateLanguageComboBox(language);
-        this.refreshLanguage();
         setLongPolling(currentlyInConfig);
     }
 
@@ -148,28 +156,9 @@ public class StartScreenCtrl implements Initializable {
     /**
      * Changes language
      */
+    @Override
     public void changeLanguage() {
-        String language = "";
-        if (languages != null) language = languages.getValue();
-        config.setProperty("language", language);
-        if (mainCtrl != null && mainCtrl.getOverviewCtrl() != null
-                && mainCtrl.getStartScreenCtrl() != null) {
-            mainCtrl.getStartScreenCtrl().updateLanguageComboBox(languages.getValue());
-            mainCtrl.getOverviewCtrl().updateLanguageComboBox(languages.getValue());
-        }
-        this.refreshLanguage();
-    }
-
-    /**
-     * Method that refreshes the language.
-     */
-    private void refreshLanguage() {
-        String language = config.getProperty("language");
-        if (language == null) {
-            language = "en";
-        }
-        updateLanguageComboBox(language);
-        languageManager.changeLanguage(Locale.of(language));
+        LanguageSwitcher.super.changeLanguage();
     }
 
     /**
@@ -186,6 +175,33 @@ public class StartScreenCtrl implements Initializable {
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
         this.languageManager.set(languageManager);
+    }
+
+    /**
+     * Getter for the main controller
+     * @return MainCtrl object
+     */
+    @Override
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
+
+    /**
+     * Getter for the languages combo box.
+     * @return LanguageComboBox object
+     */
+    @Override
+    public LanguageComboBox getLanguages() {
+        return languages;
+    }
+
+    /**
+     * Getter for the config.
+     * @return - the config
+     */
+    @Override
+    public ConfigInterface getConfig() {
+        return config;
     }
 
     /**

@@ -42,7 +42,7 @@ class MainCtrlTest {
     @Start
     void setUp(Stage ignored) {
         languageManager = mock(LanguageManager.class);
-        sut = new MainCtrl(languageManager);
+        sut = new MainCtrl(new TestConfig(), languageManager);
         stage = mock(Stage.class);
         sb = Bindings.createStringBinding(() -> "Test");
         sp = new SimpleStringProperty();

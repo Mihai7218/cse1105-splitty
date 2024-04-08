@@ -3,33 +3,30 @@ package client.utils;
 import javafx.scene.control.ComboBox;
 
 import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class LanguageComboBox extends ComboBox<String> {
 
-    private List<String> languageCodes;
-
     /**
      * Constructor for a LanguageComboBox.
      */
     public LanguageComboBox() {
         super();
-        languageCodes = getLanguageCodes();
+        List<String> languageCodes = getLanguageCodes();
         this.getItems().addAll(languageCodes);
-        this.setCellFactory(param -> new LanguageCell());
-        this.setButtonCell(new LanguageCell());
+        this.getItems().add("template");
     }
 
     /**
      * Method that gets the ISO 639-1 codes from the file names in resources/languages.
      * @return the list of language codes.
      */
-    private static List<String> getLanguageCodes() {
-        File languagesFolder = new File(String.valueOf(Path.of("client",
-                "src", "main", "resources", "client")));
+    private List<String> getLanguageCodes() {
+        System.out.println(getClass().getResource("/client"));
+        File languagesFolder = new File(getClass().getResource(
+                "/client/languages_en.properties").getFile()).getParentFile();
         File[] languageFiles = languagesFolder.listFiles();
         if (languageFiles == null)
             return new ArrayList<>();
@@ -38,5 +35,14 @@ public class LanguageComboBox extends ComboBox<String> {
                 .map(File::getName)
                 .filter(name -> !name.equals("template.properties"))
                 .map(filename -> filename.substring(10, 12)).sorted().toList();
+    }
+
+    /**
+     * Sets the cell factory with the corresponding language manager.
+     * @param languageManager - the language manager.
+     */
+    public void setCellFactory(LanguageManager languageManager) {
+        this.setCellFactory(param -> new LanguageCell(languageManager));
+        this.setButtonCell(new LanguageCell(languageManager));
     }
 }

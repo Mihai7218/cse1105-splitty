@@ -6,25 +6,32 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
+import jakarta.mail.MessagingException;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.stage.Modality;
 import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.*;
 
-public class DebtsCtrl implements Initializable {
+public class DebtsCtrl implements Initializable, NotificationSender {
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final Alert alert;
     private final CurrencyConverter currencyConverter;
+    private final MailSender mailSender;
+    @FXML
+    private Label confirmation;
+    private boolean canRemind;
     @FXML
     private Accordion menu;
     @FXML
@@ -43,13 +50,15 @@ public class DebtsCtrl implements Initializable {
                      LanguageManager languageManager,
                      ServerUtils serverUtils,
                      CurrencyConverter currencyConverter,
-                     Alert alert) {
+                     Alert alert,
+                     MailSender mailSender) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
         this.currencyConverter = currencyConverter;
         this.alert = alert;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -94,6 +103,14 @@ public class DebtsCtrl implements Initializable {
      */
     public void refresh() {
         menu.getPanes().clear();
+        String host = config.getProperty("mail.host");
+        String port = config.getProperty("mail.port");
+        String user = config.getProperty("mail.user");
+        String email = config.getProperty("mail.email");
+        canRemind = host != null && !host.isEmpty()
+                && port != null && !port.isEmpty()
+                && user != null && !user.isEmpty()
+                && email != null && !email.isEmpty();
         setTitles(mainCtrl.getEvent());
     }
 
@@ -137,51 +154,115 @@ public class DebtsCtrl implements Initializable {
             }
         }
         for (Debt debt : debts) {
-            if (!debt.getDebtor().getName().equals(debt.getCreditor().getName())) {
-                String title = String.format("%s: %.2f %s => %s",
-                        debt.getDebtor().getName(),
-                        debt.getSum(),
-                        getCurrency(),
-                        debt.getCreditor().getName());
-                TitledPane tp = new TitledPane(title, null);
-                menu.getPanes().add(tp);
-                AnchorPane anchorPane = new AnchorPane();
-                Label info = new Label();
-                Button mark = new Button();
-                if (debt.getCreditor().getBic().equals("\u2714") ||
-                        debt.getCreditor().getIban().equals("")) {
-                    info.textProperty().bind(languageManager.bind("debts.unavailable"));
-                    mark.setVisible(false);
-                } else {
-                    //info.textProperty().bind(languageManager.bind("debts.available"));
-                    String data = debt.getCreditor().getName() + "\nIBAN: " +
-                            debt.getCreditor().getIban() + "\nBIC: " +
-                            debt.getCreditor().getBic();
+            populateAccordion(event, debt);
+        }
+    }
 
-                    info.setText(data);
-                    mark.textProperty().bind(languageManager.bind("debts.send"));
-                    mark.setOnAction(x ->
-                    {
-                        mark.textProperty().bind(languageManager.bind("debts.check"));
-                    });
-                }
-                anchorPane.getChildren().add(info);
-                anchorPane.getChildren().add(mark);
-                anchorPane.setTopAnchor(info, 10.0);
-                anchorPane.setLeftAnchor(info, 10.0);
+    /**
+     * Populates the accordion with the information in the debt.
+     * @param event - the event
+     * @param debt - the debt.
+     */
+    private void populateAccordion(Event event, Debt debt) {
+        if (!debt.getDebtor().getName().equals(debt.getCreditor().getName())) {
+            String title = String.format("%s: %.2f %s => %s",
+                    debt.getDebtor().getName(),
+                    debt.getSum(),
+                    getCurrency(),
+                    debt.getCreditor().getName());
+            TitledPane tp = new TitledPane(title, null);
+            menu.getPanes().add(tp);
+            AnchorPane anchorPane = new AnchorPane();
+            Label info = new Label();
+            Button mark = new Button();
+            Button remind = new Button();
+            if (debt.getCreditor().getBic().equals("\u2714") ||
+                    debt.getCreditor().getIban().equals("")) {
+                info.textProperty().bind(languageManager.bind("debts.unavailable"));
+                mark.setVisible(false);
+            } else {
+                //info.textProperty().bind(languageManager.bind("debts.available"));
+                String data = debt.getCreditor().getName() + "\nIBAN: " +
+                        debt.getCreditor().getIban() + "\nBIC: " +
+                        debt.getCreditor().getBic();
 
-                // Position the button relative to the label
-                anchorPane.setTopAnchor(mark,
-                        AnchorPane.getTopAnchor(info) + info.getPrefHeight() + 30.0);
-                anchorPane.setLeftAnchor(mark,
-                        AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 300.0);
-                tp.setContent(anchorPane);
+                info.setText(data);
+                mark.textProperty().bind(languageManager.bind("debts.send"));
+                mark.setOnAction(x ->
+                {
+                    mark.textProperty().bind(languageManager.bind("debts.check"));
+                });
             }
+            remind.textProperty().bind(languageManager.bind("debts.remind"));
+            if (!canRemind) {
+                Tooltip tooltip = new Tooltip();
+                tooltip.textProperty().bind(languageManager
+                        .bind("debts.unavailableReminder"));
+                remind.setTooltip(tooltip);
+                remind.setId("disabledButton");
+            } else if (debt.getDebtor().getEmail() == null
+                    || debt.getDebtor().getEmail().isEmpty()) {
+                Tooltip tooltip = new Tooltip();
+                tooltip.textProperty().bind(languageManager
+                        .bind("debts.missingEmail"));
+                remind.setTooltip(tooltip);
+                remind.setId("disabledButton");
+            } else {
+                remind.setId(null);
+                remind.setTooltip(null);
+                remind.setOnAction(x -> {
+                    String address = config.getProperty("server");
+                    if (address == null || address.isEmpty())
+                        address = "http://localhost:8080";
+                    String host = config.getProperty("mail.host");
+                    String port = config.getProperty("mail.port");
+                    String username = config.getProperty("mail.user");
+                    String email = config.getProperty("mail.email");
+                    try {
+                        showNotification("mail.sending");
+                        mailSender.sendReminder(address, event.getInviteCode(),
+                                debt.getDebtor(), debt.getCreditor(),
+                                String.format("%.2f %s",
+                                        debt.getSum(), getCurrency()),
+                                host, port, username, email);
+                        showNotification("debts.reminderConfirmation");
+                    } catch (MessagingException e) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR);
+                        alert.initModality(Modality.APPLICATION_MODAL);
+                        if (e.getClass().equals(MissingPasswordException.class)) {
+                            alert.contentTextProperty().bind(
+                                    languageManager.bind("mail.noPassword"));
+                        } else {
+                            alert.contentTextProperty().unbind();
+                            alert.setContentText(e.getMessage());
+                        }
+                        alert.showAndWait();
+                        return;
+                    }
+                });
+            }
+            anchorPane.getChildren().add(info);
+            anchorPane.getChildren().add(mark);
+            anchorPane.getChildren().add(remind);
+            anchorPane.setTopAnchor(info, 10.0);
+            anchorPane.setLeftAnchor(info, 10.0);
+
+            // Position the button relative to the label
+            anchorPane.setTopAnchor(mark,
+                    AnchorPane.getTopAnchor(info) + info.getPrefHeight() + 30.0);
+            anchorPane.setLeftAnchor(mark,
+                    AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 300.0);
+            anchorPane.setTopAnchor(remind,
+                    AnchorPane.getTopAnchor(info) + info.getPrefHeight() + 30.0);
+            anchorPane.setLeftAnchor(remind,
+                    AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 200.0);
+            tp.setContent(anchorPane);
         }
     }
 
     /**
      * Method that calculates the share per person and returns it as a double.
+     *
      * @param current - the participant to calculate the share for.
      * @return - the share of that participant.
      */
@@ -205,11 +286,13 @@ public class DebtsCtrl implements Initializable {
                 }
             }
         }
-        return Math.round(participantShare*100.0)/100.0;
+        return Math.round(participantShare * 100.0) / 100.0;
     }
+
 
     /**
      * Method that gets the currency from the config.
+     *
      * @return - the correct currency from the config.
      */
     private String getCurrency() {
@@ -218,4 +301,31 @@ public class DebtsCtrl implements Initializable {
         return currencyString;
     }
 
+    /**
+     * Getter for the language manager map.
+     *
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Gets the notification label.
+     *
+     * @return - the notification label.
+     */
+    @Override
+    public Label getNotificationLabel() {
+        return confirmation;
+    }
+
+    /**
+     * Getter for the language manager property.
+     *
+     * @return - the language manager property.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
+    }
 }
