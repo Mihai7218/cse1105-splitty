@@ -214,6 +214,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                                 sumExpense.setText(String.format(
                                         "%.2f %s", getSum(), getCurrency()));
                                 subscribeToExpense(expense);
+                                mainCtrl.getDebtsCtrl().refresh();
                             });
                         });
             if (participantSubscription == null)
@@ -250,6 +251,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         }
                         filterViews();
                         all.refresh();
+                        mainCtrl.getDebtsCtrl().refresh();
                         populateParticipants();
                         String baseCurrency = getCurrency();
                         sumExpense.setText(String.format("%.2f %s", getSum(), baseCurrency));
