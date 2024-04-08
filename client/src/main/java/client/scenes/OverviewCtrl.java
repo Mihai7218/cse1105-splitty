@@ -17,10 +17,7 @@ package client.scenes;
 
 import client.utils.*;
 import com.google.inject.Inject;
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
-import commons.ParticipantPayment;
+import commons.*;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.application.Platform;
 import javafx.collections.ObservableMap;
@@ -88,6 +85,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private Button addExpenseButton;
     private StompSession.Subscription expensesSubscription;
     private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
+    private Map<Tag, StompSession.Subscription> tagSubscriptionMap;
+    private StompSession.Subscription tagSubscription;
     private StompSession.Subscription participantSubscription;
 
     @FXML
@@ -120,6 +119,15 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.currencyConverter = currencyConverter;
+    }
+
+    /**
+     * Getter for the tag subscription map.
+     *
+     * @return - the tag subscription map of the overview controller.
+     */
+    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
+        return tagSubscriptionMap;
     }
 
     /**
@@ -226,6 +234,53 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                             mainCtrl.getEvent().getParticipantsList().add(participant);
                             populateParticipants();
                         });
+            if (tagSubscription == null)
+                tagSubscription = server.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
+                        tag -> {
+                            Platform.runLater(() -> {
+                                subscribeToTag(tag);
+                            });
+                        });
+            for (Tag tag : event.getTagsList()) {
+                if (!tagSubscriptionMap.containsKey(tag))
+                    subscribeToTag(tag);
+            }
+        }
+    }
+
+    /**
+     * Method that subscribes to updates for an tag.
+     * @param tag - the tag to subscribe to.
+     */
+    private void subscribeToTag(Tag tag) {
+        if (!tagSubscriptionMap.containsKey(tag)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/tags/"
+                    + tag.getId();
+            var subscription = server.registerForMessages(dest, Tag.class,
+                    exp -> Platform.runLater(() -> {
+                        mainCtrl.getEvent().getTagsList().remove(exp);
+                        if (!"deleted".equals(exp.getColor())) {
+                            mainCtrl.getEvent().getTagsList().add(exp);
+                        }
+                        for (Object object : all.getItems()) {
+                            Expense expense = (Expense) object;
+                            if (exp.equals(expense.getTag())) {
+                                if ("deleted".equals(exp.getColor())) {
+                                    expense.setTag(null);
+                                } else {
+                                    expense.setTag(exp);
+                                }
+                            }
+                        }
+                        all.getItems().sort((o1, o2) ->
+                                -o1.getDate().compareTo(o2.getDate()));
+                        filterViews();
+                        all.refresh();
+                        populateParticipants();
+                    }));
+            tagSubscriptionMap.put(tag, subscription);
         }
     }
 
@@ -304,6 +359,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
+        }
+        if (tagSubscription != null) {
+            tagSubscription.unsubscribe();
+            tagSubscription = null;
+        }
+        if (tagSubscriptionMap != null) {
+            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap = new HashMap<>();
         }
         clearFields();
         mainCtrl.showStartMenu();
@@ -402,6 +465,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             }
         });
         expenseSubscriptionMap = new HashMap<>();
+        tagSubscriptionMap = new HashMap<>();
         refresh();
     }
 
