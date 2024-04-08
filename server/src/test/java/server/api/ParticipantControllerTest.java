@@ -3,6 +3,7 @@ package server.api;
 import commons.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 
 import java.sql.Timestamp;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.OK;
 import static server.api.PasswordService.setPassword;
 
@@ -34,7 +36,6 @@ public class ParticipantControllerTest {
 
     public GerneralServerUtil serverUtil;
 
-
     @BeforeEach
     public void init(){
         serverUtil = new ServerUtilModule();
@@ -42,7 +43,7 @@ public class ParticipantControllerTest {
         participantRepository = new TestParticipantRepository();
         participantService = new ParticipantService(
                 eventRepository, participantRepository);
-        participantController = new ParticipantController(participantService,serverUtil);
+        participantController = new ParticipantController(participantService,serverUtil, mock(SimpMessagingTemplate.class));
         valid = new Participant("John Doe",
                 "jdoe@gmail.com","NL85RABO5253446745",
                 "HBUKGB4B");

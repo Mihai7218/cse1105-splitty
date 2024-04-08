@@ -1,10 +1,15 @@
 package server.api;
 
+import commons.Event;
 import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
+
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
 
@@ -20,6 +25,7 @@ public class ParticipantController {
     private final ParticipantService participantService;
 
     private final GerneralServerUtil serverUtil;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Participant Controller Constructor
@@ -27,9 +33,11 @@ public class ParticipantController {
      */
     @Autowired
     public ParticipantController(ParticipantService participantService,
-                                 @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil){
+                                 @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil,
+                                 SimpMessagingTemplate messagingTemplate){
         this.participantService = participantService;
         this.serverUtil = serverUtil;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -67,6 +75,18 @@ public class ParticipantController {
             @PathVariable("eventId") long eventId,
             @RequestBody Participant participant){
         return participantService.addParticipant(eventId, participant,serverUtil);
+    }
+
+    /**
+     * Websocket implementation to change participants
+     * @param event the event in which the participant exists
+     * @param participant the participant to be changed
+     * @return the body of the response entity of the updateParticipant call
+     */
+    @MessageMapping("/participants")
+    @SendTo("/topic/events/participants")
+    public Participant changeParticipant(Event event, Participant participant) {
+        return updateParticipant(event.getInviteCode(), participant.getId(), participant).getBody();
     }
 
     /**
