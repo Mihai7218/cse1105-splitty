@@ -84,7 +84,8 @@
                   <Font name="MathJax_SansSerif-Regular" size="30.0" />
                </font>
             </Text>
-            <Button id="returnToServerSelect" fx:id="returnToServerSelect" layoutX="-12.0" layoutY="5.0" onAction="#returnToServerSelect" prefWidth="25.0" />
+            <Button id="logo" fx:id="logo" contentDisplay="GRAPHIC_ONLY" layoutX="-8.0" mnemonicParsing="false" />
+            <Button id="returnToServerSelect" fx:id="returnToServerSelect" layoutX="254.0" layoutY="5.0" onAction="#returnToServerSelect" prefWidth="25.0" />
             <!--<LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />-->
             <Button id="settings" fx:id="settings" layoutX="291.0" layoutY="5.0" onAction="#settings" />
          </children>
