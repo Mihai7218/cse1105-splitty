@@ -7,6 +7,7 @@ build/
 /client/config.properties
 /server/src/main/resources/rates
 /client/src/main/resources/rates
+/client/client
 
 **/*.mv.db
 /coverage/*

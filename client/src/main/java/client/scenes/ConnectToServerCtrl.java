@@ -2,6 +2,7 @@ package client.scenes;
 
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
+import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -20,11 +21,9 @@ public class ConnectToServerCtrl {
     @FXML
     private Button connectButton;
 
-    @Inject
     private MainCtrl mainCtrl;
-    @Inject
     protected final ConfigInterface configInterface;
-    @Inject
+    private final ServerUtils server;
     private LanguageManager languageManager;
 
     /**
@@ -34,9 +33,10 @@ public class ConnectToServerCtrl {
      */
     @Inject
     public ConnectToServerCtrl (MainCtrl mainCtrl, ConfigInterface configInterface,
-                                LanguageManager languageManager){
+                                ServerUtils server, LanguageManager languageManager){
         this.mainCtrl = mainCtrl;
         this.configInterface = configInterface;
+        this.server = server;
         this.languageManager = languageManager;
 
     }
@@ -69,6 +69,7 @@ public class ConnectToServerCtrl {
         }
         // Update config if everything is fine and redirect to start screen
         updateConfigFile(serverAddress);
+        server.connectToServer();
         mainCtrl.showStartMenu();
     }
 

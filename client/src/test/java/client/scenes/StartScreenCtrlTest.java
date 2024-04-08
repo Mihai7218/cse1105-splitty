@@ -75,6 +75,7 @@ class StartScreenCtrlTest {
     DoubleProperty joinEventButtonPrefWidthProperty;
     DoubleProperty widthAfter;
     Button settings;
+    Button returnToServerSelect;
 
     @Start
     void setUp(Stage stage) {
@@ -88,6 +89,7 @@ class StartScreenCtrlTest {
         alert = mock(Alert.class);
         createEventButton = mock(Button.class);
         joinEventButton = mock(Button.class);
+        returnToServerSelect = mock(Button.class);
         settings = mock(Button.class);
         createButtonHBox = mock(HBox.class);
         joinButtonHBox = mock(HBox.class);
@@ -108,6 +110,7 @@ class StartScreenCtrlTest {
         sut = new StartScreenCtrl(mainCtrl, config, languageManager, serverUtils, alert);
         sut.createEventButton = createEventButton;
         sut.joinEventButton = joinEventButton;
+        sut.returnToServerSelect = returnToServerSelect;
         sut.createButtonHBox = createButtonHBox;
         sut.joinButtonHBox = joinButtonHBox;
         sut.settings = settings;
@@ -118,6 +121,7 @@ class StartScreenCtrlTest {
         doNothing().when(settings).setGraphic(any(Node.class));
 
         sut.setRecentEvents(recentEvents);
+        sut.setLanguages(new LanguageComboBox());
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         sut.setNewEventTitle(createTextField);
         sut.setEventInvite(joinTextField);
@@ -168,14 +172,14 @@ class StartScreenCtrlTest {
      * from the config to the list of recent events.
      */
     @Test
-    void initializeWithRecentEvents() {
+    void refreshTest() {
         config.setProperty("recentEvents", "1");
         Event event = new Event("1", new Date(), new Date());
         when(serverUtils.getEvent(1)).thenReturn(event);
 
-        sut.initialize(mock(URL.class), mock(ResourceBundle.class));
+        sut.refresh();
 
-        verify(languageManager, times(2)).changeLanguage(Locale.ENGLISH);
+        verify(languageManager).changeLanguage(Locale.ENGLISH);
         assertEquals(event, eventsList.getFirst());
     }
 

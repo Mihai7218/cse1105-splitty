@@ -78,6 +78,7 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         var config = INJECTOR.getInstance(Config.class);
+        config.removeProperty("mail.password");
         config.saveProperties();
         super.stop();
     }

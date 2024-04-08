@@ -1,22 +1,26 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
+import commons.Participant;
+import jakarta.mail.MessagingException;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
-import javafx.scene.text.Text;
-import java.awt.*;
-import java.net.URL;
-import java.util.ResourceBundle;
-import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.text.Text;
+import javafx.stage.Modality;
+
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 //import javafx.scene.control.*;
 
 
-public class InvitationCtrl implements Initializable{
+public class InvitationCtrl implements Initializable, NotificationSender{
     @FXML
     public Text code;
     @FXML
@@ -31,11 +35,15 @@ public class InvitationCtrl implements Initializable{
     private Button abort;
     @FXML
     private Button send;
+    @FXML
+    private Label confirmation;
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
     private final LanguageManager languageManager;
     private final Alert alert;
+    private final MailSender mailSender;
+
     /**
      *
      * @param mainCtrl
@@ -49,12 +57,14 @@ public class InvitationCtrl implements Initializable{
                           ConfigInterface config,
                           LanguageManager languageManager,
                           ServerUtils serverUtils,
-                          Alert alert) {
+                          Alert alert,
+                          MailSender mailSender) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
         this.serverUtils = serverUtils;
         this.alert = alert;
+        this.mailSender = mailSender;
     }
 
     /**
@@ -81,6 +91,18 @@ public class InvitationCtrl implements Initializable{
         send.textProperty().bind(languageManager.bind("invitation.send"));
         test.setText(mainCtrl.getEvent().getTitle());
         code.setText(String.valueOf(mainCtrl.getEvent().getInviteCode()));
+        String host = config.getProperty("mail.host");
+        String port = config.getProperty("mail.port");
+        String user = config.getProperty("mail.user");
+        String email = config.getProperty("mail.email");
+        if (host == null || host.isEmpty()
+                || port == null || port.isEmpty()
+                || user == null || user.isEmpty()
+                || email == null || email.isEmpty()) {
+            alert.contentTextProperty().bind(languageManager.bind("invitation.missingConfig"));
+            alert.showAndWait();
+            mainCtrl.showOverview();
+        }
     }
 
     /**
@@ -88,6 +110,49 @@ public class InvitationCtrl implements Initializable{
      * has to be implemented with mail functionality
      */
     public void sendInvites(){
+        showNotification("mail.sending");
+        String emailRegex = "^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
+                "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
+        String mails = mailSpace.getText();
+        List<String> emailList = mails.lines().filter(x -> Pattern.matches(emailRegex, x)).toList();
+        if (emailList.size() < mails.lines().toList().size()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.contentTextProperty().bind(languageManager.bind("invitation.invalidEmails"));
+            alert.showAndWait();
+            return;
+        }
+        String server = config.getProperty("server");
+        if (server.isEmpty()) {
+            server = "http://localhost:8080";
+            config.setProperty("server", server);
+        }
+        String host = config.getProperty("mail.host");
+        String port = config.getProperty("mail.port");
+        String user = config.getProperty("mail.user");
+        String emailAddress = config.getProperty("mail.email");
+        try {
+            mailSender.sendInvite(server, mainCtrl.getEvent().getInviteCode(),
+                    emailList, host, port, user, emailAddress);
+        }
+        catch (MessagingException e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.initModality(Modality.APPLICATION_MODAL);
+            if (e.getClass().equals(MissingPasswordException.class)) {
+                alert.contentTextProperty().bind(languageManager.bind("mail.noPassword"));
+            }
+            else {
+                alert.contentTextProperty().unbind();
+                alert.setContentText(e.getMessage());
+            }
+            alert.showAndWait();
+            return;
+        }
+        for (String email : emailList) {
+            serverUtils.addParticipant(mainCtrl.getEvent().getInviteCode(),
+                    new Participant(email, email, null, null));
+        }
+        mainCtrl.getOverviewCtrl().populateParticipants();
         mainCtrl.showOverview();
     }
 
@@ -97,5 +162,24 @@ public class InvitationCtrl implements Initializable{
     public void goBack(){
         mainCtrl.showOverview();
         if(mailSpace!=null) mailSpace.setText("");
+    }
+
+    /**
+     * Gets the notification label.
+     * @return - the notification label.
+     */
+    @Override
+    public Label getNotificationLabel() {
+        return confirmation;
+    }
+
+    /**
+     * Getter for the language manager property.
+     *
+     * @return - the language manager property.
+     */
+    @Override
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
     }
 }

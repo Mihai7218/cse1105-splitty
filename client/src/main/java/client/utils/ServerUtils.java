@@ -48,7 +48,7 @@ import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 public class ServerUtils {
 
     private final ConfigInterface config;
-    private final String server;
+    private String server;
 
     private final List<ExecutorService> runningServices;
 
@@ -61,14 +61,21 @@ public class ServerUtils {
     @Inject
     public ServerUtils(ConfigInterface config) {
         this.config = config;
+        runningServices = new ArrayList<>();
+    }
+
+    /**
+     * Method that connects to the server.
+     */
+    public void connectToServer() {
+        final List<ExecutorService> runningServices;
         if (config.getProperty("server") != null)
-            server = config.getProperty("server");
+            this.server = config.getProperty("server");
         else {
-            server = "http://localhost:8080";
+            this.server = "http://localhost:8080";
             config.setProperty("server", server);
         }
-        runningServices = new ArrayList<>();
-        session = connect("ws://" + server.substring(7) + "/websocket");
+        this.session = connect("ws://" + server.substring(7) + "/websocket");
     }
 
     /**

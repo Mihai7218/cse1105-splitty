@@ -9,6 +9,7 @@ import server.database.ExpenseRepository;
 import server.database.TagRepository;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -87,6 +88,42 @@ public class ExpenseServiceTest {
         assertEquals(expenseService.validateExpense(e).getStatusCode(), OK);
         expenseService.addCreatedExpense(e);
         assertEquals(expenseService.getAllExpenses(1).getBody().get(0), e);
+    }
+
+    @Test
+    public void changeTitleTestInvalid(){
+        assertEquals(BAD_REQUEST, expenseService.changeTitle(expense1,-1, 0, serverUtil).getStatusCode());
+        assertEquals(BAD_REQUEST, expenseService.changeTitle(expense1,0, -1, serverUtil).getStatusCode());
+
+        assertEquals(NOT_FOUND, expenseService.changeTitle(expense1,1000, 0, serverUtil).getStatusCode());
+        assertEquals(NOT_FOUND, expenseService.changeTitle(expense1,0, 1000, serverUtil).getStatusCode());
+
+    }
+
+    @Test
+    public void changeTitleTestValid(){
+        Expense invalidE1 = new Expense(10, "EUR", "", "desc", null, null, null, null );
+        Expense invalidE2 = new Expense(10, "EUR", null, "desc", null, null, null, null );
+        assertEquals(BAD_REQUEST, expenseService.changeTitle(invalidE1, 0, 0, serverUtil).getStatusCode());
+        assertEquals(BAD_REQUEST, expenseService.changeTitle(invalidE2, 0, 0, serverUtil).getStatusCode());
+        expense1.setSplit(new ArrayList<>());
+        expense1.getSplit().add(new ParticipantPayment(payee, 10));
+        expense2.setSplit(new ArrayList<>());
+        Expense replacement = new Expense(5, "CHF", "title", "desc", null, new ArrayList<>(), null, null);
+        assertEquals(OK, expenseService.changeTitle(replacement, 0,0, serverUtil).getStatusCode());
+        replacement.setId(3);
+        assertEquals(replacement, expenseService.getExpense(0,3).getBody());
+    }
+
+    @Test
+    public void retrieveExpenseTest(){
+        assertEquals(BAD_REQUEST, expenseService.getExpense(-1,0).getStatusCode());
+        assertEquals(BAD_REQUEST, expenseService.getExpense(0,-1).getStatusCode());
+        assertEquals(NOT_FOUND, expenseService.getExpense(1000,0).getStatusCode());
+        assertEquals(NOT_FOUND, expenseService.getExpense(0,1000).getStatusCode());
+
+        assertEquals(OK, expenseService.getExpense(0,0).getStatusCode());
+        assertEquals(expense1, expenseService.getExpense(0,0).getBody());
     }
 
     /***
