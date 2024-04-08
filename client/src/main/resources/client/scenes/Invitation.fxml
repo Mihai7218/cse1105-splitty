@@ -18,16 +18,25 @@
             </font>
         </Label>
         <TextArea fx:id="mailSpace" layoutX="40.0" layoutY="143.0" prefHeight="200.0" prefWidth="411.0" />
-      <Text fx:id="test" layoutX="40.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="411.0">
-         <font>
-            <Font size="30.0" />
-         </font>
-      </Text>
-      <Text fx:id="code" layoutX="408.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="177.336669921875">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </Text>
-      <Button fx:id="abort" id="cancel" layoutX="335.0" layoutY="350.0" mnemonicParsing="false" onAction="#goBack" prefHeight="35.0" prefWidth="98.0" text="Abort" />
+        <Text fx:id="test" layoutX="40.0" layoutY="62.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="411.0">
+            <font>
+                <Font size="30.0" />
+            </font>
+        </Text>
+        <Text fx:id="code" layoutX="408.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="177.336669921875">
+            <font>
+                <Font size="16.0" />
+            </font>
+        </Text>
+        <Button id="cancel" fx:id="abort" layoutX="335.0" layoutY="350.0" mnemonicParsing="false" onAction="#goBack" prefHeight="35.0" prefWidth="98.0" text="Abort" />
+        <HBox alignment="CENTER" layoutX="180.0" layoutY="280.0" prefHeight="57.0" prefWidth="240.0">
+            <children>
+                <Label id="hciFeedback" fx:id="confirmation" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" textFill="WHITE" visible="false" HBox.hgrow="ALWAYS">
+                    <font>
+                        <Font size="14.0" />
+                    </font>
+                </Label>
+            </children>
+        </HBox>
     </children>
 </AnchorPane>

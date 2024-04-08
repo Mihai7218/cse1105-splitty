@@ -21,15 +21,17 @@ import com.google.inject.Inject;
 import commons.Event;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
-import java.util.Optional;
-import javafx.stage.FileChooser;
-
 import java.io.File;
+import java.util.Optional;
 
 public class MainCtrl {
 
@@ -276,21 +278,21 @@ public class MainCtrl {
      * Calls the method to display successful expense added message
      */
     public void showExpenseConfirmation(){
-        overviewCtrl.showConfirmationExpense();
+        overviewCtrl.showNotification("overview.confirmExpenseAdd");
     }
 
     /**
      * calls the method to display a participant being added successfully
      */
     public void showParticipantConfirmation(){
-        overviewCtrl.showConfirmationParticipant();
+        overviewCtrl.showNotification("overview.confirmParticipantAdd");
     }
 
     /**
      * calls the method to display an edit being made successfully
      */
     public void showEditConfirmation(){
-        overviewCtrl.showEditConfirmation();
+        overviewCtrl.showNotification("overview.confirmEdits");
     }
 
     /**

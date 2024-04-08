@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 //import javafx.scene.control.*;
 
 
-public class InvitationCtrl implements Initializable{
+public class InvitationCtrl implements Initializable, NotificationSender{
     @FXML
     public Text code;
     @FXML
@@ -35,6 +35,8 @@ public class InvitationCtrl implements Initializable{
     private Button abort;
     @FXML
     private Button send;
+    @FXML
+    private Label confirmation;
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
@@ -108,6 +110,7 @@ public class InvitationCtrl implements Initializable{
      * has to be implemented with mail functionality
      */
     public void sendInvites(){
+        showNotification("mail.sending");
         String emailRegex = "^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
                 "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         String mails = mailSpace.getText();
@@ -159,5 +162,24 @@ public class InvitationCtrl implements Initializable{
     public void goBack(){
         mainCtrl.showOverview();
         if(mailSpace!=null) mailSpace.setText("");
+    }
+
+    /**
+     * Gets the notification label.
+     * @return - the notification label.
+     */
+    @Override
+    public Label getNotificationLabel() {
+        return confirmation;
+    }
+
+    /**
+     * Getter for the language manager property.
+     *
+     * @return - the language manager property.
+     */
+    @Override
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
     }
 }

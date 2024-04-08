@@ -18,7 +18,7 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class DebtsCtrl implements Initializable {
+public class DebtsCtrl implements Initializable, NotificationSender {
     private final ServerUtils serverUtils;
     private final ConfigInterface config;
     private final MainCtrl mainCtrl;
@@ -177,12 +177,13 @@ public class DebtsCtrl implements Initializable {
                             String username = config.getProperty("mail.user");
                             String email = config.getProperty("mail.email");
                             try {
+                                showNotification("mail.sending");
                                 mailSender.sendReminder(address, event.getInviteCode(),
                                         pp.getParticipant(), expense.getPayee(),
                                         String.format("%.2f %s",
                                                 pp.getPaymentAmount(), expense.getCurrency()),
                                         host, port, username, email);
-                                showConfirmation();
+                                showNotification("debts.reminderConfirmation");
                             } catch (MessagingException e) {
                                 Alert alert = new Alert(Alert.AlertType.ERROR);
                                 alert.initModality(Modality.APPLICATION_MODAL);
@@ -220,37 +221,21 @@ public class DebtsCtrl implements Initializable {
     }
 
     /**
-     * method to display a confirmation message when the reminder is sent
-     * this message disappears
-     */
-    public void showConfirmation() {
-        confirmation.setVisible(true);
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), confirmation);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
-
-        fadeIn.setOnFinished(event -> {
-            PauseTransition delay = new PauseTransition(Duration.seconds(3));
-            delay.setOnFinished(e -> {
-                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), confirmation);
-                fadeOut.setFromValue(1.0);
-                fadeOut.setToValue(0.0);
-                fadeOut.setOnFinished(f -> confirmation.setVisible(false));
-                fadeOut.play();
-            });
-            delay.play();
-        });
-
-        fadeIn.play();
-    }
-
-    /**
      * Getter for the language manager map.
      *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
         return languageManager.get();
+    }
+
+    /**
+     * Gets the notification label.
+     * @return - the notification label.
+     */
+    @Override
+    public Label getNotificationLabel() {
+        return confirmation;
     }
 
     /**

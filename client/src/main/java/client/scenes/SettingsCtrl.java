@@ -3,8 +3,6 @@ package client.scenes;
 import client.utils.*;
 import com.google.inject.Inject;
 import jakarta.mail.MessagingException;
-import javafx.animation.FadeTransition;
-import javafx.animation.PauseTransition;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -12,13 +10,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
-import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
-public class SettingsCtrl implements Initializable, LanguageSwitcher {
+public class SettingsCtrl implements Initializable, LanguageSwitcher, NotificationSender {
 
     private final ConfigInterface config;
     private final LanguageManager languageManager;
@@ -275,11 +272,12 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
         }
         removeHighlight();
         try {
+            showNotification("mail.sending");
             mailSender.sendTestMail(mailHost.getText(),
                     mailPort.getText(),
                     mailUser.getText(),
                     mailEmail.getText());
-            showConfirmationTest();
+            showNotification("settings.emailTestConfirmation");
         } catch (MessagingException e) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.initModality(Modality.APPLICATION_MODAL);
@@ -323,28 +321,11 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher {
     }
 
     /**
-     * method to display a confirmation message when the message is sent
-     * this message disappears
+     * Gets the notification label.
+     * @return - the notification label.
      */
-    public void showConfirmationTest() {
-        confirmation.textProperty().bind(languageManager.bind("settings.emailTestConfirmation"));
-        confirmation.setVisible(true);
-        FadeTransition fadeIn = new FadeTransition(Duration.seconds(1), confirmation);
-        fadeIn.setFromValue(0.0);
-        fadeIn.setToValue(1.0);
-
-        fadeIn.setOnFinished(event -> {
-            PauseTransition delay = new PauseTransition(Duration.seconds(3));
-            delay.setOnFinished(e -> {
-                FadeTransition fadeOut = new FadeTransition(Duration.seconds(1), confirmation);
-                fadeOut.setFromValue(1.0);
-                fadeOut.setToValue(0.0);
-                fadeOut.setOnFinished(f -> confirmation.setVisible(false));
-                fadeOut.play();
-            });
-            delay.play();
-        });
-
-        fadeIn.play();
+    @Override
+    public Label getNotificationLabel() {
+        return confirmation;
     }
 }

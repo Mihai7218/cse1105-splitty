@@ -12,6 +12,10 @@
     -fx-text-fill: white;
 }
 
+#disabledButton:hover{
+    -fx-underline: false;
+    -fx-cursor: default;
+}
 
 .button{
     -fx-background-radius: 50px;

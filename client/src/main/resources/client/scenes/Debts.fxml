@@ -13,7 +13,7 @@
       <Button id="cancel" fx:id="back" cancelButton="true" layoutX="416.0" layoutY="340.0" mnemonicParsing="false" onAction="#goBack" />
       <HBox alignment="CENTER" layoutX="147.0" layoutY="325.0" prefHeight="57.0" prefWidth="240.0">
          <children>
-            <Label id="hciFeedback" fx:id="confirmation" alignment="CENTER" contentDisplay="CENTER" text="${controller.languageManager.debts.reminderConfirmation}" textAlignment="CENTER" textFill="WHITE" visible="false" HBox.hgrow="ALWAYS">
+            <Label id="hciFeedback" fx:id="confirmation" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" textFill="WHITE" visible="false" HBox.hgrow="ALWAYS">
                <font>
                   <Font size="14.0" />
                </font>
