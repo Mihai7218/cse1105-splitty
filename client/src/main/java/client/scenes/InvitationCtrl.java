@@ -154,6 +154,8 @@ public class InvitationCtrl implements Initializable, NotificationSender{
                     new Participant(email, email, null, null));
         }
         mainCtrl.getOverviewCtrl().populateParticipants();
+        if(mailSpace!=null) mailSpace.setText("");
+        mainCtrl.showInviteConfirmation();
         mainCtrl.showOverview();
     }
 

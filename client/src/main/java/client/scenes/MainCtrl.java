@@ -362,6 +362,13 @@ public class MainCtrl {
     }
 
     /**
+     * calls the method to display a message that invites were sent successfully
+     */
+    public void showInviteConfirmation(){
+        overviewCtrl.showNotification("overview.confirmInvite");
+    }
+
+    /**
      * Shows the start menu scene.
      */
     public void showStartMenu() {

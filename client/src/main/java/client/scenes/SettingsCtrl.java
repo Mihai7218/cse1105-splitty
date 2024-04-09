@@ -123,6 +123,14 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
         mailPort.setText(config.getProperty("mail.port"));
         mailUser.setText(config.getProperty("mail.user"));
         mailEmail.setText(config.getProperty("mail.email"));
+        if (mailHost.getText() == null)
+            mailHost.setText("");
+        if (mailPort.getText() == null)
+            mailPort.setText("");
+        if (mailUser.getText() == null)
+            mailUser.setText("");
+        if (mailEmail.getText() == null)
+            mailEmail.setText("");
     }
 
     /**
