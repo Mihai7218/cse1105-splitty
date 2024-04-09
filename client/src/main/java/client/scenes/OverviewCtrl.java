@@ -140,8 +140,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
+            List<Participant> participantsList = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+                participantsList = server.getEvent(mainCtrl.getEvent().getInviteCode())
+                        .getParticipantsList();
             } catch (WebApplicationException e) {
                 e.printStackTrace();
             }
@@ -150,6 +153,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     subscribeToExpense(expense);
                 if (!all.getItems().contains(expense))
                     all.getItems().add(expense);
+            }
+            for (Participant participant : participantsList) {
+                if (!participantSubscriptionMap.containsKey(participant))
+                    subscribeToParticipant(participant);
+                if (!participants.getItems().contains(participant))
+                    participants.getItems().add(participant);
             }
             mainCtrl.getEvent().setExpensesList(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -485,6 +494,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         });
         expenseSubscriptionMap = new HashMap<>();
         tagSubscriptionMap = new HashMap<>();
+        participantSubscriptionMap = new HashMap<>();
         refresh();
     }
 
