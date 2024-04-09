@@ -124,9 +124,22 @@ public class AdminConsole {
                 case 3:
                     List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
                     if(importedEvents == null || importedEvents.isEmpty()) break;
+                    int succes = 0;
+                    int existed = 0;
+                    int error = 0;
                     for(Event e: importedEvents) {
-                        adminConsole.setNewEvents(e);
+                        Response response = adminConsole.setNewEvents(e);
+                        if (response.getStatus() == 200) {
+                            succes++;
+                        } else if (response.getStatus() == 404) {
+                            existed++;
+                        } else {
+                            error++;
+                        }
                     }
+                    System.out.println(succes + " events where successfully imported");
+                    System.out.println(existed + " events already existed");
+                    System.out.println(error + " events encountered an error");
                     break;
                 case 4:
                     adminConsole.deleteEventMenu(userInput, adminConsole);
@@ -445,10 +458,12 @@ public class AdminConsole {
 
     /**
      * Method to add imported events to the server
+     *
      * @param event the event to be added/validated
+     * @return
      */
-    public void setNewEvents(Event event){
-        utils.setEvents(event, password);
+    public Response setNewEvents(Event event){
+        return utils.setEvents(event, password);
     }
 
     /**

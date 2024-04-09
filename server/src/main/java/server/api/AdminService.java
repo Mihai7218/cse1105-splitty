@@ -55,53 +55,67 @@ public class AdminService {
      */
     public ResponseEntity<Event> addCreatedEvent(Event event) {
         if(validateEvent(event).getStatusCode().equals(OK)){
-
-            HashMap<Tag,Tag> tagTagHashMap = new HashMap<>();
-            HashMap<Participant,Participant> ppHashMap = new HashMap<>();
-
-            Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),event.getLastActivity());
-            eventRepository.save(eventToSave);
-            for (Tag tag : event.getTagsList()) {
-                Tag tagToSave = new Tag(tag.getName(), tag.getColor());
-                tagTagHashMap.put(tag,tagToSave);
-                tagRepository.save(tagToSave);
-                eventToSave.getTagsList().add(tagToSave);
-            }
-            eventRepository.save(eventToSave);
-            for (Participant p : event.getParticipantsList()) {
-                Participant participantToSave = new Participant(p.getName(),p.getEmail(), p.getIban(), p.getBic());
-                ppHashMap.put(p,participantToSave);
-                participantRepository.save(participantToSave);
-                eventToSave.getParticipantsList().add(participantToSave);
-            }
-            eventRepository.save(eventToSave);
-            for (Expense e : event.getExpensesList()) {
-
-
-                Expense expenseToSave = new Expense(e.getAmount(),
-                        e.getCurrency(),
-                        e.getTitle(),
-                        e.getDescription(),
-                        e.getDate(),
-                        new ArrayList<>(),
-                        null,null);
-                expenseToSave.setPayee(ppHashMap.get(e.getPayee()));
-                if (e.getTag() != null) {
-                    expenseToSave.setTag(tagTagHashMap.get(e.getTag()));
+            try {
+                Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),event.getLastActivity());
+                eventRepository.save(eventToSave);
+                HashMap<Tag, Tag> tagTagHashMap = tagHashMapMaker(event, eventToSave);
+                HashMap<Participant, Participant> ppHashMap = participantHashMapMaker(event, eventToSave);
+                eventRepository.save(eventToSave);
+                for (Expense e : event.getExpensesList()) {
+                    Expense expenseToSave = new Expense(e.getAmount(),
+                            e.getCurrency(),
+                            e.getTitle(),
+                            e.getDescription(),
+                            e.getDate(),
+                            new ArrayList<>(),
+                            null,null);
+                    if (e.getPayee() != null) {
+                        expenseToSave.setPayee(ppHashMap.get(e.getPayee()));
+                    }if (e.getTag() != null) {
+                        expenseToSave.setTag(tagTagHashMap.get(e.getTag()));
+                    }
+                    for (ParticipantPayment pp : e.getSplit()) {
+                        ParticipantPayment ppToSave = new ParticipantPayment(ppHashMap.get(pp.getParticipant()),pp.getPaymentAmount());
+                        participantPaymentRepository.save(ppToSave);
+                        expenseToSave.getSplit().add(ppToSave);
+                    }
+                    expenseRepository.save(expenseToSave);
+                    eventToSave.getExpensesList().add(expenseToSave);
                 }
-                for (ParticipantPayment pp : e.getSplit()) {
-                    ParticipantPayment ppToSave = new ParticipantPayment(ppHashMap.get(pp.getParticipant()),pp.getPaymentAmount());
-                    participantPaymentRepository.save(ppToSave);
-                    expenseToSave.getSplit().add(ppToSave);
-                }
-                expenseRepository.save(expenseToSave);
-                eventToSave.getExpensesList().add(expenseToSave);
+                eventRepository.save(eventToSave);
+                return ResponseEntity.ok(eventToSave);
+            } catch (Exception e) {
+                return ResponseEntity
+                        .badRequest()
+                        .body(new Event("Something went wrong",null,null));
             }
-            eventRepository.save(eventToSave);
-            return ResponseEntity.ok(eventToSave);
         }else{
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity
+                    .notFound()
+                    .build();
         }
+    }
+
+    private HashMap<Participant, Participant> participantHashMapMaker(Event event, Event eventToSave) {
+        HashMap<Participant,Participant> ppHashMap = new HashMap<>();
+        for (Participant p : event.getParticipantsList()) {
+            Participant participantToSave = new Participant(p.getName(),p.getEmail(), p.getIban(), p.getBic());
+            ppHashMap.put(p,participantToSave);
+            participantRepository.save(participantToSave);
+            eventToSave.getParticipantsList().add(participantToSave);
+        }
+        return ppHashMap;
+    }
+
+    private HashMap<Tag, Tag> tagHashMapMaker(Event event, Event eventToSave) {
+        HashMap<Tag,Tag> tagTagHashMap = new HashMap<>();
+        for (Tag tag : event.getTagsList()) {
+            Tag tagToSave = new Tag(tag.getName(), tag.getColor());
+            tagTagHashMap.put(tag,tagToSave);
+            tagRepository.save(tagToSave);
+            eventToSave.getTagsList().add(tagToSave);
+        }
+        return tagTagHashMap;
     }
 
     /**
@@ -118,11 +132,19 @@ public class AdminService {
         List<Event> allEvents = eventRepository.findAll();
         for(Event e: allEvents){
             event.setInviteCode(e.getInviteCode());
+            boolean test = e.fullEquals(event);
             if(e.fullEquals(event)){
                 return ResponseEntity.badRequest().build();
             }
         }
 
         return ResponseEntity.ok(event);
+    }
+
+    public boolean eventEquals(Event a, Event b) {
+        return a.getInviteCode() == b.getInviteCode() &&
+                a.getLastActivity().equals(b.getLastActivity()) &&
+                a.getCreationDate().equals(b.getCreationDate()) &&
+                a.getTitle().equals(b.getTitle());
     }
 }

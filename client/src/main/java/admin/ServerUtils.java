@@ -108,21 +108,23 @@ public class ServerUtils {
 
     /**
      * Method to add events from a JSON import file
-     * @param events list of events from JSON import
+     *
+     * @param events   list of events from JSON import
      * @param password admin password string to allow endpoint access
+     * @return
      */
-    public void setEvents(Event events, String password){
+    public Response setEvents(Event events, String password){
         if(events==null){
             System.out.println("Error - empty import.");
-            return;
+            return null;
         }
 
 
-        ClientBuilder.newClient(new ClientConfig()) //
+        return ClientBuilder.newClient(new ClientConfig()) //
                 .target(server).path("api/admin/" + password )//
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
-                .post(Entity.entity(events, APPLICATION_JSON), Event.class);
+                .post(Entity.entity(events, APPLICATION_JSON), Response.class);
 //        setParticipants(events.getParticipantsList(), password, events);
 //        setExpenses(events.getExpensesList(), password, events);
 //        setTags(events.getTagsList(), password, events);
