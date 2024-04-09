@@ -3,10 +3,14 @@ package server.api;
 import commons.Participant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/events")
@@ -20,6 +24,7 @@ public class ParticipantController {
     private final ParticipantService participantService;
 
     private final GerneralServerUtil serverUtil;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * Participant Controller Constructor
@@ -27,9 +32,11 @@ public class ParticipantController {
      */
     @Autowired
     public ParticipantController(ParticipantService participantService,
-                                 @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil){
+                                 @Qualifier("serverUtilImpl") GerneralServerUtil serverUtil,
+                                 SimpMessagingTemplate messagingTemplate){
         this.participantService = participantService;
         this.serverUtil = serverUtil;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -66,7 +73,12 @@ public class ParticipantController {
     public ResponseEntity<Participant> addParticipant(
             @PathVariable("eventId") long eventId,
             @RequestBody Participant participant){
-        return participantService.addParticipant(eventId, participant,serverUtil);
+        var resp =  participantService.addParticipant(eventId, participant,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + eventId + "/participants",
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /**
@@ -81,7 +93,12 @@ public class ParticipantController {
             @PathVariable("eventId") long eventId,
             @PathVariable("id") long id,
             @RequestBody Participant participant){
-        return participantService.updateParticipant(eventId, id,participant,serverUtil);
+        var resp = participantService.updateParticipant(eventId, id,participant,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            messagingTemplate.convertAndSend("/topic/events/" + eventId + "/participants/" + id,
+                    Objects.requireNonNull(resp.getBody()));
+        }
+        return resp;
     }
 
     /**
@@ -93,7 +110,14 @@ public class ParticipantController {
     public ResponseEntity<Participant> deleteParticipant(
             @PathVariable("eventId") long eventId,
             @PathVariable("id") long id){
-        return participantService.deleteParticipant(eventId, id,serverUtil);
+        var resp = participantService.deleteParticipant(eventId, id,serverUtil);
+        if (resp.getStatusCode().equals(HttpStatusCode.valueOf(200))) {
+            Participant temp = new Participant("", "", "deleted", "");
+            temp.setId(id);
+            messagingTemplate.convertAndSend("/topic/events/" + eventId + "/participants/" + id,
+                    Objects.requireNonNull(temp));
+        }
+        return resp;
     }
 
 

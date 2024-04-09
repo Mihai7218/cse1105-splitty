@@ -362,7 +362,6 @@ public class ServerUtils {
     }
 
     /**
-<<<<<<< HEAD
      * Method that sends a change of an event to the server.
      * @param event - the event
      * @return - the updated event
@@ -459,5 +458,20 @@ public class ServerUtils {
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .get(Double.class);
+    }
+
+    /**
+     *
+     * @param event
+     * @param participant
+     * @return
+     */
+    public Participant changeParticipant(Event event, Participant participant) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/participants/%s",
+                        event.getInviteCode(), participant.getId()))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(participant, APPLICATION_JSON), Participant.class);
     }
 }

@@ -90,6 +90,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private StompSession.Subscription tagSubscription;
     private StompSession.Subscription participantSubscription;
 
+    private Map<Participant, StompSession.Subscription> participantSubscriptionMap;
+
     @FXML
     private Label sumExpense;
     @FXML
@@ -139,8 +141,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
+            List<Participant> participantsList = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+                participantsList = server.getEvent(mainCtrl.getEvent().getInviteCode())
+                        .getParticipantsList();
             } catch (WebApplicationException e) {
                 e.printStackTrace();
             }
@@ -149,6 +154,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     subscribeToExpense(expense);
                 if (!all.getItems().contains(expense))
                     all.getItems().add(expense);
+            }
+            for (Participant participant : participantsList) {
+                if (!participantSubscriptionMap.containsKey(participant))
+                    subscribeToParticipant(participant);
+                if (!participants.getItems().contains(participant))
+                    participants.getItems().add(participant);
             }
             mainCtrl.getEvent().setExpensesList(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -230,11 +241,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 participantSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent()
                                         .getInviteCode() + "/participants", Participant.class,
-                        participant -> {
+                        participant -> Platform.runLater(() -> {
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
+                            subscribeToParticipant(participant);
                             populateParticipants();
-                        });
+                        }));
             if (tagSubscription == null)
                 tagSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
@@ -247,6 +259,27 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 if (!tagSubscriptionMap.containsKey(tag))
                     subscribeToTag(tag);
             }
+        }
+    }
+
+    /**
+     * @param participant the participant to subscribe to
+     */
+    private void subscribeToParticipant(Participant participant) {
+        if (!participantSubscriptionMap.containsKey(participant)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/participants/"
+                    + participant.getId();
+            var subscription = server.registerForMessages(dest, Participant.class,
+                    part -> Platform.runLater(() -> {
+                        mainCtrl.getEvent().getParticipantsList().remove(part);
+                        if (!"deleted".equals(part.getIban())) {
+                            mainCtrl.getEvent().getParticipantsList().add(part);
+                        }
+                        populateExpenses();
+                        populateParticipants();
+                    }));
+            participantSubscriptionMap.put(participant, subscription);
         }
     }
 
@@ -356,6 +389,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
             tagSubscriptionMap = new HashMap<>();
         }
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
+        if (participantSubscriptionMap != null) {
+            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap = new HashMap<>();
+        }
         clearFields();
         mainCtrl.showStartMenu();
     }
@@ -454,6 +495,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         });
         expenseSubscriptionMap = new HashMap<>();
         tagSubscriptionMap = new HashMap<>();
+        participantSubscriptionMap = new HashMap<>();
         refresh();
     }
 
