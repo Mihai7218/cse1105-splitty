@@ -551,8 +551,8 @@ public class AdminConsole {
      */
     public static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
-        //adminConsole.utils.setServer(userInput.next());
-        adminConsole.utils.setServer("http://localhost:8080");
+        adminConsole.utils.setServer(userInput.next());
+        //adminConsole.utils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
 
