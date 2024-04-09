@@ -121,8 +121,8 @@ public class ExpenseService {
         change.setDate(date);
         expenseRepo.save(change);
         for (ParticipantPayment pp : split)
-            ppRepo.deleteById(pp.getId());
-        expenseRepo.save(change);
+            if (pp != null && ppRepo.existsById(pp.getId()))
+                ppRepo.deleteById(pp.getId());
         Event event = eventRepo.findById(id).get();
         serverUtil.updateDate(eventRepo,id);
         eventRepo.save(event);
