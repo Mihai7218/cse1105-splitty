@@ -642,6 +642,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      *  - if Ctrl + e is pressed, then it opens the add expense scene.
      *  - if Ctrl + s is pressed, then it opens the statistics.
      *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + t is pressed, then it opens the settings.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -670,6 +671,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             case M:
                 if(e.isControlDown()){
                     startMenu();
+                    break;
+                }
+            case T:
+                if(e.isControlDown()){
+                    settings();
                     break;
                 }
             default:

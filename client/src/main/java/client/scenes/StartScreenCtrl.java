@@ -444,6 +444,7 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if Ctrl + r is pressed, then it creates a new event.
      *  - if Ctrl + j is pressed, then it joins a event.
+     *  - if Ctrl + t is pressed, then it opens the settings.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -456,6 +457,11 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
             case J:
                 if(e.isControlDown()){
                     joinEventButtonHandler();
+                    break;
+                }
+            case T:
+                if(e.isControlDown()){
+                    settings();
                     break;
                 }
             default:

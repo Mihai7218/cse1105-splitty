@@ -170,6 +170,7 @@
                          <Label maxWidth="392.0" text="${controller.languageManager.settings.addparticipant}" wrapText="true" />
                         <Label maxWidth="392.0" text="${controller.languageManager.settings.addexpense}" wrapText="true" />
                         <Label maxWidth="392.0" text="${controller.languageManager.settings.statistics}" wrapText="true" />
+                         <Label maxWidth="392.0" text="${controller.languageManager.settings.settings}" wrapText="true" />
                      </children>
                   </TextFlow>
                </children>
