@@ -42,9 +42,6 @@ public class MainCtrl {
 
     private final ConfigInterface config;
 
-    private AddQuoteCtrl addCtrl;
-    private Scene add;
-
     private StartScreenCtrl startScreenCtrl;
     private Scene startScreen;
 
@@ -109,7 +106,6 @@ public class MainCtrl {
      * @param connectToServer connecting to server scene
      */
     public void initialize(Stage primaryStage,
-                           Pair<AddQuoteCtrl, Parent> add,
                            Pair<StartScreenCtrl, Parent> startScreen,
                            Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
@@ -124,9 +120,6 @@ public class MainCtrl {
                            Pair<ManageTagsCtrl, Parent> manageTags,
                            Pair<EditTagCtrl, Parent> editTag) {
         this.primaryStage = primaryStage;
-
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
 
         this.startScreenCtrl = startScreen.getKey();
         this.startScreen = new Scene(startScreen.getValue());
@@ -386,15 +379,6 @@ public class MainCtrl {
     }
 
     /**
-     * Shows the add quote scene.
-     */
-    public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
-        primaryStage.setScene(add);
-        if (add != null) add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
-    }
-
-    /**
      * Shows the add participant scene.
      */
     public void showParticipant() {
@@ -518,25 +502,6 @@ public class MainCtrl {
     public Scene getEditparticipant() {
         return editparticipant;
     }
-
-    /**
-     * Getter for the add quote controller.
-     * Package-access getter for testing purposes.
-     * @return - add quote controller.
-     */
-    AddQuoteCtrl getAddCtrl() {
-        return addCtrl;
-    }
-
-    /**
-     * Getter for the add quote scene.
-     * Package-access getter for testing purposes.
-     * @return - add quote scene.
-     */
-    Scene getAdd() {
-        return add;
-    }
-
 
 
     /**
