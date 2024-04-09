@@ -111,7 +111,7 @@
                             <HBox.margin>
                                 <Insets right="5.0" />
                             </HBox.margin></Button>
-                        <Button fx:id="settleDebts" alignment="CENTER" defaultButton="true" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" text="${controller.languageManager.overview.settleDebtsButton}" wrapText="true" />
+                        <Button fx:id="settleDebts" alignment="CENTER" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" onAction="#settleDebts" text="${controller.languageManager.overview.settleDebtsButton}" wrapText="true" />
                     </children>
                 </HBox>
             </children>

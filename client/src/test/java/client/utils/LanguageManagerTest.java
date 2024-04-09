@@ -44,6 +44,8 @@ class LanguageManagerTest {
         comparison.put("big", new SimpleMapProperty<>(FXCollections.observableHashMap()));
         ((Map<String, Object>) comparison.get("big")).put("small", "test");
         comparison.put("why","not");
+        comparison.put("language", new SimpleMapProperty<>(FXCollections.observableHashMap()));
+        ((Map<String, Object>) comparison.get("language")).put("name", "English");
         assertEquals(comparison, sut);
     }
 

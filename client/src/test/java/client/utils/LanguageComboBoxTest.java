@@ -26,7 +26,7 @@ class LanguageComboBoxTest {
      */
     @Test
     void testLanguageCodesNullList() {
-        assertEquals(List.of(), sut.getItems().stream().sorted().toList());
+        assertEquals(List.of("en", "template"), sut.getItems().stream().sorted().toList());
     }
 
 }

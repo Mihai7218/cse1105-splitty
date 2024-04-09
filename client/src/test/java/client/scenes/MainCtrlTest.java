@@ -42,7 +42,7 @@ class MainCtrlTest {
     @Start
     void setUp(Stage ignored) {
         languageManager = mock(LanguageManager.class);
-        sut = new MainCtrl(languageManager);
+        sut = new MainCtrl(new TestConfig(), languageManager);
         stage = mock(Stage.class);
         sb = Bindings.createStringBinding(() -> "Test");
         sp = new SimpleStringProperty();
@@ -115,6 +115,12 @@ class MainCtrlTest {
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
+    @Test
+    void showDebts(){
+        sut.showDebts();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
 
     /**
      * Tests that the stage that was set is returned when calling the getter for it.
@@ -154,6 +160,12 @@ class MainCtrlTest {
         Parent editExpense = spy(Parent.class);
         ConnectToServerCtrl connectToServerCtrl = mock(ConnectToServerCtrl.class);
         Parent connectToServer = spy(Parent.class);
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        Parent debts = spy(Parent.class);
+        ManageTagsCtrl manageTagsCtrl = mock(ManageTagsCtrl.class);
+        Parent manageTags = spy(Parent.class);
+        EditTagCtrl editTagCtrl = mock(EditTagCtrl.class);
+        Parent editTag = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
@@ -165,7 +177,10 @@ class MainCtrlTest {
                 new Pair<>(settingsCtrl, settings),
                 new Pair<>(statisticsCtrl,statistics),
                 new Pair<>(editExpenseCtrl, editExpense),
-                new Pair<>(connectToServerCtrl, connectToServer));
+                new Pair<>(connectToServerCtrl, connectToServer),
+                new Pair<>(debtsCtrl, debts),
+                new Pair<>(manageTagsCtrl, manageTags),
+                new Pair<>(editTagCtrl, editTag));
         assertEquals(stage, sut.getPrimaryStage());
         //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
@@ -185,6 +200,8 @@ class MainCtrlTest {
         assertEquals(editExpense, sut.getEditExpense().getRoot());
         assertEquals(addExpenseCtrl, sut.getAddExpenseCtrl());
         assertEquals(addExpense, sut.getAddExpense().getRoot());
+        assertEquals(debtsCtrl, sut.getDebtsCtrl());
+        assertEquals(debts, sut.getDebts().getRoot());
     }
 
     @Test

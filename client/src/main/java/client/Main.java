@@ -53,15 +53,18 @@ public class Main extends Application {
         var settings = FXML.load(SettingsCtrl.class, "client", "scenes", "Settings.fxml");
         var statistics = FXML.load(StatisticsCtrl.class, "client", "scenes", "Statistics.fxml");
         var editExpense = FXML.load(EditExpenseCtrl.class, "client", "scenes", "EditExpense.fxml");
+        var manageTags = FXML.load(ManageTagsCtrl.class, "client", "scenes", "ManageTags.fxml");
+        var editTag = FXML.load(EditTagCtrl.class, "client", "scenes", "EditTag.fxml");
         var connectToServer = FXML.load(ConnectToServerCtrl.class, "client", "scenes",
                 "ConnectToServer.fxml");
+        var debts = FXML.load(DebtsCtrl.class, "client", "scenes", "Debts.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage,
                 add, startScreen,
                 participant, overview, addExpense,
                 invitation, editparticipant, settings, statistics,
-                editExpense, connectToServer);
+                editExpense, connectToServer, debts, manageTags,editTag);
         primaryStage.setOnCloseRequest(e -> {
             startScreen.getKey().stop();
         });
@@ -75,6 +78,7 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         var config = INJECTOR.getInstance(Config.class);
+        config.removeProperty("mail.password");
         config.saveProperties();
         super.stop();
     }

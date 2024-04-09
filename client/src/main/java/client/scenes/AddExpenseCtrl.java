@@ -20,6 +20,7 @@ import java.util.ResourceBundle;
 
 
 public class AddExpenseCtrl extends ExpenseCtrl {
+
     @FXML
     private Button addExpense;
 

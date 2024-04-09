@@ -120,9 +120,11 @@ public class TagService {
         }
         Event event = eventRepo.findById(inviteCode).get();
         serverUtil.updateDate(eventRepo,inviteCode);
-        Tag change = tag;
+        Tag change = tagRepo.findById(tagId).get();
+        change.setColor(tag.getColor());
+        change.setName(tag.getName());
         tagRepo.save(change);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok(change);
     }
 
     /**
@@ -145,11 +147,16 @@ public class TagService {
         }
         Event event = eventRepo.findById(inviteCode).get();
         serverUtil.updateDate(eventRepo,inviteCode);
-        Optional<Tag> test = tagRepo.findById(tagId);
-        event.getTagsList().remove(test.get());
+        Tag test = tagRepo.findById(tagId).get();
+        for(Expense expense : event.getExpensesList()) {
+            if (test.equals(expense.getTag())) {
+                expense.setTag(null);
+            }
+        }
+        event.getTagsList().remove(test);
         eventRepo.save(event);
         tagRepo.deleteAllById(Collections.singleton(tagId));
-        return ResponseEntity.ok(test.get());
+        return ResponseEntity.ok(test);
     }
 
 

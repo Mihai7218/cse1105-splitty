@@ -22,6 +22,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -35,6 +36,8 @@ import java.util.*;
 public abstract class ExpenseCtrl implements Initializable {
 
 
+    @FXML
+    public ColorPicker colorPicker;
     protected final ServerUtils serverUtils;
     protected final ConfigInterface config;
     protected final MainCtrl mainCtrl;
@@ -119,6 +122,7 @@ public abstract class ExpenseCtrl implements Initializable {
         scrollNames.setVisible(false);
         instructions.setVisible(false);
         newTag.setVisible(false);
+        colorPicker.setVisible(false);
         if (cancelButton != null)
             cancelButton.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         if (addExpense != null)
@@ -156,8 +160,17 @@ public abstract class ExpenseCtrl implements Initializable {
                     setGraphic(null);
                 } else {
                     rectangle.setFill(Paint.valueOf(item.getColor()));
-                    //setText(item.getName());
-                    StackPane stackPane = new StackPane(rectangle, new Text(item.getName()));
+                    Text tagName = new Text(item.getName());
+                    Color tagColor = Color.web(item.getColor());
+                    if (0.2126 * tagColor.getRed() + 0.7152 * tagColor.getGreen()
+                            + 0.0722* tagColor.getBlue()<0.5) {
+                        tagName.setFill(Color.color(1.0,1.0,1.0));
+                    } else {
+                        tagName.setFill(Color.color(0.0,0.0,0.0));
+                    }
+                    rectangle.setStroke(Color.BLACK);
+                    rectangle.setStrokeWidth(1);
+                    StackPane stackPane = new StackPane(rectangle, tagName);
                     setGraphic(stackPane);
                 }
             }
@@ -262,13 +275,17 @@ public abstract class ExpenseCtrl implements Initializable {
     public void addTag() {
         showInstructions();
         newTag.setVisible(true);
+        colorPicker.setVisible(true);
+        System.out.println("#" + colorPicker.getValue().toString().substring(2,8));
         newTag.setOnKeyPressed(event -> {
             if (event.getCode() == KeyCode.ENTER) {
                 String tag = newTag.getText().trim();
                 // Add text to the ArrayList if it's not empty
                 if (!tag.isEmpty()) {
                     //tags.add(new Tag(tag, "black"));
-                    Tag newTag = new Tag(tag, "yellow");
+
+                    Tag newTag = new Tag(tag, "#" +
+                            colorPicker.getValue().toString().substring(2,8));
                     try {
                         newTag = serverUtils.addTag(mainCtrl.getEvent().getInviteCode(), newTag);
                     }
@@ -282,10 +299,14 @@ public abstract class ExpenseCtrl implements Initializable {
                         return;
                     }
                     expenseType.getItems().add(newTag);
+                    expenseType.setValue(newTag);
+
                 }
                 // Clear the text field
                 newTag.clear();
+                colorPicker.setValue(Color.WHITE);
                 newTag.setVisible(false);
+                colorPicker.setVisible(false);
             }
         });
     }
@@ -527,6 +548,7 @@ public abstract class ExpenseCtrl implements Initializable {
         title.clear();
         price.clear();
         newTag.clear();
+        colorPicker.setValue(Color.WHITE);
         date.setValue(null);
         currency.setValue(null);
         payee.setValue(null);
@@ -537,6 +559,7 @@ public abstract class ExpenseCtrl implements Initializable {
         scrollNames.setVisible(false);
         instructions.setVisible(false);
         newTag.setVisible(false);
+        colorPicker.setVisible(false);
     }
 
     /**
@@ -790,6 +813,14 @@ public abstract class ExpenseCtrl implements Initializable {
      */
     public void setNewTag(TextField newTag) {
         this.newTag = newTag;
+    }
+
+    /**
+     *
+     * @param colorPicker
+     */
+    public void setColorPicker(ColorPicker colorPicker) {
+        this.colorPicker = colorPicker;
     }
 
     /**
