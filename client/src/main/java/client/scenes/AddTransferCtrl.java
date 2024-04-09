@@ -7,10 +7,8 @@ import client.utils.ServerUtils;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
-import commons.Tag;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -54,6 +52,15 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
     private Button confirm;
 
 
+    /**
+     * Constrcutor for the transfer controller
+     * @param mainCtrl main controller
+     * @param config config file
+     * @param languageManager controls language switching
+     * @param serverUtils server utils
+     * @param alert alerts
+     * @param currencyConverter to convert to foreign currencies
+     */
     @Inject
     public AddTransferCtrl(MainCtrl mainCtrl,
                            ConfigInterface config,
@@ -65,8 +72,18 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
 
     }
 
+    /**
+     * Initalizes the transfer ctrl
+     * @param url
+     * The location used to resolve relative paths for the root object, or
+     * {@code null} if the location is not known.
+     *
+     * @param resources
+     * The resources used to localize the root object, or {@code null} if
+     * the root object was not localized.
+     */
     @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    public void initialize(URL url, ResourceBundle resources) {
         if (cancel != null){
             cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         }
@@ -111,6 +128,9 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         refresh();
     }
 
+    /**
+     * Refreshes the scene
+     */
     @Override
     public void refresh(){
         if (mainCtrl != null && mainCtrl.getEvent() != null
@@ -124,6 +144,9 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
 
     }
 
+    /**
+     * Attempt to add the transfer to the expenses
+     */
     public void doneTransfer(){
         String title = "Transfer";
         LocalDate transferDate = date.getValue();
@@ -164,6 +187,13 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         clearFields();
     }
 
+    /**
+     * Creates the transfer expense object
+     * @param title title of the transfer (Transfer)
+     * @param price amount transferred
+     * @param date time that the transfer occurred
+     * @return newly created transfer
+     */
     public Expense createExpense(String title, int price, LocalDate date){
         Participant payee = from.getValue();
         Date actualDate = java.sql.Date.valueOf(date);
@@ -172,16 +202,23 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         ParticipantPayment onlySplit = new ParticipantPayment(to.getValue(), priceVal);
         ParticipantPayment secondSplit = new ParticipantPayment(from.getValue(), priceVal);
 
-        return new Expense(priceVal, currencyVal.getValue(), title, "transfer", actualDate,List.of(onlySplit, secondSplit),
+        return new Expense(priceVal, currencyVal.getValue(), title,
+                "transfer", actualDate,List.of(onlySplit, secondSplit),
                 null, payee);
     }
 
+    /**
+     * Cancels adding the transfer
+     */
     @Override
     public void abort(){
         clearFields();
         mainCtrl.showOverview();
     }
 
+    /**
+     * removes all values in the fields
+     */
     @Override
     public void clearFields(){
         from.setValue(null);
@@ -191,10 +228,13 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         date.setValue(null);
     }
 
+    /**
+     * Populates + removes option from 'to' box if it is checked in 'from'
+     */
     public void populateToBox(){
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null
-        && to.getValue() == null) {
+                && to.getValue() == null) {
             to.getItems().clear();
             for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
                 if (participant == from.getValue()) continue;
@@ -205,10 +245,13 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         }
     }
 
+    /**
+     * Populates + removes options from 'from' box if it is checked in 'to'
+     */
     public void populateFromBox(){
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null
-        && from.getValue() == null) {
+                && from.getValue() == null) {
             from.getItems().clear();
             for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
                 if (participant == to.getValue()) continue;
@@ -219,6 +262,12 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         }
     }
 
+    /**
+     * Validation method to check that the transfer is correctly filled in
+     * @param expensePriceText amount to transfer
+     * @param expenseDate date of transfer
+     * @return true of transfer is valid
+     */
     public boolean validate(String expensePriceText, LocalDate expenseDate){
         // Perform validation
         return !expensePriceText.isEmpty() && expenseDate != null

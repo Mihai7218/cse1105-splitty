@@ -172,6 +172,9 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Displays the transfer scene
+     */
     public void showTransfer(){
         primaryStage.titleProperty().bind(languageManager.bind("transfer.sceneTitle"));
         try {
@@ -282,10 +285,18 @@ public class MainCtrl {
 
     }
 
+    /**
+     * Getter for transfer controller
+     * @return transfer controller
+     */
     public AddTransferCtrl getTransferCtrl() {
         return transferCtrl;
     }
 
+    /**
+     * Getter for transfer scene
+     * @return transfer scene
+     */
     public Scene getTransfer() {
         return transfer;
     }

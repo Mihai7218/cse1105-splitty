@@ -146,6 +146,10 @@ public class ExpenseListCell extends ListCell<Expense> {
         }
     }
 
+    /**
+     * Method to style the transfer in the expense cell
+     * @param item the transfer
+     */
     private void createTransfer(Expense item) {
         expenseName = new Label();
         paidLabel = new Label();
@@ -204,6 +208,9 @@ public class ExpenseListCell extends ListCell<Expense> {
         HBox.setHgrow(autogrowRight, Priority.ALWAYS);
     }
 
+    /**
+     * Updates the cell according to transfer specific styling
+     */
     private void updateTransfer(){
         boolean setCurrency = false;
         try {

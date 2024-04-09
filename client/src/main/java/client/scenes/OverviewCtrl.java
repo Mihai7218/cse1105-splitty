@@ -362,6 +362,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         mainCtrl.showParticipant();
     }
 
+    /**
+     * Opens transfer scene to add a transfer to an event
+     */
     public void addTransfer(){
         mainCtrl.showTransfer();
     }
