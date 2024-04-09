@@ -84,8 +84,8 @@ public abstract class ExpenseCtrl implements Initializable {
     protected Button addExpense;
 
     protected Expense expense;
-    private StompSession.Subscription participantSubscription;
-    private Map<Participant, StompSession.Subscription> participantSubscriptionMap;
+    protected StompSession.Subscription participantSubscription;
+    protected Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
     /**
      *
@@ -678,9 +678,18 @@ public abstract class ExpenseCtrl implements Initializable {
         confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            clearFields();
-            mainCtrl.showOverview();
+            exit();
         }
+    }
+
+    /**
+     * Exit method. Closes subscriptions and returns to the overview.
+     */
+    protected void exit() {
+        participantSubscription.unsubscribe();
+        participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+        clearFields();
+        mainCtrl.showOverview();
     }
 
     /**
