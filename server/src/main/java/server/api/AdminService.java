@@ -56,10 +56,13 @@ public class AdminService {
     public ResponseEntity<Event> addCreatedEvent(Event event) {
         if(validateEvent(event).getStatusCode().equals(OK)){
             try {
-                Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),event.getLastActivity());
+                Event eventToSave = new Event(event.getTitle(),
+                        event.getCreationDate(),event.getLastActivity());
                 eventRepository.save(eventToSave);
-                HashMap<Tag, Tag> tagTagHashMap = tagHashMapMaker(event, eventToSave);
-                HashMap<Participant, Participant> ppHashMap = participantHashMapMaker(event, eventToSave);
+                HashMap<Tag, Tag> tagTagHashMap = tagHashMapMaker(event,
+                        eventToSave);
+                HashMap<Participant, Participant> ppHashMap =
+                        participantHashMapMaker(event, eventToSave);
                 eventRepository.save(eventToSave);
                 for (Expense e : event.getExpensesList()) {
                     Expense expenseToSave = new Expense(e.getAmount(),
@@ -75,7 +78,9 @@ public class AdminService {
                         expenseToSave.setTag(tagTagHashMap.get(e.getTag()));
                     }
                     for (ParticipantPayment pp : e.getSplit()) {
-                        ParticipantPayment ppToSave = new ParticipantPayment(ppHashMap.get(pp.getParticipant()),pp.getPaymentAmount());
+                        ParticipantPayment ppToSave = new ParticipantPayment(
+                                ppHashMap.get(pp.getParticipant()),
+                                pp.getPaymentAmount());
                         participantPaymentRepository.save(ppToSave);
                         expenseToSave.getSplit().add(ppToSave);
                     }
@@ -96,10 +101,18 @@ public class AdminService {
         }
     }
 
-    private HashMap<Participant, Participant> participantHashMapMaker(Event event, Event eventToSave) {
+    /**
+     * Genereate a Hashmap to keep reference to oldParticipant
+     * @param event event were the participants are from
+     * @param eventToSave event were the participants are for
+     * @return a hash map met references between them
+     */
+    private HashMap<Participant, Participant> participantHashMapMaker(Event event,
+                                                                      Event eventToSave) {
         HashMap<Participant,Participant> ppHashMap = new HashMap<>();
         for (Participant p : event.getParticipantsList()) {
-            Participant participantToSave = new Participant(p.getName(),p.getEmail(), p.getIban(), p.getBic());
+            Participant participantToSave = new Participant(p.getName(),
+                    p.getEmail(), p.getIban(), p.getBic());
             ppHashMap.put(p,participantToSave);
             participantRepository.save(participantToSave);
             eventToSave.getParticipantsList().add(participantToSave);
@@ -107,6 +120,12 @@ public class AdminService {
         return ppHashMap;
     }
 
+    /**
+     * Genereate a Hashmap to keep reference to oldTags
+     * @param event event were the tags are from
+     * @param eventToSave event were the tags are for
+     * @return a hash map met references between them
+     */
     private HashMap<Tag, Tag> tagHashMapMaker(Event event, Event eventToSave) {
         HashMap<Tag,Tag> tagTagHashMap = new HashMap<>();
         for (Tag tag : event.getTagsList()) {
@@ -139,12 +158,5 @@ public class AdminService {
         }
 
         return ResponseEntity.ok(event);
-    }
-
-    public boolean eventEquals(Event a, Event b) {
-        return a.getInviteCode() == b.getInviteCode() &&
-                a.getLastActivity().equals(b.getLastActivity()) &&
-                a.getCreationDate().equals(b.getCreationDate()) &&
-                a.getTitle().equals(b.getTitle());
     }
 }

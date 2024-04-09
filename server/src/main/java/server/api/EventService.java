@@ -184,7 +184,8 @@ public class EventService {
      */
     public ResponseEntity<Event> addCreatedEvent(Event event) {
         if(validateEvent(event).getStatusCode().equals(OK)){
-            Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),event.getLastActivity());
+            Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),
+                    event.getLastActivity());
 
             return ResponseEntity.ok(eventRepository.save(event));
         }else{
