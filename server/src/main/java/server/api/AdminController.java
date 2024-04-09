@@ -2,6 +2,7 @@ package server.api;
 
 import commons.Event;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,12 +14,15 @@ public class AdminController {
 
     private final AdminService adminService;
 
+    private final String password;
+
     /**
      * @param adminService
      */
     @Autowired
-    public AdminController(AdminService adminService) {
+    public AdminController(AdminService adminService, @Qualifier("adminPassword") String adminPassword) {
         this.adminService = adminService;
+        this.password = adminPassword;
     }
 
     /**
@@ -27,8 +31,7 @@ public class AdminController {
      */
     @GetMapping(path = { "/{password}" })
     public ResponseEntity<List<Event>> get(@PathVariable("password") String password) {
-        String ewa = PasswordService.getPassword();
-        if (PasswordService.getPassword().equals(password)) {
+        if (password.equals(password)) {
             return adminService.getAllEvents();
         } else {
             return ResponseEntity.badRequest().build();
@@ -44,7 +47,7 @@ public class AdminController {
     @PostMapping(path = {"/{password}"})
     public ResponseEntity<Event> addJsonImport(@PathVariable("password") String password,
                                                @RequestBody  Event event){
-        if (PasswordService.getPassword().equals(password)) {
+        if (password.equals(password)) {
             return adminService.addCreatedEvent(event);
         }else{
             return ResponseEntity.badRequest().build();

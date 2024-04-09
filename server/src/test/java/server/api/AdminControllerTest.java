@@ -50,7 +50,7 @@ public class AdminControllerTest {
         TestExpenseRepository expRepo = new TestExpenseRepository();
 
         serviceStub = new AdminServiceStub(eventRepo, tagRepo,partRepo,ppRepo,expRepo);
-        sutStubbed = new AdminController(serviceStub);
+        sutStubbed = new AdminController(serviceStub,"password");
 
         ps = new PasswordService();
         setPassword("password");
