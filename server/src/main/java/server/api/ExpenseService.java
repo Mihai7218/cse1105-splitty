@@ -8,10 +8,7 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 import server.database.ParticipantPaymentRepository;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ExpenseService {
@@ -110,6 +107,7 @@ public class ExpenseService {
             return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
+        List<ParticipantPayment> split = new ArrayList<>(change.getSplit());
         change.getSplit().clear();
         if (expense.getSplit() != null) {
             ppRepo.saveAll(expense.getSplit());
@@ -121,6 +119,9 @@ public class ExpenseService {
         change.setCurrency(currency);
         change.setTag(tag);
         change.setDate(date);
+        expenseRepo.save(change);
+        for (ParticipantPayment pp : split)
+            ppRepo.deleteById(pp.getId());
         expenseRepo.save(change);
         Event event = eventRepo.findById(id).get();
         serverUtil.updateDate(eventRepo,id);

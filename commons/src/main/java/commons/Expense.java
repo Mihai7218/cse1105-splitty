@@ -17,7 +17,7 @@ public class Expense {
     private String title;
     private String description;
     private Date date;
-    @OneToMany(cascade = CascadeType.REMOVE)
+    @OneToMany(cascade = CascadeType.ALL)
     private List<ParticipantPayment> split;
     @ManyToOne
     private Tag tag;
