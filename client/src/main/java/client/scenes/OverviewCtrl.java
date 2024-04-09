@@ -190,10 +190,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     expenseparticipants.getItems().add(p);
                 }
             }
+            List<Participant> removed = new ArrayList<>();
             for (Participant p : expenseparticipants.getItems()) {
-                if (!serverparticipants.contains(p))
-                    expenseparticipants.getItems().remove(p);
+                if (!serverparticipants.contains(p)){
+                    removed.add(p);
+                }
+//                    expenseparticipants.getItems().remove(p);
             }
+            expenseparticipants.getItems().removeAll(removed);
             participants.refresh();
         }
     }
@@ -272,7 +276,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     + participant.getId();
             var subscription = server.registerForMessages(dest, Participant.class,
                     part -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getParticipantsList().remove(part);
+                        mainCtrl.getEvent().getParticipantsList().remove(participant);
                         if (!"deleted".equals(part.getIban())) {
                             mainCtrl.getEvent().getParticipantsList().add(part);
                         }
@@ -539,11 +543,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
-                    participants.getItems().remove(participant);
-                    participants.refresh();
-                    return;
-                }else{
+                if(!(result.isPresent() && result.get() == ButtonType.OK)) {
                     return;
                 }
             }
