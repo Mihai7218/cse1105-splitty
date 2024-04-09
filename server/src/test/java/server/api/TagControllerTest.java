@@ -7,6 +7,7 @@ import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.database.EventRepository;
 import server.database.TagRepository;
 
@@ -16,6 +17,9 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.HttpStatus.*;
 import static server.api.PasswordService.setPassword;
 
@@ -66,7 +70,11 @@ public class TagControllerTest {
                                                       GerneralServerUtil serverUtil){
             if(inviteCode < 0 || tagId < 0 ) return ResponseEntity.badRequest().build();
             else if (inviteCode > 40 || tagId > 40) return ResponseEntity.notFound().build();
-            else return ResponseEntity.ok(null);
+            else {
+                Tag returnTag = new Tag("placeholder","placeholder");
+                returnTag.setId(tagId);
+                return ResponseEntity.ok(returnTag);
+            }
         }
 
         public ResponseEntity<Tag> validateTag(Tag tag){
@@ -93,6 +101,8 @@ public class TagControllerTest {
 
     public GerneralServerUtil serverUtil;
 
+    public SimpMessagingTemplate smt = mock(SimpMessagingTemplate.class);
+
     public TagService serviceStub;
     public TagController ctrlStub;
 
@@ -105,7 +115,7 @@ public class TagControllerTest {
         expenseRepo = new TestExpenseRepository();
         tagRepo = new TestTagRepository();
         tagService = new TagService(eventRepo, tagRepo);
-        ctrl = new TagController(tagService,serverUtil);
+        ctrl = new TagController(tagService,serverUtil,smt);
 
         payee = new Participant("joe", null, null, null);
         tag1 = new Tag("food", "#FF1493");
@@ -134,7 +144,7 @@ public class TagControllerTest {
         expenseRepo.save(expense2);
 
         serviceStub = new TagServiceStub(eventRepo, tagRepo);
-        ctrlStub = new TagController(serviceStub, serverUtil);
+        ctrlStub = new TagController(serviceStub, serverUtil,smt);
     }
 
     /***

@@ -53,6 +53,8 @@ public class Main extends Application {
         var settings = FXML.load(SettingsCtrl.class, "client", "scenes", "Settings.fxml");
         var statistics = FXML.load(StatisticsCtrl.class, "client", "scenes", "Statistics.fxml");
         var editExpense = FXML.load(EditExpenseCtrl.class, "client", "scenes", "EditExpense.fxml");
+        var manageTags = FXML.load(ManageTagsCtrl.class, "client", "scenes", "ManageTags.fxml");
+        var editTag = FXML.load(EditTagCtrl.class, "client", "scenes", "EditTag.fxml");
         var connectToServer = FXML.load(ConnectToServerCtrl.class, "client", "scenes",
                 "ConnectToServer.fxml");
         var debts = FXML.load(DebtsCtrl.class, "client", "scenes", "Debts.fxml");
@@ -62,7 +64,7 @@ public class Main extends Application {
                 add, startScreen,
                 participant, overview, addExpense,
                 invitation, editparticipant, settings, statistics,
-                editExpense, connectToServer, debts);
+                editExpense, connectToServer, debts, manageTags,editTag);
         primaryStage.setOnCloseRequest(e -> {
             startScreen.getKey().stop();
         });

@@ -389,6 +389,20 @@ public class ServerUtils {
                 .accept(APPLICATION_JSON)
                 .put(Entity.entity(expense, APPLICATION_JSON), Expense.class);
     }
+    /**
+     * Method that updates the tag on the server.
+     * @param id - the id of the event.
+     * @param tag - the tag to update
+     * @return the updated tag
+     */
+    public Tag updateTag(int id, Tag tag) {
+        return ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/tags/%s",
+                        id, tag.getId()))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .put(Entity.entity(tag, APPLICATION_JSON), Tag.class);
+    }
 
     /**
      * Method that gets an expense from the server.
@@ -414,6 +428,19 @@ public class ServerUtils {
         ClientBuilder.newClient(new ClientConfig())
                 .target(server).path(String.format("/api/events/%s/expenses/%s",
                         eventID, expenseID))
+                .request(APPLICATION_JSON)
+                .accept(APPLICATION_JSON)
+                .delete();
+    }
+    /**
+     * Method that removes a tag from the server.
+     * @param eventID - the id of the event.
+     * @param tagID - the id of the tag.
+     */
+    public void removeTag(int eventID, long tagID) {
+        ClientBuilder.newClient(new ClientConfig())
+                .target(server).path(String.format("/api/events/%s/tags/%s",
+                        eventID, tagID))
                 .request(APPLICATION_JSON)
                 .accept(APPLICATION_JSON)
                 .delete();

@@ -62,11 +62,19 @@ public class MainCtrl {
     private AddExpenseCtrl addExpenseCtrl;
     private Scene addExpense;
     private InvitationCtrl invitationCtrl;
-    private StatisticsCtrl statisticsCtrl;
+
     private Scene invitation;
+    private StatisticsCtrl statisticsCtrl;
+    private Scene statistics;
     private SettingsCtrl settingsCtrl;
     private Scene settings;
-    private Scene statistics;
+
+    private EditTagCtrl editTagCtrl;
+    private Scene editTag;
+
+    private ManageTagsCtrl manageTagsCtrl;
+    private Scene manageTags;
+
     private DebtsCtrl debtsCtrl;
     private Scene debts;
 
@@ -95,6 +103,8 @@ public class MainCtrl {
      * @param invitation      invitation controller and scene
      * @param editparticipant edit participant controller and scene
      * @param settings        settings controller and scene
+     * @param manageTags      Manage tag controller and scene
+     * @param editTag         editTag controller and scene
      * @param statistics      statistics scene
      * @param connectToServer connecting to server scene
      */
@@ -110,7 +120,9 @@ public class MainCtrl {
                            Pair<StatisticsCtrl, Parent> statistics,
                            Pair<EditExpenseCtrl, Parent> editExpense,
                            Pair<ConnectToServerCtrl, Parent> connectToServer,
-                           Pair<DebtsCtrl, Parent> debts ) {
+                           Pair<DebtsCtrl, Parent> debts,
+                           Pair<ManageTagsCtrl, Parent> manageTags,
+                           Pair<EditTagCtrl, Parent> editTag) {
         this.primaryStage = primaryStage;
 
         this.addCtrl = add.getKey();
@@ -145,6 +157,12 @@ public class MainCtrl {
 
         this.statisticsCtrl = statistics.getKey();
         this.statistics = new Scene(statistics.getValue());
+
+        this.manageTagsCtrl = manageTags.getKey();
+        this.manageTags = new Scene(manageTags.getValue());
+
+        this.editTagCtrl = editTag.getKey();
+        this.editTag = new Scene(editTag.getValue());
 
         this.debtsCtrl = debts.getKey();
         this.debts = new Scene(debts.getValue());
@@ -194,7 +212,37 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(statistics);
-        if (statisticsCtrl != null) statisticsCtrl.refresh();
+        if (statisticsCtrl != null) statisticsCtrl.setup();
+    }
+
+    /**
+     * shows scene for Manage Tags Screen
+     */
+    public void showManageTags(){
+        primaryStage.titleProperty().bind(languageManager.bind("manageTags.sceneTitle"));
+        try {
+            manageTags.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(manageTags);
+        if (manageTagsCtrl != null) manageTagsCtrl.setup();
+    }
+
+    /**
+     * shows scene for Manage Tags Screen
+     */
+    public void showEditTag(){
+        primaryStage.titleProperty().bind(languageManager.bind("editTag.sceneTitle"));
+        try {
+            editTag.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(editTag);
+        if (editTagCtrl != null) editTagCtrl.refresh();
     }
 
     /**
@@ -229,11 +277,17 @@ public class MainCtrl {
     }
 
     /**
-     *
      * @return the controller for editing an expense
      */
     public EditExpenseCtrl getEditExpenseCtrl() {
         return editExpenseCtrl;
+    }
+    /**
+     *
+     * @return the controller for editing a tag
+     */
+    public EditTagCtrl getTagCtrl() {
+        return editTagCtrl;
     }
 
     /**
