@@ -42,6 +42,33 @@ public class ExpenseTest {
     }
 
     @Test
+    void participantPaymentTest() {
+        Participant marco = new Participant("Marco","Marco","Marco","Marco");
+        Expense expense1 = new Expense();
+        Expense expense2 = new Expense();
+        List<ParticipantPayment> list1 = new ArrayList<>();
+        List<ParticipantPayment> list2 = new ArrayList<>();
+        list1.add(new ParticipantPayment(marco,1));
+        list2.add(new ParticipantPayment(marco,1));
+        expense1.setSplit(list1);
+        expense2.setSplit(list2);
+        assertTrue(expense1.participantPaymentEquals(expense1.getSplit(),expense2.getSplit()));
+        list1.add(new ParticipantPayment(marco,1));
+        list2.add(new ParticipantPayment(marco,2));
+        assertFalse(expense1.participantPaymentEquals(expense1.getSplit(),expense2.getSplit()));
+        list1.add(new ParticipantPayment(marco,3));
+        list2.add(new ParticipantPayment(marco,1));
+        assertFalse(expense1.participantPaymentEquals(expense1.getSplit(),expense2.getSplit()));
+        expense2.setSplit(null);
+        assertFalse(expense1.participantPaymentEquals(expense1.getSplit(),expense2.getSplit()));
+        expense2.setSplit(null);
+        assertFalse(expense1.participantPaymentEquals(expense1.getSplit(),expense2.getSplit()));
+        expense2.setSplit(null);
+        expense1.setSplit(null);
+        assertTrue(expense1.participantPaymentEquals(expense1.getSplit(),expense2.getSplit()));
+    }
+
+    @Test
     void ConstructorTest(){
         assertEquals(expense.getAmount(), amount);
         assertEquals(expense.getCurrency(), currency);
@@ -179,17 +206,9 @@ public class ExpenseTest {
         Expense expense2 = new Expense(amount, currency, title, description, date, split, tag, payee);
         assertNotEquals(expense2.hashCode(), expense.hashCode());
     }
-//    @Test
-//    void toStringTest(){
-//        String s = "Expense{id="  +expense.getId()+", amount=40.45, " +
-//                "currency='Euro', title='Taxi', description='Ride back home', " +
-//                "date=Thu Jan 01 01:00:00 CET 1970, " +
-//                "split=[ParticipantPayment{participant=Participant{name='George', " +
-//                "email='george@gmail.com', iban='NL27RABO2766662669', " +
-//                "bic='RABONL2U'}, value=30.4}, ParticipantPayment{participant=Participant{name='Ilinca', " +
-//                "email='ilinca@gmail.com', iban='NL27RABO2711112669', bic='RABONL2U'}, value=10.45}], " +
-//                "tag=Tag{name='transport', color='blue'}, payee=Participant{name='Rudolf', " +
-//                "email='rudolf@gmail.com', iban='NL27RABO2766662000', bic='RABONL2U'}}";
-//        assertEquals(s, expense.toString());
-//    }
+    @Test
+    void toStringTest(){
+        String s = "Expense{id=0, amount=40.45, currency='Euro', title='Taxi', description='Ride back home', date=Thu Jan 01 01:00:00 CET 1970, split=[ParticipantPayment{participant=Participant{name='George', email='george@gmail.com', iban='NL27RABO2766662669', bic='RABONL2U'}, value=30.399999618530273}, ParticipantPayment{participant=Participant{name='Ilinca', email='ilinca@gmail.com', iban='NL27RABO2711112669', bic='RABONL2U'}, value=10.449999809265137}], tag=Tag{name='transport', color='blue'}, payee=Participant{name='Rudolf', email='rudolf@gmail.com', iban='NL27RABO2766662000', bic='RABONL2U'}}";
+        assertEquals(s, expense.toString());
+    }
 }

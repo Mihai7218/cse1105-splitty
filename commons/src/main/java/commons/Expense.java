@@ -257,7 +257,18 @@ public class Expense {
                     return false;
                 }
             }
-        }
+            for (ParticipantPayment p : participantPayments) {
+                boolean isThere = false;
+                for (ParticipantPayment p2 : split) {
+                    if (p2.fullEquals(p)) {
+                        isThere = true;
+                    }
+                }
+                if (!isThere) {
+                    return false;
+                }
+            }
+        } else return false;
         return true;
     }
 

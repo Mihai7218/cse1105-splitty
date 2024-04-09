@@ -225,7 +225,7 @@ public class Event {
      * @param list list2 with tags
      * @return a boolean to tell if they are equal
      */
-    private boolean tagsEquals(List<Tag> tagsList, List<Tag> list) {
+    public boolean tagsEquals(List<Tag> tagsList, List<Tag> list) {
         if (tagsList == null && list == null) {
             return true;
         }
@@ -244,7 +244,18 @@ public class Event {
                     return false;
                 }
             }
-        }
+            for (Tag p : list) {
+                boolean isThere = false;
+                for (Tag p2 : tagsList) {
+                    if (p2.fullEquals(p)) {
+                        isThere = true;
+                    }
+                }
+                if (!isThere) {
+                    return false;
+                }
+            }
+        } else return false;
         return true;
     }
 
@@ -254,7 +265,7 @@ public class Event {
      * @param list list2 with Expenses
      * @return a boolean to tell if they are equal
      */
-    private boolean expensesEquals(List<Expense> expensesList, List<Expense> list) {
+    public boolean expensesEquals(List<Expense> expensesList, List<Expense> list) {
         if (expensesList == null && list == null) {
             return true;
         }
@@ -273,7 +284,18 @@ public class Event {
                     return false;
                 }
             }
-        }
+            for (Expense p : list) {
+                boolean isThere = false;
+                for (Expense p2 : expensesList) {
+                    if (p2.fullEquals(p)) {
+                        isThere = true;
+                    }
+                }
+                if (!isThere) {
+                    return false;
+                }
+            }
+        } else return false;
         return true;
     }
 
@@ -302,7 +324,19 @@ public class Event {
                     return false;
                 }
             }
-        }
+
+            for (Participant p : list) {
+                boolean isThere = false;
+                for (Participant p2 : participantsList) {
+                    if (p2.fullEquals(p)) {
+                        isThere = true;
+                    }
+                }
+                if (!isThere) {
+                    return false;
+                }
+            }
+        } else return false;
         return true;
     }
 
