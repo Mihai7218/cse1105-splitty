@@ -33,7 +33,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.*;
-import static server.api.PasswordService.setPassword;
 
 public class EventControllerTest {
 
@@ -43,7 +42,6 @@ public class EventControllerTest {
     private EventController sut;
     private EventService serviceStub;
     private EventController sutStubbed;
-    private PasswordService ps;
 
     public class EventServiceStub extends EventService {
 
@@ -188,9 +186,6 @@ public class EventControllerTest {
 
         serviceStub = new EventServiceStub(repo, tagRepo);
         sutStubbed = new EventController(serviceStub, test, mock(SimpMessagingTemplate.class));
-
-        ps=new PasswordService();
-        setPassword("password");
     }
 
 //    @Test
