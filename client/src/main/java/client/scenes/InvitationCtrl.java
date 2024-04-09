@@ -196,6 +196,7 @@ public class InvitationCtrl implements Initializable, NotificationSender{
      *  - if ENTER is pressed, then send the invites.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
      *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -209,6 +210,11 @@ public class InvitationCtrl implements Initializable, NotificationSender{
             case M:
                 if(e.isControlDown()){
                     startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    goBack();
                     break;
                 }
             default:

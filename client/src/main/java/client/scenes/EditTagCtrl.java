@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
 import java.net.URL;
@@ -211,5 +212,50 @@ public class EditTagCtrl implements Initializable {
     public void loadFields() {
         name.setText(editTag.getName());
         colorPicker.setValue(Color.web(editTag.getColor()));
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Back to the overview of the expenses of the Event
+     */
+    public void backToOverview() {
+        mainCtrl.showOverview();
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it edits the tag.
+     *  - if ESCAPE is pressed, then it cancels and returns to the tags scene.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                submitTagChanges();
+                break;
+            case ESCAPE:
+                abort();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    backToOverview();
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }

@@ -349,10 +349,18 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
+     * Back to the overview of the expenses of the Event
+     */
+    public void backToOverview() {
+        mainCtrl.showOverview();
+    }
+
+    /**
      * Checks whether a key is pressed and performs a certain action depending on that:
      *  - if ENTER is pressed, then it adds the participant.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
      *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -367,6 +375,13 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
                 if(e.isControlDown()){
                     startMenu();
                     break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    if(prevScene){
+                        backToOverview();
+                        break;
+                    }
                 }
             default:
                 break;

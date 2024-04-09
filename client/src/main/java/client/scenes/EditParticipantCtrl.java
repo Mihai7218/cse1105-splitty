@@ -196,6 +196,7 @@ public class EditParticipantCtrl {
      *  - if ENTER is pressed, then it edits the participant with the current values.
      *  - if ESCAPE is pressed, then it cancels and returns to the overview.
      *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -209,6 +210,11 @@ public class EditParticipantCtrl {
             case M:
                 if(e.isControlDown()){
                     startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    abort();
                     break;
                 }
             default:
