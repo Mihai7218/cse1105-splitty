@@ -1,31 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import client.utils.LanguageComboBox?>
+
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.TextFlow?>
 
-<?import client.utils.LanguageComboBox?>
-
-<AnchorPane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SettingsCtrl">
+<AnchorPane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.SettingsCtrl">
     <children>
         <Label id="header" layoutX="29.0" layoutY="14.0" prefHeight="42.0" prefWidth="421.0" text="${controller.languageManager.settings.title}">
             <font>
                 <Font size="24.0" />
             </font>
         </Label>
-        <VBox layoutX="29.0" layoutY="66.0" prefHeight="255.0" prefWidth="392.0">
+        <VBox layoutX="29.0" layoutY="66.0" prefHeight="304.0" prefWidth="392.0">
             <children>
                 <HBox prefHeight="22.0" prefWidth="392.0">
                     <children>
@@ -50,132 +39,140 @@
                         <ChoiceBox fx:id="currency" prefHeight="26.0" prefWidth="62.0" />
                     </children>
                 </HBox>
-            <Region prefHeight="50.0" prefWidth="10.0" />
-            <HBox layoutX="10.0" layoutY="44.0" prefHeight="14.0" prefWidth="392.0">
-               <children>
-                  <Label prefHeight="22.0" prefWidth="212.0" text="${controller.languageManager.settings.language}">
-                     <font>
-                        <Font size="15.0" />
-                     </font>
-                  </Label>
-                  <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                  <LanguageComboBox fx:id="languages" prefHeight="26.0" prefWidth="170.0" />
-               </children>
-            </HBox>
-            <Region layoutX="10.0" layoutY="102.0" prefHeight="50.0" prefWidth="10.0" />
-            <TitledPane fx:id="emailPane" animated="false" prefHeight="215.0" prefWidth="392.0" text="${controller.languageManager.settings.mailTitle}">
-              <content>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="133.0" prefWidth="390.0">
-                     <children>
-                        <VBox prefHeight="141.0" prefWidth="392.0">
-                           <children>
-                              <HBox prefHeight="22.0" prefWidth="392.0">
-                                 <children>
-                                    <Label fx:id="mailHostLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailHost}">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                       <HBox.margin>
-                                          <Insets top="5.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                    <TextField fx:id="mailHost" prefHeight="26.0" prefWidth="200.0">
-                                       <HBox.margin>
-                                          <Insets right="3.0" top="3.0" />
-                                       </HBox.margin></TextField>
-                                 </children>
-                              </HBox>
-                              <Region prefHeight="50.0" prefWidth="10.0" />
-                              <HBox prefHeight="22.0" prefWidth="392.0">
-                                 <children>
-                                    <Label fx:id="mailPortLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailPort}">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                    </Label>
-                                    <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                    <TextField fx:id="mailPort" prefHeight="26.0" prefWidth="200.0">
-                                       <HBox.margin>
-                                          <Insets right="3.0" />
-                                       </HBox.margin></TextField>
-                                 </children>
-                              </HBox>
-                              <Region prefHeight="50.0" prefWidth="10.0" />
-                              <HBox prefHeight="22.0" prefWidth="392.0">
-                                 <children>
-                                    <Label id="underlined" fx:id="mailUserLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailUser}">
-                                       <font>
-                                          <Font size="15.0" />
-                                       </font>
-                                        <tooltip>
-                                            <Tooltip text="${controller.languageManager.settings.userTootlip}" />
-                                        </tooltip>
-                                    </Label>
-                                    <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                    <TextField fx:id="mailUser" prefHeight="26.0" prefWidth="200.0">
-                                       <HBox.margin>
-                                          <Insets right="3.0" />
-                                       </HBox.margin></TextField>
-                                 </children>
-                              </HBox>
-                              <Region layoutX="10.0" layoutY="65.0" prefHeight="50.0" prefWidth="10.0" />
-                               <HBox prefHeight="22.0" prefWidth="392.0">
-                                   <children>
-                                       <Label fx:id="mailEmailLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailEmail}">
-                                           <font>
-                                               <Font size="15.0" />
-                                           </font>
-                                       </Label>
-                                       <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                       <TextField fx:id="mailEmail" prefHeight="40.0" prefWidth="200.0">
-                                           <HBox.margin>
-                                               <Insets bottom="3.0" right="3.0" />
-                                           </HBox.margin></TextField>
-                                   </children>
-                               </HBox>
-                              <Region layoutX="10.0" layoutY="73.0" prefHeight="50.0" prefWidth="10.0" />
-                              <HBox layoutX="10.0" layoutY="71.0" prefHeight="22.0" prefWidth="392.0">
-                                 <children>
-                                    <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="testMail" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#testMail" text="${controller.languageManager.settings.testMailButton}" />
-                                    <Region layoutX="10.0" layoutY="10.0" prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
-                     </children>
-                  </AnchorPane>
-              </content>
-            </TitledPane>
-            <Region prefHeight="200.0" prefWidth="200.0">
-               <padding>
-                  <Insets top="10.0" />
-               </padding></Region>
-            <VBox maxWidth="392.0" prefHeight="200.0" prefWidth="392.0">
-               <children>
-                  <Label id="header" text="${controller.languageManager.settings.shortcut}" wrapText="true">
-                     <font>
-                        <Font size="15.0" />
-                     </font></Label>
-                   <Region prefHeight="10.0" prefWidth="392.0">
-                     <padding>
-                        <Insets top="5.0" />
-                     </padding></Region>
-                  <TextFlow prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <Label maxWidth="392.0" text="${controller.languageManager.settings.startscreen}" wrapText="true" />
-                        <Label maxWidth="392.0" text="${controller.languageManager.settings.addevent}" wrapText="true" />
-                         <Label maxWidth="392.0" text="${controller.languageManager.settings.joinevent}" wrapText="true" />
-                         <Label maxWidth="392.0" text="${controller.languageManager.settings.addparticipant}" wrapText="true" />
-                        <Label maxWidth="392.0" text="${controller.languageManager.settings.addexpense}" wrapText="true" />
-                        <Label maxWidth="392.0" text="${controller.languageManager.settings.statistics}" wrapText="true" />
-                         <Label maxWidth="392.0" text="${controller.languageManager.settings.settings}" wrapText="true" />
-                         <Label maxWidth="392.0" text="${controller.languageManager.settings.overview}" wrapText="true" />
-                     </children>
-                  </TextFlow>
-               </children>
-            </VBox>
+                <Region prefHeight="50.0" prefWidth="10.0" />
+                <HBox layoutX="10.0" layoutY="44.0" prefHeight="14.0" prefWidth="392.0">
+                    <children>
+                        <Label prefHeight="22.0" prefWidth="212.0" text="${controller.languageManager.settings.language}">
+                            <font>
+                                <Font size="15.0" />
+                            </font>
+                        </Label>
+                        <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                        <LanguageComboBox fx:id="languages" prefHeight="26.0" prefWidth="170.0"/>
+                    </children>
+                </HBox>
+                <Region layoutX="10.0" layoutY="102.0" prefHeight="50.0" prefWidth="10.0" />
+            <Accordion prefHeight="236.0">
+              <panes>
+                      <TitledPane fx:id="emailPane" animated="false" prefHeight="206.0" prefWidth="392.0" text="${controller.languageManager.settings.mailTitle}">
+                          <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="296.0" prefWidth="390.0">
+                                  <children>
+                                      <VBox prefHeight="141.0" prefWidth="392.0">
+                                          <children>
+                                              <HBox prefHeight="22.0" prefWidth="392.0">
+                                                  <children>
+                                                      <Label fx:id="mailHostLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailHost}">
+                                                          <font>
+                                                              <Font size="15.0" />
+                                                          </font>
+                                                          <HBox.margin>
+                                                              <Insets top="5.0" />
+                                                          </HBox.margin>
+                                                      </Label>
+                                                      <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="mailHost" prefHeight="26.0" prefWidth="200.0">
+                                                          <HBox.margin>
+                                                              <Insets right="3.0" top="3.0" />
+                                                          </HBox.margin>
+                                                      </TextField>
+                                                  </children>
+                                              </HBox>
+                                              <Region prefHeight="50.0" prefWidth="10.0" />
+                                              <HBox prefHeight="22.0" prefWidth="392.0">
+                                                  <children>
+                                                      <Label fx:id="mailPortLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailPort}">
+                                                          <font>
+                                                              <Font size="15.0" />
+                                                          </font>
+                                                      </Label>
+                                                      <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="mailPort" prefHeight="26.0" prefWidth="200.0">
+                                                          <HBox.margin>
+                                                              <Insets right="3.0" />
+                                                          </HBox.margin>
+                                                      </TextField>
+                                                  </children>
+                                              </HBox>
+                                              <Region prefHeight="50.0" prefWidth="10.0" />
+                                              <HBox prefHeight="22.0" prefWidth="392.0">
+                                                  <children>
+                                                      <Label id="underlined" fx:id="mailUserLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailUser}">
+                                                          <font>
+                                                              <Font size="15.0" />
+                                                          </font>
+                                                          <tooltip>
+                                                              <Tooltip text="${controller.languageManager.settings.userTootlip}" />
+                                                          </tooltip>
+                                                      </Label>
+                                                      <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="mailUser" prefHeight="26.0" prefWidth="200.0">
+                                                          <HBox.margin>
+                                                              <Insets right="3.0" />
+                                                          </HBox.margin>
+                                                      </TextField>
+                                                  </children>
+                                              </HBox>
+                                              <Region layoutX="10.0" layoutY="65.0" prefHeight="50.0" prefWidth="10.0" />
+                                              <HBox prefHeight="22.0" prefWidth="392.0">
+                                                  <children>
+                                                      <Label fx:id="mailEmailLabel" prefHeight="22.0" prefWidth="150.0" text="${controller.languageManager.settings.mailEmail}">
+                                                          <font>
+                                                              <Font size="15.0" />
+                                                          </font>
+                                                      </Label>
+                                                      <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                      <TextField fx:id="mailEmail" prefHeight="40.0" prefWidth="200.0">
+                                                          <HBox.margin>
+                                                              <Insets bottom="3.0" right="3.0" />
+                                                          </HBox.margin>
+                                                      </TextField>
+                                                  </children>
+                                              </HBox>
+                                              <Region layoutX="10.0" layoutY="73.0" prefHeight="50.0" prefWidth="10.0" />
+                                              <HBox layoutX="10.0" layoutY="71.0" prefHeight="22.0" prefWidth="392.0">
+                                                  <children>
+                                                      <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                      <Button fx:id="testMail" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#testMail" text="${controller.languageManager.settings.testMailButton}" />
+                                                      <Region layoutX="10.0" layoutY="10.0" prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+                                                  </children>
+                                              </HBox>
+                                          </children>
+                                      </VBox>
+                                  </children>
+                              </AnchorPane>
+                          </content>
+                      </TitledPane>
+                      <TitledPane animated="false" prefHeight="238.0" prefWidth="392.0" text="${controller.languageManager.settings.shortcut}">
+                          <content>
+                              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                  <children>
+                              <ScrollPane prefHeight="148.0" prefWidth="391.0">
+                                 <content>
+                                            <VBox maxWidth="392.0">
+                                                <children>
+                                                    <TextFlow prefWidth="370.0">
+                                                        <children>
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.startscreen}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.addevent}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.joinevent}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.addparticipant}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.addexpense}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.statistics}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.settings}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.overview}" wrapText="true" />
+                                                        </children>
+                                                    </TextFlow>
+                                                </children>
+                                            </VBox>
+                                 </content>
+                              </ScrollPane>
+                                  </children>
+                              </AnchorPane>
+                          </content>
+                      </TitledPane>
+              </panes>
+            </Accordion>
             </children>
         </VBox>
         <HBox alignment="CENTER" layoutY="370.0" prefHeight="57.0" prefWidth="450.0">
