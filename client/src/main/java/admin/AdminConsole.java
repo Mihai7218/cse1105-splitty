@@ -301,6 +301,7 @@ public class AdminConsole {
         System.out.println("Where do you want to save the dump? " +
                 "Give the folder or type 'cancel' to cancel: ");
         String path = userInput.next();
+        path = path.replace("/","\\");
         if(path.equals("cancel")){
             return;
         }
@@ -401,6 +402,7 @@ public class AdminConsole {
         String line;
         try {
             line = fileScan.nextLine();
+            line = line.replace("/","\\");
         }catch(NoSuchElementException n){
             System.out.println("Unable to locate the requested file (empty filepath). ");
             return null;
