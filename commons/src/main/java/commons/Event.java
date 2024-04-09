@@ -244,19 +244,30 @@ public class Event {
                     return false;
                 }
             }
-            for (Tag p : list) {
-                boolean isThere = false;
-                for (Tag p2 : tagsList) {
-                    if (p2.fullEquals(p)) {
-                        isThere = true;
-                    }
-                }
-                if (!isThere) {
-                    return false;
-                }
-            }
+            if (checkOtherWayAroundTags(tagsList, list)) return false;
         } else return false;
         return true;
+    }
+
+    /**
+     * to Really check equivalents and check both sides the other way around
+     * @param tagsList tagsList list from one Event
+     * @param list tagsList list from other Event
+     * @return if they are equal
+     */
+    private static boolean checkOtherWayAroundTags(List<Tag> tagsList, List<Tag> list) {
+        for (Tag p : list) {
+            boolean isThere = false;
+            for (Tag p2 : tagsList) {
+                if (p2.fullEquals(p)) {
+                    isThere = true;
+                }
+            }
+            if (!isThere) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -284,19 +295,31 @@ public class Event {
                     return false;
                 }
             }
-            for (Expense p : list) {
-                boolean isThere = false;
-                for (Expense p2 : expensesList) {
-                    if (p2.fullEquals(p)) {
-                        isThere = true;
-                    }
-                }
-                if (!isThere) {
-                    return false;
-                }
-            }
+            if (otherWayAroundCheckExpenselist(expensesList, list)) return false;
         } else return false;
         return true;
+    }
+
+    /**
+     * to Really check equivalents and check both sides the other way around
+     * @param expensesList expensesList list from one Event
+     * @param list expensesList list from other Event
+     * @return if they are equal
+     */
+    private static boolean otherWayAroundCheckExpenselist(List<Expense> expensesList,
+                                                          List<Expense> list) {
+        for (Expense p : list) {
+            boolean isThere = false;
+            for (Expense p2 : expensesList) {
+                if (p2.fullEquals(p)) {
+                    isThere = true;
+                }
+            }
+            if (!isThere) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -325,19 +348,31 @@ public class Event {
                 }
             }
 
-            for (Participant p : list) {
-                boolean isThere = false;
-                for (Participant p2 : participantsList) {
-                    if (p2.fullEquals(p)) {
-                        isThere = true;
-                    }
-                }
-                if (!isThere) {
-                    return false;
-                }
-            }
+            if (otherWayAroundCheckParticipants(participantsList, list)) return false;
         } else return false;
         return true;
+    }
+
+    /**
+     * to Really check equivalents and check both sides the other way around
+     * @param participantsList participantsList list from one Event
+     * @param list participantsList list from other Event
+     * @return if they are equal
+     */
+    private static boolean otherWayAroundCheckParticipants(List<Participant> participantsList,
+                                                           List<Participant> list) {
+        for (Participant p : list) {
+            boolean isThere = false;
+            for (Participant p2 : participantsList) {
+                if (p2.fullEquals(p)) {
+                    isThere = true;
+                }
+            }
+            if (!isThere) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

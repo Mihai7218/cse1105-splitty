@@ -257,19 +257,31 @@ public class Expense {
                     return false;
                 }
             }
-            for (ParticipantPayment p : participantPayments) {
-                boolean isThere = false;
-                for (ParticipantPayment p2 : split) {
-                    if (p2.fullEquals(p)) {
-                        isThere = true;
-                    }
-                }
-                if (!isThere) {
-                    return false;
-                }
-            }
+            if (otherWayAroundCheck(split, participantPayments)) return false;
         } else return false;
         return true;
+    }
+
+    /**
+     * to Really check equivalents and check both sides the other way around
+     * @param split split list from one Expense
+     * @param participantPayments split list from other Expense
+     * @return if they are equal
+     */
+    private static boolean otherWayAroundCheck(List<ParticipantPayment> split,
+                                               List<ParticipantPayment> participantPayments) {
+        for (ParticipantPayment p : participantPayments) {
+            boolean isThere = false;
+            for (ParticipantPayment p2 : split) {
+                if (p2.fullEquals(p)) {
+                    isThere = true;
+                }
+            }
+            if (!isThere) {
+                return true;
+            }
+        }
+        return false;
     }
 
 
