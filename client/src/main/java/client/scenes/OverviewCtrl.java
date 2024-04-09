@@ -240,12 +240,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 participantSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent()
                                         .getInviteCode() + "/participants", Participant.class,
-                        participant -> {
+                        participant -> Platform.runLater(() -> {
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
                             subscribeToParticipant(participant);
                             populateParticipants();
-                        });
+                        }));
             if (tagSubscription == null)
                 tagSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
