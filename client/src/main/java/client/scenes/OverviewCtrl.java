@@ -362,6 +362,10 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         mainCtrl.showParticipant();
     }
 
+    public void addTransfer(){
+        mainCtrl.showTransfer();
+    }
+
     /**
      * Opens the addExpense scene to be able to add Expenses to the event.
      */

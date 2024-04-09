@@ -11,16 +11,15 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.AddTransferCtrl">
    <children>
-      <VBox layoutX="33.0" layoutY="38.0" prefHeight="404.0" prefWidth="388.0">
+      <VBox layoutX="33.0" layoutY="38.0" prefHeight="404.0" prefWidth="380.0">
          <children>
             <HBox prefHeight="0.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="title">
+                  <Label fx:id="header" text="${controller.languageManager.transfer.title}" HBox.hgrow="ALWAYS">
                      <font>
-                        <Font size="24.0" />
+                        <Font name="System Bold" size="24.0" />
                      </font>
                   </Label>
                </children>
@@ -28,33 +27,46 @@
             <Region prefHeight="34.0" prefWidth="388.0" />
             <HBox prefHeight="35.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="transferFrom" />
-                  <ChoiceBox fx:id="from" prefWidth="150.0" />
+                  <Label fx:id="transferFrom" prefHeight="18.0" prefWidth="230.0" text="${controller.languageManager.transfer.transferFrom}">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Label>
+                  <ChoiceBox fx:id="from" prefHeight="26.0" prefWidth="170.0" />
                </children>
             </HBox>
             <HBox prefHeight="34.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="transferTo" />
-                  <ChoiceBox fx:id="to" prefWidth="150.0" />
+                  <Label fx:id="transferTo" prefHeight="18.0" prefWidth="230.0" text="${controller.languageManager.transfer.transferTo}">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Label>
+                  <ChoiceBox fx:id="to" prefHeight="26.0" prefWidth="169.0" />
                </children>
             </HBox>
             <HBox prefHeight="35.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="transferAmount" />
+                  <Label fx:id="transferAmount" prefHeight="18.0" prefWidth="260.0" text="${controller.languageManager.transfer.transferAmount}" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Label>
                   <TextField fx:id="amount" />
-                  <ChoiceBox fx:id="currencyVal" prefWidth="150.0" />
+                  <ChoiceBox fx:id="currencyVal" prefHeight="26.0" prefWidth="91.0" />
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label fx:id="dateLabel" />
+                  <Label fx:id="dateLabel" prefHeight="18.0" prefWidth="233.0" text="${controller.languageManager.transfer.date}" HBox.hgrow="ALWAYS">
+                     <font>
+                        <Font size="16.0" />
+                     </font></Label>
                   <DatePicker fx:id="date" />
                </children>
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button id="cancel" fx:id="cancel" mnemonicParsing="false" />
-                  <Button id="addEntity" fx:id="confirm" mnemonicParsing="false" />
+                  <Button id="cancel" fx:id="cancel" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.transfer.cancel}" />
+                  <Region prefHeight="100.0" prefWidth="10.0" />
+                  <Button id="addEntity" fx:id="confirm" mnemonicParsing="false" onAction="#doneTransfer" text="${controller.languageManager.transfer.addTransfer}" />
                </children>
             </HBox>
          </children>

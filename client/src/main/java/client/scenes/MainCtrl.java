@@ -75,6 +75,9 @@ public class MainCtrl {
     private DebtsCtrl debtsCtrl;
     private Scene debts;
 
+    private AddTransferCtrl transferCtrl;
+    private Scene transfer;
+
     private FileChooser fileChooser = new FileChooser();
 
     private Event event;
@@ -104,6 +107,7 @@ public class MainCtrl {
      * @param editTag         editTag controller and scene
      * @param statistics      statistics scene
      * @param connectToServer connecting to server scene
+     * @param transfer        transfer controller and scene
      */
     public void initialize(Stage primaryStage,
                            Pair<StartScreenCtrl, Parent> startScreen,
@@ -118,7 +122,8 @@ public class MainCtrl {
                            Pair<ConnectToServerCtrl, Parent> connectToServer,
                            Pair<DebtsCtrl, Parent> debts,
                            Pair<ManageTagsCtrl, Parent> manageTags,
-                           Pair<EditTagCtrl, Parent> editTag) {
+                           Pair<EditTagCtrl, Parent> editTag,
+                           Pair<AddTransferCtrl, Parent> transfer){
         this.primaryStage = primaryStage;
 
         this.startScreenCtrl = startScreen.getKey();
@@ -160,8 +165,23 @@ public class MainCtrl {
         this.debtsCtrl = debts.getKey();
         this.debts = new Scene(debts.getValue());
 
+        this.transferCtrl = transfer.getKey();
+        this.transfer = new Scene(transfer.getValue());
+
         showConnectToServer();
         primaryStage.show();
+    }
+
+    public void showTransfer(){
+        primaryStage.titleProperty().bind(languageManager.bind("transfer.sceneTitle"));
+        try {
+            transfer.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(transfer);
+        if (transferCtrl != null) transferCtrl.refresh();
     }
 
     /**
@@ -260,6 +280,14 @@ public class MainCtrl {
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
         if (editExpense != null) editExpense.setOnKeyPressed(e -> editExpenseCtrl.keyPressed(e));
 
+    }
+
+    public AddTransferCtrl getTransferCtrl() {
+        return transferCtrl;
+    }
+
+    public Scene getTransfer() {
+        return transfer;
     }
 
     /**
