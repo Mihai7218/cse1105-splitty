@@ -195,7 +195,7 @@ public class Event {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Event that = (Event) o;
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss"); // specify your desired format here
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         boolean ewa1 = participantsEquals(participantsList, that.participantsList);
         boolean ewa2 = expensesEquals(expensesList, that.expensesList);
         boolean ewa3 = tagsEquals(tagsList, that.tagsList);
@@ -213,6 +213,12 @@ public class Event {
                         dateFormat.format(that.lastActivity));
     }
 
+    /**
+     * Manual way to check if tags are truly equal
+     * @param tagsList list1 with tags
+     * @param list list2 with tags
+     * @return a boolean to tell if they are equal
+     */
     private boolean tagsEquals(List<Tag> tagsList, List<Tag> list) {
         if (tagsList == null && list == null) {
             return true;
@@ -236,6 +242,12 @@ public class Event {
         return true;
     }
 
+    /**
+     * Manual way to check if Expenses are truly equal
+     * @param expensesList list1 with Expenses
+     * @param list list2 with Expenses
+     * @return a boolean to tell if they are equal
+     */
     private boolean expensesEquals(List<Expense> expensesList, List<Expense> list) {
         if (expensesList == null && list == null) {
             return true;
@@ -259,6 +271,12 @@ public class Event {
         return true;
     }
 
+    /**
+     * Manual way to check if Participants are truly equal
+     * @param participantsList list1 with Participants
+     * @param list list2 with Participants
+     * @return a boolean to tell if they are equal
+     */
     public boolean participantsEquals(List<Participant> participantsList, List<Participant> list) {
         if (participantsList == null && list == null) {
             return true;

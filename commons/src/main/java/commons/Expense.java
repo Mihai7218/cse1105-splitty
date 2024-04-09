@@ -231,6 +231,12 @@ public class Expense {
                 participantPaymentEquals(split,expense.split);
     }
 
+    /**
+     * Manual way to check if ParticipantPayments are truly equal
+     * @param split list1 with ParticipantPayments
+     * @param participantPayments list2 with ParticipantPayments
+     * @return a boolean to tell if they are equal
+     */
     public boolean participantPaymentEquals(List<ParticipantPayment> split,
                                             List<ParticipantPayment> participantPayments) {
         if (split == null && participantPayments == null) {
