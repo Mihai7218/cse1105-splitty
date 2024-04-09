@@ -42,7 +42,7 @@ class MainCtrlTest {
     @Start
     void setUp(Stage ignored) {
         languageManager = mock(LanguageManager.class);
-        sut = new MainCtrl(languageManager);
+        sut = new MainCtrl(new TestConfig(), languageManager);
         stage = mock(Stage.class);
         sb = Bindings.createStringBinding(() -> "Test");
         sp = new SimpleStringProperty();
@@ -162,6 +162,10 @@ class MainCtrlTest {
         Parent connectToServer = spy(Parent.class);
         DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
         Parent debts = spy(Parent.class);
+        ManageTagsCtrl manageTagsCtrl = mock(ManageTagsCtrl.class);
+        Parent manageTags = spy(Parent.class);
+        EditTagCtrl editTagCtrl = mock(EditTagCtrl.class);
+        Parent editTag = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(addQuoteCtrl, addQuote),
                 new Pair<>(startScreenCtrl, startScreen),
@@ -174,7 +178,9 @@ class MainCtrlTest {
                 new Pair<>(statisticsCtrl,statistics),
                 new Pair<>(editExpenseCtrl, editExpense),
                 new Pair<>(connectToServerCtrl, connectToServer),
-                new Pair<>(debtsCtrl, debts));
+                new Pair<>(debtsCtrl, debts),
+                new Pair<>(manageTagsCtrl, manageTags),
+                new Pair<>(editTagCtrl, editTag));
         assertEquals(stage, sut.getPrimaryStage());
         //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
         //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());

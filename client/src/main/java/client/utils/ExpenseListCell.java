@@ -9,6 +9,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Text;
 
 import java.text.DateFormat;
 
@@ -30,9 +33,12 @@ public class ExpenseListCell extends ListCell<Expense> {
     private Button remove;
     private FlowPane details;
     private VBox vBox;
+    private VBox vBox2;
     private HBox hBox;
     private Region autogrowLeft;
     private Region autogrowRight;
+    private Text tagName;
+    private javafx.scene.shape.Rectangle rectangle2;
 
     /**
      * Constructor for the RecentEventCell.
@@ -92,8 +98,15 @@ public class ExpenseListCell extends ListCell<Expense> {
         autogrowLeft = new Region();
         autogrowRight = new Region();
         details = new FlowPane(payeeName, paidLabel, price, currency, forLabel, expenseName);
+        rectangle2 = new javafx.scene.shape.Rectangle(100, 20);
+
+        tagName = new Text();
+        rectangle2.setStroke(Color.BLACK);
+        rectangle2.setStrokeWidth(1);
+        StackPane stackPane = new StackPane(rectangle2, tagName);
         vBox = new VBox(details, payers);
-        hBox = new HBox(date, autogrowLeft, vBox, autogrowRight, edit, remove);
+        vBox2 = new VBox(date,stackPane);
+        hBox = new HBox(vBox2, autogrowLeft, vBox, autogrowRight, edit, remove);
         hBox.setSpacing(5);
         vBox.setSpacing(5);
         details.setHgap(3);
@@ -141,6 +154,20 @@ public class ExpenseListCell extends ListCell<Expense> {
             payeeName.setText(this.getItem().getPayee().getName());
         } catch (NullPointerException e) {
             payeeName.setText("<no payee>");
+        }
+        try {
+            tagName.setText(this.getItem().getTag().getName());
+            Color tagColor = Color.web(this.getItem().getTag().getColor());
+            if (0.2126 * tagColor.getRed() + 0.7152 * tagColor.getGreen()
+                    + 0.0722* tagColor.getBlue()<0.5) {
+                tagName.setFill(Color.color(1.0,1.0,1.0));
+            } else {
+                tagName.setFill(Color.color(0.0,0.0,0.0));
+            }
+            rectangle2.setFill(Paint.valueOf(this.getItem().getTag().getColor()));
+        } catch (NullPointerException e) {
+            rectangle2.setFill(Paint.valueOf("#ffffff"));
+            tagName.setText("<no tag>");
         }
         String currencyString = config.getProperty("currency");
         if (currencyString == null || currencyString.isEmpty()) currencyString = "EUR";

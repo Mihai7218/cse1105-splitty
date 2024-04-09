@@ -121,6 +121,7 @@ class StartScreenCtrlTest {
         doNothing().when(settings).setGraphic(any(Node.class));
 
         sut.setRecentEvents(recentEvents);
+        sut.setLanguages(new LanguageComboBox());
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
         sut.setNewEventTitle(createTextField);
         sut.setEventInvite(joinTextField);
@@ -171,14 +172,14 @@ class StartScreenCtrlTest {
      * from the config to the list of recent events.
      */
     @Test
-    void initializeWithRecentEvents() {
+    void refreshTest() {
         config.setProperty("recentEvents", "1");
         Event event = new Event("1", new Date(), new Date());
         when(serverUtils.getEvent(1)).thenReturn(event);
 
-        sut.initialize(mock(URL.class), mock(ResourceBundle.class));
+        sut.refresh();
 
-        verify(languageManager, times(2)).changeLanguage(Locale.ENGLISH);
+        verify(languageManager).changeLanguage(Locale.ENGLISH);
         assertEquals(event, eventsList.getFirst());
     }
 

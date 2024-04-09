@@ -204,7 +204,6 @@ public class ParticipantCell extends ListCell<Participant> {
             }
         }
         return participantShare;
-
     }
 
     /**

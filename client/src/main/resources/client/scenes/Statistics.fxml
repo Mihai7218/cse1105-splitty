@@ -2,11 +2,19 @@
 
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <Pane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StatisticsCtrl">
-   <PieChart fx:id="pieChart" layoutX="14.0" layoutY="14.0" legendVisible="false" onMouseClicked="#setStatistics" prefHeight="344.0" prefWidth="422.0" title="Chart" />
-   <VBox fx:id="ownLegend" layoutX="14.0" layoutY="305.0" prefHeight="118.0" prefWidth="422.0" />
-   <Button id="cancel" fx:id="cancel" cancelButton="true" layoutX="36.0" layoutY="428.0" mnemonicParsing="false" onAction="#backToOverview" text="${controller.languageManager.statistics.backButton}" />
+   <PieChart fx:id="pieChart" layoutX="14.0" layoutY="14.0" legendVisible="false" onMouseClicked="#setup" prefHeight="305.0" prefWidth="422.0" title="Chart" />
+   <VBox fx:id="ownLegend" layoutX="14.0" layoutY="305.0" prefHeight="126.0" prefWidth="422.0" />
+   <HBox alignment="CENTER_RIGHT" layoutX="14.0" layoutY="435.0" prefHeight="26.0" prefWidth="422.0">
+      <children>
+         <Button id="cancel" fx:id="cancel" cancelButton="true" mnemonicParsing="false" onAction="#backToOverview" text="${controller.languageManager.statistics.backButton}" />
+         <Region prefHeight="50.0" prefWidth="10.0" />
+         <Button id="showStatistics" fx:id="manageTags" cancelButton="true" mnemonicParsing="false" onAction="#showManageTagsScreen" text="${controller.languageManager.statistics.manageTags}" />
+      </children>
+   </HBox>
 </Pane>

@@ -62,6 +62,7 @@ public class AddExpenseCtrlTest {
     TextField newTag;
     Label instructions;
     Button cancelButton;
+    ColorPicker colorPicker;
     Button addExpenseButton;
     private CurrencyConverter currencyConverter;
 
@@ -90,6 +91,7 @@ public class AddExpenseCtrlTest {
         instructions = mock(Label.class);
         cancelButton=mock(Button.class);
         addExpenseButton = mock(Button.class);
+        colorPicker = mock(ColorPicker.class);
 
         sut.setPayee(payee);
         sut.setCurrency(currency);
@@ -108,6 +110,7 @@ public class AddExpenseCtrlTest {
         sut.setAdd(addExpenseButton);
         sut.setCancelButton(cancelButton);
         sut.setAddExpense(addExpenseButton);
+        sut.setColorPicker(colorPicker);
 
         doNothing().when(addExpenseButton).setGraphic(any(Node.class));
         doNothing().when(cancelButton).setGraphic(any(Node.class));
