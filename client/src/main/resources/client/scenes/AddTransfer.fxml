@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
@@ -48,6 +49,12 @@
                <children>
                   <Label fx:id="dateLabel" />
                   <DatePicker fx:id="date" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button id="cancel" fx:id="cancel" mnemonicParsing="false" />
+                  <Button id="addEntity" fx:id="confirm" mnemonicParsing="false" />
                </children>
             </HBox>
          </children>
