@@ -17,10 +17,13 @@ public class AdminController {
     private final String adminPassword;
 
     /**
-     * @param adminService
+     * Constructor for the adminController
+     * @param adminService an instance of an adminService with the right functions
+     * @param adminPassword a bean with the adminPassword
      */
     @Autowired
-    public AdminController(AdminService adminService, @Qualifier("adminPassword") String adminPassword) {
+    public AdminController(AdminService adminService,
+                           @Qualifier("adminPassword") String adminPassword) {
         this.adminService = adminService;
         this.adminPassword = adminPassword;
     }

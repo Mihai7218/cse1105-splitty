@@ -23,9 +23,12 @@ public class AdminService {
     private final ExpenseRepository expenseRepository;
 
     /**
-     * Constructor for de EventService
-     * @param eventRepository the event repository
-     * @param tagRepository the tag repository
+     * Constructor for the AdminService
+     * @param eventRepository an EventRepository
+     * @param tagRepository an TagRepository
+     * @param participantRepository an ParticipantRepository
+     * @param participantPaymentRepository an ParticipantPaymentRepository
+     * @param expenseRepository an ExpenseRepository
      */
     @Autowired
     public AdminService(EventRepository eventRepository,
