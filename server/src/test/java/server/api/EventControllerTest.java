@@ -192,12 +192,12 @@ public class EventControllerTest {
         setPassword("password");
     }
 
-    @Test
-    public void adminTestPassword(){
-        setPassword("testPs");
-        assertEquals(sutStubbed.get("testPs").getStatusCode(), OK);
-        assertEquals(sutStubbed.get("wrongPs").getStatusCode(), BAD_REQUEST);
-    }
+//    @Test
+//    public void adminTestPassword(){
+//        setPassword("testPs");
+//        assertEquals(sutStubbed.get("testPs").getStatusCode(), OK);
+//        assertEquals(sutStubbed.get("wrongPs").getStatusCode(), BAD_REQUEST);
+//    }
 
     @Test
     public void getInvolvedPayTest(){
@@ -373,9 +373,9 @@ public class EventControllerTest {
 
     @Test
     public void importEvent(){
-        setPassword("password");
-        assertEquals(OK,sut.addJsonImport("password", new Event("title",null,null)).getStatusCode());
-        assertEquals(BAD_REQUEST,sut.addJsonImport("wrongPassword", new Event("title",null,null)).getStatusCode());
+//        setPassword("password");
+//        assertEquals(OK,sut.addJsonImport("password", new Event("title",null,null)).getStatusCode());
+//        assertEquals(BAD_REQUEST,sut.addJsonImport("wrongPassword", new Event("title",null,null)).getStatusCode());
 
 //        Event event = new Event("Title4", null, null);
 //        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");

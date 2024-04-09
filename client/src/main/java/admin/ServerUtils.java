@@ -54,7 +54,7 @@ public class ServerUtils {
      */
     public List<Event> getEvents(String password) {
         return ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/events/admin/" + password) //
+                .target(server).path("api/admin/" + password) //
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .get(new GenericType<List<Event>>() {
@@ -119,7 +119,7 @@ public class ServerUtils {
 
 
         ClientBuilder.newClient(new ClientConfig()) //
-                .target(server).path("api/events/admin/" + password )//
+                .target(server).path("api/admin/" + password )//
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(events, APPLICATION_JSON), Event.class);
