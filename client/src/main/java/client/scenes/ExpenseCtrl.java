@@ -846,4 +846,5 @@ public abstract class ExpenseCtrl implements Initializable {
     public void setCancelButton(Button cancelButton) {
         this.cancelButton = cancelButton;
     }
+
 }

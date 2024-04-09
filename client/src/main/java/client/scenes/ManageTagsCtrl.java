@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
+import javafx.scene.input.KeyEvent;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
@@ -189,6 +190,47 @@ public class ManageTagsCtrl implements Initializable {
                         tagsListView.refresh();
                     }));
             tagSubscriptionMap.put(item, subscription);
+        }
+    }
+
+    /**
+     * Back to the overview of the expenses of the Event
+     */
+    public void backToOverview() {
+        mainCtrl.showOverview();
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                backToStatistics();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    backToOverview();
+                    break;
+                }
+            default:
+                break;
         }
     }
 }

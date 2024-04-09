@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.Modality;
 
+import javafx.scene.input.KeyEvent;
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -72,8 +73,7 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
      * The initialize method for the settings controller.
      * Sets the graphics for the buttons, sets a bound to the number of recent events,
      * and sets the available currencies.
-     *
-     * @param url            - the URL
+     * @param url - the URL
      * @param resourceBundle - the resource bundle.
      */
     @Override
@@ -154,6 +154,25 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
             mainCtrl.showOverview();
         else
             mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Method that returns to the startmenu. It's used for the shortcut.
+     */
+    private void startMenu(){
+        if (!noRecentEvents.getValue().toString().equals(config.getProperty("recentEventsLimit"))
+                || !currency.getValue().equals(config.getProperty("currency"))
+                || !languages.getValue().equals(config.getProperty("language"))) {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+            confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+            confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+            confirmation.contentTextProperty()
+                    .bind(languageManager.bind("settings.cancelAlert"));
+            Optional<ButtonType> result = confirmation.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                mainCtrl.showStartMenu();
+            }
+        } else mainCtrl.showStartMenu();
     }
 
     /**
@@ -327,5 +346,45 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
     @Override
     public Label getNotificationLabel() {
         return confirmation;
+    }
+
+    /**
+     * Back to the overview of the expenses of the Event
+     */
+    public void backToOverview() {
+        mainCtrl.showOverview();
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it adds the participant.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                save();
+                break;
+            case ESCAPE:
+                cancel();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    if(prevScene){
+                        backToOverview();
+                        break;
+                    }
+                }
+            default:
+                break;
+        }
     }
 }
