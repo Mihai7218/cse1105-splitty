@@ -14,7 +14,7 @@ public class AdminController {
 
     private final AdminService adminService;
 
-    private final String password;
+    private final String adminPassword;
 
     /**
      * @param adminService
@@ -22,7 +22,7 @@ public class AdminController {
     @Autowired
     public AdminController(AdminService adminService, @Qualifier("adminPassword") String adminPassword) {
         this.adminService = adminService;
-        this.password = adminPassword;
+        this.adminPassword = adminPassword;
     }
 
     /**
@@ -31,7 +31,7 @@ public class AdminController {
      */
     @GetMapping(path = { "/{password}" })
     public ResponseEntity<List<Event>> get(@PathVariable("password") String password) {
-        if (password.equals(password)) {
+        if (adminPassword.equals(password)) {
             return adminService.getAllEvents();
         } else {
             return ResponseEntity.badRequest().build();
@@ -47,7 +47,7 @@ public class AdminController {
     @PostMapping(path = {"/{password}"})
     public ResponseEntity<Event> addJsonImport(@PathVariable("password") String password,
                                                @RequestBody  Event event){
-        if (password.equals(password)) {
+        if (adminPassword.equals(password)) {
             return adminService.addCreatedEvent(event);
         }else{
             return ResponseEntity.badRequest().build();
