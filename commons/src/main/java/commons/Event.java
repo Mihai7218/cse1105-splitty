@@ -196,11 +196,17 @@ public class Event {
         if (o == null || getClass() != o.getClass()) return false;
         Event that = (Event) o;
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        boolean ewa1 = participantsEquals(participantsList, that.participantsList);
-        boolean ewa2 = expensesEquals(expensesList, that.expensesList);
-        boolean ewa3 = tagsEquals(tagsList, that.tagsList);
-        boolean ewa4 = Objects.equals(dateFormat.format(creationDate),
-                dateFormat.format(that.creationDate));
+        boolean creationDateCheck = (creationDate == null && that.creationDate == null);
+        if (creationDate != null && that.creationDate != null) {
+            creationDateCheck = Objects.equals(dateFormat.format(creationDate),
+                    dateFormat.format(that.creationDate));
+        }
+        boolean lastActivityDateCheck = (lastActivity == null && that.lastActivity == null);
+        if (creationDate != null && that.creationDate != null) {
+            lastActivityDateCheck = Objects.equals(dateFormat.format(lastActivity),
+                    dateFormat.format(that.lastActivity));
+        }
+
 
         return Objects.equals(inviteCode, that.inviteCode) &&
                 Objects.equals(title, that.title) &&

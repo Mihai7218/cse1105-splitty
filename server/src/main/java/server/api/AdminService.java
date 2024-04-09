@@ -151,7 +151,6 @@ public class AdminService {
         List<Event> allEvents = eventRepository.findAll();
         for(Event e: allEvents){
             event.setInviteCode(e.getInviteCode());
-            boolean test = e.fullEquals(event);
             if(e.fullEquals(event)){
                 return ResponseEntity.badRequest().build();
             }
