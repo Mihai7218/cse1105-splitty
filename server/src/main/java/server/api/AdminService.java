@@ -1,12 +1,13 @@
 package server.api;
 
-import commons.Event;
+import commons.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import server.database.EventRepository;
-import server.database.TagRepository;
+import server.database.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -17,8 +18,9 @@ public class AdminService {
 
     private final EventRepository eventRepository;
     private final TagRepository tagRepository;
-    private final ParticipantPaymentService participantPaymentService;
-    private final ParticipantService participantService;
+    private final ParticipantRepository participantRepository;
+    private final ParticipantPaymentRepository participantPaymentRepository;
+    private final ExpenseRepository expenseRepository;
 
     /**
      * Constructor for de EventService
@@ -28,12 +30,14 @@ public class AdminService {
     @Autowired
     public AdminService(EventRepository eventRepository,
                         TagRepository tagRepository,
-                        ParticipantPaymentService participantPaymentService,
-                        ParticipantService participantService) {
+                        ParticipantRepository participantRepository,
+                        ParticipantPaymentRepository participantPaymentRepository,
+                        ExpenseRepository expenseRepository) {
         this.eventRepository = eventRepository;
         this.tagRepository = tagRepository;
-        this.participantPaymentService = participantPaymentService;
-        this.participantService = participantService;
+        this.participantRepository = participantRepository;
+        this.participantPaymentRepository = participantPaymentRepository;
+        this.expenseRepository = expenseRepository;
     }
 
     /**
@@ -51,9 +55,50 @@ public class AdminService {
      */
     public ResponseEntity<Event> addCreatedEvent(Event event) {
         if(validateEvent(event).getStatusCode().equals(OK)){
-            Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),event.getLastActivity());
 
-            return ResponseEntity.ok(eventRepository.save(event));
+            HashMap<Tag,Tag> tagTagHashMap = new HashMap<>();
+            HashMap<Participant,Participant> ppHashMap = new HashMap<>();
+
+            Event eventToSave = new Event(event.getTitle(),event.getCreationDate(),event.getLastActivity());
+            eventRepository.save(eventToSave);
+            for (Tag tag : event.getTagsList()) {
+                Tag tagToSave = new Tag(tag.getName(), tag.getColor());
+                tagTagHashMap.put(tag,tagToSave);
+                tagRepository.save(tagToSave);
+                eventToSave.getTagsList().add(tagToSave);
+            }
+            eventRepository.save(eventToSave);
+            for (Participant p : event.getParticipantsList()) {
+                Participant participantToSave = new Participant(p.getName(),p.getEmail(), p.getIban(), p.getBic());
+                ppHashMap.put(p,participantToSave);
+                participantRepository.save(participantToSave);
+                eventToSave.getParticipantsList().add(participantToSave);
+            }
+            eventRepository.save(eventToSave);
+            for (Expense e : event.getExpensesList()) {
+
+
+                Expense expenseToSave = new Expense(e.getAmount(),
+                        e.getCurrency(),
+                        e.getTitle(),
+                        e.getDescription(),
+                        e.getDate(),
+                        new ArrayList<>(),
+                        null,null);
+                expenseToSave.setPayee(ppHashMap.get(e.getPayee()));
+                if (e.getTag() != null) {
+                    expenseToSave.setTag(tagTagHashMap.get(e.getTag()));
+                }
+                for (ParticipantPayment pp : e.getSplit()) {
+                    ParticipantPayment ppToSave = new ParticipantPayment(ppHashMap.get(pp.getParticipant()),pp.getPaymentAmount());
+                    participantPaymentRepository.save(ppToSave);
+                    expenseToSave.getSplit().add(ppToSave);
+                }
+                expenseRepository.save(expenseToSave);
+                eventToSave.getExpensesList().add(expenseToSave);
+            }
+            eventRepository.save(eventToSave);
+            return ResponseEntity.ok(eventToSave);
         }else{
             return ResponseEntity.badRequest().build();
         }

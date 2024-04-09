@@ -124,7 +124,9 @@ public class AdminConsole {
                 case 3:
                     List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
                     if(importedEvents == null || importedEvents.isEmpty()) break;
-                    for(Event e: importedEvents) adminConsole.setNewEvents(e);
+                    for(Event e: importedEvents) {
+                        adminConsole.setNewEvents(e);
+                    }
                     break;
                 case 4:
                     adminConsole.deleteEventMenu(userInput, adminConsole);
@@ -532,8 +534,8 @@ public class AdminConsole {
      */
     public static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
-        adminConsole.utils.setServer(userInput.next());
-        //adminConsole.serverUtils.setServer("http://localhost:8080");
+        //adminConsole.utils.setServer(userInput.next());
+        adminConsole.utils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
 

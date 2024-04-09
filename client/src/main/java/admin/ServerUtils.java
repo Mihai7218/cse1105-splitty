@@ -123,9 +123,9 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(events, APPLICATION_JSON), Event.class);
-        setParticipants(events.getParticipantsList(), password, events);
-        setExpenses(events.getExpensesList(), password, events);
-        setTags(events.getTagsList(), password, events);
+//        setParticipants(events.getParticipantsList(), password, events);
+//        setExpenses(events.getExpensesList(), password, events);
+//        setTags(events.getTagsList(), password, events);
 
     }
 
