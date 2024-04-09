@@ -16,6 +16,14 @@ java {
 	sourceCompatibility = '21'
 }
 
+tasks.register('adminRun', JavaExec) {
+	group = "application"
+	description = "Runs the admin console."
+	classpath = sourceSets.main.runtimeClasspath
+	standardInput = System.in
+	mainClass = 'admin.AdminConsole'
+}
+
 
 dependencies {
 	implementation project(":commons")
