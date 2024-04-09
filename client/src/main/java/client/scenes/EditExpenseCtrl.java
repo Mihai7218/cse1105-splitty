@@ -71,7 +71,6 @@ public class EditExpenseCtrl extends ExpenseCtrl {
                     if ("deleted".equals(exp.getDescription())) {
                         throwAlert("editExpense.removedExpenseHeader",
                                 "editExpense.removedExpenseBody");
-                        expenseSubscription.unsubscribe();
                         exit();
                     }
                 }));
@@ -210,6 +209,15 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     public void startMenu() {
         clearFields();
         mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Exit method. Returns to the overview and unsubscribes.
+     */
+    @Override
+    protected void exit() {
+        expenseSubscription.unsubscribe();
+        super.exit();
     }
 
     /**
