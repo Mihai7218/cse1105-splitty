@@ -60,6 +60,10 @@ class MainCtrlTest {
     }
 
     /**
+     * Below are tests for all show methods
+     */
+
+    /**
      * Tests that the title of the stage was changed and that there was a scene set.
      */
     @Test
@@ -67,6 +71,11 @@ class MainCtrlTest {
         sut.showOverview();
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
+    }
+
+    @Test //TODO
+    void showOverview2() {
+        
     }
 
     /**
@@ -83,6 +92,11 @@ class MainCtrlTest {
         verify(stage).titleProperty();
     }
 
+    @Test //TODO
+    void showStartMenu2() {
+
+    }
+
     /**
      * Tests that the title of the stage was changed and that there was a scene set.
      */
@@ -92,6 +106,10 @@ class MainCtrlTest {
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
+    @Test //TODO
+    void showParticipant2() {
+
+    }
 
     @Test
     void showEditParticipant() {
@@ -99,11 +117,19 @@ class MainCtrlTest {
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
+    @Test //TODO
+    void showEditParticipant2() {
+
+    }
     @Test
     void showEditExpense(){
         sut.showEditExpense();
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
+    }
+    @Test //TODO
+    void showEditExpense2(){
+
     }
     @Test
     void showDebts(){
@@ -111,6 +137,16 @@ class MainCtrlTest {
         assertEquals(null, stageTitle);
         verify(stage).setScene(any());
     }
+    @Test //TODO
+    void showDebts2(){
+
+    }
+
+    //TODO: showInvitation, showStatistics, showManageTags, showEditTag, showAddExpense,
+    //TODO: showConnectToServer, showSettings
+    //TODO: showExpenseConfirmation, showParticipantConfirmation
+    //TODO: showInviteConfirmation, showEditConfirmation
+    //TODO: pickLocation, getSettingsCtrl, getSettings, getPassword
 
     /**
      * Tests that the stage that was set is returned when calling the getter for it.
@@ -126,8 +162,7 @@ class MainCtrlTest {
      */
     @Test
     void initialize() {
-        //QuoteOverviewCtrl quoteOverviewCtrl = mock(QuoteOverviewCtrl.class);
-        //Parent quoteOverview = spy(Parent.class);
+        //Mocks of all the controllers
         StartScreenCtrl startScreenCtrl = mock(StartScreenCtrl.class);
         Parent startScreen = spy(Parent.class);
         ParticipantCtrl participantCtrl = mock(ParticipantCtrl.class);
@@ -154,6 +189,8 @@ class MainCtrlTest {
         Parent manageTags = spy(Parent.class);
         EditTagCtrl editTagCtrl = mock(EditTagCtrl.class);
         Parent editTag = spy(Parent.class);
+
+
         sut.initialize(stage,
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
@@ -169,8 +206,8 @@ class MainCtrlTest {
                 new Pair<>(manageTagsCtrl, manageTags),
                 new Pair<>(editTagCtrl, editTag));
         assertEquals(stage, sut.getPrimaryStage());
-        //assertEquals(quoteOverviewCtrl, sut.getQuoteOverviewCtrl());
-        //assertEquals(quoteOverview, sut.getQuoteOverview().getRoot());
+
+        //Test if the controllers were initialised
         assertEquals(startScreenCtrl, sut.getStartScreenCtrl());
         assertEquals(startScreen, sut.getStartScreen().getRoot());
         assertEquals(participantCtrl, sut.getParticipantCtrl());
