@@ -105,6 +105,11 @@ public class DebtsCtrl implements Initializable, NotificationSender {
      * loads the data for the scene
      */
     public void refresh() {
+        String expanded = null;
+        var expandedPane = menu.getExpandedPane();
+        if (expandedPane != null) {
+            expanded = expandedPane.getText();
+        }
         menu.getPanes().clear();
         String host = config.getProperty("mail.host");
         String port = config.getProperty("mail.port");
@@ -115,6 +120,12 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                 && user != null && !user.isEmpty()
                 && email != null && !email.isEmpty();
         setTitles(mainCtrl.getEvent());
+        for (var pane : menu.getPanes()) {
+            if (expanded != null && pane.getText().equals(expanded)) {
+                menu.setExpandedPane(pane);
+                break;
+            }
+        }
     }
 
     /**

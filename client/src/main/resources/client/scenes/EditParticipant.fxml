@@ -10,9 +10,9 @@
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="267.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditParticipantCtrl">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="267.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.EditParticipantCtrl">
    <children>
-      <Button defaultButton="true" layoutX="395.0" layoutY="227.0" mnemonicParsing="false" onAction="#ok" text="${controller.languageManager.editParticipant.okButton}" />
+      <Button layoutX="395.0" layoutY="227.0" mnemonicParsing="false" onAction="#ok" text="${controller.languageManager.editParticipant.okButton}" />
       <Button id="cancel" cancelButton="true" layoutX="266.0" layoutY="227.0" mnemonicParsing="false" onAction="#abort" text="${controller.languageManager.editParticipant.cancelButton}" />
       <TextField fx:id="name" layoutX="109.0" layoutY="76.0" prefHeight="26.0" prefWidth="346.0" />
       <TextField fx:id="iban" layoutX="109.0" layoutY="150.0" prefHeight="26.0" prefWidth="346.0" />

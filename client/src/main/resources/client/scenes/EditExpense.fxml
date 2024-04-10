@@ -31,7 +31,7 @@
                                 <Font size="15.0" />
                             </font>
                         </Label>
-                        <ChoiceBox fx:id="payee" prefHeight="26.0" prefWidth="202.0" />
+                        <ChoiceBox fx:id="payee" prefHeight="26.0" prefWidth="202.0" onAction="#populateParticipantCheckBoxes" />
                     </children>
                 </HBox>
                 <Region prefHeight="50.0" prefWidth="10.0" />
