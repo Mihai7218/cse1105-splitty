@@ -249,6 +249,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
                             subscribeToParticipant(participant);
+                            mainCtrl.getDebtsCtrl().refresh();
                             populateParticipants();
                         }));
             if (tagSubscription == null)
@@ -280,6 +281,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         if (!"deleted".equals(part.getIban())) {
                             mainCtrl.getEvent().getParticipantsList().add(part);
                         }
+                        mainCtrl.getDebtsCtrl().refresh();
                         populateExpenses();
                         populateParticipants();
                     }));
