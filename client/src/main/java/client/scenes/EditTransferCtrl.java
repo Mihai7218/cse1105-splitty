@@ -73,7 +73,7 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
      * The location used to resolve relative paths for the root object, or
      * {@code null} if the location is not known.
      *
-     * @param resources
+     * @param resourceBundle
      * The resources used to localize the root object, or {@code null} if
      * the root object was not localized.
      */
@@ -87,12 +87,19 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
         }
         currencyVal.getItems().addAll(currencyConverter.getCurrencies());
 
-        from.valueProperty().addListener((observable, oldValue, newValue) -> {
-            populateToBox();
-        });
-        to.valueProperty().addListener((observable, oldValue, newValue) -> {
-            populateFromBox();
-        });
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null) {
+            for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
+                if (p.equals(to.getValue())) {
+                    to.getItems().add(p);
+                } else if (p.equals(from.getValue())) {
+                    from.getItems().add(p);
+                } else {
+                    to.getItems().add(p);
+                    from.getItems().add(p);
+                }
+            }
+        }
         from.setConverter(new StringConverter<>() {
             @Override
             public String toString(Participant participant) {
@@ -118,7 +125,6 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
                 return null;
             }
         });
-        refresh();
     }
 
     /**
@@ -135,6 +141,13 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
      */
     @Override
     public void refresh(){
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null) {
+            from.getItems().clear();
+            from.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
+            to.getItems().clear();
+            to.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
+        }
         from.setValue(expense.getPayee());
         to.setValue(expense.getSplit().stream().filter(item ->
                 !item.getParticipant().equals(expense.getPayee()))
@@ -153,6 +166,10 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
 
         if(!validate(expensePriceText,expenseDate)) {
             throwAlert("transfer.missingFields", "transfer.missingFieldsBody");
+            return;
+        }else if(from.getValue().equals(to.getValue())){
+            throwAlert("transfer.sameFields","transfer.sameFieldsBody");
+            return;
         }
 
         try{
@@ -224,41 +241,6 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
         amount.clear();
         currencyVal.setValue(null);
         date.setValue(null);
-    }
-
-
-    /**
-     * Populates + removes option from 'to' box if it is checked in 'from'
-     */
-    public void populateToBox(){
-        if (mainCtrl != null && mainCtrl.getEvent() != null
-                && mainCtrl.getEvent().getParticipantsList() != null
-                && to.getValue() == null) {
-            to.getItems().clear();
-            for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
-                if (participant == from.getValue()) continue;
-                else {
-                    to.getItems().add(participant);
-                }
-            }
-        }
-    }
-
-    /**
-     * Populates + removes options from 'from' box if it is checked in 'to'
-     */
-    public void populateFromBox(){
-        if (mainCtrl != null && mainCtrl.getEvent() != null
-                && mainCtrl.getEvent().getParticipantsList() != null
-                && from.getValue() == null) {
-            from.getItems().clear();
-            for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
-                if (participant == to.getValue()) continue;
-                else {
-                    from.getItems().add(participant);
-                }
-            }
-        }
     }
 
     /**

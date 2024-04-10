@@ -71,7 +71,7 @@
                <children>
                   <Button id="cancel" fx:id="cancel" mnemonicParsing="false" onAction="#cancel" text="${controller.languageManager.transfer.cancel}" />
                   <Region prefHeight="100.0" prefWidth="10.0" />
-                  <Button id="addEntity" fx:id="confirm" mnemonicParsing="false" onAction="#doneTransfer" text="${controller.languageManager.transfer.addTransfer}" />
+                  <Button id="addEntity" fx:id="confirm" mnemonicParsing="false" onAction="#doneTransfer" text="${controller.languageManager.transfer.saveTransfer}" />
                </children>
             </HBox>
          </children>
