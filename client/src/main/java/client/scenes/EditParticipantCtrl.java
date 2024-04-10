@@ -20,40 +20,39 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Participant;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 
 public class EditParticipantCtrl {
 
     private final ServerUtils server;
     private final MainCtrl mainCtrl;
-
+    private final LanguageManager languageManager;
     @FXML
     private TextField name;
-
     @FXML
     private TextField email;
-
     @FXML
     private TextField iban;
-
     @FXML
     private TextField bic;
-
     //this is the participant that is being edited.
     private Participant participant;
-    private final LanguageManager languageManager;
+    private StompSession.Subscription participantSubscription;
 
 
     /**
      * Constructs a new ParticipantCtrl object.
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
+     *
+     * @param server          ServerUtils object
+     * @param mainCtrl        MainCtrl object
      * @param languageManager LanguageManager object
      */
     @Inject
@@ -72,15 +71,41 @@ public class EditParticipantCtrl {
         email.setText(participant.getEmail());
         iban.setText(participant.getIban());
         bic.setText(participant.getBic());
+        String dest = "/topic/events/" +
+                mainCtrl.getEvent().getInviteCode() + "/participants/"
+                + participant.getId();
+        participantSubscription = server.registerForMessages(dest, Participant.class,
+                part -> Platform.runLater(() -> {
+                    if ("deleted".equals(part.getIban())) {
+                        var alert = new Alert(Alert.AlertType.WARNING);
+                        alert.headerTextProperty().bind(languageManager
+                                .bind("editParticipant.removedParticipantHeader"));
+                        alert.contentTextProperty().bind(languageManager
+                                .bind("editParticipant.removedParticipantBody"));
+                        alert.initModality(Modality.APPLICATION_MODAL);
+                        alert.showAndWait();
+                        abort();
+                    }
+                }));
     }
 
     /**
      * Returns a new Participant object with the provided details.
+     *
      * @return a participant object with the details.
      */
     private Participant getParticipant() {
-        var p = new Participant(name.getText(),email.getText(),iban.getText(),bic.getText());
+        var p = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
         return p;
+    }
+
+    /**
+     * sets the participant that is getting edited
+     *
+     * @param participant
+     */
+    public void setParticipant(Participant participant) {
+        this.participant = participant;
     }
 
     /**
@@ -89,7 +114,7 @@ public class EditParticipantCtrl {
     public void ok() {
         boolean bicPresent = bic.getText().isEmpty();
         boolean ibanPresent = iban.getText().isEmpty();
-        if (name.getText().isEmpty()){
+        if (name.getText().isEmpty()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("editParticipant.emptyFields"));
@@ -97,7 +122,7 @@ public class EditParticipantCtrl {
             alert.showAndWait();
             return;
         }
-        if(bicPresent != ibanPresent){
+        if (bicPresent != ibanPresent) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty()
                     .bind(languageManager.bind("editParticipant.invalidPayment"));
@@ -129,32 +154,25 @@ public class EditParticipantCtrl {
      * When the abort button is pressed it goes back to the overview
      */
     public void abort() {
+        participantSubscription.unsubscribe();
         clearFields();
         mainCtrl.showOverview();
-    }
-
-    /**
-     * sets the participant that is getting edited
-     * @param participant
-     */
-    public void setParticipant(Participant participant) {
-        this.participant = participant;
     }
 
     /**
      * Clears all the text fields
      */
     private void clearFields() {
-        if(name!=null){
+        if (name != null) {
             name.clear();
         }
-        if(email!=null){
+        if (email != null) {
             email.clear();
         }
-        if(iban!=null){
+        if (iban != null) {
             iban.clear();
         }
-        if(bic!=null){
+        if (bic != null) {
             bic.clear();
         }
     }
@@ -169,6 +187,7 @@ public class EditParticipantCtrl {
 
     /**
      * Getter for the language manager observable map.
+     *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -177,6 +196,7 @@ public class EditParticipantCtrl {
 
     /**
      * Setter for the language manager observable map.
+     *
      * @param languageManager - the language manager observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
@@ -185,6 +205,7 @@ public class EditParticipantCtrl {
 
     /**
      * Getter for the language manager property.
+     *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
@@ -193,10 +214,11 @@ public class EditParticipantCtrl {
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it edits the participant with the current values.
-     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
-     *  - if Ctrl + m is pressed, then it returns to the startscreen.
-     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * - if ENTER is pressed, then it edits the participant with the current values.
+     * - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * - if Ctrl + m is pressed, then it returns to the startscreen.
+     * - if Ctrl + o is pressed, then it returns to the overview.
+     *
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -208,12 +230,12 @@ public class EditParticipantCtrl {
                 abort();
                 break;
             case M:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     startMenu();
                     break;
                 }
             case O:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     abort();
                     break;
                 }

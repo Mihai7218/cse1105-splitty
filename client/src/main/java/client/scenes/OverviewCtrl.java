@@ -190,10 +190,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     expenseparticipants.getItems().add(p);
                 }
             }
+            List<Participant> removed = new ArrayList<>();
             for (Participant p : expenseparticipants.getItems()) {
-                if (!serverparticipants.contains(p))
-                    expenseparticipants.getItems().remove(p);
+                if (!serverparticipants.contains(p)){
+                    removed.add(p);
+                }
+//                    expenseparticipants.getItems().remove(p);
             }
+            expenseparticipants.getItems().removeAll(removed);
             participants.refresh();
         }
     }
@@ -245,6 +249,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
                             subscribeToParticipant(participant);
+                            mainCtrl.getDebtsCtrl().refresh();
                             populateParticipants();
                         }));
             if (tagSubscription == null)
@@ -272,10 +277,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     + participant.getId();
             var subscription = server.registerForMessages(dest, Participant.class,
                     part -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getParticipantsList().remove(part);
+                        mainCtrl.getEvent().getParticipantsList().remove(participant);
                         if (!"deleted".equals(part.getIban())) {
                             mainCtrl.getEvent().getParticipantsList().add(part);
                         }
+                        mainCtrl.getDebtsCtrl().refresh();
                         populateExpenses();
                         populateParticipants();
                     }));
@@ -539,12 +545,34 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
-                    participants.getItems().remove(participant);
-                    participants.refresh();
+                if(!(result.isPresent() && result.get() == ButtonType.OK)) {
                     return;
-                }else{
-                    return;
+                } else {
+                    break;
+                }
+            }
+        }
+        for (Expense expense : expenses) {
+            if (expense.getPayee().equals(participant)) {
+                try {
+                    server.removeExpense(mainCtrl.getEvent().getInviteCode(), expense.getId());
+                } catch (WebApplicationException e) {
+                    if (mainCtrl.getOverviewCtrl() == null
+                            || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                        return;
+                    var sub = expenseSubscriptionMap.get(expense);
+                    if (sub != null)
+                        sub.notify();
+                }
+            } else if(!expense.getSplit().stream().filter(x -> x.getParticipant()
+                    .equals(participant)).toList().isEmpty()) {
+                recalculateSplit(expense, participant);
+                try {
+                    server.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
+                } catch (WebApplicationException e) {
+                    var sub = expenseSubscriptionMap.get(expense);
+                    if (sub != null)
+                        sub.notify();
                 }
             }
         }
@@ -552,7 +580,41 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         participants.getItems().remove(participant);
         expenseparticipants.getItems().remove(participant);
         participants.refresh();
+    }
 
+    /**
+     * Recalculate expenses on deletion of participant.
+     * @param expense - the expense.
+     * @param participant - the deleted participant.
+     */
+    private void recalculateSplit(Expense expense, Participant participant) {
+        double amount = expense.getAmount();
+        int amountCents = (int) (amount*100);
+        List<Participant> participantsList = new ArrayList<>(expense.getSplit().stream()
+                .map(ParticipantPayment::getParticipant).toList());
+        participantsList.remove(participant);
+        expense.getSplit().clear();
+        int noParticipants = participantsList.size();
+
+        Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
+        double amtAdded = (double)(amountCents/noParticipants)/100.0;
+        //System.out.println(amtAdded);
+        int remainder = amountCents % noParticipants;
+        for (Participant p : participantsList) {
+            ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
+            expense.getSplit().add(newP);
+            participantSplits.put(p, newP);
+        }
+        Collections.shuffle(participantsList);
+        int counter = 0;
+        while(remainder > 0){
+            Participant subject = participantsList.get(counter);
+            double initAmt = participantSplits.get(subject).getPaymentAmount();
+            participantSplits.get(participantsList.get(counter)).setPaymentAmount(initAmt + 0.01);
+            remainder--;
+            counter++;
+            //System.out.println(subject.toString() + " got the extra cent!");
+        }
     }
 
     /**

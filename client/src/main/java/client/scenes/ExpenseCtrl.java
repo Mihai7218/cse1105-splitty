@@ -12,6 +12,7 @@ import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.animation.FadeTransition;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -28,6 +29,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
 import java.time.LocalDate;
@@ -82,6 +84,8 @@ public abstract class ExpenseCtrl implements Initializable {
     protected Button addExpense;
 
     protected Expense expense;
+    protected StompSession.Subscription participantSubscription;
+    protected Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
     /**
      *
@@ -107,6 +111,7 @@ public abstract class ExpenseCtrl implements Initializable {
         checkBoxParticipantMap = new HashMap<>();
         participantCheckBoxMap = new HashMap<>();
         participantsList = new ArrayList<>();
+        participantSubscriptionMap = new HashMap<>();
         //System.out.println(mainCtrl.getEvent());
     }
 
@@ -212,6 +217,61 @@ public abstract class ExpenseCtrl implements Initializable {
             payee.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
             expenseType.getItems().clear();
             expenseType.getItems().addAll(mainCtrl.getEvent().getTagsList());
+            for (Participant p : mainCtrl.getEvent().getParticipantsList()) {
+                subscribeToParticipant(p);
+            }
+            if (participantSubscription == null)
+                participantSubscription = serverUtils.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent()
+                                        .getInviteCode() + "/participants", Participant.class,
+                        participant -> Platform.runLater(() -> {
+                            payee.getItems().add(participant);
+                            populateParticipantCheckBoxes();
+                            boolean everySelected = everyone.isSelected();
+                            only.setSelected(true);
+                            onlyCheck();
+                            if (everySelected) {
+                                for (var pair : checkBoxParticipantMap.entrySet()) {
+                                    if (!pair.getValue().equals(participant))
+                                        pair.getKey().setSelected(true);
+                                }
+                            }
+                            subscribeToParticipant(participant);
+                        }));
+        }
+    }
+
+    /**
+     * @param participant the participant to subscribe to
+     */
+    private void subscribeToParticipant(Participant participant) {
+        if (!participantSubscriptionMap.containsKey(participant)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/participants/"
+                    + participant.getId();
+            var subscription = serverUtils.registerForMessages(dest, Participant.class,
+                    part -> Platform.runLater(() -> {
+                        Participant previous = payee.getValue();
+                        boolean isSelected = false;
+                        if (payee.getValue() != null)
+                            isSelected = payee.getValue().equals(participant);
+                        payee.getItems().remove(participant);
+//                        mainCtrl.getEvent().getParticipantsList().remove(participant);
+                        payee.setValue(null);
+                        if (!"deleted".equals(part.getIban())) {
+//                            mainCtrl.getEvent().getParticipantsList().add(part);
+                            payee.getItems().add(part);
+                            if (isSelected) {
+                                payee.setValue(part);
+                            }
+                        }
+                        if (previous != null && !previous.equals(participant)) {
+                            payee.setValue(previous);
+                        }
+                        populateParticipantCheckBoxes();
+                        checkAllSelected();
+                    }));
+            participantSubscriptionMap.put(participant, subscription);
         }
     }
 
@@ -255,7 +315,7 @@ public abstract class ExpenseCtrl implements Initializable {
             if (expense != null)
                 split = expense.getSplit();
             for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
-                if (participant == payee.getValue()) continue;
+                if (participant.equals(payee.getValue())) continue;
                 String name = participant.getName();
                 CheckBox checkBox = new CheckBox(name);
                 if (split != null && split.stream().anyMatch(
@@ -618,9 +678,18 @@ public abstract class ExpenseCtrl implements Initializable {
         confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
         Optional<ButtonType> result = confirmation.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            clearFields();
-            mainCtrl.showOverview();
+            exit();
         }
+    }
+
+    /**
+     * Exit method. Closes subscriptions and returns to the overview.
+     */
+    protected void exit() {
+        participantSubscription.unsubscribe();
+        participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+        clearFields();
+        mainCtrl.showOverview();
     }
 
     /**
