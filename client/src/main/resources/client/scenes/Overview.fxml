@@ -52,20 +52,24 @@
                         <ListView fx:id="participants" />
                     </children>
                 </VBox>
-                <Region prefHeight="44.0" prefWidth="396.0" />
+                <Region prefHeight="25.0" prefWidth="586.0" />
                 <VBox id="expenseContainer" alignment="CENTER_LEFT" prefHeight="51.0" prefWidth="585.0">
                     <children>
                         <Label layoutX="35.0" layoutY="156.0" text="${controller.languageManager.overview.expensesLabel}" />
                         <Region prefHeight="200.0" prefWidth="200.0" />
-                        <HBox alignment="CENTER_LEFT" prefHeight="26.0" prefWidth="350.0">
+                        <HBox prefHeight="26.0" prefWidth="350.0">
                             <children>
                                 <ChoiceBox fx:id="expenseparticipants" layoutX="35.0" layoutY="177.0" onAction="#filterViews" prefWidth="150.0" />
-                                <Region prefHeight="26.0" prefWidth="5.0" HBox.hgrow="ALWAYS" />
+                                <Region prefHeight="51.0" prefWidth="172.0" HBox.hgrow="ALWAYS" />
                                 <Button id="showStatistics" fx:id="showStatisticsButton" mnemonicParsing="false" onAction="#statistics" text="${controller.languageManager.overview.showStatisticsButton}" />
-                        <Region prefHeight="26.0" prefWidth="5.0" />
-                        <Button id="addEntity" fx:id="addTransferButton" mnemonicParsing="false" onAction="#addTransfer" text="${controller.languageManager.overview.addTransfer}" />
-                                <Region prefHeight="26.0" prefWidth="5.0" />
-                                <Button id="addExpense" fx:id="addExpenseButton" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
+                        <Region prefHeight="51.0" prefWidth="8.0" />
+                        <VBox alignment="TOP_RIGHT" prefHeight="51.0" prefWidth="217.0" HBox.hgrow="ALWAYS">
+                           <children>
+                                      <Button id="addExpense" fx:id="addExpenseButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#addExpense" text="${controller.languageManager.overview.addExpenseButton}" />
+                              <Region prefHeight="26.0" prefWidth="5.0" />
+                              <Button id="addExpense" fx:id="addTransferButton" contentDisplay="RIGHT" mnemonicParsing="false" onAction="#addTransfer" text="${controller.languageManager.overview.addTransfer}" />
+                           </children>
+                        </VBox>
                             </children>
                         </HBox>
                     </children>
@@ -106,29 +110,34 @@
                         </TabPane>
                     </children>
                 </VBox>
-                <Region prefHeight="44.0" prefWidth="396.0" VBox.vgrow="ALWAYS" />
-                <HBox alignment="BOTTOM_RIGHT" prefHeight="35.0" prefWidth="585.0">
-                    <children>
-                        <Region HBox.hgrow="ALWAYS" />
-                        <Button id="cancel" fx:id="cancel" alignment="CENTER" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" wrapText="true">
-                            <HBox.margin>
-                                <Insets right="5.0" />
-                            </HBox.margin></Button>
-                        <Button fx:id="settleDebts" alignment="CENTER" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" onAction="#settleDebts" text="${controller.languageManager.overview.settleDebtsButton}" wrapText="true" />
-                    </children>
-                </HBox>
+                <Region prefHeight="22.0" prefWidth="586.0" VBox.vgrow="ALWAYS" />
+            <HBox prefHeight="57.0" prefWidth="586.0">
+               <children>
+                    <HBox prefHeight="41.0" prefWidth="300.0">
+                        <children>
+                            <Label fx:id="sumLabel" wrapText="true" HBox.hgrow="ALWAYS">
+                                <HBox.margin>
+                                    <Insets right="5.0" />
+                                </HBox.margin>
+                            </Label>
+                            <Label fx:id="sumExpense" alignment="TOP_LEFT" />
+                        </children>
+                    </HBox>
+                      <HBox alignment="TOP_RIGHT" prefHeight="79.0" prefWidth="305.0">
+                          <children>
+                              <Region prefHeight="46.0" prefWidth="11.0" HBox.hgrow="ALWAYS" />
+                              <Button id="cancel" fx:id="cancel" alignment="CENTER" cancelButton="true" layoutX="36.0" layoutY="385.0" mnemonicParsing="false" onAction="#startMenu" text="${controller.languageManager.overview.backButton}" wrapText="true" HBox.hgrow="ALWAYS">
+                                  <HBox.margin>
+                                      <Insets right="5.0" />
+                                  </HBox.margin>
+                        </Button>
+                              <Button fx:id="settleDebts" alignment="CENTER" layoutX="256.0" layoutY="385.0" mnemonicParsing="false" onAction="#settleDebts" text="${controller.languageManager.overview.settleDebtsButton}" wrapText="true" HBox.hgrow="ALWAYS" />
+                          </children>
+                      </HBox>
+               </children>
+            </HBox>
             </children>
         </VBox>
-        <HBox layoutX="32.0" layoutY="627.0" prefHeight="41.0" prefWidth="300.0">
-            <children>
-                <Label fx:id="sumLabel" wrapText="true" HBox.hgrow="ALWAYS">
-                    <HBox.margin>
-                        <Insets right="5.0" />
-                    </HBox.margin>
-                </Label>
-                <Label fx:id="sumExpense" alignment="TOP_LEFT" />
-            </children>
-        </HBox>
         <HBox alignment="CENTER" layoutX="100.0" layoutY="626.0" prefHeight="34.0" prefWidth="450.0">
             <children>
                 <Label id="hciFeedback" fx:id="expenseAdded" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" textFill="WHITE" visible="false" HBox.hgrow="ALWAYS">

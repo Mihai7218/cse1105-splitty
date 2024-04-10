@@ -27,7 +27,7 @@
             <Region prefHeight="34.0" prefWidth="388.0" />
             <HBox prefHeight="35.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="transferFrom" prefHeight="18.0" prefWidth="230.0" text="${controller.languageManager.transfer.transferFrom}">
+                  <Label fx:id="transferFrom" prefHeight="26.0" prefWidth="219.0" text="${controller.languageManager.transfer.transferFrom}">
                      <font>
                         <Font size="16.0" />
                      </font></Label>
@@ -36,16 +36,16 @@
             </HBox>
             <HBox prefHeight="34.0" prefWidth="388.0">
                <children>
-                  <Label fx:id="transferTo" prefHeight="18.0" prefWidth="230.0" text="${controller.languageManager.transfer.transferTo}">
+                  <Label fx:id="transferTo" prefHeight="26.0" prefWidth="218.0" text="${controller.languageManager.transfer.transferTo}">
                      <font>
                         <Font size="16.0" />
                      </font></Label>
                   <ChoiceBox fx:id="to" prefHeight="26.0" prefWidth="169.0" />
                </children>
             </HBox>
-            <HBox prefHeight="35.0" prefWidth="388.0">
+            <HBox alignment="CENTER" prefHeight="35.0" prefWidth="388.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Label fx:id="transferAmount" prefHeight="18.0" prefWidth="260.0" text="${controller.languageManager.transfer.transferAmount}" HBox.hgrow="ALWAYS">
+                  <Label fx:id="transferAmount" prefHeight="65.0" prefWidth="252.0" text="${controller.languageManager.transfer.transferAmount}" wrapText="true" HBox.hgrow="ALWAYS">
                      <font>
                         <Font size="16.0" />
                      </font></Label>
@@ -55,11 +55,11 @@
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label fx:id="dateLabel" prefHeight="18.0" prefWidth="233.0" text="${controller.languageManager.transfer.date}" HBox.hgrow="ALWAYS">
+                  <Label fx:id="dateLabel" prefHeight="26.0" prefWidth="226.0" text="${controller.languageManager.transfer.date}" HBox.hgrow="ALWAYS">
                      <font>
                         <Font size="16.0" />
                      </font></Label>
-                  <DatePicker fx:id="date" />
+                  <DatePicker fx:id="date" prefHeight="26.0" prefWidth="178.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">

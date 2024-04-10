@@ -45,6 +45,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     @FXML
     public Button showStatisticsButton;
     @FXML
+    public Button addTransferButton;
+    @FXML
     private Tab fromTab;
     @FXML
     private Tab includingTab;
@@ -206,6 +208,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
+        addTransferButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         showStatisticsButton.setGraphic(new ImageView(new Image("icons/graph.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         Event event = mainCtrl.getEvent();
