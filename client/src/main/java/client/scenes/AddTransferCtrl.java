@@ -338,9 +338,9 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
      */
     public boolean validate(String expensePriceText, LocalDate expenseDate){
         // Perform validation
-        if( !expensePriceText.isEmpty() || expenseDate != null
-                || currencyVal.getValue() != null || to.getValue() != null
-                || from.getValue() != null){
+        if( expensePriceText.isEmpty() || expenseDate == null
+                || currencyVal.getValue() == null || to.getValue() == null
+                || from.getValue() == null){
             removeHighlight();
             highlightMissing(to.getValue()==null, from.getValue()==null,
                     expensePriceText.isEmpty(), expenseDate==null, currencyVal.getValue() == null);
@@ -426,4 +426,85 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         mainCtrl.showOverview();
     }
 
+    public void setParticipantSubscription(StompSession.Subscription participantSubscription) {
+        this.participantSubscription = participantSubscription;
+    }
+
+    public void setParticipantSubscriptionMap(Map<Participant, StompSession.Subscription> participantSubscriptionMap) {
+        this.participantSubscriptionMap = participantSubscriptionMap;
+    }
+
+    public Label getHeader() {
+        return header;
+    }
+
+    public void setHeader(Label header) {
+        this.header = header;
+    }
+
+
+    public void setTransferFrom(Label transferFrom) {
+        this.transferFrom = transferFrom;
+    }
+
+
+    public void setFrom(ChoiceBox<Participant> from) {
+        this.from = from;
+    }
+
+
+    public void setTransferTo(Label transferTo) {
+        this.transferTo = transferTo;
+    }
+
+
+    public void setTo(ChoiceBox<Participant> to) {
+        this.to = to;
+    }
+
+
+    public void setTransferAmount(Label transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+
+    public void setAmount(TextField amount) {
+        this.amount = amount;
+    }
+
+
+    public void setCurrencyVal(ChoiceBox<String> currencyVal) {
+        this.currencyVal = currencyVal;
+    }
+
+    public Label getDateLabel() {
+        return dateLabel;
+    }
+
+    public void setDateLabel(Label dateLabel) {
+        this.dateLabel = dateLabel;
+    }
+
+    @Override
+    public DatePicker getDate() {
+        return date;
+    }
+
+    @Override
+    public void setDate(DatePicker date) {
+        this.date = date;
+    }
+
+    public Button getCancel() {
+        return cancel;
+    }
+
+    public void setCancel(Button cancel) {
+        this.cancel = cancel;
+    }
+
+
+    public void setConfirm(Button confirm) {
+        this.confirm = confirm;
+    }
 }
