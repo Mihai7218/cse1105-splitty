@@ -15,6 +15,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -207,6 +208,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
 
         if(!validate(price, transferDate)){
             throwAlert("transfer.missingFields", "transfer.missingFieldsBody");
+            return;
         }
         Expense newExpense;
         try{
@@ -238,6 +240,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
 
         mainCtrl.showOverview();
         clearFields();
+        removeHighlight();
     }
 
     /**
@@ -265,6 +268,8 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
      */
     @Override
     public void abort(){
+
+        removeHighlight();
         exit();
     }
 
@@ -333,9 +338,92 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
      */
     public boolean validate(String expensePriceText, LocalDate expenseDate){
         // Perform validation
-        return !expensePriceText.isEmpty() && expenseDate != null
-                && currencyVal.getValue() != null && to.getValue() != null
-                && from.getValue() != null;
+        if( !expensePriceText.isEmpty() || expenseDate != null
+                || currencyVal.getValue() != null || to.getValue() != null
+                || from.getValue() != null){
+            removeHighlight();
+            highlightMissing(to.getValue()==null, from.getValue()==null,
+                    expensePriceText.isEmpty(), expenseDate==null, currencyVal.getValue() == null);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Insert highlight for missing fields in the addexpense scene
+     * @param toBool boolean if recipient is present
+     * @param fromBool boolean if transferee for price is present
+     * @param priceBool boolean for amount being present
+     * @param dateBool boolean for date being present
+     * @param currencyBool boolean for currency selected
+     */
+
+    public void highlightMissing(boolean toBool, boolean fromBool,
+                                 boolean priceBool, boolean dateBool, boolean currencyBool){
+        if(toBool) to
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(fromBool) from
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(dateBool) date
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(currencyBool) currencyVal
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        if(priceBool) amount
+                .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+    }
+
+    /**
+     * removes any prior highlighting of required fields
+     */
+    public void removeHighlight() {
+        to.setStyle("-fx-border-color: none;");
+        from.setStyle("-fx-border-color: none; ");
+        date.setStyle("-fx-border-color: none; ");
+        currencyVal.setStyle("-fx-border-color: none;");
+        amount.setStyle("-fx-border-color: none");
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ESCAPE is pressed, then it cancels and returns to the tags scene.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                abort();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    backToOverview();
+                    break;
+                }
+            default:
+                break;
+        }
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        clearFields();
+        mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Back to the overview of the expenses of the Event
+     */
+    public void backToOverview() {
+        clearFields();
+        mainCtrl.showOverview();
     }
 
 }

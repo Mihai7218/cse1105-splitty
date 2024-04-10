@@ -192,8 +192,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(editTransfer);
         if (editTransferCtrl != null) editTransferCtrl.refresh();
-        //if (editTransfer != null) editTransfer.setOnKeyPressed
-        // (e -> editTransferCtrl.keyPressed(e));
+        if (editTransfer != null) editTransfer.setOnKeyPressed
+            (e -> editTransferCtrl.keyPressed(e));
 
     }
 
@@ -210,6 +210,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(transfer);
         if (transferCtrl != null) transferCtrl.refresh();
+        if (transferCtrl != null) transfer.setOnKeyPressed
+                (e -> transferCtrl.keyPressed(e));
     }
 
     /**

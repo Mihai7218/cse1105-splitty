@@ -39,6 +39,8 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     private Accordion menu;
     @FXML
     private Button back;
+//    @FXML
+//    private Label noDebts;
 
     /**
      * @param mainCtrl
@@ -299,6 +301,9 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                 }
             }
         }
+//        if(menu.getPanes().isEmpty()){
+//            noDebts.setVisible(true);
+//        }
     }
 
     /**
