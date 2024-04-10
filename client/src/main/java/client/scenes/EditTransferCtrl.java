@@ -19,12 +19,11 @@ import javafx.util.StringConverter;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Date;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
-
+public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
 
     @FXML
     private Label header;
@@ -51,25 +50,21 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
     @FXML
     private Button confirm;
 
-
     /**
-     * Constructor for the transfer controller
-     * @param mainCtrl main controller
-     * @param config config file
-     * @param languageManager controls language switching
-     * @param serverUtils server utils
-     * @param alert alerts
-     * @param currencyConverter to convert to foreign currencies
+     * @param mainCtrl
+     * @param config
+     * @param languageManager
+     * @param serverUtils
+     * @param alert
+     * @param currencyConverter
      */
     @Inject
-    public AddTransferCtrl(MainCtrl mainCtrl,
-                           ConfigInterface config,
-                           LanguageManager languageManager,
-                           ServerUtils serverUtils,
-                           Alert alert,
-                           CurrencyConverter currencyConverter) {
+    public EditTransferCtrl(MainCtrl mainCtrl,
+                            ConfigInterface config,
+                            LanguageManager languageManager,
+                            ServerUtils serverUtils, Alert alert,
+                            CurrencyConverter currencyConverter) {
         super(mainCtrl, config, languageManager, serverUtils, alert, currencyConverter);
-
     }
 
     /**
@@ -83,7 +78,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
      * the root object was not localized.
      */
     @Override
-    public void initialize(URL url, ResourceBundle resources) {
+    public void initialize(URL url, ResourceBundle resourceBundle) {
         if (cancel != null){
             cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
         }
@@ -127,40 +122,50 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
     }
 
     /**
+     * Setter for the expense.
+     * @param expense - the new value of the expense.
+     */
+    public void setExpense(Expense expense) {
+        this.expense = expense;
+    }
+
+
+    /**
      * Refreshes the scene
      */
     @Override
     public void refresh(){
-        if (mainCtrl != null && mainCtrl.getEvent() != null
-                && mainCtrl.getEvent().getParticipantsList() != null) {
-            from.getItems().clear();
-            from.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
-            to.getItems().clear();
-            to.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
-        }
-        date.setValue(LocalDate.now());
-
+        from.setValue(expense.getPayee());
+        to.setValue(expense.getSplit().stream().filter(item ->
+                !item.getParticipant().equals(expense.getPayee()))
+                .toList().getFirst().getParticipant());
+        amount.setText(String.valueOf(expense.getAmount()));
+        currencyVal.setValue(expense.getCurrency());
+        date.setValue(LocalDate.ofInstant(expense.getDate().toInstant(), ZoneId.systemDefault()));
     }
 
     /**
      * Attempt to add the transfer to the expenses
      */
     public void doneTransfer(){
-        String title = "Transfer";
-        LocalDate transferDate = date.getValue();
-        String price = amount.getText();
+        String expensePriceText = amount.getText();
+        LocalDate expenseDate = date.getValue();
 
-        if(!validate(price, transferDate)){
+        if(!validate(expensePriceText,expenseDate)) {
             throwAlert("transfer.missingFields", "transfer.missingFieldsBody");
         }
-        Expense newExpense;
+
         try{
-            double currPrice = Double.parseDouble(price);
+            double currPrice = Double.parseDouble(expensePriceText);
             boolean fail = (BigDecimal.valueOf(currPrice).scale() > 2);
             if (fail || currPrice <= 0) throw new NumberFormatException();
             int expensePrice = (int) (currPrice * 100);
 
-            newExpense = createExpense(title, expensePrice,transferDate);
+            ParticipantPayment onlySplit = new ParticipantPayment(to.getValue(), currPrice);
+            ParticipantPayment secondSplit = new ParticipantPayment(from.getValue(), currPrice);
+
+            modifyTransfer((double) expensePrice, expenseDate, onlySplit, secondSplit);
+
             clearFields();
 
         }catch(NumberFormatException e){
@@ -169,7 +174,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         }
 
         try {
-            serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
+            serverUtils.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
         } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
                 case 400 -> {
@@ -186,30 +191,25 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
     }
 
     /**
-     * Creates the transfer expense object
-     * @param title title of the transfer (Transfer)
-     * @param price amount transferred
-     * @param date time that the transfer occurred
-     * @return newly created transfer
+     * Modifies the transfer
+     * @param expensePrice
+     * @param expenseDate
+     * @param onlySplit
+     * @param secondSplit
      */
-    public Expense createExpense(String title, int price, LocalDate date){
-        Participant payee = from.getValue();
-        Date actualDate = java.sql.Date.valueOf(date);
-        double priceVal = ((double)price)/100;
-
-        ParticipantPayment onlySplit = new ParticipantPayment(to.getValue(), priceVal);
-        ParticipantPayment secondSplit = new ParticipantPayment(from.getValue(), priceVal);
-
-        return new Expense(priceVal, currencyVal.getValue(), title,
-                "transfer", actualDate,List.of(onlySplit, secondSplit),
-                null, payee);
+    public void modifyTransfer(double expensePrice, LocalDate expenseDate,
+                               ParticipantPayment onlySplit, ParticipantPayment secondSplit) {
+        expense.setPayee(from.getValue());
+        expense.setAmount(expensePrice /100);
+        expense.setCurrency(currencyVal.getValue());
+        expense.setDate(java.sql.Date.valueOf(expenseDate));
+        expense.setSplit(List.of(onlySplit, secondSplit));
     }
 
     /**
      * Cancels adding the transfer
      */
-    @Override
-    public void abort(){
+    public void cancel(){
         clearFields();
         mainCtrl.showOverview();
     }
@@ -225,6 +225,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         currencyVal.setValue(null);
         date.setValue(null);
     }
+
 
     /**
      * Populates + removes option from 'to' box if it is checked in 'from'
@@ -272,5 +273,4 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
                 && currencyVal.getValue() != null && to.getValue() != null
                 && from.getValue() != null;
     }
-
 }

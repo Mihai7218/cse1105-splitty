@@ -78,6 +78,9 @@ public class MainCtrl {
     private AddTransferCtrl transferCtrl;
     private Scene transfer;
 
+    private EditTransferCtrl editTransferCtrl;
+    private Scene editTransfer;
+
     private FileChooser fileChooser = new FileChooser();
 
     private Event event;
@@ -123,7 +126,8 @@ public class MainCtrl {
                            Pair<DebtsCtrl, Parent> debts,
                            Pair<ManageTagsCtrl, Parent> manageTags,
                            Pair<EditTagCtrl, Parent> editTag,
-                           Pair<AddTransferCtrl, Parent> transfer){
+                           Pair<AddTransferCtrl, Parent> transfer,
+                           Pair<EditTransferCtrl, Parent> editTransfer){
         this.primaryStage = primaryStage;
 
         this.startScreenCtrl = startScreen.getKey();
@@ -168,8 +172,29 @@ public class MainCtrl {
         this.transferCtrl = transfer.getKey();
         this.transfer = new Scene(transfer.getValue());
 
+        this.editTransferCtrl = editTransfer.getKey();
+        this.editTransfer = new Scene(editTransfer.getValue());
+
         showConnectToServer();
         primaryStage.show();
+    }
+
+    /**
+     * Displays the edit transfer scene
+     */
+    public void showEditTransfer(){
+        primaryStage.titleProperty().bind(languageManager.bind("transfer.sceneTitle"));
+        try {
+            editTransfer.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(editTransfer);
+        if (editTransferCtrl != null) editTransferCtrl.refresh();
+        //if (editTransfer != null) editTransfer.setOnKeyPressed
+        // (e -> editTransferCtrl.keyPressed(e));
+
     }
 
     /**
@@ -283,6 +308,22 @@ public class MainCtrl {
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
         if (editExpense != null) editExpense.setOnKeyPressed(e -> editExpenseCtrl.keyPressed(e));
 
+    }
+
+    /**
+     * Getter for edit transfer controller
+     * @return edit transfer controller
+     */
+    public EditTransferCtrl getEditTransferCtrl() {
+        return editTransferCtrl;
+    }
+
+    /**
+     * Getter for edit transfer scene
+     * @return edit transfer scene
+     */
+    public Scene getEditTransfer() {
+        return editTransfer;
     }
 
     /**

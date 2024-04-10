@@ -58,12 +58,15 @@ public class Main extends Application {
                 "ConnectToServer.fxml");
         var debts = FXML.load(DebtsCtrl.class, "client", "scenes", "Debts.fxml");
         var transfer = FXML.load(AddTransferCtrl.class, "client", "scenes", "AddTransfer.fxml");
+        var editTransfer = FXML.load(EditTransferCtrl.class,
+                "client", "scenes", "EditTransfer.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
         mainCtrl.initialize(primaryStage,
                 startScreen, participant, overview, addExpense,
                 invitation, editparticipant, settings, statistics,
-                editExpense, connectToServer, debts, manageTags,editTag, transfer);
+                editExpense, connectToServer, debts, manageTags,editTag, transfer,
+                editTransfer);
         primaryStage.setOnCloseRequest(e -> {
             startScreen.getKey().stop();
         });

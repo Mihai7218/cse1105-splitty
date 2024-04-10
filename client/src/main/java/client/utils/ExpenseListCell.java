@@ -164,8 +164,13 @@ public class ExpenseListCell extends ListCell<Expense> {
         edit = new Button();
         edit.setText("\uD83D\uDD89");
         edit.setOnAction(param -> {
-            mainCtrl.getEditExpenseCtrl().setExpense(item);
-            mainCtrl.showEditExpense();
+            if(item.getDescription().equals("transfer")){
+                mainCtrl.getEditTransferCtrl().setExpense(item);
+                mainCtrl.showEditTransfer();
+            }else {
+                mainCtrl.getEditExpenseCtrl().setExpense(item);
+                mainCtrl.showEditExpense();
+            }
         });
         remove = new Button();
         remove.setText("\uD83D\uDDD1");
