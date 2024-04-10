@@ -9,19 +9,19 @@ import commons.Participant;
 import commons.ParticipantPayment;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.StringConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
 
@@ -51,6 +51,8 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
     @FXML
     private Button confirm;
 
+    protected StompSession.Subscription participantSubscription;
+    protected Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
     /**
      * Constructor for the transfer controller
@@ -69,7 +71,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
                            Alert alert,
                            CurrencyConverter currencyConverter) {
         super(mainCtrl, config, languageManager, serverUtils, alert, currencyConverter);
-
+        participantSubscriptionMap = new HashMap<>();
     }
 
     /**
@@ -139,7 +141,40 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
             to.getItems().addAll(mainCtrl.getEvent().getParticipantsList());
         }
         date.setValue(LocalDate.now());
+        load();
+    }
 
+    @Override
+    public void load(){
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null){
+            for(Participant p: mainCtrl.getEvent().getParticipantsList()){
+                subscribeToParticipant(p);
+            }
+            if(participantSubscription == null){
+                participantSubscription = serverUtils.registerForMessages("/topic/events/" +
+                        mainCtrl.getEvent().getInviteCode() + "/participants", Participant.class,
+                        participant -> Platform.runLater(() ->{
+
+                        }));
+            }
+        }
+    }
+
+    public void subscribeToParticipant(Participant participant){
+        if(!participantSubscriptionMap.containsKey(participant)){
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/participants/"
+                    + participant.getId();
+            var subscription = serverUtils.registerForMessages(dest, Participant.class,
+                    part -> Platform.runLater(() -> {
+                        if("deleted".equals(part.getIban())){
+                            to.getItems().remove(part);
+                            from.getItems().remove(part);
+                        }
+                    }));
+            participantSubscriptionMap.put(participant, subscription);
+        }
     }
 
     /**

@@ -9,12 +9,14 @@ import commons.Participant;
 import commons.ParticipantPayment;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.util.StringConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -49,6 +51,8 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
     private Button cancel;
     @FXML
     private Button confirm;
+    private StompSession.Subscription transferSubscription;
+
 
     /**
      * @param mainCtrl
@@ -155,6 +159,26 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
         amount.setText(String.valueOf(expense.getAmount()));
         currencyVal.setValue(expense.getCurrency());
         date.setValue(LocalDate.ofInstant(expense.getDate().toInstant(), ZoneId.systemDefault()));
+        load();
+    }
+
+
+    @Override
+    public void load(){
+        String dest = "/topic/events/" + mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                + expense.getId();
+        transferSubscription = serverUtils.registerForMessages(dest, Expense.class,
+                exp -> Platform.runLater(() -> {
+                    if("deleted".equals(exp.getDescription())){
+                        throwAlert("editExpense.removedExpenseHeader",
+                                "editExpense.removedExpenseBody");
+                        exit();
+                    }
+                }));
+    }
+
+    protected void exit(){
+        transferSubscription.unsubscribe();
     }
 
     /**
