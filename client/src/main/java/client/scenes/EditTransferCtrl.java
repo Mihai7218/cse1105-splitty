@@ -22,7 +22,9 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
@@ -51,8 +53,9 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
     private Button cancel;
     @FXML
     private Button confirm;
-    private StompSession.Subscription transferSubscription;
-
+    protected StompSession.Subscription participantSubscription;
+    protected Map<Participant, StompSession.Subscription> participantSubscriptionMap;
+    protected StompSession.Subscription transferSubscription;
 
     /**
      * @param mainCtrl
@@ -69,6 +72,7 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
                             ServerUtils serverUtils, Alert alert,
                             CurrencyConverter currencyConverter) {
         super(mainCtrl, config, languageManager, serverUtils, alert, currencyConverter);
+        participantSubscriptionMap = new HashMap<>();
     }
 
     /**
@@ -163,22 +167,81 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
     }
 
 
+    /**
+     * Adds websocket subscriptions to participants and adds new participants
+     * to dropdown options
+     */
     @Override
     public void load(){
-        String dest = "/topic/events/" + mainCtrl.getEvent().getInviteCode() + "/expenses/"
-                + expense.getId();
-        transferSubscription = serverUtils.registerForMessages(dest, Expense.class,
-                exp -> Platform.runLater(() -> {
-                    if("deleted".equals(exp.getDescription())){
-                        throwAlert("editExpense.removedExpenseHeader",
-                                "editExpense.removedExpenseBody");
-                        exit();
-                    }
-                }));
+        if (mainCtrl != null && mainCtrl.getEvent() != null
+                && mainCtrl.getEvent().getParticipantsList() != null){
+            for(Participant p: mainCtrl.getEvent().getParticipantsList()){
+                subscribeToParticipant(p);
+            }
+            if(participantSubscription == null){
+                participantSubscription = serverUtils.registerForMessages("/topic/events/" +
+                                mainCtrl.getEvent().getInviteCode()
+                                + "/participants", Participant.class,
+                        participant -> Platform.runLater(() ->{
+                            to.getItems().add(participant);
+                            from.getItems().add(participant);
+                            subscribeToParticipant(participant);
+                        }));
+            }
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                    + expense.getId();
+            transferSubscription = serverUtils.registerForMessages(dest, Expense.class,
+                    exp -> Platform.runLater(() -> {
+                        if ("deleted".equals(exp.getDescription())){
+                            throwAlert("transfer.removedTransfer", "transfer.removedTransferBody");
+                            exit();
+                        }
+                    }));
+        }
     }
 
-    protected void exit(){
-        transferSubscription.unsubscribe();
+    /**
+     * Adds subscriptions to participants
+     * if a participant is deleted it is removed from the options,
+     * or if previously selected an alert is thrown.
+     * @param participant participant to subscribe to
+     */
+    public void subscribeToParticipant(Participant participant) {
+        if(!participantSubscriptionMap.containsKey(participant)){
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/participants/"
+                    + participant.getId();
+            var subscription = serverUtils.registerForMessages(dest, Participant.class,
+                    part -> Platform.runLater(() -> {
+                        if("deleted".equals(part.getIban())){
+                            if(to.getValue().equals(part)){
+                                throwAlert("transfer.participantDeleted",
+                                        "transfer.participantDeletedBody");
+                                to.setValue(null);
+                            }
+                            if(from.getValue().equals(part)){
+                                throwAlert("transfer.participantDeleted",
+                                        "transfer.participantDeletedBody");
+                                from.setValue(null);
+                            }
+                            to.getItems().remove(part);
+                            from.getItems().remove(part);
+                        }
+                    }));
+            participantSubscriptionMap.put(participant, subscription);
+        }
+    }
+
+    /**
+     * Unsubscribes from websocket connections and returns to overview
+     */
+    @Override
+    public void exit(){
+        participantSubscription.unsubscribe();
+        participantSubscriptionMap.forEach((k,v) -> v.unsubscribe());
+        clearFields();
+        mainCtrl.showOverview();
     }
 
     /**
@@ -251,8 +314,7 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
      * Cancels adding the transfer
      */
     public void cancel(){
-        clearFields();
-        mainCtrl.showOverview();
+        exit();
     }
 
     /**

@@ -636,6 +636,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
         for (Expense e : expenses) {
+            if(e.getDescription().equals("transfer") || e.getDescription().equals("settlement")){
+                continue;
+            }
             String currency = e.getCurrency();
             Date date = e.getDate();
             String base = getCurrency();

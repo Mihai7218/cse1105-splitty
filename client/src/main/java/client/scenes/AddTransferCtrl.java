@@ -144,6 +144,10 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         load();
     }
 
+    /**
+     * Subscribes to websocket connection and adds participants as options if
+     * they are added by another client
+     */
     @Override
     public void load(){
         if (mainCtrl != null && mainCtrl.getEvent() != null
@@ -155,13 +159,19 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
                 participantSubscription = serverUtils.registerForMessages("/topic/events/" +
                         mainCtrl.getEvent().getInviteCode() + "/participants", Participant.class,
                         participant -> Platform.runLater(() ->{
-
+                            to.getItems().add(participant);
+                            from.getItems().add(participant);
+                            subscribeToParticipant(participant);
                         }));
             }
         }
     }
 
-    public void subscribeToParticipant(Participant participant){
+    /**
+     * Subscribes to websocket connection to participant
+     * @param participant participant to subscribe to
+     */
+    public void subscribeToParticipant(Participant participant) {
         if(!participantSubscriptionMap.containsKey(participant)){
             String dest = "/topic/events/" +
                     mainCtrl.getEvent().getInviteCode() + "/participants/"
@@ -169,6 +179,16 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
             var subscription = serverUtils.registerForMessages(dest, Participant.class,
                     part -> Platform.runLater(() -> {
                         if("deleted".equals(part.getIban())){
+                            if(to.getValue().equals(part)){
+                                throwAlert("transfer.participantDeleted",
+                                        "transfer.participantDeletedBody");
+                                to.setValue(null);
+                            }
+                            if(from.getValue().equals(part)){
+                                throwAlert("transfer.participantDeleted",
+                                        "transfer.participantDeletedBody");
+                                from.setValue(null);
+                            }
                             to.getItems().remove(part);
                             from.getItems().remove(part);
                         }
@@ -245,6 +265,16 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
      */
     @Override
     public void abort(){
+        exit();
+    }
+
+    /**
+     * Removes websocket subscriptions and returns to the overview
+     */
+    @Override
+    public void exit(){
+        participantSubscription.unsubscribe();
+        participantSubscriptionMap.forEach((k,v) -> v.unsubscribe());
         clearFields();
         mainCtrl.showOverview();
     }
