@@ -153,15 +153,14 @@ public class EditTagCtrlTest {
         EditTagCtrl test = spy(sut);
         when(name.getText()).thenReturn("test");
         when(colorPicker.getValue()).thenReturn(Color.valueOf("#ffffff"));
-        WebApplicationException ex = new WebApplicationException(Response.status(404).build());
         Event testEvent = new Event();
         testEvent.setInviteCode(1);
         when(mainCtrl.getEvent()).thenReturn(testEvent);
         Tag testTag = new Tag();
         testTag.setId(0);
-        when(serverUtils.updateTag(1, testTag)).thenThrow(ex);
         KeyEvent ke = mock(KeyEvent.class);
-
+        testTag.setId(0);
+        when(serverUtils.updateTag(1, testTag)).thenReturn(testTag);
         when(ke.getCode()).thenReturn(KeyCode.ENTER);
         test.keyPressed(ke);
         verify(test, atLeastOnce()).submitTagChanges();
@@ -218,10 +217,12 @@ public class EditTagCtrlTest {
         EditTagCtrl test = spy(sut);
         when(name.getText()).thenReturn("test");
         when(colorPicker.getValue()).thenReturn(Color.valueOf("#ffffff"));
-        WebApplicationException ex = new WebApplicationException(Response.status(400).build());
         Event testEvent = new Event();
         testEvent.setInviteCode(1);
         when(mainCtrl.getEvent()).thenReturn(testEvent);
+        Tag testTag = new Tag();
+        testTag.setId(0);
+        when(serverUtils.updateTag(1, testTag)).thenReturn(testTag);
         test.submitTagChanges();
         verify(test, atLeastOnce()).clearFields();
     }
