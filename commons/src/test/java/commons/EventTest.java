@@ -204,11 +204,11 @@ class EventTest {
     void participantEqualsTest() {
         Event event1 = new Event("",null,null);
         Event event2 = new Event("",null,null);
-        event1.addParticipant(new Participant("Marco","Marco","Marco","Marco"));
-        event2.addParticipant(new Participant("Marco","Marco","Marco","Marco"));
+        event1.addParticipant(new Participant("Marco","","",""));
+        event2.addParticipant(new Participant("Marco","","",""));
         assertTrue(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
-        event1.addParticipant(new Participant("Marco","Marco","Marco","Marco"));
-        event2.addParticipant(new Participant("Marco1","Marco","Marco","Marco"));
+        event1.addParticipant(new Participant("Marco","","",""));
+        event2.addParticipant(new Participant("Marco2","","",""));
         assertFalse(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
         event2.addParticipant(null);
         assertFalse(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
@@ -222,14 +222,14 @@ class EventTest {
     void tagsEqualsEqualsTest() {
         Event event1 = new Event("",null,null);
         Event event2 = new Event("",null,null);
-        event1.addTag(new Tag("ewa","ewa"));
-        event2.addTag(new Tag("ewa","ewa"));
+        event1.addTag(new Tag("Tag","red"));
+        event2.addTag(new Tag("Tag","red"));
         assertTrue(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
-        event1.addTag(new Tag("ewa","ewa"));
-        event2.addTag(new Tag("ewa1","ewa"));
+        event1.addTag(new Tag("Tag","red"));
+        event2.addTag(new Tag("Tag1","red"));
         assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
-        event1.addTag(new Tag("ewa11","ewa"));
-        event2.addTag(new Tag("ewa1","ewa"));
+        event1.addTag(new Tag("Tag11","red"));
+        event2.addTag(new Tag("Tag1","red"));
         assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
         event2.addTag(null);
         assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
@@ -242,17 +242,17 @@ class EventTest {
 
     @Test
     void expensesEqualsEqualsTest() {
-        Participant Marco = new Participant("Marco","Marco","Marco","Marco");
+        Participant Marco = new Participant("Marco","","","");
         Event event1 = new Event("",null,null);
         Event event2 = new Event("",null,null);
-        event1.addExpense(new Expense(0,"ew","","",new Date(),null,null,Marco));
-        event2.addExpense(new Expense(0,"ew","","",new Date(),null,null,Marco));
+        event1.addExpense(new Expense(0,"","expense","",new Date(),null,null,Marco));
+        event2.addExpense(new Expense(0,"","expense","",new Date(),null,null,Marco));
         assertTrue(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
-        event1.addExpense(new Expense(0,"ew","","",new Date(),null,null,Marco));
-        event2.addExpense(new Expense(0,"ewa","","",new Date(),null,null,Marco));
+        event1.addExpense(new Expense(0,"","expense","",new Date(),null,null,Marco));
+        event2.addExpense(new Expense(0,"","expense2","",new Date(),null,null,Marco));
         assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
-        event1.addExpense(new Expense(0,"ewaa","","",new Date(),null,null,Marco));
-        event2.addExpense(new Expense(0,"ewa","","",new Date(),null,null,Marco));
+        event1.addExpense(new Expense(0,"","expense3","",new Date(),null,null,Marco));
+        event2.addExpense(new Expense(0,"","expense2","",new Date(),null,null,Marco));
         assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
         event2.addExpense(null);
         assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));

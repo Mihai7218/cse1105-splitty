@@ -43,7 +43,7 @@ public class ExpenseTest {
 
     @Test
     void participantPaymentTest() {
-        Participant marco = new Participant("Marco","Marco","Marco","Marco");
+        Participant marco = new Participant("Marco","","","");
         Expense expense1 = new Expense();
         Expense expense2 = new Expense();
         List<ParticipantPayment> list1 = new ArrayList<>();
