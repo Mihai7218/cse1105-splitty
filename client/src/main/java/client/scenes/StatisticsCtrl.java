@@ -176,9 +176,9 @@ public class StatisticsCtrl implements Initializable {
         if (mainCtrl.getEvent() != null) {
             subscription = serverUtils.registerForMessages(String.format("/topic/events/%s",
                     mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
-                mainCtrl.getEvent().setTitle(q.getTitle());
-                Platform.runLater(() -> refresh());
-            });
+                    mainCtrl.getEvent().setTitle(q.getTitle());
+                    Platform.runLater(() -> refresh());
+                });
             if (tagSubscription == null)
                 tagSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
@@ -447,57 +447,73 @@ public class StatisticsCtrl implements Initializable {
                 break;
         }
     }
+
     /**
      * set the manageTags
+     *
      * @param manageTags set the manageTags of the controller
      */
     public void setManageTags(Button manageTags) {
         this.manageTags = manageTags;
     }
+
     /**
      * set the subscription
+     *
      * @param subscription set the subscription of the controller
      */
     public void setSubscription(StompSession.Subscription subscription) {
         this.subscription = subscription;
     }
+
     /**
      * set the pieChart
+     *
      * @param pieChart set the pieChart of the controller
      */
     public void setPieChart(PieChart pieChart) {
         this.pieChart = pieChart;
     }
+
     /**
      * set the cancel
+     *
      * @param cancel set the cancel of the controller
      */
     public void setCancel(Button cancel) {
         this.cancel = cancel;
     }
+
     /**
      * set the ownLegend
+     *
      * @param ownLegend set the ownLegend of the controller
      */
     public void setOwnLegend(VBox ownLegend) {
         this.ownLegend = ownLegend;
     }
+
     /**
      * set the currency
+     *
      * @param currency set the currency of the controller
      */
     public void setCurrency(String currency) {
         this.currency = currency;
     }
+
     /**
      * set the tagSubscription
+     *
      * @param tagSubscription set the tagSubscription of the controller
      */
     public void setTagSubscription(StompSession.Subscription tagSubscription) {
         this.tagSubscription = tagSubscription;
     }
+
     /**
      * set the tagSubscriptionMap
+     *
      * @param tagSubscriptionMap set the tagSubscriptionMap of the controller
      */
     public void setTagSubscriptionMap(Map<Tag, StompSession.Subscription> tagSubscriptionMap) {
@@ -506,6 +522,7 @@ public class StatisticsCtrl implements Initializable {
 
     /**
      * set the ExpenseSubscriptionMap
+     *
      * @param expensesSubscription set the expensesSubscription of the controller
      */
     public void setExpensesSubscription(StompSession.Subscription expensesSubscription) {
@@ -514,9 +531,11 @@ public class StatisticsCtrl implements Initializable {
 
     /**
      * return the ExpenseSubscriptionMap
+     *
      * @param expenseSubscriptionMap the expenseSubscriptionMap of the controller
      */
-    public void setExpenseSubscriptionMap(Map<Expense, StompSession.Subscription> expenseSubscriptionMap) {
+    public void setExpenseSubscriptionMap(Map<Expense,
+            StompSession.Subscription> expenseSubscriptionMap) {
         this.expenseSubscriptionMap = expenseSubscriptionMap;
     }
 
