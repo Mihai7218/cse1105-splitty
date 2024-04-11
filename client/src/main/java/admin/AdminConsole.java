@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -112,7 +113,14 @@ public class AdminConsole {
         boolean running = true;
         while (running){
             printOptions();
-            switch (userInput.nextInt()) {
+            int choseOption = 5;
+            try{
+                choseOption = Integer.parseInt(userInput.next());
+            } catch (Exception e) {
+                System.out.println("this is not a number");
+                showOptions(userInput,adminConsole);
+            }
+            switch (choseOption) {
                 case 1:
                     printerMenu(userInput, adminConsole);
                     break;
@@ -301,14 +309,14 @@ public class AdminConsole {
         System.out.println("Where do you want to save the dump? " +
                 "Give the folder or type 'cancel' to cancel: ");
         String path = userInput.next();
-        path = path.replace("/","\\");
+
         if(path.equals("cancel")){
             return;
         }
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         String formattedDateTime = now.format(timeFormat);
-        path += "\\Splitty-Dump-" + formattedDateTime + ".json";
+        path = Path.of(path, "Splitty-Dump-" + formattedDateTime + ".json").toString();
         FileWriter ewa = null;
         try {
             ewa = new FileWriter(path);
@@ -402,7 +410,6 @@ public class AdminConsole {
         String line;
         try {
             line = fileScan.nextLine();
-            line = line.replace("/","\\");
         }catch(NoSuchElementException n){
             System.out.println("Unable to locate the requested file (empty filepath). ");
             return null;
