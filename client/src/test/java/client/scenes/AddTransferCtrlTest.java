@@ -8,11 +8,15 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -24,6 +28,7 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -77,6 +82,8 @@ class AddTransferCtrlTest {
     Participant p1;
     Participant p2;
     StompSession.Subscription sub;
+    @Mock
+    KeyEvent mockEvent = mock(KeyEvent.class);
     @Mock
     private Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
@@ -132,7 +139,38 @@ class AddTransferCtrlTest {
         p2 = new Participant("jill", null, null, null);
         testEvent.addParticipant(p1);
         testEvent.addParticipant(p2);
+        testEvent.setInviteCode(1);
 
+    }
+
+    @Test
+    public void initializeTest(){
+        AddTransferCtrl spy = spy(sut);
+        List<String> currencies = List.of("EUR", "USD", "CHF");
+        when(currencyConverter.getCurrencies()).thenReturn(currencies);
+        ObservableList<String> currVals = FXCollections.observableArrayList();
+        when(currencyVal.getItems()).thenReturn(currVals);
+
+        ObjectProperty<Participant> fromValueProperty = new SimpleObjectProperty<>();
+        ObjectProperty<Participant> toValueProperty = new SimpleObjectProperty<>();
+
+        when(from.valueProperty()).thenReturn(fromValueProperty);
+        when(to.valueProperty()).thenReturn(toValueProperty);
+
+        doNothing().when(from).setConverter(any());
+        doNothing().when(to).setConverter(any());
+
+
+        spy.initialize(mock(URL.class), mock(ResourceBundle.class));
+
+        assertEquals(currencies, currVals);
+
+        verify(from, times(1)).setConverter(any());
+        verify(to, times(1)).setConverter(any());
+        verify(from, times(1)).valueProperty();
+        verify(to, times(1)).valueProperty();
+        verify(cancel, times(1)).setGraphic(any());
+        verify(confirm, times(1)).setGraphic(any());
     }
 
     @Test
@@ -144,16 +182,29 @@ class AddTransferCtrlTest {
         doNothing().when(amount).setStyle(anyString());
         doNothing().when(sub).unsubscribe();
         doAnswer(invocation -> {
-//            Map.Entry<Participant, StompSession.Subscription> entry =
-//                    (Map.Entry<Participant, StompSession.Subscription>) invocation.getArguments()[0];
-            // Call unsubscribe() method on each value
             sub.unsubscribe();
             return null;
         }).when(participantSubscriptionMap).forEach(any());
         sut.abort();
         verify(participantSubscriptionMap, times(1)).forEach(any());
+    }
 
-
+    @Test
+    public void loadTest(){
+        AddTransferCtrl spy = spy(sut);
+        when(mainCtrl.getEvent()).thenReturn(testEvent);
+        sut.setParticipantSubscription(null);
+        spy.setParticipantSubscription(null);
+        when(participantSubscriptionMap.containsKey(any())).thenReturn(true);
+        List<String> pathes = new ArrayList<>();
+        doAnswer(invocation -> {
+            String s = String.valueOf(invocation.getArguments()[0]);
+            pathes.add(s);
+            return null;
+        }).when(serverUtils).registerForMessages(any(), any(),any());
+        spy.load();
+        verify(spy, times(2)).subscribeToParticipant(any());
+        assertEquals(pathes.getFirst(), "/topic/events/1/participants");
     }
 
     @Test
@@ -171,15 +222,9 @@ class AddTransferCtrlTest {
         sut.populateFromBox();
         assertEquals(List.of(p2), from.getItems());
     }
-    /*
-    !expensePriceText.isEmpty() || expenseDate != null
-                || currencyVal.getValue() != null || to.getValue() != null
-                || from.getValue() != null
-     */
+
     @Test
     public void validateTestNotValid(){
-//        doNothing().when(mockSut).highlightMissing(anyBoolean(), anyBoolean(), anyBoolean(),anyBoolean(), anyBoolean());
-//        doNothing().when(mockSut).removeHighlight();
         doNothing().when(to).setStyle(anyString());
         doNothing().when(from).setStyle(anyString());
         doNothing().when(currencyVal).setStyle(anyString());
@@ -188,20 +233,15 @@ class AddTransferCtrlTest {
         when(currencyVal.getValue()).thenReturn(null);
         when(to.getValue()).thenReturn(null);
         assertFalse(sut.validate("15", LocalDate.now()));
-//        verify(mockSut, times(1)).removeHighlight();
-//        verify(mockSut, times(1)).highlightMissing(anyBoolean(), anyBoolean(),anyBoolean(),anyBoolean(),anyBoolean());
     }
 
     @Test
     public void refreshTest(){
         List<Date> dates = new ArrayList<>();
         doAnswer(invocation -> {
-            // Retrieve the second parameter passed to addExpense
             Date d = java.sql.Date.valueOf((LocalDate) invocation.getArguments()[0]);
-            // Add the expense to the list
             dates.add(d);
             when(mainCtrl.getEvent()).thenReturn(null);
-            // Return null as addExpense might have void return type
             return null;
         }).when(date).setValue(any());
         sut.refresh();
@@ -261,6 +301,53 @@ class AddTransferCtrlTest {
 
     }
 
+    @Test
+    void testKeyPressedEscape() {
+        AddTransferCtrl spies = spy(sut);
+
+        when(mockEvent.getCode()).thenReturn(KeyCode.ESCAPE);
+        spies.keyPressed(mockEvent);
+
+        // Verify that the abort method is called
+        verify(spies).abort();
+    }
+
+    @Test
+    void testKeyPressedMWithControl() {
+        AddTransferCtrl spies = spy(sut);
+
+        when(mockEvent.getCode()).thenReturn(KeyCode.M);
+        when(mockEvent.isControlDown()).thenReturn(true);
+
+
+        spies.keyPressed(mockEvent);
+        verify(spies).startMenu();
+    }
+
+    @Test
+    void testKeyPressedOWithControl() {
+        AddTransferCtrl spies = spy(sut);
+
+        when(mockEvent.getCode()).thenReturn(KeyCode.O);
+        when(mockEvent.isControlDown()).thenReturn(true);
+
+
+        spies.keyPressed(mockEvent);
+
+        verify(spies).backToOverview();
+    }
+
+    @Test
+    void testKeyPressedDefault() {
+        AddTransferCtrl spies = spy(sut);
+        when(mockEvent.getCode()).thenReturn(KeyCode.P);
+
+        spies.keyPressed(mockEvent);
+
+        verify(spies, never()).abort();
+        verify(spies, never()).startMenu();
+        verify(spies, never()).backToOverview();
+    }
 
 
 

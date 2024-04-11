@@ -426,84 +426,116 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         mainCtrl.showOverview();
     }
 
+    /**
+     * Setter for the participantSubscription (testing)
+     * @param participantSubscription websocket subscription
+     */
     public void setParticipantSubscription(StompSession.Subscription participantSubscription) {
         this.participantSubscription = participantSubscription;
     }
 
-    public void setParticipantSubscriptionMap(Map<Participant, StompSession.Subscription> participantSubscriptionMap) {
+    /**
+     * Setter for the participantSubscriptionMap(testing)
+     * @param participantSubscriptionMap map
+     */
+    public void setParticipantSubscriptionMap(Map<Participant,
+            StompSession.Subscription> participantSubscriptionMap) {
         this.participantSubscriptionMap = participantSubscriptionMap;
     }
 
-    public Label getHeader() {
-        return header;
-    }
-
+    /**
+     * Setter for the header label (testing)
+     * @param header label
+     */
     public void setHeader(Label header) {
         this.header = header;
     }
 
-
+    /**
+     * Setter for the transfer from label (testing)
+     * @param transferFrom label
+     */
     public void setTransferFrom(Label transferFrom) {
         this.transferFrom = transferFrom;
     }
 
-
+    /**
+     * Setter for from choicebox (testing)
+     * @param from choicebox
+     */
     public void setFrom(ChoiceBox<Participant> from) {
         this.from = from;
     }
 
-
+    /**
+     * Setter for transferTo label (testing)
+     * @param transferTo label
+     */
     public void setTransferTo(Label transferTo) {
         this.transferTo = transferTo;
     }
 
-
+    /**
+     * Setter for the to choicebox (testing)
+     * @param to choicebox
+     */
     public void setTo(ChoiceBox<Participant> to) {
         this.to = to;
     }
 
-
+    /**
+     * Setter for the label for transfer amount (testing)
+     * @param transferAmount label
+     */
     public void setTransferAmount(Label transferAmount) {
         this.transferAmount = transferAmount;
     }
 
-
+    /**
+     * Setter for amount textfield (testing)
+     * @param amount textfield
+     */
     public void setAmount(TextField amount) {
         this.amount = amount;
     }
 
-
+    /**
+     * Setter for choicebox (testing)
+     * @param currencyVal choicebox containing currency selection
+     */
     public void setCurrencyVal(ChoiceBox<String> currencyVal) {
         this.currencyVal = currencyVal;
     }
 
-    public Label getDateLabel() {
-        return dateLabel;
-    }
-
+    /**
+     * Setter for the date label (testing)
+     * @param dateLabel label
+     */
     public void setDateLabel(Label dateLabel) {
         this.dateLabel = dateLabel;
     }
 
-    @Override
-    public DatePicker getDate() {
-        return date;
-    }
-
+    /**
+     * Setter for the datepicker (testing)
+     * @param date datepicker
+     */
     @Override
     public void setDate(DatePicker date) {
         this.date = date;
     }
 
-    public Button getCancel() {
-        return cancel;
-    }
-
+    /**
+     * Setter for the cancel button (Testing)
+     * @param cancel button
+     */
     public void setCancel(Button cancel) {
         this.cancel = cancel;
     }
 
-
+    /**
+     * setter for the confirm button (testing)
+     * @param confirm button
+     */
     public void setConfirm(Button confirm) {
         this.confirm = confirm;
     }
