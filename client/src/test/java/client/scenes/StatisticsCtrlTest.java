@@ -28,8 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ResourceBundle;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -156,7 +155,7 @@ public class StatisticsCtrlTest {
     }
 
     @Test
-    void refreshTest() {
+    void setupTest() {
         Event test = new Event("test", null, null);
         Tag newTag = new Tag("TAG", "blue");
         newTag.setId(1);
@@ -176,6 +175,85 @@ public class StatisticsCtrlTest {
         sut.setExpensesSubscription(null);
         sut.setup();
         verify(serverUtils).registerForMessages(eq("/topic/events/1/tags/1"), eq(Tag.class), any());
+    }
+
+    @Test
+    void onExpenseChangeTest() {
+        Event test = new Event("test", null, null);
+        Tag newTag = new Tag("TAG", "blue");
+        newTag.setId(1);
+        test.addTag(newTag);
+        Expense expense1 = new Expense(1, "EUR", "Title", "Desc", null, null, null, null);
+        expense1.setId(1);
+        test.addExpense(expense1);
+        test.addExpense(new Expense(1, "EUR", "Title", "Desc", null, null, newTag, null));
+        test.setInviteCode(1);
+
+        when(serverUtils.getEvent(1)).thenReturn(test);
+        when(mainCtrl.getEvent()).thenReturn(test);
+        when(languageManager.bind("statistics.chartTitle")).thenReturn(new StringBinding() {
+            @Override
+            protected String computeValue() {
+                return "total";
+            }
+        });
+
+        StatisticsCtrl testSut = spy(sut);
+        testSut.setTagSubscription(null);
+        testSut.setExpensesSubscription(null);
+        testSut.setup();
+
+        Event testEvent = testSut.getMainCtrl().getEvent();
+        assertEquals(testEvent.getExpensesList().size(),2);
+
+        Expense expense2 = new Expense(1, "EUR", "NewTitle", "Desc", null, null, null, null);
+        expense2.setId(1);
+
+        testSut.onExpenseChange(expense1,expense2);
+
+        verify(testSut, atLeastOnce()).setStatistics();
+        assertEquals(testEvent.getExpensesList().size(),2);
+        assertTrue(testEvent.getExpensesList().contains(expense2));
+    }
+
+    @Test
+    void onNewExpenseReceive() {
+        Event test = new Event("test", null, null);
+        Tag newTag = new Tag("TAG", "blue");
+        newTag.setId(1);
+        test.addTag(newTag);
+        Expense expense1 = new Expense(1, "EUR", "Title", "Desc", null, null, null, null);
+        expense1.setId(1);
+        test.addExpense(expense1);
+        test.addExpense(new Expense(1, "EUR", "Title", "Desc", null, null, newTag, null));
+        test.setInviteCode(1);
+
+        when(serverUtils.getEvent(1)).thenReturn(test);
+        when(mainCtrl.getEvent()).thenReturn(test);
+        when(languageManager.bind("statistics.chartTitle")).thenReturn(new StringBinding() {
+            @Override
+            protected String computeValue() {
+                return "total";
+            }
+        });
+
+        StatisticsCtrl testSut = spy(sut);
+        testSut.setTagSubscription(null);
+        testSut.setExpensesSubscription(null);
+        testSut.setup();
+
+        Event testEvent = testSut.getMainCtrl().getEvent();
+        assertEquals(testEvent.getExpensesList().size(),2);
+
+        Expense expense2 = new Expense(1, "EUR", "NewTitle", "Desc", null, null, null, null);
+        expense2.setId(2);
+
+        testSut.onNewExpenseReceive(expense2);
+
+        verify(testSut, atLeastOnce()).subscribeToExpense(expense2);
+        verify(testSut, atLeastOnce()).setStatistics();
+        assertEquals(testEvent.getExpensesList().size(),3);
+        assertTrue(testEvent.getExpensesList().contains(expense2));
     }
 
     @Test

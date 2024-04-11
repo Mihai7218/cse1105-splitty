@@ -54,6 +54,8 @@ public class StatisticsCtrl implements Initializable {
     private StompSession.Subscription expensesSubscription;
     private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
 
+    private int invitecode;
+
 
     /**
      * Constructor for the StatisticsCtrl
@@ -99,6 +101,7 @@ public class StatisticsCtrl implements Initializable {
      */
     public void setup() {
         Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
+        invitecode = mainCtrl.getEvent().getInviteCode();
         mainCtrl.setEvent(e);
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
             if (!expenseSubscriptionMap.containsKey(expense))
@@ -123,8 +126,7 @@ public class StatisticsCtrl implements Initializable {
                     + tag.getId();
             var subscription = serverUtils.registerForMessages(dest, Tag.class,
                     exp -> Platform.runLater(() -> {
-                        Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
-                        mainCtrl.setEvent(e);
+                        mainCtrl.setEvent(serverUtils.getEvent(invitecode));
                         setStatistics();
                     }));
             tagSubscriptionMap.put(tag, subscription);
@@ -183,23 +185,13 @@ public class StatisticsCtrl implements Initializable {
                 tagSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
                         tag -> {
-                            Platform.runLater(() -> {
-                                subscribeToTag(tag);
-                            });
+                            Platform.runLater(() -> {subscribeToTag(tag);});
                         });
             if (expensesSubscription == null)
                 expensesSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
                         expense -> {
-                            Platform.runLater(() -> {
-                                if (!mainCtrl.getEvent().getExpensesList().contains(expense)) {
-                                    mainCtrl.getEvent().getExpensesList().add(expense);
-                                }
-
-                                subscribeToExpense(expense);
-                                setStatistics();
-                            });
-                        });
+                            Platform.runLater(() -> {onNewExpenseReceive(expense);});});
         }
         pieChart.titleProperty().set(mainCtrl.getEvent().getTitle());
         cancel.setGraphic(new ImageView(new Image("icons/arrowback.png")));
@@ -210,25 +202,44 @@ public class StatisticsCtrl implements Initializable {
     }
 
     /**
+     * What the page needs to do when a new expense is received
+     * @param expense the expense that is received
+     */
+    public void onNewExpenseReceive(Expense expense) {
+        if (!mainCtrl.getEvent().getExpensesList().contains(expense)) {
+            mainCtrl.getEvent().getExpensesList().add(expense);
+        }
+        subscribeToExpense(expense);
+        setStatistics();
+    }
+
+    /**
      * Method that subscribes to updates for an expense.
      *
      * @param expense - the expense to subscribe to.
      */
-    private void subscribeToExpense(Expense expense) {
+    public void subscribeToExpense(Expense expense) {
         if (!expenseSubscriptionMap.containsKey(expense)) {
             String dest = "/topic/events/" +
                     mainCtrl.getEvent().getInviteCode() + "/expenses/"
                     + expense.getId();
             var subscription = serverUtils.registerForMessages(dest, Expense.class,
-                    exp -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getExpensesList().remove(expense);
-                        if (!"deleted".equals(exp.getDescription())) {
-                            mainCtrl.getEvent().getExpensesList().add(exp);
-                        }
-                        setStatistics();
-                    }));
+                    exp -> Platform.runLater(() -> {onExpenseChange(expense, exp);}));
             expenseSubscriptionMap.put(expense, subscription);
         }
+    }
+
+    /**
+     * What the system needs to do when an expense changes
+     * @param expense the expense old version changed
+     * @param exp the expense that changed
+     */
+    public void onExpenseChange(Expense expense, Expense exp) {
+        mainCtrl.getEvent().getExpensesList().remove(expense);
+        if (!"deleted".equals(exp.getDescription())) {
+            mainCtrl.getEvent().getExpensesList().add(exp);
+        }
+        setStatistics();
     }
 
     /**
@@ -539,4 +550,11 @@ public class StatisticsCtrl implements Initializable {
         this.expenseSubscriptionMap = expenseSubscriptionMap;
     }
 
+    /**
+     * get the main controller that is being used by the statistics page
+     * @return the mainCtrl from the statistics page
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
 }
