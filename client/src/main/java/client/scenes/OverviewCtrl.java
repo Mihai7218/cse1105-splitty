@@ -185,19 +185,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             }
             participants.getItems().clear();
             participants.getItems(). addAll(serverparticipants);
-            for (Participant p : serverparticipants) {
-                if (!expenseparticipants.getItems().contains(p)) {
-                    expenseparticipants.getItems().add(p);
-                }
+            Participant set = expenseparticipants.getValue();
+            expenseparticipants.getItems().clear();
+            expenseparticipants.getItems().addAll(serverparticipants);
+            if (set != null && expenseparticipants.getItems().contains(set)) {
+                expenseparticipants.setValue(set);
             }
-            List<Participant> removed = new ArrayList<>();
-            for (Participant p : expenseparticipants.getItems()) {
-                if (!serverparticipants.contains(p)){
-                    removed.add(p);
-                }
-//                    expenseparticipants.getItems().remove(p);
-            }
-            expenseparticipants.getItems().removeAll(removed);
+            filterViews();
             participants.refresh();
         }
     }
