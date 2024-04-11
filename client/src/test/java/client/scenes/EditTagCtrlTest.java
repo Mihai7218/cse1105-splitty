@@ -150,15 +150,6 @@ public class EditTagCtrlTest {
     }
     @Test
     void keyTestEnter() {
-        KeyEvent ke = mock(KeyEvent.class);
-
-        when(ke.getCode()).thenReturn(KeyCode.ENTER);
-        EditTagCtrl test = spy(sut);
-        test.keyPressed(ke);
-        verify(test, atLeastOnce()).submitTagChanges();
-    }
-    @Test
-    void refreshTest() {
         EditTagCtrl test = spy(sut);
         when(name.getText()).thenReturn("test");
         when(colorPicker.getValue()).thenReturn(Color.valueOf("#ffffff"));
@@ -169,6 +160,15 @@ public class EditTagCtrlTest {
         Tag testTag = new Tag();
         testTag.setId(0);
         when(serverUtils.updateTag(1, testTag)).thenThrow(ex);
+        KeyEvent ke = mock(KeyEvent.class);
+
+        when(ke.getCode()).thenReturn(KeyCode.ENTER);
+        test.keyPressed(ke);
+        verify(test, atLeastOnce()).submitTagChanges();
+    }
+    @Test
+    void refreshTest() {
+        EditTagCtrl test = spy(sut);
         test.refresh();
         verify(test, atLeastOnce()).clearFields();
         verify(test, atLeastOnce()).loadFields();
