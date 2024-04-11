@@ -563,33 +563,60 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             }
         }
         for (Expense expense : expenses) {
-            if (expense.getPayee().equals(participant)) {
-                try {
-                    server.removeExpense(mainCtrl.getEvent().getInviteCode(), expense.getId());
-                } catch (WebApplicationException e) {
-                    if (mainCtrl.getOverviewCtrl() == null
-                            || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
-                        return;
-                    var sub = expenseSubscriptionMap.get(expense);
-                    if (sub != null)
-                        sub.notify();
-                }
-            } else if(!expense.getSplit().stream().filter(x -> x.getParticipant()
-                    .equals(participant)).toList().isEmpty()) {
-                recalculateSplit(expense, participant);
-                try {
-                    server.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
-                } catch (WebApplicationException e) {
-                    var sub = expenseSubscriptionMap.get(expense);
-                    if (sub != null)
-                        sub.notify();
-                }
-            }
+            if (removeExpenseLogic(participant, expense)) return;
         }
         server.removeParticipant(mainCtrl.getEvent().getInviteCode(),participant);
         participants.getItems().remove(participant);
         expenseparticipants.getItems().remove(participant);
         participants.refresh();
+    }
+
+    /**
+     * Extracted method that deals with expenses whos payee got deleted as well as
+     * debts/transfers where the only participant left is the one who paid/received
+     * @param participant participant deleted
+     * @param expense expense being reviewed
+     * @return true if expense is removed, false if not
+     */
+    private boolean removeExpenseLogic(Participant participant, Expense expense) {
+        if (expense.getPayee().equals(participant)) {
+            if (tryRemoveExpense(expense)) return true;
+        } else if(!expense.getSplit().stream().filter(x -> x.getParticipant()
+                .equals(participant)).toList().isEmpty()) {
+            recalculateSplit(expense, participant);
+            try {
+                server.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
+            } catch (WebApplicationException e) {
+                var sub = expenseSubscriptionMap.get(expense);
+                if (sub != null)
+                    sub.notify();
+            }
+            if (expense.getSplit().stream().allMatch(x ->
+                    x.getParticipant().equals(expense.getPayee()))) {
+                if (tryRemoveExpense(expense)) return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Extracted functionality that tries and catches removing an expense from server
+     * @param expense expense to remove
+     * @return true if successful, false if not
+     */
+    private boolean tryRemoveExpense(Expense expense) {
+        try {
+            server.removeExpense(mainCtrl.getEvent().getInviteCode(), expense.getId());
+        } catch (WebApplicationException e) {
+            if (mainCtrl.getOverviewCtrl() == null
+                    || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                return true;
+            var sub = expenseSubscriptionMap.get(expense);
+            if (sub != null)
+                sub.notify();
+        }
+        return false;
     }
 
     /**
