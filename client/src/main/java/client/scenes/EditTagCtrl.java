@@ -6,6 +6,7 @@ import client.utils.ServerUtils;
 import com.google.inject.Inject;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,8 +30,7 @@ public class EditTagCtrl implements Initializable {
 
     protected final Alert alert;
 
-    @FXML
-    public Button cancel;
+
     @FXML
     public TextField name;
     @FXML
@@ -140,6 +140,7 @@ public class EditTagCtrl implements Initializable {
 
     /**
      * set the taf to edit in the edit screen
+     *
      * @param item the tag to edit
      */
     public void setTag(Tag item) {
@@ -150,15 +151,18 @@ public class EditTagCtrl implements Initializable {
      * Abort back to the manage Tags sceen
      */
     public void abort() {
-        Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
-        confirmation.contentTextProperty().bind(languageManager.bind("editTag.abortAlert"));
-        confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
-        confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
-        Optional<ButtonType> result = confirmation.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            clearFields();
-            mainCtrl.showManageTags();
-        }
+        Platform.runLater(() -> {
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+
+            confirmation.contentTextProperty().bind(languageManager.bind("editTag.abortAlert"));
+            confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
+            confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
+            Optional<ButtonType> result = confirmation.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.OK) {
+                clearFields();
+                mainCtrl.showManageTags();
+            }
+        });
     }
 
     /**
@@ -167,14 +171,14 @@ public class EditTagCtrl implements Initializable {
     public void submitTagChanges() {
         String nameString = name.getText();
         name.setStyle("-fx-border-color: none;");
-        if(nameString.isEmpty()) {
+        if (nameString.isEmpty()) {
             throwAlert("editTag.incompleteHeader", "editTag.incompleteBody");
             name.setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
             return;
         }
         editTag.setName(nameString);
         editTag.setColor("#" +
-                colorPicker.getValue().toString().substring(2,8));
+                colorPicker.getValue().toString().substring(2, 8));
         try {
             serverUtils.updateTag(mainCtrl.getEvent().getInviteCode(), editTag);
         } catch (WebApplicationException e) {
@@ -196,8 +200,9 @@ public class EditTagCtrl implements Initializable {
 
     /**
      * Method that throws an alert.
+     *
      * @param header - property associated with the header.
-     * @param body - property associated with the body.
+     * @param body   - property associated with the body.
      */
     protected void throwAlert(String header, String body) {
         alert.titleProperty().bind(languageManager.bind("commons.warning"));
@@ -230,10 +235,11 @@ public class EditTagCtrl implements Initializable {
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it edits the tag.
-     *  - if ESCAPE is pressed, then it cancels and returns to the tags scene.
-     *  - if Ctrl + m is pressed, then it returns to the startscreen.
-     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * - if ENTER is pressed, then it edits the tag.
+     * - if ESCAPE is pressed, then it cancels and returns to the tags scene.
+     * - if Ctrl + m is pressed, then it returns to the startscreen.
+     * - if Ctrl + o is pressed, then it returns to the overview.
+     *
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -245,17 +251,57 @@ public class EditTagCtrl implements Initializable {
                 abort();
                 break;
             case M:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     startMenu();
                     break;
                 }
             case O:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     backToOverview();
                     break;
                 }
             default:
                 break;
         }
+    }
+    /**
+     * set the name
+     *
+     * @param name set the name of the controller
+     */
+    public void setName(TextField name) {
+        this.name = name;
+    }
+    /**
+     * set the colorPicker
+     *
+     * @param colorPicker set the colorPicker of the controller
+     */
+    public void setColorPicker(ColorPicker colorPicker) {
+        this.colorPicker = colorPicker;
+    }
+    /**
+     * set the cancelButton
+     *
+     * @param cancelButton set the cancelButton of the controller
+     */
+    public void setCancelButton(Button cancelButton) {
+        this.cancelButton = cancelButton;
+    }
+    /**
+     * set the changeTag
+     *
+     * @param changeTag set the changeTag of the controller
+     */
+    public void setChangeTag(Button changeTag) {
+        this.changeTag = changeTag;
+    }
+    /**
+     * set the editTag
+     *
+     * @param editTag set the editTag of the controller
+     */
+    public void setEditTag(Tag editTag) {
+        this.editTag = editTag;
     }
 }
