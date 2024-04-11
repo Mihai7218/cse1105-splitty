@@ -163,7 +163,12 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
                 .toList().getFirst().getParticipant());
         amount.setText(String.valueOf(expense.getAmount()));
         currencyVal.setValue(expense.getCurrency());
-        date.setValue(LocalDate.ofInstant(expense.getDate().toInstant(), ZoneId.systemDefault()));
+        try {
+            date.setValue(LocalDate.ofInstant(expense.getDate().toInstant(),
+                    ZoneId.systemDefault()));
+        }catch(UnsupportedOperationException e){
+            System.out.println("oops");
+        }
         load();
     }
 
@@ -340,9 +345,9 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
      */
     public boolean validate(String expensePriceText, LocalDate expenseDate){
         // Perform validation
-        if( !expensePriceText.isEmpty() || expenseDate != null
-                || currencyVal.getValue() != null || to.getValue() != null
-                || from.getValue() != null){
+        if( expensePriceText.isEmpty() || expenseDate == null
+                || currencyVal.getValue() == null || to.getValue() == null
+                || from.getValue() == null){
             removeHighlight();
             highlightMissing(to.getValue()==null, from.getValue()==null,
                     expensePriceText.isEmpty(), expenseDate==null, currencyVal.getValue() == null);
@@ -396,7 +401,7 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
             case ESCAPE:
-                abort();
+                cancel();
                 break;
             case M:
                 if(e.isControlDown()){
@@ -427,6 +432,120 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
     public void backToOverview() {
         clearFields();
         mainCtrl.showOverview();
+    }
+
+    /**
+     * Setter for header label (testing)
+     * @param header label
+     */
+    public void setHeader(Label header) {
+        this.header = header;
+    }
+
+    /**
+     * SEtter for transfer label (testing)
+     * @param transferFrom label
+     */
+    public void setTransferFrom(Label transferFrom) {
+        this.transferFrom = transferFrom;
+    }
+
+    /**
+     * Setter for from choicebox (testing)
+     * @param from choicebox
+     */
+    public void setFrom(ChoiceBox<Participant> from) {
+        this.from = from;
+    }
+
+    /**
+     * Setter for transferTO label (testing)
+     * @param transferTo label
+     */
+    public void setTransferTo(Label transferTo) {
+        this.transferTo = transferTo;
+    }
+
+    /**
+     * setter for choicebox to (testing)
+     * @param to choicebox
+     */
+    public void setTo(ChoiceBox<Participant> to) {
+        this.to = to;
+    }
+
+    /**
+     * Setter for transferAmount label
+     * @param transferAmount label
+     */
+    public void setTransferAmount(Label transferAmount) {
+        this.transferAmount = transferAmount;
+    }
+
+    /**
+     * Setter for amount field (testing)
+     * @param amount textfield
+     */
+    public void setAmount(TextField amount) {
+        this.amount = amount;
+    }
+
+    /**
+     * Setter for currency val choicebox (testing)
+     * @param currencyVal choicebox
+     */
+    public void setCurrencyVal(ChoiceBox<String> currencyVal) {
+        this.currencyVal = currencyVal;
+    }
+
+    /**
+     * Setter for the date label (testing)
+     * @param dateLabel label
+     */
+    public void setDateLabel(Label dateLabel) {
+        this.dateLabel = dateLabel;
+    }
+
+    /**
+     * Setter for the datepicker (testing)
+     * @param date datepicker
+     */
+    @Override
+    public void setDate(DatePicker date) {
+        this.date = date;
+    }
+
+    /**
+     * Setter for the cancel button (Testing)
+     * @param cancel cancel button
+     */
+    public void setCancel(Button cancel) {
+        this.cancel = cancel;
+    }
+
+    /**
+     * Setter for confirm button (testing)
+     * @param confirm button
+     */
+    public void setConfirm(Button confirm) {
+        this.confirm = confirm;
+    }
+
+    /**
+     * Setter for participant subscriptions (testing)
+     * @param participantSubscription Stompsession subscription
+     */
+    public void setParticipantSubscription(StompSession.Subscription participantSubscription) {
+        this.participantSubscription = participantSubscription;
+    }
+
+    /**
+     * Setter for the websocket subscription map (testing)
+     * @param participantSubscriptionMap map
+     */
+    public void setParticipantSubscriptionMap(Map<Participant,
+            StompSession.Subscription> participantSubscriptionMap) {
+        this.participantSubscriptionMap = participantSubscriptionMap;
     }
 
 }
