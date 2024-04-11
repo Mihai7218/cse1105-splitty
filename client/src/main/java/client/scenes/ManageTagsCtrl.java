@@ -238,22 +238,47 @@ public class ManageTagsCtrl implements Initializable {
         }
     }
 
+
+    /**
+     * return the tagSubscription
+     *
+     * @param tagSubscription the tagSubscription of the controller
+     */
     public void setTagSubscription(StompSession.Subscription tagSubscription) {
         this.tagSubscription = tagSubscription;
     }
 
+    /**
+     * return the tagSubscriptionMap
+     *
+     * @param tagSubscriptionMap the tagSubscriptionMap of the controller
+     */
     public void setTagSubscriptionMap(Map<Tag, StompSession.Subscription> tagSubscriptionMap) {
         this.tagSubscriptionMap = tagSubscriptionMap;
     }
 
+    /**
+     * return the cancel
+     *
+     * @param cancel the cancel of the controller
+     */
     public void setCancel(Button cancel) {
         this.cancel = cancel;
     }
 
+    /**
+     * return the tagsListView
+     *
+     * @param tagsListView the tagsListView of the controller
+     */
     public void setTagsListView(ListView tagsListView) {
         this.tagsListView = tagsListView;
     }
 
+    /**
+     * get the main controller that is being used by the manageTags page
+     * @return the mainCtrl from the manageTags page
+     */
     public MainCtrl getMainCtrl() {
         return mainCtrl;
     }
