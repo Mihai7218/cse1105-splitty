@@ -95,12 +95,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
         }
         currencyVal.getItems().addAll(currencyConverter.getCurrencies());
 
-        from.valueProperty().addListener((observable, oldValue, newValue) -> {
-            populateToBox();
-        });
-        to.valueProperty().addListener((observable, oldValue, newValue) -> {
-            populateFromBox();
-        });
+        populateBoxes();
         from.setConverter(new StringConverter<>() {
             @Override
             public String toString(Participant participant) {
@@ -192,6 +187,21 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
                             }
                             to.getItems().remove(part);
                             from.getItems().remove(part);
+                        } else {
+                            Participant fromSet = from.getValue();
+                            Participant toSet = to.getValue();
+                            from.getItems().remove(part);
+                            to.getItems().remove(part);
+                            from.getItems().add(part);
+                            to.getItems().add(part);
+                            if (fromSet != null && fromSet.equals(part)) {
+                                from.setValue(null);
+                                from.setValue(part);
+                            }
+                            if (toSet != null && toSet.equals(part)) {
+                                to.setValue(null);
+                                to.setValue(part);
+                            }
                         }
                     }));
             participantSubscriptionMap.put(participant, subscription);
@@ -208,6 +218,9 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
 
         if(!validate(price, transferDate)){
             throwAlert("transfer.missingFields", "transfer.missingFieldsBody");
+            return;
+        }else if(from.getValue().equals(to.getValue())){
+            throwAlert("transfer.sameFields","transfer.sameFieldsBody");
             return;
         }
         Expense newExpense;
@@ -299,33 +312,15 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
     /**
      * Populates + removes option from 'to' box if it is checked in 'from'
      */
-    public void populateToBox(){
+    public void populateBoxes(){
         if (mainCtrl != null && mainCtrl.getEvent() != null
                 && mainCtrl.getEvent().getParticipantsList() != null
                 && to.getValue() == null) {
             to.getItems().clear();
-            for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
-                if (participant == from.getValue()) continue;
-                else {
-                    to.getItems().add(participant);
-                }
-            }
-        }
-    }
-
-    /**
-     * Populates + removes options from 'from' box if it is checked in 'to'
-     */
-    public void populateFromBox(){
-        if (mainCtrl != null && mainCtrl.getEvent() != null
-                && mainCtrl.getEvent().getParticipantsList() != null
-                && from.getValue() == null) {
             from.getItems().clear();
             for (Participant participant : mainCtrl.getEvent().getParticipantsList()) {
-                if (participant == to.getValue()) continue;
-                else {
-                    from.getItems().add(participant);
-                }
+                to.getItems().add(participant);
+                from.getItems().add(participant);
             }
         }
     }
@@ -344,6 +339,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
             removeHighlight();
             highlightMissing(to.getValue()==null, from.getValue()==null,
                     expensePriceText.isEmpty(), expenseDate==null, currencyVal.getValue() == null);
+
             return false;
         }
         return true;

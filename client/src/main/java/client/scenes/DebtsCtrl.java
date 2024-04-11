@@ -192,10 +192,16 @@ public class DebtsCtrl implements Initializable, NotificationSender {
             Label info = new Label();
             Button mark = new Button();
             Button remind = new Button();
+            mark.setVisible(true);
+            mark.textProperty().bind(languageManager.bind("debts.send"));
+            mark.setOnAction(x ->
+            {
+                createExpense(debt);
+                mark.textProperty().bind(languageManager.bind("debts.check"));
+            });
             if (debt.getCreditor().getBic().equals("\u2714") ||
                     debt.getCreditor().getIban().equals("")) {
                 info.textProperty().bind(languageManager.bind("debts.unavailable"));
-                mark.setVisible(false);
             } else {
                 //info.textProperty().bind(languageManager.bind("debts.available"));
                 String data = debt.getCreditor().getName() + "\nIBAN: " +
@@ -203,13 +209,7 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                         debt.getCreditor().getBic();
 
                 info.setText(data);
-                mark.setVisible(true);
-                mark.textProperty().bind(languageManager.bind("debts.send"));
-                mark.setOnAction(x ->
-                {
-                    createExpense(debt);
-                    mark.textProperty().bind(languageManager.bind("debts.check"));
-                });
+
             }
             remind.textProperty().bind(languageManager.bind("debts.remind"));
             if (!canRemind) {

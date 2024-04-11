@@ -233,7 +233,23 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
                             }
                             to.getItems().remove(part);
                             from.getItems().remove(part);
+                        } else {
+                            Participant fromSet = from.getValue();
+                            Participant toSet = to.getValue();
+                            from.getItems().remove(part);
+                            to.getItems().remove(part);
+                            from.getItems().add(part);
+                            to.getItems().add(part);
+                            if (fromSet != null && fromSet.equals(part)) {
+                                from.setValue(null);
+                                from.setValue(part);
+                            }
+                            if (toSet != null && toSet.equals(part)) {
+                                to.setValue(null);
+                                to.setValue(part);
+                            }
                         }
+
                     }));
             participantSubscriptionMap.put(participant, subscription);
         }

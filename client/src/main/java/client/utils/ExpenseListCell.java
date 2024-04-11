@@ -166,7 +166,9 @@ public class ExpenseListCell extends ListCell<Expense> {
         date = new Label();
         payers = new Label();
         edit = new Button();
-        edit.setStyle("-fx-background-color: none");
+        edit.setText("\uD83D\uDD89");
+        edit.setStyle("-fx-background-color: none; -fx-text-fill: none");
+        edit.setDisable(true);
         remove = new Button();
         remove.setText("\uD83D\uDDD1");
         remove.setId("cancel");

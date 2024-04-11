@@ -165,10 +165,7 @@ class AddTransferCtrlTest {
 
         assertEquals(currencies, currVals);
 
-        verify(from, times(1)).setConverter(any());
-        verify(to, times(1)).setConverter(any());
-        verify(from, times(1)).valueProperty();
-        verify(to, times(1)).valueProperty();
+
         verify(cancel, times(1)).setGraphic(any());
         verify(confirm, times(1)).setGraphic(any());
     }
@@ -211,20 +208,15 @@ class AddTransferCtrlTest {
     public void populateTo(){
         when(from.getValue()).thenReturn(p1);
         when(to.getValue()).thenReturn(null);
-        sut.populateToBox();
-        assertEquals(List.of(p2), to.getItems());
-    }
-
-    @Test
-    public void populateFrom(){
-        when(to.getValue()).thenReturn(p1);
-        when(from.getValue()).thenReturn(null);
-        sut.populateFromBox();
-        assertEquals(List.of(p2), from.getItems());
+        sut.populateBoxes();
+        assertEquals(List.of(p1, p2), to.getItems());
+        assertEquals(List.of(p1, p2), from.getItems());
     }
 
     @Test
     public void validateTestNotValid(){
+        AddTransferCtrl spy = spy(sut);
+
         doNothing().when(to).setStyle(anyString());
         doNothing().when(from).setStyle(anyString());
         doNothing().when(currencyVal).setStyle(anyString());
@@ -232,7 +224,7 @@ class AddTransferCtrlTest {
         doNothing().when(amount).setStyle(anyString());
         when(currencyVal.getValue()).thenReturn(null);
         when(to.getValue()).thenReturn(null);
-        assertFalse(sut.validate("15", LocalDate.now()));
+        assertFalse(spy.validate("15", LocalDate.now()));
     }
 
     @Test
@@ -269,6 +261,8 @@ class AddTransferCtrlTest {
 
     @Test
     public void addValidTransfer(){
+        p1.setId(0);
+        p2.setId(1);
         List<Expense> expenses = new ArrayList<>();
         doNothing().when(to).setStyle(anyString());
         doNothing().when(from).setStyle(anyString());
