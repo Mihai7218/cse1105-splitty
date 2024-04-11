@@ -30,7 +30,7 @@
                                 <Region prefHeight="0.0" prefWidth="10.0" />
                                 <Button id="icon" fx:id="addparticipant" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="143.0" layoutY="84.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" onAction="#addParticipant" prefHeight="26.0" prefWidth="33.0" scaleShape="false">
                                     <tooltip>
-                                        <Tooltip id="tooltipAddParticipants" fx:id="addParticipantTooltip" text="Add Participants" />
+                                        <Tooltip id="tooltipAddParticipants" fx:id="addParticipantTooltip" text="${controller.languageManager.overview.addParticipantTooltip}" />
                                     </tooltip>
                                 </Button>
                                 <Region prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
