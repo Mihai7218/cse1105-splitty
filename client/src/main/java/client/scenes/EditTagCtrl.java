@@ -296,12 +296,4 @@ public class EditTagCtrl implements Initializable {
     public void setChangeTag(Button changeTag) {
         this.changeTag = changeTag;
     }
-    /**
-     * set the editTag
-     *
-     * @param editTag set the editTag of the controller
-     */
-    public void setEditTag(Tag editTag) {
-        this.editTag = editTag;
-    }
 }

@@ -87,7 +87,7 @@ public class EditTagCtrlTest {
         sut.setName(name);
         sut.setColorPicker(colorPicker);
         sut.setChangeTag(changeTag);
-        sut.setEditTag(new Tag("test","blue"));
+        sut.setTag(new Tag("test","blue"));
 
         doNothing().when(cancelButton).setGraphic(any(Node.class));
         doNothing().when(changeTag).setGraphic(any(Node.class));
@@ -149,8 +149,26 @@ public class EditTagCtrlTest {
         verify(test, atLeastOnce()).startMenu();
     }
     @Test
+    void keyTestEnter() {
+        KeyEvent ke = mock(KeyEvent.class);
+
+        when(ke.getCode()).thenReturn(KeyCode.ENTER);
+        EditTagCtrl test = spy(sut);
+        test.keyPressed(ke);
+        verify(test, atLeastOnce()).submitTagChanges();
+    }
+    @Test
     void refreshTest() {
         EditTagCtrl test = spy(sut);
+        when(name.getText()).thenReturn("test");
+        when(colorPicker.getValue()).thenReturn(Color.valueOf("#ffffff"));
+        WebApplicationException ex = new WebApplicationException(Response.status(404).build());
+        Event testEvent = new Event();
+        testEvent.setInviteCode(1);
+        when(mainCtrl.getEvent()).thenReturn(testEvent);
+        Tag testTag = new Tag();
+        testTag.setId(0);
+        when(serverUtils.updateTag(1, testTag)).thenThrow(ex);
         test.refresh();
         verify(test, atLeastOnce()).clearFields();
         verify(test, atLeastOnce()).loadFields();
