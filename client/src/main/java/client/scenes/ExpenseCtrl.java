@@ -21,6 +21,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -88,7 +89,6 @@ public abstract class ExpenseCtrl implements Initializable {
     protected Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
     /**
-     *
      * @param mainCtrl
      * @param config
      * @param languageManager
@@ -168,10 +168,10 @@ public abstract class ExpenseCtrl implements Initializable {
                     Text tagName = new Text(item.getName());
                     Color tagColor = Color.web(item.getColor());
                     if (0.2126 * tagColor.getRed() + 0.7152 * tagColor.getGreen()
-                            + 0.0722* tagColor.getBlue()<0.5) {
-                        tagName.setFill(Color.color(1.0,1.0,1.0));
+                            + 0.0722 * tagColor.getBlue() < 0.5) {
+                        tagName.setFill(Color.color(1.0, 1.0, 1.0));
                     } else {
-                        tagName.setFill(Color.color(0.0,0.0,0.0));
+                        tagName.setFill(Color.color(0.0, 0.0, 0.0));
                     }
                     rectangle.setStroke(Color.BLACK);
                     rectangle.setStrokeWidth(1);
@@ -336,39 +336,44 @@ public abstract class ExpenseCtrl implements Initializable {
         showInstructions();
         newTag.setVisible(true);
         colorPicker.setVisible(true);
-        System.out.println("#" + colorPicker.getValue().toString().substring(2,8));
-        newTag.setOnKeyPressed(event -> {
-            if (event.getCode() == KeyCode.ENTER) {
-                String tag = newTag.getText().trim();
-                // Add text to the ArrayList if it's not empty
-                if (!tag.isEmpty()) {
-                    //tags.add(new Tag(tag, "black"));
+        System.out.println("#" + colorPicker.getValue().toString().substring(2, 8));
+        newTag.setOnKeyPressed(this::handleKeyPressed);
+    }
 
-                    Tag newTag = new Tag(tag, "#" +
-                            colorPicker.getValue().toString().substring(2,8));
-                    try {
-                        newTag = serverUtils.addTag(mainCtrl.getEvent().getInviteCode(), newTag);
-                    }
-                    catch (WebApplicationException e) {
-                        switch (e.getResponse().getStatus()) {
-                            case 400 -> throwAlert("addExpense.invalidTagHeader",
-                                    "addExpense.invalidTagBody");
-                            case 404 -> throwAlert("addExpense.notFoundHeader",
-                                    "addExpense.notFoundBody");
-                        }
-                        return;
-                    }
-                    expenseType.getItems().add(newTag);
-                    expenseType.setValue(newTag);
+    /**
+     * @param event
+     */
 
+    public void handleKeyPressed(KeyEvent event) {
+        if (event.getCode() == KeyCode.ENTER) {
+            String tag = newTag.getText().trim();
+            // Add text to the ArrayList if it's not empty
+            if (!tag.isEmpty()) {
+                //tags.add(new Tag(tag, "black"));
+
+                Tag newTag = new Tag(tag, "#" +
+                        colorPicker.getValue().toString().substring(2, 8));
+                try {
+                    newTag = serverUtils.addTag(mainCtrl.getEvent().getInviteCode(), newTag);
+                } catch (WebApplicationException e) {
+                    switch (e.getResponse().getStatus()) {
+                        case 400 -> throwAlert("addExpense.invalidTagHeader",
+                                "addExpense.invalidTagBody");
+                        case 404 -> throwAlert("addExpense.notFoundHeader",
+                                "addExpense.notFoundBody");
+                    }
+                    return;
                 }
-                // Clear the text field
-                newTag.clear();
-                colorPicker.setValue(Color.WHITE);
-                newTag.setVisible(false);
-                colorPicker.setVisible(false);
+                expenseType.getItems().add(newTag);
+                expenseType.setValue(newTag);
+
             }
-        });
+            // Clear the text field
+            newTag.clear();
+            colorPicker.setValue(Color.WHITE);
+            newTag.setVisible(false);
+            colorPicker.setVisible(false);
+        }
     }
 
     /**
@@ -455,8 +460,9 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Method that throws an alert.
+     *
      * @param header - property associated with the header.
-     * @param body - property associated with the body.
+     * @param body   - property associated with the body.
      */
     protected void throwAlert(String header, String body) {
         alert.titleProperty().bind(languageManager.bind("commons.warning"));
@@ -467,23 +473,24 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Insert highlight for missing fields in the addexpense scene
-     * @param titleBool boolean if title is present
-     * @param priceText boolean if text for price is present
-     * @param dateBool boolean for date being present
+     *
+     * @param titleBool    boolean if title is present
+     * @param priceText    boolean if text for price is present
+     * @param dateBool     boolean for date being present
      * @param currencyBool boolean for currency selected
      */
     public void highlightMissing(boolean titleBool,
                                  boolean priceText, boolean dateBool, boolean currencyBool,
-                                 boolean payeeBool){
-        if(titleBool) title
+                                 boolean payeeBool) {
+        if (titleBool) title
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
-        if(priceText) price
+        if (priceText) price
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
-        if(dateBool) date
+        if (dateBool) date
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
-        if(currencyBool) currency
+        if (currencyBool) currency
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
-        if(payeeBool) payee
+        if (payeeBool) payee
                 .setStyle("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
     }
 
@@ -500,9 +507,10 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Method that gets the list of participant payments.
-     * @param price - price of the expense
+     *
+     * @param price       - price of the expense
      * @param actualPayee - payee of the expense.
-     * @return  - list of participant payments.
+     * @return - list of participant payments.
      */
     protected List<ParticipantPayment> getParticipantPayments(int price, Participant actualPayee) {
         List<ParticipantPayment> participantPayments = new ArrayList<>();
@@ -516,11 +524,12 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Updates the participant payments list in the case that only some people are selected.
-     * @param price - price of the expense
+     *
+     * @param price               - price of the expense
      * @param participantPayments - list of participant payments.
      */
     protected void onlyCase(int price, List<ParticipantPayment> participantPayments,
-                          Participant actualPayee) {
+                            Participant actualPayee) {
         int numberOfParticipants = 1;
         for (var pair : checkBoxParticipantMap.entrySet()) {
             if (pair.getKey().isSelected()) {
@@ -531,7 +540,7 @@ public abstract class ExpenseCtrl implements Initializable {
         Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
         List<Participant> currParticipants = new ArrayList<>();
 
-        double amtAdded = (double)(price/numberOfParticipants)/100.0;
+        double amtAdded = (double) (price / numberOfParticipants) / 100.0;
         ParticipantPayment payeePayment = new ParticipantPayment(actualPayee, amtAdded);
         participantSplits.put(actualPayee, payeePayment);
         participantPayments.add(payeePayment);
@@ -550,7 +559,7 @@ public abstract class ExpenseCtrl implements Initializable {
         }
         Collections.shuffle(currParticipants);
         int counter = 0;
-        while(remainder > 0){
+        while (remainder > 0) {
             Participant subject = currParticipants.get(counter);
             double initAmt = participantSplits.get(subject).getPaymentAmount();
             participantSplits.get(currParticipants.get(counter)).setPaymentAmount(initAmt + 0.01);
@@ -563,16 +572,18 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Updates the participant payments list in the case that everyone is selected.
-     * @param price - price of the expense
-     * @param actualPayee - payee of the expense.
+     *
+     * @param price               - price of the expense
+     * @param actualPayee         - payee of the expense.
      * @param participantPayments - list of participant payments.
      */
     protected void everyoneCase(int price, Participant actualPayee,
-                              List<ParticipantPayment> participantPayments) {
+                                List<ParticipantPayment> participantPayments) {
 
         Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
 
-        double amtAdded = (double)(price/mainCtrl.getEvent().getParticipantsList().size())/100.0;
+        double amtAdded = (double) (price / mainCtrl.getEvent()
+                .getParticipantsList().size()) / 100.0;
         ParticipantPayment payeePayment = new ParticipantPayment(actualPayee, amtAdded);
         participantSplits.put(actualPayee, payeePayment);
         participantPayments.add(payeePayment);
@@ -590,7 +601,7 @@ public abstract class ExpenseCtrl implements Initializable {
         List<Participant> currParticipants = mainCtrl.getEvent().getParticipantsList();
         Collections.shuffle(currParticipants);
         int counter = 0;
-        while(remainder > 0){
+        while (remainder > 0) {
             Participant subject = currParticipants.get(counter);
             double initAmt = participantSplits.get(subject).getPaymentAmount();
             participantSplits.get(currParticipants.get(counter)).setPaymentAmount(initAmt + 0.01);
@@ -623,20 +634,21 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param expenseTitle
      * @param expensePriceText
      * @param expenseDate
      * @return
      */
-    protected boolean validate(String expenseTitle, String expensePriceText, LocalDate expenseDate){
+    protected boolean validate(String expenseTitle, String expensePriceText,
+                               LocalDate expenseDate) {
         // Perform validation
         if (expenseTitle.isEmpty() || expensePriceText.isEmpty() || expenseDate == null
                 || currency.getValue() == null || payee.getValue() == null) {
             throwAlert("addExpense.incompleteHeader", "addExpense.incompleteBody");
             removeHighlight();
-            highlightMissing(expenseTitle.isEmpty(), expensePriceText.isEmpty(), expenseDate ==null,
-                    currency.getValue()==null, payee.getValue() == null);
+            highlightMissing(expenseTitle.isEmpty(), expensePriceText.isEmpty(),
+                    expenseDate == null,
+                    currency.getValue() == null, payee.getValue() == null);
             return false;
         }
         return true;
@@ -644,6 +656,7 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Getter for the language manager observable map.
+     *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -652,6 +665,7 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Setter for the language manager observable map.
+     *
      * @param languageManager - the language manager observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
@@ -660,6 +674,7 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * Getter for the language manager property.
+     *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
@@ -691,7 +706,8 @@ public abstract class ExpenseCtrl implements Initializable {
             participantSubscription = null;
         }
         if (participantSubscriptionMap != null) {
-            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             participantSubscriptionMap = new HashMap<>();
         }
         clearFields();
@@ -708,7 +724,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param payee
      */
     public void setPayee(ChoiceBox<Participant> payee) {
@@ -716,7 +731,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public ChoiceBox<String> getCurrency() {
@@ -724,7 +738,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param currency
      */
     public void setCurrency(ChoiceBox<String> currency) {
@@ -732,7 +745,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public ComboBox<Tag> getExpenseType() {
@@ -740,7 +752,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param expenseType
      */
     public void setExpenseType(ComboBox<Tag> expenseType) {
@@ -748,7 +759,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public CheckBox getEveryone() {
@@ -756,7 +766,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param everyone
      */
     public void setEveryone(CheckBox everyone) {
@@ -764,7 +773,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public CheckBox getOnly() {
@@ -772,7 +780,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param only
      */
     public void setOnly(CheckBox only) {
@@ -780,7 +787,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public VBox getNamesContainer() {
@@ -788,7 +794,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param namesContainer
      */
     public void setNamesContainer(VBox namesContainer) {
@@ -796,7 +801,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public Label getQuestion() {
@@ -804,7 +808,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param question
      */
     public void setQuestion(Label question) {
@@ -812,7 +815,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public TextField getTitle() {
@@ -820,7 +822,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param title
      */
     public void setTitle(TextField title) {
@@ -829,6 +830,7 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * getter for button for testing
+     *
      * @param addExpense
      */
     public void setAddExpense(Button addExpense) {
@@ -836,7 +838,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public TextField getPrice() {
@@ -844,7 +845,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param price
      */
     public void setPrice(TextField price) {
@@ -852,7 +852,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @return
      */
     public DatePicker getDate() {
@@ -860,7 +859,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param date
      */
     public void setDate(DatePicker date) {
@@ -868,7 +866,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param scrollNames
      */
     public void setScrollNames(ScrollPane scrollNames) {
@@ -876,7 +873,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param addTag
      */
     public void setAddTag(Button addTag) {
@@ -884,7 +880,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param newTag
      */
     public void setNewTag(TextField newTag) {
@@ -892,7 +887,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param colorPicker
      */
     public void setColorPicker(ColorPicker colorPicker) {
@@ -900,7 +894,6 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
      * @param instructions
      */
     public void setInstructions(Label instructions) {
@@ -909,6 +902,7 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * setter for the add button (testing)
+     *
      * @param add button for adding expense
      */
     public void setAdd(Button add) {
@@ -917,6 +911,7 @@ public abstract class ExpenseCtrl implements Initializable {
 
     /**
      * setter for cancel button (testing)
+     *
      * @param cancelButton button to cancel adding expense
      */
     public void setCancelButton(Button cancelButton) {

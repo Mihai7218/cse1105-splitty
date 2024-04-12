@@ -15,6 +15,7 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import java.util.Date;
+import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
@@ -76,6 +77,7 @@ class MainCtrlTest {
      */
     @Test
     void showStartMenu() {
+        sut.history=new Stack<>();
         sut.showStartMenu();
         assertEquals("startScreen.windowTitle", titleKey);
         assertEquals("Test", sb.get());

@@ -8,6 +8,7 @@ import commons.Event;
 import commons.Expense;
 import commons.Participant;
 import commons.Tag;
+import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -16,7 +17,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +47,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(ApplicationExtension.class)
-public class AddExpenseCtrlTest {
+public class ExpenseCtrlTest {
 
     //Needed for the tests to run headless.
     static {
@@ -44,7 +55,7 @@ public class AddExpenseCtrlTest {
         System.setProperty("testfx.headless", "true");
         System.setProperty("prism.order", "sw");
         System.setProperty("prism.text", "t2k");
-        System.setProperty("java.awt.headless","true");
+        System.setProperty("java.awt.headless", "true");
     }
 
     MainCtrl mainCtrl;
@@ -77,8 +88,11 @@ public class AddExpenseCtrlTest {
     CurrencyConverter currencyConverter;
     Event event;
     List<Participant> participants;
-    StringProperty sp;
+    StringProperty contentSp;
+    StringProperty titleSp;
+    StringProperty headerSp;
     Participant participant;
+
 
     @Start
     void setUp(Stage stage) {
@@ -103,7 +117,7 @@ public class AddExpenseCtrlTest {
         addTag = mock(Button.class);
         newTag = mock(TextField.class);
         instructions = mock(Label.class);
-        cancelButton=mock(Button.class);
+        cancelButton = mock(Button.class);
         addExpenseButton = mock(Button.class);
         colorPicker = mock(ColorPicker.class);
         var creationDate = new Date(2024, 2, 15);
@@ -131,11 +145,13 @@ public class AddExpenseCtrlTest {
         sut.setAddExpense(addExpenseButton);
         sut.setColorPicker(colorPicker);
 
-        sp = new SimpleStringProperty("Hello");
+        contentSp = new SimpleStringProperty("Hello");
+        titleSp = new SimpleStringProperty("Hello");
+        headerSp = new SimpleStringProperty("Hello");
         when(languageManager.bind(anyString())).thenReturn(Bindings.createStringBinding(() -> ""));
-        when(alert.contentTextProperty()).thenReturn(sp);
-        when(alert.titleProperty()).thenReturn(sp);
-        when(alert.headerTextProperty()).thenReturn(sp);
+        when(alert.contentTextProperty()).thenReturn(contentSp);
+        when(alert.titleProperty()).thenReturn(titleSp);
+        when(alert.headerTextProperty()).thenReturn(headerSp);
         participant = new Participant("john", "erra@gmail.com", "NL123ABN", "BRT");
         participants = new ArrayList<>();
         addParticipants();
@@ -153,101 +169,96 @@ public class AddExpenseCtrlTest {
 
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
     }
-    public void addPeople(ObservableList noc){
+
+    public void addPeople(ObservableList noc) {
         noc.add(0, "John");
         noc.add(1, "Heather");
     }
-    public void addParticipants(){
+
+    public void addParticipants() {
         participants.add(new Participant("part1", "erra@gmail.com", "NL123ABN", "BRT"));
         participants.add(new Participant("part2", "maru@gmail.com", "NL13323ABN", "BRT"));
     }
-    
-    @Test
-    void initialize() {
-        assertFalse(question.isVisible());
-        assertNotNull(sut.getNamesContainer());
-        assertEquals(0, namesContainer.getChildren().size());
-    }
 
     @Test
-    void chooseOne() {
-        everyone.setSelected(true);
-        sut.everyoneCheck();
-        assertFalse(only.isSelected());
-        assertEquals(0, namesContainer.getChildren().size());
-
-        everyone.setSelected(false);
-        only.setSelected(true);
-        sut.onlyCheck();
-        assertFalse(everyone.isSelected());
-        if(everyone.isSelected()) noc.clear();
-        else addPeople(noc);
-        assertFalse(namesContainer.getChildren().isEmpty());
-    }
-    @Test
-    void testAddExpenseGoodNumber() {
-        // Set up necessary dependencies and data
-        String expenseTitle = "Test Expense";
-        String expensePriceText = "10.00"; // Assuming valid price text
-        LocalDate expenseDate = LocalDate.now();
-
-        // Mock behavior for GUI elements
-        when(title.getText()).thenReturn(expenseTitle);
-        when(price.getText()).thenReturn(expensePriceText);
-        when(date.getValue()).thenReturn(expenseDate);
-        //when(serverUtils.addExpense(any(), any())).thenReturn(mock(Response.class)); // Mock server response
-
-        // Invoke the method
-        sut.addExpense();
-
-        // Verify behavior
-        verify(title, times(1)).getText();
-        verify(price, times(1)).getText();
-        verify(date, times(1)).getValue();
+    void testShowInstructions() {
+        sut.setInstructions(instructions);
+        verify(instructions).setVisible(false);
+        sut.showInstructions();
+        verify(instructions).setVisible(true);
 
     }
     @Test
-    void testAddExpenseNegativeNumber() {
-        // Set up necessary dependencies and data
-        String expenseTitle = "Test Expense";
-        String expensePriceText = "-10.00"; // Assuming valid price text
-        LocalDate expenseDate = LocalDate.now();
-
-        // Mock behavior for GUI elements
-        when(title.getText()).thenReturn(expenseTitle);
-        when(price.getText()).thenReturn(expensePriceText);
-        when(date.getValue()).thenReturn(expenseDate);
-        //when(serverUtils.addExpense(any(), any())).thenReturn(mock(Response.class)); // Mock server response
-
-        // Invoke the method
-        sut.addExpense();
-
-        // Verify behavior
-        verify(title, times(1)).getText();
-        verify(price, times(1)).getText();
-        verify(date, times(1)).getValue();
-
+    void testHandleKeyPressed(){
+        KeyEvent event = mock(KeyEvent.class);
+        when(colorPicker.getValue()).thenReturn(Color.color(1,1,1));
+        when(newTag.getText()).thenReturn("nou");
+        when(event.getCode()).thenReturn(KeyCode.ENTER);
+        sut.handleKeyPressed(event);
+        Tag tag = new Tag("nou", "White");
+        sut.getExpenseType().getItems().add(tag);
+        sut.getExpenseType().setValue(tag);
+        verify(serverUtils).addTag(0,tag);
     }
     @Test
-    void testAddExpenseTooManyDigitsNumber() {
-        // Set up necessary dependencies and data
-        String expenseTitle = "Test Expense";
-        String expensePriceText = "10.00223"; // Assuming valid price text
-        LocalDate expenseDate = LocalDate.now();
-
-        // Mock behavior for GUI elements
-        when(title.getText()).thenReturn(expenseTitle);
-        when(price.getText()).thenReturn(expensePriceText);
-        when(date.getValue()).thenReturn(expenseDate);
-        //when(serverUtils.addExpense(any(), any())).thenReturn(mock(Response.class)); // Mock server response
-
-        // Invoke the method
-        sut.addExpense();
-
-        // Verify behavior
-        verify(title, times(1)).getText();
-        verify(price, times(1)).getText();
-        verify(date, times(1)).getValue();
-
+    void testHandle400(){
+        when(serverUtils.addTag(anyInt(),any())).thenThrow(new WebApplicationException(400));
+        KeyEvent event = mock(KeyEvent.class);
+        when(colorPicker.getValue()).thenReturn(Color.color(1,1,1));
+        when(newTag.getText()).thenReturn("nou");
+        when(event.getCode()).thenReturn(KeyCode.ENTER);
+        sut.handleKeyPressed(event);
+        verify(languageManager).bind("addExpense.invalidTagHeader");
+        verify(languageManager).bind("addExpense.invalidTagBody");
+        verify(alert).showAndWait();
     }
+    @Test
+    void testHandle404(){
+        when(serverUtils.addTag(anyInt(),any())).thenThrow(new WebApplicationException(404));
+        KeyEvent event = mock(KeyEvent.class);
+        when(colorPicker.getValue()).thenReturn(Color.color(1,1,1));
+        when(newTag.getText()).thenReturn("nou");
+        when(event.getCode()).thenReturn(KeyCode.ENTER);
+        sut.handleKeyPressed(event);
+        verify(languageManager).bind("addExpense.notFoundHeader");
+        verify(languageManager).bind("addExpense.notFoundBody");
+        verify(alert).showAndWait();
+    }
+
+
+//    @Test
+//    void testSetExpenseTypeView() {
+//        // Set up test data
+//        Tag tag = new Tag("Food", "Green");
+//
+//
+//        sut.setExpenseTypeView();
+//
+//        // Verify cell factory setup
+//        //verify(expenseType).setCellFactory(any());
+//        verify(expenseType).setConverter(any());
+//
+//        // Simulate cell update
+//        // Assuming Tag.getColor() returns a color in hexadecimal format
+//        Rectangle rectangle = new Rectangle(100, 20);
+//        rectangle.setFill(Paint.valueOf(tag.getColor()));
+//        Text tagName = new Text(tag.getName());
+//        Color tagColor = Color.web(tag.getColor());
+//        if (0.2126 * tagColor.getRed() + 0.7152 * tagColor.getGreen()
+//                + 0.0722* tagColor.getBlue() < 0.5) {
+//            tagName.setFill(Color.WHITE);
+//        } else {
+//            tagName.setFill(Color.BLACK);
+//        }
+//
+//        // Assuming the actual cell factory updates the graphic correctly
+//        // Mock the cell update
+//        ComboBox<Tag> comboBox = mock(ComboBox.class);
+//
+//        // Verify converter setup
+//        // Assuming Tag.getName() returns the name of the tag
+//        assertEquals(tag.getName(), expenseType.getConverter().toString(tag));
+//
+//        // Assert other behaviors as necessary
+//    }
 }

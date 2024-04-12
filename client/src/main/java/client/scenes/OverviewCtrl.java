@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.commands.ICommand;
 import client.utils.*;
 import com.google.inject.Inject;
 import commons.*;
@@ -42,6 +43,10 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private final LanguageManager languageManager;
     private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
+    @FXML
+    public Button undoButton;
+    @FXML
+    public Tooltip undoTooltip;
     @FXML
     public Button showStatisticsButton;
     @FXML
@@ -136,6 +141,27 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
+     * Adds a command to history
+     * @param i command to add
+     */
+    public void addToHistory(ICommand i){
+        mainCtrl.addToHistory(i);
+        if(!undoButton.isVisible()){
+            undoButton.setVisible(true);
+        }
+    }
+
+    /**
+     * Undoes the most recent command
+     */
+    public void undo(){
+        mainCtrl.undo();
+        if(mainCtrl.getHistory().isEmpty()){
+            undoButton.setVisible(false);
+        }
+    }
+
+    /**
      * Method that populates the lists related to expenses.
      */
     public void populateExpenses() {
@@ -209,6 +235,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         addTransferButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         showStatisticsButton.setGraphic(new ImageView(new Image("icons/graph.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
+        if(mainCtrl != null &&
+                mainCtrl.getHistory() != null &&
+                mainCtrl.getHistory().isEmpty()) undoButton.setVisible(false);
+        undoButton.setGraphic(new ImageView(new Image("icons/undo.png")));
+        undoButton.setStyle("-fx-background-color: none");
+
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
@@ -816,6 +848,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     settings();
                     break;
                 }
+            case Z:
+                undo();
+                break;
             default:
                 break;
         }

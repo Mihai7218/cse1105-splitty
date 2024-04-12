@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.commands.EditExpenseCommand;
+import client.commands.ICommand;
 import client.utils.ConfigInterface;
 import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
@@ -160,24 +162,8 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             highlightMissing(false, true, false, false, false);
             return;
         }
-        try {
-            serverUtils.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
-        } catch (WebApplicationException e) {
-            switch (e.getResponse().getStatus()) {
-                case 400 -> {
-                    throwAlert("addExpense.badReqHeader",
-                            "addExpense.badReqBody");
-                }
-                case 404 -> {
-                    throwAlert("addExpense.notFoundHeader",
-                            "addExpense.notFoundBody");
-                }
-            }
-        }
         exit();
         mainCtrl.showEditConfirmation();
-        // Optionally, clear input fields after adding the expense
-        clearFields();
     }
 
     /**
@@ -190,16 +176,55 @@ public class EditExpenseCtrl extends ExpenseCtrl {
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
+        ICommand editExpense = new EditExpenseCommand(price/100.0, currency.getValue(), title,
+                java.sql.Date.valueOf(date), participantPayments,
+                tag, actualPayee,expense,serverUtils,mainCtrl);
+        try{
+            editExpense.execute();
+            mainCtrl.getOverviewCtrl().addToHistory(editExpense);
+        }catch(WebApplicationException e){
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader",
+                            "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader",
+                            "addExpense.notFoundBody");
+                }
+            }
+        }
 //       new Expense(price, currency.getValue(), title, "testing",
 //                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
 
-        expense.setTitle(title);
-        expense.setAmount(price / 100.0);
-        expense.setCurrency(currency.getValue());
-        expense.setDate(java.sql.Date.valueOf(date));
-        expense.setSplit(participantPayments);
-        expense.setTag(tag);
-        expense.setPayee(actualPayee);
+//        expense.setTitle(title);
+//        expense.setAmount(price / 100.0);
+//        expense.setCurrency(currency.getValue());
+//        expense.setDate(java.sql.Date.valueOf(date));
+//        expense.setSplit(participantPayments);
+//        expense.setTag(tag);
+//        expense.setPayee(actualPayee);
+    }
+
+    /**
+     * Undoes the change to the expense and deals with exceptions
+     * @param undoCommand the edits to undo
+     */
+    public void undo(ICommand undoCommand){
+        try{
+            undoCommand.undo();
+        }catch(WebApplicationException e){
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader",
+                            "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader",
+                            "addExpense.notFoundBody");
+                }
+            }
+        }
     }
 
     /**
