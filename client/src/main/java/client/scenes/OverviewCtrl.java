@@ -175,7 +175,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
                 participantsList = server.getEvent(mainCtrl.getEvent().getInviteCode())
                         .getParticipantsList();
-            } catch (WebApplicationException e) {
+            } catch (WebApplicationException | NullPointerException e) {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
@@ -313,7 +313,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         if (!"deleted".equals(part.getIban())) {
                             mainCtrl.getEvent().getParticipantsList().add(part);
                         }
-                        mainCtrl.getDebtsCtrl().refresh();
+                        if (mainCtrl.getDebtsCtrl() != null)
+                            mainCtrl.getDebtsCtrl().refresh();
                         populateExpenses();
                         populateParticipants();
                     }));
@@ -333,7 +334,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     + tag.getId();
             var subscription = server.registerForMessages(dest, Tag.class,
                     exp -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getTagsList().remove(exp);
+                        mainCtrl.getEvent().getTagsList().remove(tag);
                         if (!"deleted".equals(exp.getColor())) {
                             mainCtrl.getEvent().getTagsList().add(exp);
                         }
@@ -1143,5 +1144,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     StompSession.Subscription getExpensesSubscription() {
         return expensesSubscription;
+    }
+
+    /**
+     *
+     * @param subscription
+     */
+    void setEventSubscription(StompSession.Subscription subscription) {
+        this.eventSubscription = subscription;
     }
 }

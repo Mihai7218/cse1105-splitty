@@ -4,6 +4,9 @@ import client.commands.ICommand;
 import client.utils.*;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -463,19 +466,237 @@ class OverviewCtrlTest {
     }
 
     @Test
-    void changeLanguage() {
+    void participantSubscription() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Participant>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/participants/1")
+                    && mock.getArgument(1).equals(Participant.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        mainCtrl.setDebtsCtrl(debtsCtrl);
+        when(server.getAllParticipants(1)).thenReturn(event.getParticipantsList());
+        when(server.getEvent(1)).thenReturn(event);
+
+        sut.populateExpenses();
+
+        assertTrue(event.getParticipantsList().contains(bob));
+
+        lambda.get().accept(new Participant("title", "", "", ""));
+        Thread.sleep(100);
+
+        assertFalse(event.getParticipantsList().contains(bob));
+        assertTrue(event.getParticipantsList().contains(new Participant()));
+        verify(debtsCtrl).refresh();
+    }
+
+    @Test
+    void participantSubscriptionDeleted() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Participant>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/participants/1")
+                    && mock.getArgument(1).equals(Participant.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        mainCtrl.setDebtsCtrl(debtsCtrl);
+        when(server.getAllParticipants(1)).thenReturn(event.getParticipantsList());
+        when(server.getEvent(1)).thenReturn(event);
+
+        sut.populateExpenses();
+
+        assertTrue(event.getParticipantsList().contains(bob));
+
+        lambda.get().accept(new Participant("title", "", "deleted", ""));
+        Thread.sleep(100);
+
+        assertFalse(event.getParticipantsList().contains(bob));
+        assertFalse(event.getParticipantsList().contains(new Participant()));
+        verify(debtsCtrl).refresh();
+    }
+
+    @Test
+    void tagSubscription() throws InterruptedException {
+        Event event = getEvent();
+        Tag food = new Tag("food", "red");
+        food.setId(1);
+        Tag drinks = new Tag("drinks", "blue");
+        drinks.setId(2);
+        event.setTagsList(new ArrayList<>(List.of(food, drinks)));
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Tag>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/tags/1")
+                    && mock.getArgument(1).equals(Tag.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+
+        sut.refresh();
+
+        assertTrue(event.getTagsList().contains(food));
+
+        lambda.get().accept(new Tag());
+        Thread.sleep(100);
+
+        assertFalse(event.getTagsList().contains(food));
+        assertTrue(event.getTagsList().contains(new Tag()));
+    }
+
+    @Test
+    void tagSubscriptionDeleted() throws InterruptedException {
+        Event event = getEvent();
+        Tag food = new Tag("food", "red");
+        food.setId(1);
+        Tag drinks = new Tag("drinks", "blue");
+        drinks.setId(2);
+        event.setTagsList(new ArrayList<>(List.of(food, drinks)));
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Tag>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/tags/1")
+                    && mock.getArgument(1).equals(Tag.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+
+        sut.refresh();
+
+        assertTrue(event.getTagsList().contains(food));
+
+        lambda.get().accept(new Tag("", "deleted"));
+        Thread.sleep(100);
+
+        assertFalse(event.getTagsList().contains(food));
+        assertFalse(event.getTagsList().contains(new Tag()));
+    }
+
+    @Test
+    void expenseSubscription() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Expense>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/expenses/1")
+                    && mock.getArgument(1).equals(Expense.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
+        when(server.getEvent(1)).thenReturn(event);
+        when(currencyConverter.convert(any(), any(), any(), anyDouble())).then(mock -> mock.getArguments()[3]);
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        mainCtrl.setDebtsCtrl(debtsCtrl);
+
+        sut.populateExpenses();
+
+        assertTrue(all.getItems().contains(expense1));
+        assertEquals("25.00 EUR", sumExpense.getText());
+
+        Expense expense3 = new Expense(50.0, "CHF", "exp3", "desc", java.sql.Date.valueOf("2025-01-01"), List.of(
+                new ParticipantPayment(tom, 25.0),
+                new ParticipantPayment(bob, 25.0)
+        ), null, tom);
+        expense3.setId(3);
+        lambda.get().accept(expense3);
+        Thread.sleep(100);
+
+        assertFalse(all.getItems().contains(expense1));
+        assertFalse(event.getExpensesList().contains(expense1));
+        assertTrue(all.getItems().contains(expense3));
+        assertTrue(event.getExpensesList().contains(expense3));
+        assertEquals("65.00 EUR", sumExpense.getText());
+    }
+
+    @Test
+    void expenseSubscriptionDeleted() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Expense>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/expenses/1")
+                    && mock.getArgument(1).equals(Expense.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
+        when(server.getEvent(1)).thenReturn(event);
+        when(currencyConverter.convert(any(), any(), any(), anyDouble())).then(mock -> mock.getArguments()[3]);
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        mainCtrl.setDebtsCtrl(debtsCtrl);
+
+        sut.populateExpenses();
+
+        assertTrue(all.getItems().contains(expense1));
+        assertEquals("25.00 EUR", sumExpense.getText());
+
+        Expense expense3 = new Expense(50.0, "CHF", "exp3", "deleted", java.sql.Date.valueOf("2025-01-01"), List.of(
+                new ParticipantPayment(tom, 25.0),
+                new ParticipantPayment(bob, 25.0)
+        ), null, tom);
+        expense3.setId(3);
+        lambda.get().accept(expense3);
+        Thread.sleep(100);
+
+        assertFalse(all.getItems().contains(expense1));
+        assertFalse(event.getExpensesList().contains(expense1));
+        assertFalse(all.getItems().contains(expense3));
+        assertFalse(event.getExpensesList().contains(expense3));
+        assertEquals("15.00 EUR", sumExpense.getText());
     }
 
     @Test
     void addParticipant() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter);
+        sut2.addParticipant();
+        verify(mainCtrl2).showParticipant();
+    }
+
+    @Test
+    void addTransfer() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter);
+        sut2.addTransfer();
+        verify(mainCtrl2).showTransfer();
     }
 
     @Test
     void addExpense() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter);
+        sut2.addExpense();
+        verify(mainCtrl2).showAddExpense();
     }
 
     @Test
     void startMenu() {
+        StompSession.Subscription subscription = mock(StompSession.Subscription.class);
+        sut.setExpensesSubscription(subscription);
+        sut.setTagSubscription(subscription);
+        sut.setEventSubscription(subscription);
+        sut.setParticipantSubscription(subscription);
+
+        Scene startMenu = mock(Scene.class);
+        mainCtrl.setStartScreen(startMenu);
+        Stage primaryStage = mock(Stage.class);
+        StringProperty sp = new SimpleStringProperty();
+        when(primaryStage.titleProperty()).thenReturn(sp);
+        mainCtrl.setHistory(new Stack<>());
+        mainCtrl.setPrimaryStage(primaryStage);
+
+        sut.startMenu();
+
+        verify(subscription, times(4)).unsubscribe();
+        assertTrue(expenseSubscriptionMap.isEmpty());
+        assertTrue(tagSubscriptionMap.isEmpty());
+        assertTrue(participantSubscriptionMap.isEmpty());
     }
 
     @Test

@@ -774,4 +774,12 @@ public class MainCtrl {
     void setDebtsCtrl(DebtsCtrl debtsCtrl) {
         this.debtsCtrl = debtsCtrl;
     }
+
+    /**
+     *
+     * @param startScreen
+     */
+    void setStartScreen(Scene startScreen) {
+        this.startScreen = startScreen;
+    }
 }
