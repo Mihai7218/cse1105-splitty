@@ -15,13 +15,14 @@
  */
 package server.api;
 
-import commons.*;
+import commons.Event;
+import commons.Expense;
+import commons.Tag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.database.EventRepository;
-import server.database.ParticipantRepository;
 import server.database.TagRepository;
 
 import java.sql.Timestamp;
@@ -32,7 +33,6 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.*;
-import static server.api.PasswordService.setPassword;
 
 public class EventControllerTest {
 
@@ -42,7 +42,6 @@ public class EventControllerTest {
     private EventController sut;
     private EventService serviceStub;
     private EventController sutStubbed;
-    private PasswordService ps;
 
     public class EventServiceStub extends EventService {
 
@@ -187,17 +186,14 @@ public class EventControllerTest {
 
         serviceStub = new EventServiceStub(repo, tagRepo);
         sutStubbed = new EventController(serviceStub, test, mock(SimpMessagingTemplate.class));
-
-        ps=new PasswordService();
-        setPassword("password");
     }
 
-    @Test
-    public void adminTestPassword(){
-        setPassword("testPs");
-        assertEquals(sutStubbed.get("testPs").getStatusCode(), OK);
-        assertEquals(sutStubbed.get("wrongPs").getStatusCode(), BAD_REQUEST);
-    }
+//    @Test
+//    public void adminTestPassword(){
+//        setPassword("testPs");
+//        assertEquals(sutStubbed.get("testPs").getStatusCode(), OK);
+//        assertEquals(sutStubbed.get("wrongPs").getStatusCode(), BAD_REQUEST);
+//    }
 
     @Test
     public void getInvolvedPayTest(){
@@ -369,32 +365,5 @@ public class EventControllerTest {
         sut.get(0L);
         event = repo.getById(0L);
         assertEquals(event.getLastActivity(),tmpdate);
-    }
-
-    @Test
-    public void importEvent(){
-        setPassword("password");
-        assertEquals(OK,sut.addJsonImport("password", new Event("title",null,null)).getStatusCode());
-        assertEquals(BAD_REQUEST,sut.addJsonImport("wrongPassword", new Event("title",null,null)).getStatusCode());
-
-//        Event event = new Event("Title4", null, null);
-//        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-//        Participant other = new Participant("John Doe",
-//                "jdoe@gmail.com","NL85RABO5253446745",
-//                "HBUKGB4B");
-//        ParticipantPayment pp = new ParticipantPayment(other, 25);
-//        List<ParticipantPayment> split = List.of(pp);
-//        Tag t = new Tag("red", "red");
-//        Expense e= new Expense(50, "USD", "exampleExpense", "description",
-//                null,split ,t, p);
-//        event.getParticipantsList().add(p);
-//        event.getParticipantsList().add(other);
-//        event.getExpensesList().add(e);
-//        Tag one = new Tag("food", "#93c47d");
-//        Tag two = new Tag("entrance fees", "#4a86e8");
-//        Tag three = new Tag("travel", "#e06666");
-//        event.setTagsList(List.of(t, one, two, three));
-//        event.setInviteCode(5);
-//        assertEquals(OK,sut.addJsonImport("password", event).getStatusCode());
     }
 }

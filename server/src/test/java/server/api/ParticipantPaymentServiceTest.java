@@ -5,14 +5,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.http.HttpStatus.*;
-
-
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.http.HttpStatus.*;
 
 public class ParticipantPaymentServiceTest {
     TestEventRepository eventRepository;
@@ -88,33 +88,7 @@ public class ParticipantPaymentServiceTest {
         eventRepository.getById(0L).setParticipantsList(participantList);
     }
 
-    @Test
-    public void importPriorPP(){
-        Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
-        ParticipantPayment pp = new ParticipantPayment(other, 25);
-        List<ParticipantPayment> split = List.of(pp);
-        Tag t = new Tag("red", "red");
-        Expense e= new Expense(50, "USD", "exampleExpense", "description",
-                null,split ,t, p);
-        event.getParticipantsList().add(p);
-        event.getParticipantsList().add(other);
-        event.getExpensesList().add(e);
-        Tag one = new Tag("food", "#93c47d");
-        Tag two = new Tag("entrance fees", "#4a86e8");
-        Tag three = new Tag("travel", "#e06666");
-        event.setTagsList(List.of(t, one, two, three));
-        event.setInviteCode(5);
-        eventRepository.save(event);
-        participantRepository.save(other);
-        expenseRepository.save(e);
-        assertEquals(participantPaymentService.validateParticipantPayment(pp).getStatusCode(), OK );
-        participantPaymentService.addCreatedParticipantPayment(pp);
-        assertTrue(participantPaymentService.getParticipantPayment(1, 1,2).getBody().fullEquals(pp));
-    }
+
 
     @Test
     public void testGetAllParticipants(){

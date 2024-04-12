@@ -83,18 +83,7 @@ public class EventController {
         return eventService.getEvent(inviteCode);
     }
 
-    /**
-     * Get methode to get all the events on the server
-     * @return returns a list of all events on the server
-     */
-    @GetMapping(path = { "/admin/{password}" })
-    public ResponseEntity<List<Event>> get(@PathVariable("password") String password) {
-        if (PasswordService.getPassword().equals(password)) {
-            return eventService.getAllEvents();
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
+
 
     /**
      * @param inviteCode the invite code of the event to check in
@@ -159,21 +148,6 @@ public class EventController {
         return eventService.deleteEvent(inviteCode);
     }
 
-    /**
-     * Post method to allow an admin to upload new events
-     * @param password string password
-     * @param event the list of events to be added
-     * @return the list of events if succesfully added
-     */
-    @PostMapping(path = {"/admin/{password}"})
-    public ResponseEntity<Event> addJsonImport(@PathVariable("password") String password,
-                                               @RequestBody  Event event){
-        if (PasswordService.getPassword().equals(password)) {
-            return eventService.addCreatedEvent(event);
-        }else{
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     /**
      * Endpoint to access and calculated the share for a certain participant

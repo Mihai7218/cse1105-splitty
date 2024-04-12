@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.springframework.http.HttpStatus.*;
-
 
 @RestController
 @RequestMapping( "api/events")
@@ -110,34 +108,4 @@ public class ParticipantPaymentController {
     ){
         return participantPaymentService.deleteParticipantPayment(eventId,expenseId,id,serverUtil);
     }
-
-
-    /**
-     * Post method to allow an admin to upload new ParticipantPayments
-     * @param password string password
-     * @param participantPayments the list of participantPayments to be added
-     * @return the list of participantPayments if succesfully added
-     */
-    @PostMapping(path = {"/admin/participantPayment/{password}"})
-    public ResponseEntity<ParticipantPayment> addJsonImport(
-            @PathVariable("password") String password,
-            @RequestBody ParticipantPayment participantPayments){
-        if (PasswordService.getPassword().equals(password)) {
-
-            if(participantPaymentService
-                    .validateParticipantPayment(participantPayments)
-                    .getStatusCode()
-                    .equals(OK)){
-                participantPaymentService.addCreatedParticipantPayment(participantPayments);
-                return ResponseEntity.ok(participantPayments);
-
-            }else{
-                return ResponseEntity.badRequest().build();
-            }
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-
 }
