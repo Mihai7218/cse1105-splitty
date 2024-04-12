@@ -848,6 +848,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     settings();
                     break;
                 }
+            case Z:
+                undo();
+                break;
             default:
                 break;
         }
