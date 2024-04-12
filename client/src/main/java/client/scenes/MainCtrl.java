@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.commands.ICommand;
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
@@ -32,6 +33,7 @@ import javafx.util.Pair;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.Stack;
 
 public class MainCtrl {
 
@@ -78,6 +80,9 @@ public class MainCtrl {
     private FileChooser fileChooser = new FileChooser();
 
     private Event event;
+
+
+    Stack<ICommand> history;
 
     /**
      * Constructor for the MainCtrl
@@ -159,6 +164,8 @@ public class MainCtrl {
 
         this.debtsCtrl = debts.getKey();
         this.debts = new Scene(debts.getValue());
+
+        history = new Stack<>();
 
         showConnectToServer();
         primaryStage.show();
@@ -376,6 +383,34 @@ public class MainCtrl {
         primaryStage.setScene(startScreen);
         if (startScreen != null) startScreen
                 .setOnKeyPressed(e -> startScreenCtrl.keyPressed(e));
+        history.clear();
+    }
+
+
+    /**
+     * Adds a command to application history
+     * @param i command to add
+     */
+    public void addToHistory(ICommand i){
+        history.push(i);
+    }
+
+    /**
+     * Getter for the history stack in main
+     * @return history stack
+     */
+    public Stack<ICommand> getHistory() {
+        return history;
+    }
+
+    /**
+     * Undoes the most recent change
+     */
+    public void undo(){
+        if(!history.isEmpty()){
+            ICommand prev = history.pop();
+            editExpenseCtrl.undo(prev);
+        }
     }
 
     /**
