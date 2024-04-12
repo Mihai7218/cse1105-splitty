@@ -54,6 +54,8 @@ public class StatisticsCtrl implements Initializable {
     private StompSession.Subscription expensesSubscription;
     private Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
 
+    private int invitecode;
+
 
     /**
      * Constructor for the StatisticsCtrl
@@ -89,22 +91,17 @@ public class StatisticsCtrl implements Initializable {
         this.refreshLanguage();
         expenseSubscriptionMap = new HashMap<>();
         tagSubscriptionMap = new HashMap<>();
+        pieChart = new PieChart();
+        ownLegend = new VBox();
     }
 
-    /**
-     * Getter for the tag subscription map.
-     *
-     * @return - the tag subscription map of the overview controller.
-     */
-    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
-        return tagSubscriptionMap;
-    }
 
     /**
      * Extra setup to fix statistic refresh
      */
     public void setup() {
         Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
+        invitecode = mainCtrl.getEvent().getInviteCode();
         mainCtrl.setEvent(e);
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
             if (!expenseSubscriptionMap.containsKey(expense))
@@ -119,6 +116,7 @@ public class StatisticsCtrl implements Initializable {
 
     /**
      * Method that subscribes to updates for an tag.
+     *
      * @param tag - the tag to subscribe to.
      */
     private void subscribeToTag(Tag tag) {
@@ -128,8 +126,7 @@ public class StatisticsCtrl implements Initializable {
                     + tag.getId();
             var subscription = serverUtils.registerForMessages(dest, Tag.class,
                     exp -> Platform.runLater(() -> {
-                        Event e = serverUtils.getEvent(mainCtrl.getEvent().getInviteCode());
-                        mainCtrl.setEvent(e);
+                        mainCtrl.setEvent(serverUtils.getEvent(invitecode));
                         setStatistics();
                     }));
             tagSubscriptionMap.put(tag, subscription);
@@ -180,31 +177,21 @@ public class StatisticsCtrl implements Initializable {
     public void refresh() {
         if (mainCtrl.getEvent() != null) {
             subscription = serverUtils.registerForMessages(String.format("/topic/events/%s",
-                            mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
-                                mainCtrl.getEvent().setTitle(q.getTitle());
-                                Platform.runLater(() -> refresh());
-                            });
+                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> {
+                    mainCtrl.getEvent().setTitle(q.getTitle());
+                    Platform.runLater(() -> refresh());
+                });
             if (tagSubscription == null)
                 tagSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
                         tag -> {
-                            Platform.runLater(() -> {
-                                subscribeToTag(tag);
-                            });
+                            Platform.runLater(() -> {subscribeToTag(tag);});
                         });
             if (expensesSubscription == null)
                 expensesSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
                         expense -> {
-                            Platform.runLater(() -> {
-                                if (!mainCtrl.getEvent().getExpensesList().contains(expense)) {
-                                    mainCtrl.getEvent().getExpensesList().add(expense);
-                                }
-
-                                subscribeToExpense(expense);
-                                setStatistics();
-                            });
-                        });
+                            Platform.runLater(() -> {onNewExpenseReceive(expense);});});
         }
         pieChart.titleProperty().set(mainCtrl.getEvent().getTitle());
         cancel.setGraphic(new ImageView(new Image("icons/arrowback.png")));
@@ -215,25 +202,44 @@ public class StatisticsCtrl implements Initializable {
     }
 
     /**
+     * What the page needs to do when a new expense is received
+     * @param expense the expense that is received
+     */
+    public void onNewExpenseReceive(Expense expense) {
+        if (!mainCtrl.getEvent().getExpensesList().contains(expense)) {
+            mainCtrl.getEvent().getExpensesList().add(expense);
+        }
+        subscribeToExpense(expense);
+        setStatistics();
+    }
+
+    /**
      * Method that subscribes to updates for an expense.
      *
      * @param expense - the expense to subscribe to.
      */
-    private void subscribeToExpense(Expense expense) {
+    public void subscribeToExpense(Expense expense) {
         if (!expenseSubscriptionMap.containsKey(expense)) {
             String dest = "/topic/events/" +
                     mainCtrl.getEvent().getInviteCode() + "/expenses/"
                     + expense.getId();
             var subscription = serverUtils.registerForMessages(dest, Expense.class,
-                    exp -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getExpensesList().remove(expense);
-                        if (!"deleted".equals(exp.getDescription())) {
-                            mainCtrl.getEvent().getExpensesList().add(exp);
-                        }
-                        setStatistics();
-                    }));
+                    exp -> Platform.runLater(() -> {onExpenseChange(expense, exp);}));
             expenseSubscriptionMap.put(expense, subscription);
         }
+    }
+
+    /**
+     * What the system needs to do when an expense changes
+     * @param expense the expense old version changed
+     * @param exp the expense that changed
+     */
+    public void onExpenseChange(Expense expense, Expense exp) {
+        mainCtrl.getEvent().getExpensesList().remove(expense);
+        if (!"deleted".equals(exp.getDescription())) {
+            mainCtrl.getEvent().getExpensesList().add(exp);
+        }
+        setStatistics();
     }
 
     /**
@@ -259,6 +265,7 @@ public class StatisticsCtrl implements Initializable {
         }
         mainCtrl.showOverview();
     }
+
     /**
      * Manage the tags
      */
@@ -294,6 +301,10 @@ public class StatisticsCtrl implements Initializable {
 
         double total = 0;
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
+            if(expense.getDescription().equals("transfer")
+                    || expense.getDescription().equals("settlement")){
+                continue;
+            }
             total += currencyConverter.convert(expense.getDate(),
                     expense.getCurrency(),
                     currency,
@@ -305,6 +316,10 @@ public class StatisticsCtrl implements Initializable {
                 String catagoryName = pair.getKey().getName();
                 double value = 0;
                 for (Expense expense : pair.getValue()) {
+                    if(expense.getDescription().equals("transfer")
+                            || expense.getDescription().equals("settlement")){
+                        continue;
+                    }
                     value += currencyConverter.convert(expense.getDate(),
                             expense.getCurrency(),
                             currency,
@@ -314,22 +329,17 @@ public class StatisticsCtrl implements Initializable {
                 pieChart.getData().add(slice);
                 try {
                     slice.getNode().setStyle("-fx-pie-color: " + pair.getKey().getColor() + ";");
-
                 } catch (Exception e) {
                     System.out.println(e);
                 }
                 legendList.add(new Pair<>(pair.getKey(), value));
             }
         }
-
-
         String legendStyle = "-fx-background-color: white; -fx-border-color: black;";
         pieChart.getData().get(0).getNode().getParent().getParent()
                 .lookup(".chart-legend").setStyle(legendStyle);
 
         updateOwnLegend(legendList, total);
-
-
         StringBinding test = languageManager.bind("statistics.chartTitle");
         pieChart.setTitle(mainCtrl.getEvent().getTitle() +
                 "\n" + test.getValue() + " " + String.format("%.2f %s", total, currency));
@@ -347,6 +357,10 @@ public class StatisticsCtrl implements Initializable {
         for (Tag tag : eventTagList) {
             List<Expense> expensesWithTag = new ArrayList<>();
             for (Expense expense : event.getExpensesList()) {
+                if(expense.getDescription().equals("transfer")
+                        || expense.getDescription().equals("settlement")){
+                    continue;
+                }
                 if (expense.getTag() != null && expense.getTag().equals(tag)) {
                     expensesWithTag.add(expense);
                 }
@@ -380,22 +394,6 @@ public class StatisticsCtrl implements Initializable {
         return res;
     }
 
-
-    /**
-     * Update own legend version
-     */
-    private void updateOwnLegend2() {
-        ownLegend.getChildren().clear();
-        for (PieChart.Data data : pieChart.getData()) {
-            Label item = new Label(data.getName());
-            String style = data.getNode().getStyle();
-            String colorString = style.substring(style.indexOf("-fx-pie-color:") + 15,
-                    style.indexOf(";"));
-            item.setTextFill(Color.web(colorString));
-            ownLegend.getChildren().add(item);
-        }
-    }
-
     /**
      * Update own legend version
      */
@@ -404,15 +402,14 @@ public class StatisticsCtrl implements Initializable {
         for (Pair<Tag, Double> data : stats) {
             double precentage = (data.getValue() / total * 100);
             String withRightDigits = String.format("%.1f", precentage);
-            Rectangle rectangle = new Rectangle(15,15);
+            Rectangle rectangle = new Rectangle(15, 15);
             rectangle.setStroke(Color.BLACK);
             rectangle.setStrokeWidth(1);
             rectangle.setFill(Color.web(data.getKey().getColor()));
             Label item = new Label(" " + data.getKey().getName() + ": "
                     + String.format("%.2f %s", data.getValue(), currency)
                     + " (" + withRightDigits + "%)");
-            //item.setTextFill(Color.web(data.getKey().getColor()));
-            HBox test = new HBox(rectangle,item);
+            HBox test = new HBox(rectangle, item);
             ownLegend.getChildren().add(test);
         }
     }
@@ -421,14 +418,32 @@ public class StatisticsCtrl implements Initializable {
      * When the shortcut is used it goes back to the startmenu.
      */
     public void startMenu() {
+        subscription.unsubscribe();
+        if (expenseSubscriptionMap != null) {
+            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap = new HashMap<>();
+        }
+        if (expensesSubscription != null) {
+            expensesSubscription.unsubscribe();
+            expensesSubscription = null;
+        }
+        if (tagSubscription != null) {
+            tagSubscription.unsubscribe();
+            tagSubscription = null;
+        }
+        if (tagSubscriptionMap != null) {
+            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap = new HashMap<>();
+        }
         mainCtrl.showStartMenu();
     }
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
-     *  - if Ctrl + m is pressed, then it returns to the startscreen.
-     *  - if Ctrl + m is pressed, then it returns to the overview.
+     * - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * - if Ctrl + m is pressed, then it returns to the startscreen.
+     * - if Ctrl + m is pressed, then it returns to the overview.
+     *
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -437,13 +452,18 @@ public class StatisticsCtrl implements Initializable {
                 backToOverview();
                 break;
             case M:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     startMenu();
                     break;
                 }
             case O:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     backToOverview();
+                    break;
+                }
+            case T:
+                if (e.isControlDown()) {
+                    showManageTagsScreen();
                     break;
                 }
             default:
@@ -451,4 +471,102 @@ public class StatisticsCtrl implements Initializable {
         }
     }
 
+    /**
+     * set the manageTags
+     *
+     * @param manageTags set the manageTags of the controller
+     */
+    public void setManageTags(Button manageTags) {
+        this.manageTags = manageTags;
+    }
+
+    /**
+     * set the subscription
+     *
+     * @param subscription set the subscription of the controller
+     */
+    public void setSubscription(StompSession.Subscription subscription) {
+        this.subscription = subscription;
+    }
+
+    /**
+     * set the pieChart
+     *
+     * @param pieChart set the pieChart of the controller
+     */
+    public void setPieChart(PieChart pieChart) {
+        this.pieChart = pieChart;
+    }
+
+    /**
+     * set the cancel
+     *
+     * @param cancel set the cancel of the controller
+     */
+    public void setCancel(Button cancel) {
+        this.cancel = cancel;
+    }
+
+    /**
+     * set the ownLegend
+     *
+     * @param ownLegend set the ownLegend of the controller
+     */
+    public void setOwnLegend(VBox ownLegend) {
+        this.ownLegend = ownLegend;
+    }
+
+    /**
+     * set the currency
+     *
+     * @param currency set the currency of the controller
+     */
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    /**
+     * set the tagSubscription
+     *
+     * @param tagSubscription set the tagSubscription of the controller
+     */
+    public void setTagSubscription(StompSession.Subscription tagSubscription) {
+        this.tagSubscription = tagSubscription;
+    }
+
+    /**
+     * set the tagSubscriptionMap
+     *
+     * @param tagSubscriptionMap set the tagSubscriptionMap of the controller
+     */
+    public void setTagSubscriptionMap(Map<Tag, StompSession.Subscription> tagSubscriptionMap) {
+        this.tagSubscriptionMap = tagSubscriptionMap;
+    }
+
+    /**
+     * set the ExpenseSubscriptionMap
+     *
+     * @param expensesSubscription set the expensesSubscription of the controller
+     */
+    public void setExpensesSubscription(StompSession.Subscription expensesSubscription) {
+        this.expensesSubscription = expensesSubscription;
+    }
+
+    /**
+     * return the ExpenseSubscriptionMap
+     *
+     * @param expenseSubscriptionMap the expenseSubscriptionMap of the controller
+     */
+    public void setExpenseSubscriptionMap(Map<Expense,
+            StompSession.Subscription> expenseSubscriptionMap) {
+        this.expenseSubscriptionMap = expenseSubscriptionMap;
+    }
+
+    /**
+     * get the main controller that is being used by the statistics page
+     * @return the mainCtrl from the statistics page
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
+    }
 }

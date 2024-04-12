@@ -64,31 +64,6 @@ public class ExpenseServiceTest {
         expenseRepo.save(expense3);
     }
 
-    @Test
-    public void importValidExpense(){
-        Event even = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
-        ParticipantPayment pp = new ParticipantPayment(other, 25);
-        List<ParticipantPayment> split = List.of(pp);
-        Tag t = new Tag("red", "red");
-        Expense e= new Expense(50, "USD", "exampleExpense", "description",
-                null,split ,t, p);
-        even.getParticipantsList().add(p);
-        even.getParticipantsList().add(other);
-        even.getExpensesList().add(e);
-        Tag one = new Tag("food", "#93c47d");
-        Tag two = new Tag("entrance fees", "#4a86e8");
-        Tag three = new Tag("travel", "#e06666");
-        even.setTagsList(List.of(t, one, two, three));
-        even.setInviteCode(5);
-        eventService.addCreatedEvent(even);
-        assertEquals(expenseService.validateExpense(e).getStatusCode(), OK);
-        expenseService.addCreatedExpense(e);
-        assertEquals(expenseService.getAllExpenses(1).getBody().get(0), e);
-    }
 
     @Test
     public void changeTitleTestInvalid(){

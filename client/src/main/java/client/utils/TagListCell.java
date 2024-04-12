@@ -3,6 +3,7 @@ package client.utils;
 import client.scenes.MainCtrl;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.collections.ObservableMap;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,6 +30,8 @@ public class TagListCell extends ListCell<Tag> {
     private Region autogrowRight;
 
     private Rectangle rectangle;
+
+
 
     /**
      * Constructor for the TagListCell.
@@ -114,14 +117,78 @@ public class TagListCell extends ListCell<Tag> {
         } catch (NullPointerException e) {
             tagName.setText("<no color>");
         }
-//        try {
-//            tagColor.setText(this.getItem().getColor());
-//        } catch (NullPointerException e) {
-//            tagColor.setText("<no name>");
-//        }
 
         rectangle.setFill(Paint.valueOf(this.getItem().getColor()));
 
         setGraphic(hBox);
+    }
+    /**
+     * set the languageManager for testing
+     * @param languageManager the languageManager to set it to
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
+    }
+
+    /**
+     * set the tagName for testing
+     * @param tagName the tagName to set it to
+     */
+    public void setTagName(Label tagName) {
+        this.tagName = tagName;
+    }
+
+    /**
+     * set the edit for testing
+     * @param edit the edit to set it to
+     */
+    public void setEdit(Button edit) {
+        this.edit = edit;
+    }
+
+    /**
+     * set the remove for testing
+     * @param remove the remove to set it to
+     */
+    public void setRemove(Button remove) {
+        this.remove = remove;
+    }
+
+    /**
+     * set the details for testing
+     * @param details the details to set it to
+     */
+    public void setDetails(FlowPane details) {
+        this.details = details;
+    }
+    /**
+     * set the hBox for testing
+     * @param hBox the hBox to set it to
+     */
+    public void sethBox(HBox hBox) {
+        this.hBox = hBox;
+    }
+    /**
+     * set the vBox for testing
+     * @param vBox the vBox to set it to
+     */
+    public void setvBox(VBox vBox) {
+        this.vBox = vBox;
+    }
+
+    /**
+     * set the autogrowRight for testing
+     * @param autogrowRight the autogrowRight to set it to
+     */
+    public void setAutogrowRight(Region autogrowRight) {
+        this.autogrowRight = autogrowRight;
+    }
+
+    /**
+     * set the rectangle for testing
+     * @param rectangle the rectangle to set it to
+     */
+    public void setRectangle(Rectangle rectangle) {
+        this.rectangle = rectangle;
     }
 }

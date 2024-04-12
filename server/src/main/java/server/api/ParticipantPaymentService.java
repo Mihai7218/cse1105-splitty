@@ -196,13 +196,4 @@ public class ParticipantPaymentService {
         return ResponseEntity.ok(p);
     }
 
-    /**
-     * Method to add a participant payment to the repository from a JSON import
-     * @param p ParticipantPayment to be added to the tagRepository
-     * @return the participantPayment in a ResponseEntity
-     */
-    public ResponseEntity<ParticipantPayment> addCreatedParticipantPayment(ParticipantPayment p) {
-        return ResponseEntity.ok(participantPaymentRepository.save(p));
-    }
-
 }

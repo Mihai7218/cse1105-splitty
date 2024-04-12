@@ -1,22 +1,23 @@
 package server.api;
 
-import commons.*;
+import commons.Event;
+import commons.Participant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.database.EventRepository;
 import server.database.ParticipantRepository;
+
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.springframework.http.HttpStatus.OK;
 import static org.springframework.http.HttpStatus.*;
-import static server.api.PasswordService.setPassword;
 
 
 public class ParticipantControllerTest {
@@ -177,13 +178,7 @@ public class ParticipantControllerTest {
 
     }
 
-    @Test
-    public void importParticipant(){
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        setPassword("password");
-        assertEquals(ctrlStubbed.addPriorParticipant("password", p).getStatusCode(), OK);
-        assertEquals(ctrlStubbed.addPriorParticipant("wrongPassword", p).getStatusCode(), BAD_REQUEST);
-    }
+
 
     @Test
     public void testGetController(){

@@ -265,14 +265,7 @@ public class ExpenseService {
         return ResponseEntity.ok(expense);
     }
 
-    /**
-     * Method to add an expense to the repository from a JSON import
-     * @param expense expense to be added to the expenseRepository
-     * @return the expense in a ResponseEntity
-     */
-    public ResponseEntity<Expense> addCreatedExpense(Expense expense) {
-        return ResponseEntity.ok(expenseRepo.save(expense));
-    }
+
 
 
     /**
