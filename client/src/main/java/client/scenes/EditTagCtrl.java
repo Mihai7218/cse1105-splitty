@@ -211,13 +211,6 @@ public class EditTagCtrl implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * getter for the current tag that is being edited
-     * @return the current tag that's being edited
-     */
-    public Tag getEditTag() {
-        return editTag;
-    }
 
     /**
      * loads the fields with data from the tag to be modified
