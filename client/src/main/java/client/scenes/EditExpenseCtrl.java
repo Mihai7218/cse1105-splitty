@@ -1,5 +1,7 @@
 package client.scenes;
 
+import client.commands.EditExpenseCommand;
+import client.commands.ICommand;
 import client.utils.ConfigInterface;
 import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
@@ -10,10 +12,12 @@ import commons.Participant;
 import commons.ParticipantPayment;
 import commons.Tag;
 import jakarta.ws.rs.WebApplicationException;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
+import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.math.BigDecimal;
 import java.net.URL;
@@ -26,6 +30,7 @@ import java.util.ResourceBundle;
 public class EditExpenseCtrl extends ExpenseCtrl {
     @FXML
     private Button done;
+    private StompSession.Subscription expenseSubscription;
 
     /**
      * @param mainCtrl
@@ -47,10 +52,30 @@ public class EditExpenseCtrl extends ExpenseCtrl {
 
     /**
      * Setter for the expense.
+     *
      * @param expense - the new value of the expense.
      */
     public void setExpense(Expense expense) {
         this.expense = expense;
+    }
+
+    /**
+     *
+     */
+    @Override
+    public void load() {
+        super.load();
+        String dest = "/topic/events/" +
+                mainCtrl.getEvent().getInviteCode() + "/expenses/"
+                + expense.getId();
+        expenseSubscription = serverUtils.registerForMessages(dest, Expense.class,
+                exp -> Platform.runLater(() -> {
+                    if ("deleted".equals(exp.getDescription())) {
+                        throwAlert("editExpense.removedExpenseHeader",
+                                "editExpense.removedExpenseBody");
+                        exit();
+                    }
+                }));
     }
 
     /**
@@ -137,20 +162,20 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             highlightMissing(false, true, false, false, false);
             return;
         }
-        try {
-            serverUtils.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
-        } catch (WebApplicationException e) {
-            switch (e.getResponse().getStatus()) {
-                case 400 -> {
-                    throwAlert("addExpense.badReqHeader",
-                            "addExpense.badReqBody");
-                }
-                case 404 -> {
-                    throwAlert("addExpense.notFoundHeader",
-                            "addExpense.notFoundBody");
-                }
-            }
-        }
+//        try {
+//            serverUtils.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
+//        } catch (WebApplicationException e) {
+//            switch (e.getResponse().getStatus()) {
+//                case 400 -> {
+//                    throwAlert("addExpense.badReqHeader",
+//                            "addExpense.badReqBody");
+//                }
+//                case 404 -> {
+//                    throwAlert("addExpense.notFoundHeader",
+//                            "addExpense.notFoundBody");
+//                }
+//            }
+//        }
         mainCtrl.showOverview();
         mainCtrl.showEditConfirmation();
 
@@ -168,16 +193,55 @@ public class EditExpenseCtrl extends ExpenseCtrl {
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
+        ICommand editExpense = new EditExpenseCommand(price/100.0, currency.getValue(), title,
+                java.sql.Date.valueOf(date), participantPayments,
+                tag, actualPayee,expense,serverUtils,mainCtrl);
+        try{
+            editExpense.execute();
+            mainCtrl.getOverviewCtrl().addToHistory(editExpense);
+        }catch(WebApplicationException e){
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader",
+                            "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader",
+                            "addExpense.notFoundBody");
+                }
+            }
+        }
 //       new Expense(price, currency.getValue(), title, "testing",
 //                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
 
-        expense.setTitle(title);
-        expense.setAmount(price / 100.0);
-        expense.setCurrency(currency.getValue());
-        expense.setDate(java.sql.Date.valueOf(date));
-        expense.setSplit(participantPayments);
-        expense.setTag(tag);
-        expense.setPayee(actualPayee);
+//        expense.setTitle(title);
+//        expense.setAmount(price / 100.0);
+//        expense.setCurrency(currency.getValue());
+//        expense.setDate(java.sql.Date.valueOf(date));
+//        expense.setSplit(participantPayments);
+//        expense.setTag(tag);
+//        expense.setPayee(actualPayee);
+    }
+
+    /**
+     * Undoes the change to the expense and deals with exceptions
+     * @param undoCommand the edits to undo
+     */
+    public void undo(ICommand undoCommand){
+        try{
+            undoCommand.undo();
+        }catch(WebApplicationException e){
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader",
+                            "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader",
+                            "addExpense.notFoundBody");
+                }
+            }
+        }
     }
 
     /**
@@ -186,6 +250,15 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     public void startMenu() {
         clearFields();
         mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Exit method. Returns to the overview and unsubscribes.
+     */
+    @Override
+    protected void exit() {
+        expenseSubscription.unsubscribe();
+        super.exit();
     }
 
     /**
@@ -199,10 +272,11 @@ public class EditExpenseCtrl extends ExpenseCtrl {
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it edits the expense with the current values.
-     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
-     *  - if Ctrl + m is pressed, then it returns to the startscreen.
-     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * - if ENTER is pressed, then it edits the expense with the current values.
+     * - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * - if Ctrl + m is pressed, then it returns to the startscreen.
+     * - if Ctrl + o is pressed, then it returns to the overview.
+     *
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -214,12 +288,12 @@ public class EditExpenseCtrl extends ExpenseCtrl {
                 abort();
                 break;
             case M:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     startMenu();
                     break;
                 }
             case O:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     abort();
                     break;
                 }

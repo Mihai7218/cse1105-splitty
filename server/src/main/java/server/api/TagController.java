@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.http.HttpStatus.OK;
-
 //TODO: add endpoints for specific expense within an event if necessary
 
 @RestController
@@ -118,33 +116,4 @@ public class TagController {
         }
         return resp;
     }
-
-
-
-    /**
-     * Post method to allow an admin to upload new tags
-     * @param password string password
-     * @param tag the list of tags to be added
-     * @return the list of tags if succesfully added
-     */
-    @PostMapping(path = {"/admin/tag/{password}"})
-    public ResponseEntity <Tag> addJsonImport(@PathVariable("password") String password,
-                                              @RequestBody Tag tag){
-        if (PasswordService.getPassword().equals(password)) {
-
-            if(tagService.validateTag(tag).getStatusCode().equals(OK)){
-                tagService.addCreatedTag(tag);
-                return ResponseEntity.ok(tag);
-
-            }else{
-                return ResponseEntity.badRequest().build();
-
-            }
-
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-
 }

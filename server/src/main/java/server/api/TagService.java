@@ -176,14 +176,5 @@ public class TagService {
         return ResponseEntity.ok(tag);
     }
 
-    /**
-     * Method to add a tag to the repository from a JSON import
-     * @param tag tag to be added to the tagRepository
-     * @return the tag in a ResponseEntity
-     */
-    public ResponseEntity<Tag> addCreatedTag(Tag tag) {
-        return ResponseEntity.ok(tagRepo.save(tag));
-    }
-
 
 }

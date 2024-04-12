@@ -8,10 +8,7 @@ import server.database.EventRepository;
 import server.database.ExpenseRepository;
 import server.database.ParticipantPaymentRepository;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class ExpenseService {
@@ -110,6 +107,7 @@ public class ExpenseService {
             return ResponseEntity.badRequest().build();
         }
         Expense change = expenseRepo.findById(expenseId).get();
+        List<ParticipantPayment> split = new ArrayList<>(change.getSplit());
         change.getSplit().clear();
         if (expense.getSplit() != null) {
             ppRepo.saveAll(expense.getSplit());
@@ -122,6 +120,9 @@ public class ExpenseService {
         change.setTag(tag);
         change.setDate(date);
         expenseRepo.save(change);
+        for (ParticipantPayment pp : split)
+            if (pp != null && ppRepo.existsById(pp.getId()))
+                ppRepo.deleteById(pp.getId());
         Event event = eventRepo.findById(id).get();
         serverUtil.updateDate(eventRepo,id);
         eventRepo.save(event);
@@ -264,14 +265,7 @@ public class ExpenseService {
         return ResponseEntity.ok(expense);
     }
 
-    /**
-     * Method to add an expense to the repository from a JSON import
-     * @param expense expense to be added to the expenseRepository
-     * @return the expense in a ResponseEntity
-     */
-    public ResponseEntity<Expense> addCreatedExpense(Expense expense) {
-        return ResponseEntity.ok(expenseRepo.save(expense));
-    }
+
 
 
     /**

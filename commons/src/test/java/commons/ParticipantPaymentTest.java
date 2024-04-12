@@ -20,6 +20,7 @@ class ParticipantPaymentTest {
     @Test
     public void checkConstructor(){
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
+        ParticipantPayment PP2 = new ParticipantPayment();
         assertEquals(PP1.getParticipant(), PARTICIPANT);
         assertEquals(PP1.getPaymentAmount(), 20.00f);
     }
@@ -28,6 +29,12 @@ class ParticipantPaymentTest {
     public void checkValueGetter(){
         ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
         assertEquals(PP1.getPaymentAmount(), 20.00);
+    }
+    @Test
+    public void checkIDGetter(){
+        ParticipantPayment PP1 = new ParticipantPayment(PARTICIPANT, 20.00);
+        PP1.setId(1212);
+        assertEquals(PP1.getId(), 1212);
     }
 
     @Test
@@ -88,6 +95,13 @@ class ParticipantPaymentTest {
         ParticipantPayment PP4 = new ParticipantPayment(null, 5.00);
         assertFalse(PP3.fullEquals(PP4));
         assertNotEquals(PP3.hashCode(), PP4.hashCode());
+    }
+    @Test
+    public void equalsTest(){
+        ParticipantPayment PP3 = new ParticipantPayment(PARTICIPANT_2, 5.00);
+        ParticipantPayment PP4 = new ParticipantPayment(null, 5.00);
+        assertTrue(PP3.fullEquals(PP3));
+        assertFalse(PP3.fullEquals(null));
     }
 
     @Test

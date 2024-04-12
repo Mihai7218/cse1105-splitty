@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.commands.ICommand;
 import client.utils.*;
 import com.google.inject.Inject;
 import commons.*;
@@ -43,7 +44,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
     @FXML
+    public Button undoButton;
+    @FXML
+    public Tooltip undoTooltip;
+    @FXML
     public Button showStatisticsButton;
+    @FXML
+    public Button addTransferButton;
     @FXML
     private Tab fromTab;
     @FXML
@@ -134,6 +141,27 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
+     * Adds a command to history
+     * @param i command to add
+     */
+    public void addToHistory(ICommand i){
+        mainCtrl.addToHistory(i);
+        if(!undoButton.isVisible()){
+            undoButton.setVisible(true);
+        }
+    }
+
+    /**
+     * Undoes the most recent command
+     */
+    public void undo(){
+        mainCtrl.undo();
+        if(mainCtrl.getHistory().isEmpty()){
+            undoButton.setVisible(false);
+        }
+    }
+
+    /**
      * Method that populates the lists related to expenses.
      */
     public void populateExpenses() {
@@ -185,15 +213,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             }
             participants.getItems().clear();
             participants.getItems(). addAll(serverparticipants);
-            for (Participant p : serverparticipants) {
-                if (!expenseparticipants.getItems().contains(p)) {
-                    expenseparticipants.getItems().add(p);
-                }
+            Participant set = expenseparticipants.getValue();
+            expenseparticipants.getItems().clear();
+            expenseparticipants.getItems().addAll(serverparticipants);
+            if (set != null && expenseparticipants.getItems().contains(set)) {
+                expenseparticipants.setValue(set);
             }
-            for (Participant p : expenseparticipants.getItems()) {
-                if (!serverparticipants.contains(p))
-                    expenseparticipants.getItems().remove(p);
-            }
+            filterViews();
             participants.refresh();
         }
     }
@@ -206,8 +232,15 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         settleDebts.setGraphic(new ImageView(new Image("icons/checkwhite.png")));
         settings.setGraphic(new ImageView(new Image("icons/settingswhite.png")));
         addExpenseButton.setGraphic(new ImageView(new Image("icons/plus.png")));
+        addTransferButton.setGraphic(new ImageView(new Image("icons/plus.png")));
         showStatisticsButton.setGraphic(new ImageView(new Image("icons/graph.png")));
         cancel.setGraphic(new ImageView(new Image("icons/cancelwhite.png")));
+        if(mainCtrl != null &&
+                mainCtrl.getHistory() != null &&
+                mainCtrl.getHistory().isEmpty()) undoButton.setVisible(false);
+        undoButton.setGraphic(new ImageView(new Image("icons/undo.png")));
+        undoButton.setStyle("-fx-background-color: none");
+
         Event event = mainCtrl.getEvent();
         if (event != null) {
             title.setText(event.getTitle());
@@ -245,6 +278,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
                             subscribeToParticipant(participant);
+                            mainCtrl.getDebtsCtrl().refresh();
                             populateParticipants();
                         }));
             if (tagSubscription == null)
@@ -272,10 +306,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     + participant.getId();
             var subscription = server.registerForMessages(dest, Participant.class,
                     part -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getParticipantsList().remove(part);
+                        mainCtrl.getEvent().getParticipantsList().remove(participant);
                         if (!"deleted".equals(part.getIban())) {
                             mainCtrl.getEvent().getParticipantsList().add(part);
                         }
+                        mainCtrl.getDebtsCtrl().refresh();
                         populateExpenses();
                         populateParticipants();
                     }));
@@ -360,6 +395,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void addParticipant() {
         mainCtrl.showParticipant();
+    }
+
+    /**
+     * Opens transfer scene to add a transfer to an event
+     */
+    public void addTransfer(){
+        mainCtrl.showTransfer();
     }
 
     /**
@@ -539,20 +581,103 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
-                    participants.getItems().remove(participant);
-                    participants.refresh();
+                if(!(result.isPresent() && result.get() == ButtonType.OK)) {
                     return;
-                }else{
-                    return;
+                } else {
+                    break;
                 }
             }
+        }
+        for (Expense expense : expenses) {
+            if (removeExpenseLogic(participant, expense)) return;
         }
         server.removeParticipant(mainCtrl.getEvent().getInviteCode(),participant);
         participants.getItems().remove(participant);
         expenseparticipants.getItems().remove(participant);
         participants.refresh();
+    }
 
+    /**
+     * Extracted method that deals with expenses whos payee got deleted as well as
+     * debts/transfers where the only participant left is the one who paid/received
+     * @param participant participant deleted
+     * @param expense expense being reviewed
+     * @return true if expense is removed, false if not
+     */
+    private boolean removeExpenseLogic(Participant participant, Expense expense) {
+        if (expense.getPayee().equals(participant)) {
+            if (tryRemoveExpense(expense)) return true;
+        } else if(!expense.getSplit().stream().filter(x -> x.getParticipant()
+                .equals(participant)).toList().isEmpty()) {
+            recalculateSplit(expense, participant);
+            try {
+                server.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
+            } catch (WebApplicationException e) {
+                var sub = expenseSubscriptionMap.get(expense);
+                if (sub != null)
+                    sub.notify();
+            }
+            if (expense.getSplit().stream().allMatch(x ->
+                    x.getParticipant().equals(expense.getPayee()))) {
+                if (tryRemoveExpense(expense)) return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * Extracted functionality that tries and catches removing an expense from server
+     * @param expense expense to remove
+     * @return true if successful, false if not
+     */
+    private boolean tryRemoveExpense(Expense expense) {
+        try {
+            server.removeExpense(mainCtrl.getEvent().getInviteCode(), expense.getId());
+        } catch (WebApplicationException e) {
+            if (mainCtrl.getOverviewCtrl() == null
+                    || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                return true;
+            var sub = expenseSubscriptionMap.get(expense);
+            if (sub != null)
+                sub.notify();
+        }
+        return false;
+    }
+
+    /**
+     * Recalculate expenses on deletion of participant.
+     * @param expense - the expense.
+     * @param participant - the deleted participant.
+     */
+    private void recalculateSplit(Expense expense, Participant participant) {
+        double amount = expense.getAmount();
+        int amountCents = (int) (amount*100);
+        List<Participant> participantsList = new ArrayList<>(expense.getSplit().stream()
+                .map(ParticipantPayment::getParticipant).toList());
+        participantsList.remove(participant);
+        expense.getSplit().clear();
+        int noParticipants = participantsList.size();
+
+        Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
+        double amtAdded = (double)(amountCents/noParticipants)/100.0;
+        //System.out.println(amtAdded);
+        int remainder = amountCents % noParticipants;
+        for (Participant p : participantsList) {
+            ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
+            expense.getSplit().add(newP);
+            participantSplits.put(p, newP);
+        }
+        Collections.shuffle(participantsList);
+        int counter = 0;
+        while(remainder > 0){
+            Participant subject = participantsList.get(counter);
+            double initAmt = participantSplits.get(subject).getPaymentAmount();
+            participantSplits.get(participantsList.get(counter)).setPaymentAmount(initAmt + 0.01);
+            remainder--;
+            counter++;
+            //System.out.println(subject.toString() + " got the extra cent!");
+        }
     }
 
     /**
@@ -564,6 +689,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
         for (Expense e : expenses) {
+            if(e.getDescription().equals("transfer") || e.getDescription().equals("settlement")){
+                continue;
+            }
             String currency = e.getCurrency();
             Date date = e.getDate();
             String base = getCurrency();
@@ -678,7 +806,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it goes to settle debts.
      *  - if ESCAPE is pressed, then it cancels and returns to the startscreen.
      *  - if Ctrl + p is pressed, then it opens the add participant scene.
      *  - if Ctrl + e is pressed, then it opens the add expense scene.
@@ -689,9 +816,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                settleDebts();
-                break;
             case ESCAPE:
                 startMenu();
                 break;
@@ -720,6 +844,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     settings();
                     break;
                 }
+            case Z:
+                undo();
+                break;
             default:
                 break;
         }

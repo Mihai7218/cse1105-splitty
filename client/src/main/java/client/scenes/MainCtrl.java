@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.commands.ICommand;
 import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import com.google.inject.Inject;
@@ -32,6 +33,7 @@ import javafx.util.Pair;
 
 import java.io.File;
 import java.util.Optional;
+import java.util.Stack;
 
 public class MainCtrl {
 
@@ -75,9 +77,18 @@ public class MainCtrl {
     private DebtsCtrl debtsCtrl;
     private Scene debts;
 
+    private AddTransferCtrl transferCtrl;
+    private Scene transfer;
+
+    private EditTransferCtrl editTransferCtrl;
+    private Scene editTransfer;
+
     private FileChooser fileChooser = new FileChooser();
 
     private Event event;
+
+
+    Stack<ICommand> history;
 
     /**
      * Constructor for the MainCtrl
@@ -104,6 +115,7 @@ public class MainCtrl {
      * @param editTag         editTag controller and scene
      * @param statistics      statistics scene
      * @param connectToServer connecting to server scene
+     * @param transfer        transfer controller and scene
      */
     public void initialize(Stage primaryStage,
                            Pair<StartScreenCtrl, Parent> startScreen,
@@ -118,7 +130,9 @@ public class MainCtrl {
                            Pair<ConnectToServerCtrl, Parent> connectToServer,
                            Pair<DebtsCtrl, Parent> debts,
                            Pair<ManageTagsCtrl, Parent> manageTags,
-                           Pair<EditTagCtrl, Parent> editTag) {
+                           Pair<EditTagCtrl, Parent> editTag,
+                           Pair<AddTransferCtrl, Parent> transfer,
+                           Pair<EditTransferCtrl, Parent> editTransfer){
         this.primaryStage = primaryStage;
 
         this.startScreenCtrl = startScreen.getKey();
@@ -160,8 +174,52 @@ public class MainCtrl {
         this.debtsCtrl = debts.getKey();
         this.debts = new Scene(debts.getValue());
 
+        history = new Stack<>();
+
+        this.transferCtrl = transfer.getKey();
+        this.transfer = new Scene(transfer.getValue());
+
+        this.editTransferCtrl = editTransfer.getKey();
+        this.editTransfer = new Scene(editTransfer.getValue());
+
+
         showConnectToServer();
         primaryStage.show();
+    }
+
+    /**
+     * Displays the edit transfer scene
+     */
+    public void showEditTransfer(){
+        primaryStage.titleProperty().bind(languageManager.bind("transfer.sceneTitle"));
+        try {
+            editTransfer.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(editTransfer);
+        if (editTransferCtrl != null) editTransferCtrl.refresh();
+        if (editTransfer != null) editTransfer.setOnKeyPressed
+            (e -> editTransferCtrl.keyPressed(e));
+
+    }
+
+    /**
+     * Displays the transfer scene
+     */
+    public void showTransfer(){
+        primaryStage.titleProperty().bind(languageManager.bind("transfer.sceneTitle"));
+        try {
+            transfer.getStylesheets().add(getClass()
+                    .getResource("stylesheet.css").toExternalForm());
+        }catch(NullPointerException e){
+            System.out.println("exception caught: Null Pointer Exception");
+        }
+        primaryStage.setScene(transfer);
+        if (transferCtrl != null) transferCtrl.refresh();
+        if (transferCtrl != null) transfer.setOnKeyPressed
+                (e -> transferCtrl.keyPressed(e));
     }
 
     /**
@@ -260,6 +318,38 @@ public class MainCtrl {
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
         if (editExpense != null) editExpense.setOnKeyPressed(e -> editExpenseCtrl.keyPressed(e));
 
+    }
+
+    /**
+     * Getter for edit transfer controller
+     * @return edit transfer controller
+     */
+    public EditTransferCtrl getEditTransferCtrl() {
+        return editTransferCtrl;
+    }
+
+    /**
+     * Getter for edit transfer scene
+     * @return edit transfer scene
+     */
+    public Scene getEditTransfer() {
+        return editTransfer;
+    }
+
+    /**
+     * Getter for transfer controller
+     * @return transfer controller
+     */
+    public AddTransferCtrl getTransferCtrl() {
+        return transferCtrl;
+    }
+
+    /**
+     * Getter for transfer scene
+     * @return transfer scene
+     */
+    public Scene getTransfer() {
+        return transfer;
     }
 
     /**
@@ -376,6 +466,34 @@ public class MainCtrl {
         primaryStage.setScene(startScreen);
         if (startScreen != null) startScreen
                 .setOnKeyPressed(e -> startScreenCtrl.keyPressed(e));
+        history.clear();
+    }
+
+
+    /**
+     * Adds a command to application history
+     * @param i command to add
+     */
+    public void addToHistory(ICommand i){
+        history.push(i);
+    }
+
+    /**
+     * Getter for the history stack in main
+     * @return history stack
+     */
+    public Stack<ICommand> getHistory() {
+        return history;
+    }
+
+    /**
+     * Undoes the most recent change
+     */
+    public void undo(){
+        if(!history.isEmpty()){
+            ICommand prev = history.pop();
+            editExpenseCtrl.undo(prev);
+        }
     }
 
     /**

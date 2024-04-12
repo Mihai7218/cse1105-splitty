@@ -7,6 +7,7 @@ import commons.Expense;
 import commons.Participant;
 import commons.ParticipantPayment;
 import jakarta.mail.MessagingException;
+import jakarta.ws.rs.WebApplicationException;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -20,6 +21,7 @@ import javafx.stage.Modality;
 import javafx.util.Duration;
 
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.*;
 
 public class DebtsCtrl implements Initializable, NotificationSender {
@@ -37,6 +39,8 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     private Accordion menu;
     @FXML
     private Button back;
+//    @FXML
+//    private Label noDebts;
 
     /**
      * @param mainCtrl
@@ -103,6 +107,11 @@ public class DebtsCtrl implements Initializable, NotificationSender {
      * loads the data for the scene
      */
     public void refresh() {
+        String expanded = null;
+        var expandedPane = menu.getExpandedPane();
+        if (expandedPane != null) {
+            expanded = expandedPane.getText();
+        }
         menu.getPanes().clear();
         String host = config.getProperty("mail.host");
         String port = config.getProperty("mail.port");
@@ -113,6 +122,12 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                 && user != null && !user.isEmpty()
                 && email != null && !email.isEmpty();
         setTitles(mainCtrl.getEvent());
+        for (var pane : menu.getPanes()) {
+            if (expanded != null && pane.getText().equals(expanded)) {
+                menu.setExpandedPane(pane);
+                break;
+            }
+        }
     }
 
     /**
@@ -177,10 +192,16 @@ public class DebtsCtrl implements Initializable, NotificationSender {
             Label info = new Label();
             Button mark = new Button();
             Button remind = new Button();
+            mark.setVisible(true);
+            mark.textProperty().bind(languageManager.bind("debts.send"));
+            mark.setOnAction(x ->
+            {
+                createExpense(debt);
+                mark.textProperty().bind(languageManager.bind("debts.check"));
+            });
             if (debt.getCreditor().getBic().equals("\u2714") ||
                     debt.getCreditor().getIban().equals("")) {
                 info.textProperty().bind(languageManager.bind("debts.unavailable"));
-                mark.setVisible(false);
             } else {
                 //info.textProperty().bind(languageManager.bind("debts.available"));
                 String data = debt.getCreditor().getName() + "\nIBAN: " +
@@ -188,11 +209,7 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                         debt.getCreditor().getBic();
 
                 info.setText(data);
-                mark.textProperty().bind(languageManager.bind("debts.send"));
-                mark.setOnAction(x ->
-                {
-                    mark.textProperty().bind(languageManager.bind("debts.check"));
-                });
+
             }
             remind.textProperty().bind(languageManager.bind("debts.remind"));
             if (!canRemind) {
@@ -259,6 +276,46 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                     AnchorPane.getLeftAnchor(info) + info.getPrefWidth() + 200.0);
             tp.setContent(anchorPane);
         }
+    }
+
+    /**
+     * Creates the debt settlement expense and adds
+     * @param debt the debt to settle
+     */
+    public void createExpense(Debt debt) {
+        ParticipantPayment from = new ParticipantPayment(debt.getDebtor(), debt.getSum());
+        ParticipantPayment to = new ParticipantPayment(debt.getCreditor(), debt.getSum());
+        List<ParticipantPayment> split = List.of(from, to);
+        Expense settlement = new Expense(debt.getSum(), getCurrency(), "Transfer", "settlement",
+                java.sql.Date.valueOf(LocalDate.now()),
+                split, null, debt.getDebtor());
+        try{
+            serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), settlement);
+        }catch (WebApplicationException e) {
+            switch (e.getResponse().getStatus()) {
+                case 400 -> {
+                    throwAlert("addExpense.badReqHeader", "addExpense.badReqBody");
+                }
+                case 404 -> {
+                    throwAlert("addExpense.notFoundHeader", "addExpense.notFoundBody");
+                }
+            }
+        }
+//        if(menu.getPanes().isEmpty()){
+//            noDebts.setVisible(true);
+//        }
+    }
+
+    /**
+     * Method that throws an alert.
+     * @param header - property associated with the header.
+     * @param body - property associated with the body.
+     */
+    protected void throwAlert(String header, String body) {
+        alert.titleProperty().bind(languageManager.bind("commons.warning"));
+        alert.headerTextProperty().bind(languageManager.bind(header));
+        alert.contentTextProperty().bind(languageManager.bind(body));
+        alert.showAndWait();
     }
 
     /**

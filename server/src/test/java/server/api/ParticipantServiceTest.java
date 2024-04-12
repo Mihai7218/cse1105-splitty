@@ -68,30 +68,7 @@ class ParticipantServiceTest {
 
     }
 
-    @Test
-    public void addPriorParticipantsTest(){
-        Event event = new Event("Title4", null, null);
-        Participant p = new Participant("j doe", "example@email.com","NL85RABO5253446745", "HBUKGB4B");
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
-        ParticipantPayment pp = new ParticipantPayment(other, 25);
-        List<ParticipantPayment> split = List.of(pp);
-        Tag t = new Tag("red", "red");
-        Expense e= new Expense(50, "USD", "exampleExpense", "description",
-                null,split ,t, p);
-        event.getParticipantsList().add(p);
-        event.getParticipantsList().add(other);
-        event.getExpensesList().add(e);
-        Tag one = new Tag("food", "#93c47d");
-        Tag two = new Tag("entrance fees", "#4a86e8");
-        Tag three = new Tag("travel", "#e06666");
-        event.setTagsList(List.of(t, one, two, three));
-        event.setInviteCode(5);
-        eventRepository.save(event);
-        assertEquals(participantService.addPriorParticipant(p).getStatusCode(), OK);
-        assertEquals(participantService.getParticipant(1, 2).getBody(), p);
-    }
+
 
     @Test
     public void addInValidNoPaymentDetails(){

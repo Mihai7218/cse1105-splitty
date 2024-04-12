@@ -19,6 +19,7 @@ import org.testfx.framework.junit5.Start;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -90,6 +91,7 @@ class MainCtrlTest {
      */
     @Test
     void showStartMenu() {
+        sut.history=new Stack<>();
         sut.showStartMenu();
         assertEquals("startScreen.windowTitle", titleKey);
         assertEquals("Test", sb.get());
@@ -149,7 +151,7 @@ class MainCtrlTest {
     //TODO: showAddExpense, showConnectToServer, showExpenseConfirmation, showParticipantConfirmation
     //TODO: showExpenseConfirmation, showParticipantConfirmation
     //TODO: showInviteConfirmation, showEditConfirmation
-    //TODO: pickLocation, getSettingsCtrl, getSettings, getPassword
+    //TODO: pickLocation, getSettingsCtrl, getSettings,
 
     @Test
     void showInvitation(){
@@ -228,8 +230,10 @@ class MainCtrlTest {
         Parent manageTags = spy(Parent.class);
         EditTagCtrl editTagCtrl = mock(EditTagCtrl.class);
         Parent editTag = spy(Parent.class);
-
-
+        Parent transfer = spy(Parent.class);
+        AddTransferCtrl transferCtrl = mock(AddTransferCtrl.class);
+        EditTransferCtrl editTransferCtrl = mock(EditTransferCtrl.class);
+        Parent editTransfer = spy(Parent.class);
         sut.initialize(stage,
                 new Pair<>(startScreenCtrl, startScreen),
                 new Pair<>(participantCtrl, participant),
@@ -243,7 +247,9 @@ class MainCtrlTest {
                 new Pair<>(connectToServerCtrl, connectToServer),
                 new Pair<>(debtsCtrl, debts),
                 new Pair<>(manageTagsCtrl, manageTags),
-                new Pair<>(editTagCtrl, editTag));
+                new Pair<>(editTagCtrl, editTag),
+                new Pair<>(transferCtrl, transfer),
+                new Pair<>(editTransferCtrl,editTransfer));
         assertEquals(stage, sut.getPrimaryStage());
 
         //Test if the controllers were initialised

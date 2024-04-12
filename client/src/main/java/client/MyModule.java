@@ -43,6 +43,8 @@ public class MyModule implements Module {
         binder.bind(ParticipantCtrl.class).in(Scopes.SINGLETON);
         binder.bind(OverviewCtrl.class).in(Scopes.SINGLETON);
         binder.bind(EditParticipantCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(EditTransferCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(AddTransferCtrl.class).in(Scopes.SINGLETON);
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
