@@ -782,4 +782,12 @@ public class MainCtrl {
     void setStartScreen(Scene startScreen) {
         this.startScreen = startScreen;
     }
+
+    /**
+     *
+     * @param overviewCtrl
+     */
+    void setOverviewCtrl(OverviewCtrl overviewCtrl) {
+        this.overviewCtrl = overviewCtrl;
+    }
 }

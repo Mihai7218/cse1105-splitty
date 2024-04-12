@@ -66,18 +66,19 @@ class OverviewCtrlTest {
     Button undoButton;
     Label title;
     Label code;
+    Alert alert;
     Participant bob = new Participant("Bob", null, null, null);
     Participant mary = new Participant("Mary", null, null, null);
     Participant tom = new Participant("Tom", null, null, null);
-    Expense expense1 = new Expense(10.0, "EUR", "title", "desc", java.sql.Date.valueOf("2024-01-01"), List.of(
+    Expense expense1 = new Expense(10.0, "EUR", "title", "desc", java.sql.Date.valueOf("2024-01-01"), new ArrayList<>(List.of(
             new ParticipantPayment(bob, 5.0),
             new ParticipantPayment(mary, 5.0)
-    ), null, bob);
-    Expense expense2 = new Expense(15.0, "EUR", "title2", "desc", java.sql.Date.valueOf("2023-01-01"), List.of(
+    )), null, bob);
+    Expense expense2 = new Expense(15.0, "EUR", "title2", "desc", java.sql.Date.valueOf("2023-01-01"), new ArrayList<>(List.of(
             new ParticipantPayment(bob, 5.0),
             new ParticipantPayment(mary, 5.0),
             new ParticipantPayment(tom, 5.0)
-    ), null, mary);
+    )), null, mary);
 
     @Start
     void setup(Stage ignored) {
@@ -92,7 +93,8 @@ class OverviewCtrlTest {
         server = mock(ServerUtils.class);
         mainCtrl = new MainCtrl(config, languageManager);
         currencyConverter = mock(CurrencyConverter.class);
-        sut = new OverviewCtrl(languageManager, config, server, mainCtrl, currencyConverter);
+        alert = mock(Alert.class);
+        sut = new OverviewCtrl(languageManager, config, server, mainCtrl, currencyConverter, alert);
         all = new ListView<>();
         sut.setAll(all);
         from = new ListView<>();
@@ -654,7 +656,7 @@ class OverviewCtrlTest {
     @Test
     void addParticipant() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
-        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
         sut2.addParticipant();
         verify(mainCtrl2).showParticipant();
     }
@@ -662,7 +664,7 @@ class OverviewCtrlTest {
     @Test
     void addTransfer() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
-        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
         sut2.addTransfer();
         verify(mainCtrl2).showTransfer();
     }
@@ -670,7 +672,7 @@ class OverviewCtrlTest {
     @Test
     void addExpense() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
-        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
         sut2.addExpense();
         verify(mainCtrl2).showAddExpense();
     }
@@ -701,30 +703,95 @@ class OverviewCtrlTest {
 
     @Test
     void sendInvites() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        sut2.sendInvites();
+        verify(mainCtrl2).showInvitation();
     }
 
     @Test
     void statistics() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        sut2.statistics();
+        verify(mainCtrl2).showStatistics();
     }
 
     @Test
     void settleDebts() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        sut2.settleDebts();
+        verify(mainCtrl2).showDebts();
     }
 
     @Test
     void changeTitle() {
-    }
+        sut.changeTitle();
 
-    @Test
-    void initialize() {
-    }
-
-    @Test
-    void filterViews() {
+        assertEquals("", title.getText());
     }
 
     @Test
     void removeParticipant() {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        when(server.getEvent(1)).thenReturn(event);
+        when(server.getAllParticipants(1)).thenReturn(event.getParticipantsList());
+        when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
+        when(alert.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
+        StringProperty sp = new SimpleStringProperty();
+        when(alert.contentTextProperty()).thenReturn(sp);
+        when(alert.titleProperty()).thenReturn(sp);
+        when(alert.headerTextProperty()).thenReturn(sp);
+        AtomicReference<Expense> modified = new AtomicReference<>();
+        when(server.updateExpense(anyInt(), any())).then(mock -> {
+            modified.set(mock.getArgument(1));
+            return null;
+        });
+        sut.populateExpenses();
+
+        sut.removeParticipant(bob);
+
+        verify(alert).setAlertType(Alert.AlertType.CONFIRMATION);
+        verify(alert).setAlertType(Alert.AlertType.WARNING);
+        verify(server).updateExpense(1, expense2);
+        verify(server).removeExpense(1, 1);
+        assertEquals(2, modified.get().getSplit().size());
+        assertEquals(7.5, modified.get().getSplit().getFirst().getPaymentAmount());
+    }
+
+    @Test
+    void removeParticipantWAExc() {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        when(server.getEvent(1)).thenReturn(event);
+        when(server.getAllParticipants(1)).thenReturn(event.getParticipantsList());
+        when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
+        when(alert.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
+        StringProperty sp = new SimpleStringProperty();
+        when(alert.contentTextProperty()).thenReturn(sp);
+        when(alert.titleProperty()).thenReturn(sp);
+        when(alert.headerTextProperty()).thenReturn(sp);
+        AtomicReference<Expense> modified = new AtomicReference<>();
+        when(server.updateExpense(anyInt(), any())).then(mock -> {
+            modified.set(mock.getArgument(1));
+            throw new WebApplicationException();
+        });
+        doAnswer(mock -> {
+            throw new WebApplicationException();
+        }).when(server).removeExpense(anyInt(), anyLong());
+        sut.populateExpenses();
+        mainCtrl.setOverviewCtrl(sut);
+
+        sut.removeParticipant(bob);
+
+        verify(alert).setAlertType(Alert.AlertType.CONFIRMATION);
+        verify(alert).setAlertType(Alert.AlertType.WARNING);
+        verify(server).updateExpense(1, expense2);
+        verify(server).removeExpense(1, 1);
+        assertEquals(2, modified.get().getSplit().size());
+        assertEquals(7.5, modified.get().getSplit().getFirst().getPaymentAmount());
     }
 
     @Test

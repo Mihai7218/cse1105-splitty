@@ -43,6 +43,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private final LanguageManager languageManager;
     private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
+    private final Alert alert;
     @FXML
     public Button undoButton;
     @FXML
@@ -124,12 +125,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         ConfigInterface config,
                         ServerUtils server,
                         MainCtrl mainCtrl,
-                        CurrencyConverter currencyConverter) {
+                        CurrencyConverter currencyConverter,
+                        Alert alert) {
         this.languageManager = languageManager;
         this.config = config;
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.currencyConverter = currencyConverter;
+        this.alert = alert;
     }
 
     /**
@@ -587,12 +590,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     .filter(item -> item.getParticipant()
                             .equals(participant)).toList().isEmpty()
                     || e.getPayee().equals(participant)) {
-                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
-                confirmation.contentTextProperty().bind(
+                alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                alert.contentTextProperty().bind(
                         languageManager.bind("overview.removeParticipant"));
-                confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
-                confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
-                Optional<ButtonType> result = confirmation.showAndWait();
+                alert.titleProperty().bind(languageManager.bind("commons.warning"));
+                alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
+                Optional<ButtonType> result = alert.showAndWait();
+                alert.setAlertType(Alert.AlertType.WARNING);
                 if (!(result.isPresent() && result.get() == ButtonType.OK)) {
                     return;
                 } else {
