@@ -10,6 +10,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 
@@ -153,6 +154,8 @@ public class InvitationCtrl implements Initializable, NotificationSender{
                     new Participant(email, email, null, null));
         }
         mainCtrl.getOverviewCtrl().populateParticipants();
+        if(mailSpace!=null) mailSpace.setText("");
+        mainCtrl.showInviteConfirmation();
         mainCtrl.showOverview();
     }
 
@@ -181,5 +184,43 @@ public class InvitationCtrl implements Initializable, NotificationSender{
     @Override
     public LanguageManager languageManagerProperty() {
         return languageManager;
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then send the invites.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                sendInvites();
+                break;
+            case ESCAPE:
+                goBack();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    goBack();
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }

@@ -18,6 +18,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -290,7 +291,6 @@ public class StatisticsCtrl implements Initializable {
         pieChart.getData().clear();
         List<Pair<Tag, Double>> legendList = new ArrayList<>();
         List<Pair<Tag, List<Expense>>> stats = pairListMaker();
-        System.out.println(stats);
 
         double total = 0;
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
@@ -414,6 +414,40 @@ public class StatisticsCtrl implements Initializable {
             //item.setTextFill(Color.web(data.getKey().getColor()));
             HBox test = new HBox(rectangle,item);
             ownLegend.getChildren().add(test);
+        }
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + m is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                backToOverview();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    backToOverview();
+                    break;
+                }
+            default:
+                break;
         }
     }
 

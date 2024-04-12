@@ -111,7 +111,7 @@ public class ExpenseListCell extends ListCell<Expense> {
         vBox.setSpacing(5);
         details.setHgap(3);
         details.setOrientation(Orientation.HORIZONTAL);
-        details.setPrefWidth(200);
+        details.setPrefWidth(350);
         payeeName.setStyle("-fx-font-weight: 700;");
         expenseName.setStyle("-fx-font-weight: 700;");
         price.setStyle("-fx-font-weight: 700;");

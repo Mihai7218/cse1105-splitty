@@ -27,6 +27,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.util.StringConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
@@ -89,6 +90,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private StompSession.Subscription tagSubscription;
     private StompSession.Subscription participantSubscription;
 
+    private Map<Participant, StompSession.Subscription> participantSubscriptionMap;
+
     @FXML
     private Label sumExpense;
     @FXML
@@ -138,8 +141,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 && mainCtrl.getEvent().getExpensesList() != null) {
             all.getItems().clear();
             List<Expense> expenses = new ArrayList<>();
+            List<Participant> participantsList = new ArrayList<>();
             try {
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
+                participantsList = server.getEvent(mainCtrl.getEvent().getInviteCode())
+                        .getParticipantsList();
             } catch (WebApplicationException e) {
                 e.printStackTrace();
             }
@@ -148,6 +154,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     subscribeToExpense(expense);
                 if (!all.getItems().contains(expense))
                     all.getItems().add(expense);
+            }
+            for (Participant participant : participantsList) {
+                if (!participantSubscriptionMap.containsKey(participant))
+                    subscribeToParticipant(participant);
+                if (!participants.getItems().contains(participant))
+                    participants.getItems().add(participant);
             }
             mainCtrl.getEvent().setExpensesList(expenses);
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
@@ -178,10 +190,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     expenseparticipants.getItems().add(p);
                 }
             }
+            List<Participant> removed = new ArrayList<>();
             for (Participant p : expenseparticipants.getItems()) {
-                if (!serverparticipants.contains(p))
-                    expenseparticipants.getItems().remove(p);
+                if (!serverparticipants.contains(p)){
+                    removed.add(p);
+                }
+//                    expenseparticipants.getItems().remove(p);
             }
+            expenseparticipants.getItems().removeAll(removed);
             participants.refresh();
         }
     }
@@ -229,11 +245,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 participantSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent()
                                         .getInviteCode() + "/participants", Participant.class,
-                        participant -> {
+                        participant -> Platform.runLater(() -> {
                             participants.getItems().add(participant);
                             mainCtrl.getEvent().getParticipantsList().add(participant);
+                            subscribeToParticipant(participant);
+                            mainCtrl.getDebtsCtrl().refresh();
                             populateParticipants();
-                        });
+                        }));
             if (tagSubscription == null)
                 tagSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
@@ -246,6 +264,28 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 if (!tagSubscriptionMap.containsKey(tag))
                     subscribeToTag(tag);
             }
+        }
+    }
+
+    /**
+     * @param participant the participant to subscribe to
+     */
+    private void subscribeToParticipant(Participant participant) {
+        if (!participantSubscriptionMap.containsKey(participant)) {
+            String dest = "/topic/events/" +
+                    mainCtrl.getEvent().getInviteCode() + "/participants/"
+                    + participant.getId();
+            var subscription = server.registerForMessages(dest, Participant.class,
+                    part -> Platform.runLater(() -> {
+                        mainCtrl.getEvent().getParticipantsList().remove(participant);
+                        if (!"deleted".equals(part.getIban())) {
+                            mainCtrl.getEvent().getParticipantsList().add(part);
+                        }
+                        mainCtrl.getDebtsCtrl().refresh();
+                        populateExpenses();
+                        populateParticipants();
+                    }));
+            participantSubscriptionMap.put(participant, subscription);
         }
     }
 
@@ -355,6 +395,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
             tagSubscriptionMap = new HashMap<>();
         }
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
+        if (participantSubscriptionMap != null) {
+            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap = new HashMap<>();
+        }
         clearFields();
         mainCtrl.showStartMenu();
     }
@@ -453,6 +501,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         });
         expenseSubscriptionMap = new HashMap<>();
         tagSubscriptionMap = new HashMap<>();
+        participantSubscriptionMap = new HashMap<>();
         refresh();
     }
 
@@ -496,12 +545,34 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
                 confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
                 Optional<ButtonType> result = confirmation.showAndWait();
-                if(result.isPresent() && result.get() == ButtonType.OK) {
-                    participants.getItems().remove(participant);
-                    participants.refresh();
+                if(!(result.isPresent() && result.get() == ButtonType.OK)) {
                     return;
-                }else{
-                    return;
+                } else {
+                    break;
+                }
+            }
+        }
+        for (Expense expense : expenses) {
+            if (expense.getPayee().equals(participant)) {
+                try {
+                    server.removeExpense(mainCtrl.getEvent().getInviteCode(), expense.getId());
+                } catch (WebApplicationException e) {
+                    if (mainCtrl.getOverviewCtrl() == null
+                            || mainCtrl.getOverviewCtrl().getExpenseSubscriptionMap() == null)
+                        return;
+                    var sub = expenseSubscriptionMap.get(expense);
+                    if (sub != null)
+                        sub.notify();
+                }
+            } else if(!expense.getSplit().stream().filter(x -> x.getParticipant()
+                    .equals(participant)).toList().isEmpty()) {
+                recalculateSplit(expense, participant);
+                try {
+                    server.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
+                } catch (WebApplicationException e) {
+                    var sub = expenseSubscriptionMap.get(expense);
+                    if (sub != null)
+                        sub.notify();
                 }
             }
         }
@@ -509,7 +580,41 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         participants.getItems().remove(participant);
         expenseparticipants.getItems().remove(participant);
         participants.refresh();
+    }
 
+    /**
+     * Recalculate expenses on deletion of participant.
+     * @param expense - the expense.
+     * @param participant - the deleted participant.
+     */
+    private void recalculateSplit(Expense expense, Participant participant) {
+        double amount = expense.getAmount();
+        int amountCents = (int) (amount*100);
+        List<Participant> participantsList = new ArrayList<>(expense.getSplit().stream()
+                .map(ParticipantPayment::getParticipant).toList());
+        participantsList.remove(participant);
+        expense.getSplit().clear();
+        int noParticipants = participantsList.size();
+
+        Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
+        double amtAdded = (double)(amountCents/noParticipants)/100.0;
+        //System.out.println(amtAdded);
+        int remainder = amountCents % noParticipants;
+        for (Participant p : participantsList) {
+            ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
+            expense.getSplit().add(newP);
+            participantSplits.put(p, newP);
+        }
+        Collections.shuffle(participantsList);
+        int counter = 0;
+        while(remainder > 0){
+            Participant subject = participantsList.get(counter);
+            double initAmt = participantSplits.get(subject).getPaymentAmount();
+            participantSplits.get(participantsList.get(counter)).setPaymentAmount(initAmt + 0.01);
+            remainder--;
+            counter++;
+            //System.out.println(subject.toString() + " got the extra cent!");
+        }
     }
 
     /**
@@ -631,5 +736,54 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public Map<Expense, StompSession.Subscription> getExpenseSubscriptionMap() {
         return expenseSubscriptionMap;
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it goes to settle debts.
+     *  - if ESCAPE is pressed, then it cancels and returns to the startscreen.
+     *  - if Ctrl + p is pressed, then it opens the add participant scene.
+     *  - if Ctrl + e is pressed, then it opens the add expense scene.
+     *  - if Ctrl + s is pressed, then it opens the statistics.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + t is pressed, then it opens the settings.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                settleDebts();
+                break;
+            case ESCAPE:
+                startMenu();
+                break;
+            case E:
+                if(e.isControlDown()){
+                    addExpense();
+                    break;
+                }
+            case P:
+                if(e.isControlDown()){
+                    addParticipant();
+                    break;
+                }
+            case S:
+                if(e.isControlDown()){
+                    statistics();
+                    break;
+                }
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case T:
+                if(e.isControlDown()){
+                    settings();
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }

@@ -42,9 +42,6 @@ public class MainCtrl {
 
     private final ConfigInterface config;
 
-    private AddQuoteCtrl addCtrl;
-    private Scene add;
-
     private StartScreenCtrl startScreenCtrl;
     private Scene startScreen;
 
@@ -109,7 +106,6 @@ public class MainCtrl {
      * @param connectToServer connecting to server scene
      */
     public void initialize(Stage primaryStage,
-                           Pair<AddQuoteCtrl, Parent> add,
                            Pair<StartScreenCtrl, Parent> startScreen,
                            Pair<ParticipantCtrl, Parent> participant,
                            Pair<OverviewCtrl, Parent> overview,
@@ -124,9 +120,6 @@ public class MainCtrl {
                            Pair<ManageTagsCtrl, Parent> manageTags,
                            Pair<EditTagCtrl, Parent> editTag) {
         this.primaryStage = primaryStage;
-
-        this.addCtrl = add.getKey();
-        this.add = new Scene(add.getValue());
 
         this.startScreenCtrl = startScreen.getKey();
         this.startScreen = new Scene(startScreen.getValue());
@@ -199,6 +192,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(invitation);
         if (invitationCtrl != null) invitationCtrl.refresh();
+        if (invitation != null) invitation.setOnKeyPressed(e -> invitationCtrl.keyPressed(e));
+
     }
     /**
      * shows scene for statistics
@@ -213,6 +208,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(statistics);
         if (statisticsCtrl != null) statisticsCtrl.setup();
+        if (statistics != null) statistics.setOnKeyPressed(e -> statisticsCtrl.keyPressed(e));
+
     }
 
     /**
@@ -243,6 +240,9 @@ public class MainCtrl {
         }
         primaryStage.setScene(editTag);
         if (editTagCtrl != null) editTagCtrl.refresh();
+        if (statisticsCtrl != null) statisticsCtrl.refresh();
+        if (statistics != null) statistics.setOnKeyPressed(e -> statisticsCtrl.keyPressed(e));
+
     }
 
     /**
@@ -258,6 +258,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(editExpense);
         if(editExpenseCtrl!=null) editExpenseCtrl.refresh();
+        if (editExpense != null) editExpense.setOnKeyPressed(e -> editExpenseCtrl.keyPressed(e));
+
     }
 
     /**
@@ -311,6 +313,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(addExpense);
         addExpenseCtrl.refresh();
+        if (addExpense != null) addExpense.setOnKeyPressed(e -> addExpenseCtrl.keyPressed(e));
+
     }
 
     /**
@@ -326,6 +330,7 @@ public class MainCtrl {
         }
         primaryStage.setScene(overview);
         if (overviewCtrl != null) overviewCtrl.refresh();
+        if (overview != null) overview.setOnKeyPressed(e -> overviewCtrl.keyPressed(e));
     }
 
     /**
@@ -350,6 +355,13 @@ public class MainCtrl {
     }
 
     /**
+     * calls the method to display a message that invites were sent successfully
+     */
+    public void showInviteConfirmation(){
+        overviewCtrl.showNotification("overview.confirmInvite");
+    }
+
+    /**
      * Shows the start menu scene.
      */
     public void showStartMenu() {
@@ -362,15 +374,8 @@ public class MainCtrl {
         }
         if (startScreenCtrl != null) startScreenCtrl.refresh();
         primaryStage.setScene(startScreen);
-    }
-
-    /**
-     * Shows the add quote scene.
-     */
-    public void showAdd() {
-        primaryStage.setTitle("Quotes: Adding Quote");
-        primaryStage.setScene(add);
-        if (add != null) add.setOnKeyPressed(e -> addCtrl.keyPressed(e));
+        if (startScreen != null) startScreen
+                .setOnKeyPressed(e -> startScreenCtrl.keyPressed(e));
     }
 
     /**
@@ -385,6 +390,7 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(participant);
+        if (participant != null) participant.setOnKeyPressed(e -> participantCtrl.keyPressed(e));
     }
 
     /**
@@ -400,6 +406,9 @@ public class MainCtrl {
         }
         primaryStage.setScene(editparticipant);
         if (overviewCtrl != null) editparticipantCtrl.refresh();
+        if (editparticipant != null) editparticipant
+                .setOnKeyPressed(e -> editparticipantCtrl.keyPressed(e));
+
     }
 
     /**
@@ -417,6 +426,9 @@ public class MainCtrl {
             System.out.println("exception caught: Null Pointer Exception");
         }
         primaryStage.setScene(connectToServer);
+        if (connectToServer != null) connectToServer
+                .setOnKeyPressed(e -> connectCtrl.keyPressed(e));
+
     }
 
     /**
@@ -432,6 +444,8 @@ public class MainCtrl {
         }
         primaryStage.setScene(settings);
         if (settingsCtrl != null) settingsCtrl.refresh();
+        if (settings != null) settings.setOnKeyPressed(e -> settingsCtrl.keyPressed(e));
+
     }
 
     /**
@@ -488,25 +502,6 @@ public class MainCtrl {
     public Scene getEditparticipant() {
         return editparticipant;
     }
-
-    /**
-     * Getter for the add quote controller.
-     * Package-access getter for testing purposes.
-     * @return - add quote controller.
-     */
-    AddQuoteCtrl getAddCtrl() {
-        return addCtrl;
-    }
-
-    /**
-     * Getter for the add quote scene.
-     * Package-access getter for testing purposes.
-     * @return - add quote scene.
-     */
-    Scene getAdd() {
-        return add;
-    }
-
 
 
     /**

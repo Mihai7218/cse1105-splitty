@@ -14,6 +14,7 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
 import javafx.util.Duration;
@@ -102,6 +103,11 @@ public class DebtsCtrl implements Initializable, NotificationSender {
      * loads the data for the scene
      */
     public void refresh() {
+        String expanded = null;
+        var expandedPane = menu.getExpandedPane();
+        if (expandedPane != null) {
+            expanded = expandedPane.getText();
+        }
         menu.getPanes().clear();
         String host = config.getProperty("mail.host");
         String port = config.getProperty("mail.port");
@@ -112,6 +118,12 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                 && user != null && !user.isEmpty()
                 && email != null && !email.isEmpty();
         setTitles(mainCtrl.getEvent());
+        for (var pane : menu.getPanes()) {
+            if (expanded != null && pane.getText().equals(expanded)) {
+                menu.setExpandedPane(pane);
+                break;
+            }
+        }
     }
 
     /**
@@ -327,5 +339,46 @@ public class DebtsCtrl implements Initializable, NotificationSender {
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        mainCtrl.showStartMenu();
+    }
+
+    /**
+     * Back to the overview of the expenses of the Event
+     */
+    public void backToOverview() {
+        mainCtrl.showOverview();
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ESCAPE is pressed, then it cancels and returns to the tags scene.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ESCAPE:
+                goBack();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    backToOverview();
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }

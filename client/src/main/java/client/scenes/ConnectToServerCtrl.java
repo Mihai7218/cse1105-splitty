@@ -8,6 +8,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
+
 import java.io.IOException;
 
 //These imports are for testing if the connection works
@@ -117,5 +119,21 @@ public class ConnectToServerCtrl {
      */
     private boolean emptyServer(String serverAddr) {
         return serverAddr.isEmpty() || serverAddr.equals("");
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it edits the participant with the current values.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                connectButtonHandler();
+                break;
+            default:
+                break;
+        }
     }
 }

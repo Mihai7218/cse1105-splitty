@@ -24,6 +24,7 @@ import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Modality;
 
 import java.util.regex.Pattern;
@@ -131,9 +132,7 @@ public class ParticipantCtrl {
         try {
 //            server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
 //            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
-            Participant participant = server.addParticipant(
-                    mainCtrl.getEvent().getInviteCode(), getParticipant());
-            mainCtrl.getEvent().getParticipantsList().add(participant);
+            server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
             mainCtrl.getOverviewCtrl().populateParticipants();
         } catch (WebApplicationException e) {
 
@@ -155,6 +154,14 @@ public class ParticipantCtrl {
     public void abort() {
         clearFields();
         mainCtrl.showOverview();
+    }
+
+    /**
+     * When the shortcut is used it goes back to the startmenu.
+     */
+    public void startMenu() {
+        clearFields();
+        mainCtrl.showStartMenu();
     }
 
     /**
@@ -197,5 +204,36 @@ public class ParticipantCtrl {
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
+    }
+
+    /**
+     * Checks whether a key is pressed and performs a certain action depending on that:
+     *  - if ENTER is pressed, then it adds the participant.
+     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
+     *  - if Ctrl + m is pressed, then it returns to the startscreen.
+     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * @param e KeyEvent
+     */
+    public void keyPressed(KeyEvent e) {
+        switch (e.getCode()) {
+            case ENTER:
+                ok();
+                break;
+            case ESCAPE:
+                abort();
+                break;
+            case M:
+                if(e.isControlDown()){
+                    startMenu();
+                    break;
+                }
+            case O:
+                if(e.isControlDown()){
+                    abort();
+                    break;
+                }
+            default:
+                break;
+        }
     }
 }
