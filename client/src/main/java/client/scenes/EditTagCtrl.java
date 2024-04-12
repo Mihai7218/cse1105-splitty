@@ -40,8 +40,6 @@ public class EditTagCtrl implements Initializable {
     @FXML
     public Button changeTag;
 
-    public Alert confirmation;
-
     public Tag editTag;
 
 
@@ -154,7 +152,7 @@ public class EditTagCtrl implements Initializable {
      */
     public void abort() {
         Platform.runLater(() -> {
-            confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
 
             confirmation.contentTextProperty().bind(languageManager.bind("editTag.abortAlert"));
             confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
@@ -298,13 +296,5 @@ public class EditTagCtrl implements Initializable {
      */
     public void setChangeTag(Button changeTag) {
         this.changeTag = changeTag;
-    }
-
-    /**
-     * getter for the conformation alert
-     * @param confirmation the conformation alert
-     */
-    public void setConfirmation(Alert confirmation) {
-        this.confirmation = confirmation;
     }
 }
