@@ -105,16 +105,6 @@ public class EditTagCtrlTest {
     }
 
 
-//    @Test
-//    void keyTestEscape() {
-//        EditTagCtrl test = spy(sut);
-//        Optional<ButtonType> optionalOk = Optional.of(ButtonType.OK);
-//        when(confirmation.showAndWait()).thenReturn(optionalOk);
-//        KeyEvent ke = mock(KeyEvent.class);
-//        when(ke.getCode()).thenReturn(KeyCode.ESCAPE);
-//        test.keyPressed(ke);
-//        verify(test, atLeastOnce()).abort();
-//    }
 
     @Test
     void keyTestM() {
