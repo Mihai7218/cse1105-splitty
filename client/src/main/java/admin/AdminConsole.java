@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -112,7 +113,14 @@ public class AdminConsole {
         boolean running = true;
         while (running){
             printOptions();
-            switch (userInput.nextInt()) {
+            int choseOption = 5;
+            try{
+                choseOption = Integer.parseInt(userInput.next());
+            } catch (Exception e) {
+                System.out.println("This is not a number. Please enter a number");
+                showOptions(userInput,adminConsole);
+            }
+            switch (choseOption) {
                 case 1:
                     printerMenu(userInput, adminConsole);
                     break;
@@ -159,7 +167,16 @@ public class AdminConsole {
     public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("What would you like to do?");
         printerMenuPrintText();
-        switch (userInput.nextInt()){
+        int choseOption = 0;
+        while (choseOption == 0) {
+            try{
+                choseOption = Integer.parseInt(userInput.next());
+            } catch (Exception exception) {
+                System.out.println("This is not a number. Please enter a number");
+                printerMenuPrintText();
+            }
+        }
+        switch (choseOption){
             case 1:
                 adminConsole.updateEvents();
                 adminConsole.printEvents();
@@ -274,7 +291,7 @@ public class AdminConsole {
      * @return whether the deletion was confirmed
      */
     public boolean confirmationMenu(Scanner userInput, int invCode) {
-        System.out.println("Please confirm you want to delete event" + invCode + "\n" +
+        System.out.println("Please confirm you want to delete event " + invCode + "\n" +
                 "Y/N");
         String choice = userInput.next();
         switch (choice) {
@@ -301,14 +318,14 @@ public class AdminConsole {
         System.out.println("Where do you want to save the dump? " +
                 "Give the folder or type 'cancel' to cancel: ");
         String path = userInput.next();
-        path = path.replace("/","\\");
+
         if(path.equals("cancel")){
             return;
         }
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         String formattedDateTime = now.format(timeFormat);
-        path += "\\Splitty-Dump-" + formattedDateTime + ".json";
+        path = Path.of(path, "Splitty-Dump-" + formattedDateTime + ".json").toString();
         FileWriter ewa = null;
         try {
             ewa = new FileWriter(path);
@@ -377,7 +394,19 @@ public class AdminConsole {
             System.out.println("1. for retry password");
             System.out.println("2. change server address");
             System.out.println("3. to quit");
-            switch (userInput.nextInt()) {
+            int choseOption = 0;
+            while (choseOption == 0) {
+                try{
+                    choseOption = Integer.parseInt(userInput.next());
+                } catch (Exception exception) {
+                    System.out.println("This is not a number. Please enter a number");
+                    System.out.println("Password incorrect");
+                    System.out.println("1. for retry password");
+                    System.out.println("2. change server address");
+                    System.out.println("3. to quit");
+                }
+            }
+            switch (choseOption) {
                 case 1:
                     System.out.println("retry password");
                     signIn(userInput, adminConsole);
@@ -402,7 +431,6 @@ public class AdminConsole {
         String line;
         try {
             line = fileScan.nextLine();
-            line = line.replace("/","\\");
         }catch(NoSuchElementException n){
             System.out.println("Unable to locate the requested file (empty filepath). ");
             return null;
