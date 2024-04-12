@@ -161,6 +161,7 @@
                                                             <Label maxWidth="370.0" text="${controller.languageManager.settings.statistics}" wrapText="true" />
                                                             <Label maxWidth="370.0" text="${controller.languageManager.settings.settings}" wrapText="true" />
                                                             <Label maxWidth="370.0" text="${controller.languageManager.settings.overview}" wrapText="true" />
+                                                            <Label maxWidth="370.0" text="${controller.languageManager.settings.undo}" wrapText="true" />
                                                         </children>
                                                     </TextFlow>
                                                 </children>
