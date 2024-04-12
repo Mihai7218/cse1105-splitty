@@ -115,6 +115,34 @@ public class DebtsCtrl implements Initializable, NotificationSender {
         setTitles(mainCtrl.getEvent());
     }
 
+    public ServerUtils getServerUtils() {
+        return serverUtils;
+    }
+
+    public Label getConfirmation() {
+        return confirmation;
+    }
+
+    public void setConfirmation(Label confirmation) {
+        this.confirmation = confirmation;
+    }
+
+    public Accordion getMenu() {
+        return menu;
+    }
+
+    public void setMenu(Accordion menu) {
+        this.menu = menu;
+    }
+
+    public Button getBack() {
+        return back;
+    }
+
+    public void setBack(Button back) {
+        this.back = back;
+    }
+
     /**
      * return to overview
      */
