@@ -84,7 +84,6 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
         noRecentEvents.setValueFactory(new SpinnerValueFactory
                 .IntegerSpinnerValueFactory(0, 100));
         currency.getItems().addAll(currencyConverter.getCurrencies());
-        emailPane.setExpanded(false);
         languages.getItems().remove("template");
     }
 
