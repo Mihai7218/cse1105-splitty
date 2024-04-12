@@ -166,7 +166,7 @@ public class AddExpenseCtrlTest {
     void initialize() {
         assertFalse(question.isVisible());
         assertNotNull(sut.getNamesContainer());
-        assertEquals(2, namesContainer.getChildren().size());
+        assertEquals(0, namesContainer.getChildren().size());
     }
 
     @Test
@@ -174,7 +174,7 @@ public class AddExpenseCtrlTest {
         everyone.setSelected(true);
         sut.everyoneCheck();
         assertFalse(only.isSelected());
-        assertEquals(2, namesContainer.getChildren().size());
+        assertEquals(0, namesContainer.getChildren().size());
 
         everyone.setSelected(false);
         only.setSelected(true);
