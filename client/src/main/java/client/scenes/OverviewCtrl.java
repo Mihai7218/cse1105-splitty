@@ -96,6 +96,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private Map<Tag, StompSession.Subscription> tagSubscriptionMap;
     private StompSession.Subscription tagSubscription;
     private StompSession.Subscription participantSubscription;
+    private StompSession.Subscription eventSubscription;
 
     private Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
@@ -246,11 +247,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             code.setText(String.valueOf(event.getInviteCode()));
             participants.getItems().sort(Comparator.comparing(Participant::getName));
             expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
-            server.registerForMessages(String.format("/topic/events/%s",
-                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> Platform.runLater(() ->{
-                        mainCtrl.getEvent().setTitle(q.getTitle());
-                        title.setText(q.getTitle());
-                    }));
+            if (eventSubscription == null)
+                eventSubscription = server.registerForMessages(String.format("/topic/events/%s",
+                        mainCtrl.getEvent().getInviteCode()), Event.class,
+                        q -> Platform.runLater(() ->{
+                            mainCtrl.getEvent().setTitle(q.getTitle());
+                            title.setText(q.getTitle());
+                        }));
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -266,7 +269,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                                 sumExpense.setText(String.format(
                                         "%.2f %s", getSum(), getCurrency()));
                                 subscribeToExpense(expense);
-                                mainCtrl.getDebtsCtrl().refresh();
+                                if (mainCtrl.getDebtsCtrl() != null)
+                                    mainCtrl.getDebtsCtrl().refresh();
                             });
                         });
             if (participantSubscription == null)
@@ -424,6 +428,10 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
+        }
+        if (eventSubscription != null) {
+            eventSubscription.unsubscribe();
+            eventSubscription = null;
         }
         if (tagSubscription != null) {
             tagSubscription.unsubscribe();
@@ -869,8 +877,10 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     break;
                 }
             case Z:
-                undo();
-                break;
+                if (e.isControlDown()) {
+                    undo();
+                    break;
+                }
             default:
                 break;
         }
@@ -1077,5 +1087,61 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     void setParticipantSubscriptionMap(Map<Participant, StompSession.Subscription>
                                                participantSubscriptionMap) {
         this.participantSubscriptionMap = participantSubscriptionMap;
+    }
+
+    /**
+     *
+     * @param undoButton
+     */
+    void setUndoButton(Button undoButton) {
+        this.undoButton = undoButton;
+    }
+
+    /**
+     *
+     * @param undoTooltip
+     */
+    void setUndoTooltip(Tooltip undoTooltip) {
+        this.undoTooltip = undoTooltip;
+    }
+
+    /**
+     *
+     * @param addTransferButton
+     */
+    void setAddTransferButton(Button addTransferButton) {
+        this.addTransferButton = addTransferButton;
+    }
+
+    /**
+     *
+     * @return
+     */
+    StompSession.Subscription getEventSubscription() {
+        return eventSubscription;
+    }
+
+    /**
+     *
+     * @return
+     */
+    StompSession.Subscription getParticipantSubscription() {
+        return participantSubscription;
+    }
+
+    /**
+     *
+     * @return
+     */
+    StompSession.Subscription getTagSubscription() {
+        return tagSubscription;
+    }
+
+    /**
+     *
+     * @return
+     */
+    StompSession.Subscription getExpensesSubscription() {
+        return expensesSubscription;
     }
 }

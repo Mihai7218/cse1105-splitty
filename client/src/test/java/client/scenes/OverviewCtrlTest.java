@@ -1,14 +1,10 @@
 package client.scenes;
 
-import client.utils.ConfigInterface;
-import client.utils.CurrencyConverter;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.commands.ICommand;
+import client.utils.*;
 import commons.*;
 import jakarta.ws.rs.WebApplicationException;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,13 +12,15 @@ import org.springframework.messaging.simp.stomp.StompSession;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import java.net.URL;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
 class OverviewCtrlTest {
@@ -51,6 +49,20 @@ class OverviewCtrlTest {
     Map<Tag, StompSession.Subscription> tagSubscriptionMap;
     Label participantFrom;
     Label participantIncluding;
+    LanguageComboBox languages;
+    Label sumLabel;
+    Tab fromTab;
+    Tab includingTab;
+    Button addParticipant;
+    Button settleDebts;
+    Button settings;
+    Button addExpenseButton;
+    Button addTransferButton;
+    Button showStatisticsButton;
+    Button cancel;
+    Button undoButton;
+    Label title;
+    Label code;
     Participant bob = new Participant("Bob", null, null, null);
     Participant mary = new Participant("Mary", null, null, null);
     Participant tom = new Participant("Tom", null, null, null);
@@ -58,7 +70,7 @@ class OverviewCtrlTest {
             new ParticipantPayment(bob, 5.0),
             new ParticipantPayment(mary, 5.0)
     ), null, bob);
-    Expense expense2 = new Expense(15.0, "EUR", "title2", "desc", java.sql.Date.valueOf("2023-01-01"),  List.of(
+    Expense expense2 = new Expense(15.0, "EUR", "title2", "desc", java.sql.Date.valueOf("2023-01-01"), List.of(
             new ParticipantPayment(bob, 5.0),
             new ParticipantPayment(mary, 5.0),
             new ParticipantPayment(tom, 5.0)
@@ -91,24 +103,52 @@ class OverviewCtrlTest {
         sut.setParticipants(participants);
         sumExpense = new Label();
         sut.setSumExpense(sumExpense);
+        participantFrom = new Label();
+        sut.setParticipantFrom(participantFrom);
+        participantIncluding = new Label();
+        sut.setParticipantIncluding(participantIncluding);
+        languages = new LanguageComboBox();
+        sut.setLanguages(languages);
+        sumLabel = new Label();
+        sut.setSumLabel(sumLabel);
+        fromTab = new Tab();
+        sut.setFromTab(fromTab);
+        includingTab = new Tab();
+        sut.setIncludingTab(includingTab);
+        addParticipant = new Button();
+        sut.setAddparticipant(addParticipant);
+        settleDebts = new Button();
+        sut.setSettleDebts(settleDebts);
+        settings = new Button();
+        sut.setSettings(settings);
+        addExpenseButton = new Button();
+        sut.setAddExpenseButton(addExpenseButton);
+        addTransferButton = new Button();
+        sut.setAddTransferButton(addTransferButton);
+        showStatisticsButton = new Button();
+        sut.setShowStatisticsButton(showStatisticsButton);
+        cancel = new Button();
+        sut.setCancel(cancel);
+        undoButton = new Button();
+        sut.setUndoButton(undoButton);
+        title = new Label();
+        sut.setTitle(title);
+        code = new Label();
+        sut.setCode(code);
+
+        sut.initialize(mock(URL.class), mock(ResourceBundle.class));
+
         expenseSubscriptionMap = new HashMap<>();
         sut.setExpenseSubscriptionMap(expenseSubscriptionMap);
         participantSubscriptionMap = new HashMap<>();
         sut.setParticipantSubscriptionMap(participantSubscriptionMap);
         tagSubscriptionMap = new HashMap<>();
         sut.setTagSubscriptionMap(tagSubscriptionMap);
-        participantFrom = new Label();
-        sut.setParticipantFrom(participantFrom);
-        participantIncluding = new Label();
-        sut.setParticipantIncluding(participantIncluding);
     }
 
     @Test
     void populateExpensesSuccess() {
-        Event event = new Event("title", new Date(), new Date());
-        event.getParticipantsList().addAll(List.of(bob, mary, tom));
-        event.getExpensesList().addAll(List.of(expense1, expense2));
-        event.setInviteCode(1);
+        Event event = getEvent();
         mainCtrl.setEvent(event);
         when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
         when(server.getEvent(1)).thenReturn(event);
@@ -164,10 +204,7 @@ class OverviewCtrlTest {
 
     @Test
     void populateExpensesWebApplicationException() {
-        Event event = new Event("title", new Date(), new Date());
-        event.getParticipantsList().addAll(List.of(bob, mary, tom));
-        event.getExpensesList().addAll(List.of(expense1, expense2));
-        event.setInviteCode(1);
+        Event event = getEvent();
         mainCtrl.setEvent(event);
         when(server.getAllExpenses(1)).thenThrow(WebApplicationException.class);
         when(server.getEvent(1)).thenThrow(WebApplicationException.class);
@@ -186,10 +223,7 @@ class OverviewCtrlTest {
 
     @Test
     void populateExpensesAlreadyThere() {
-        Event event = new Event("title", new Date(), new Date());
-        event.getParticipantsList().addAll(List.of(bob, mary, tom));
-        event.getExpensesList().addAll(List.of(expense1, expense2));
-        event.setInviteCode(1);
+        Event event = getEvent();
         mainCtrl.setEvent(event);
         when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
         when(server.getEvent(1)).thenReturn(event);
@@ -211,11 +245,221 @@ class OverviewCtrlTest {
     }
 
     @Test
-    void populateParticipants() {
+    void populateParticipantsNullEvent() {
+        expenseParticipant.getItems().clear();
+        participants.getItems().clear();
+
+        sut.populateParticipants();
+
+        verify(server, never()).getAllParticipants(anyInt());
+        assertTrue(participants.getItems().isEmpty());
+        assertTrue(expenseParticipant.getItems().isEmpty());
     }
 
     @Test
-    void refresh() {
+    void populateParticipantsNullPList() {
+        Event event = getEvent();
+        expenseParticipant.getItems().clear();
+        participants.getItems().clear();
+        mainCtrl.setEvent(event);
+        event.setParticipantsList(null);
+
+        sut.populateParticipants();
+
+        verify(server, never()).getAllParticipants(anyInt());
+        assertTrue(participants.getItems().isEmpty());
+        assertTrue(expenseParticipant.getItems().isEmpty());
+    }
+
+    @Test
+    void populateParticipantsWAException() {
+        Event event = getEvent();
+        expenseParticipant.getItems().clear();
+        participants.getItems().clear();
+        mainCtrl.setEvent(event);
+        event.setParticipantsList(new ArrayList<>());
+        when(server.getAllParticipants(anyInt())).thenThrow(WebApplicationException.class);
+
+        sut.populateParticipants();
+
+        verify(server).getAllParticipants(1);
+        assertTrue(participants.getItems().isEmpty());
+        assertTrue(expenseParticipant.getItems().isEmpty());
+    }
+
+    @Test
+    void populateParticipantsSuccess() {
+        Event event = getEvent();
+        expenseParticipant.getItems().clear();
+        participants.getItems().clear();
+        mainCtrl.setEvent(event);
+        event.setParticipantsList(new ArrayList<>());
+        when(server.getAllParticipants(1)).thenReturn(List.of(bob, tom, mary));
+
+        sut.populateParticipants();
+
+        verify(server).getAllParticipants(1);
+        assertEquals(List.of(bob, tom, mary), participants.getItems());
+        assertEquals(List.of(bob, tom, mary), expenseParticipant.getItems());
+    }
+
+    @Test
+    void populateParticipantsSuccessEPSet() {
+        Event event = getEvent();
+        expenseParticipant.getItems().clear();
+        participants.getItems().clear();
+        mainCtrl.setEvent(event);
+        event.setParticipantsList(new ArrayList<>());
+        when(server.getAllParticipants(1)).thenReturn(List.of(bob, tom, mary));
+        expenseParticipant.setValue(tom);
+
+        sut.populateParticipants();
+
+        verify(server).getAllParticipants(1);
+        assertEquals(List.of(bob, tom, mary), participants.getItems());
+        assertEquals(List.of(bob, tom, mary), expenseParticipant.getItems());
+        assertEquals(tom, expenseParticipant.getValue());
+    }
+
+    @Test
+    void refreshEmptyHistory() {
+        Stack<ICommand> history = new Stack<>();
+        mainCtrl.setHistory(history);
+
+        sut.refresh();
+
+        assertFalse(undoButton.isVisible());
+    }
+
+    @Test
+    void refreshWithEvent() {
+        Event event = getEvent();
+        event.setTagsList(new ArrayList<>(List.of(new Tag("food", "red"),
+                new Tag("drinks", "blue"))));
+        mainCtrl.setEvent(event);
+
+        sut.refresh();
+
+        assertEquals("title", title.getText());
+        assertEquals("1", code.getText());
+    }
+
+    @Test
+    void refreshEventSubscription() throws InterruptedException {
+        Event event = getEvent();
+        event.setTagsList(new ArrayList<>(List.of(new Tag("food", "red"),
+                new Tag("drinks", "blue"))));
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Event>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(1).equals(Event.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+
+        sut.refresh();
+
+        assertEquals("title", title.getText());
+        assertEquals("1", code.getText());
+
+        lambda.get().accept(new Event("title2", new Date(), new Date()));
+        Thread.sleep(100);
+
+        assertEquals("title2", title.getText());
+        assertEquals("title2", event.getTitle());
+    }
+
+    @Test
+    void refreshExpenseSubscription() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Expense>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/expenses")
+                    && mock.getArgument(1).equals(Expense.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        Expense expense3 = new Expense(50.0, "CHF", "exp3", "desc", java.sql.Date.valueOf("2025-01-01"), List.of(
+                new ParticipantPayment(tom, 25.0),
+                new ParticipantPayment(bob, 25.0)
+        ), null, tom);
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        mainCtrl.setDebtsCtrl(debtsCtrl);
+        when(currencyConverter.convert(any(), any(), any(), anyDouble())).then(mock -> mock.getArgument(3));
+
+        sut.refresh();
+
+        assertFalse(all.getItems().contains(expense3));
+        assertFalse(event.getExpensesList().contains(expense3));
+        assertEquals("", sumExpense.getText());
+        assertFalse(expenseSubscriptionMap.containsKey(expense3));
+
+        lambda.get().accept(expense3);
+        Thread.sleep(100);
+
+        assertTrue(all.getItems().contains(expense3));
+        assertTrue(event.getExpensesList().contains(expense3));
+        assertEquals("75.00 EUR", sumExpense.getText());
+        assertTrue(expenseSubscriptionMap.containsKey(expense3));
+        verify(debtsCtrl).refresh();
+    }
+
+    @Test
+    void refreshParticipantSubscription() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Participant>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/participants")
+                    && mock.getArgument(1).equals(Participant.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        Participant coati = new Participant("Coati", null, null, null);
+        coati.setId(42);
+        DebtsCtrl debtsCtrl = mock(DebtsCtrl.class);
+        mainCtrl.setDebtsCtrl(debtsCtrl);
+        when(server.getAllParticipants(1)).thenReturn(List.of(coati));
+
+        sut.refresh();
+
+        assertFalse(participants.getItems().contains(coati));
+        assertFalse(event.getParticipantsList().contains(coati));
+        assertFalse(participantSubscriptionMap.containsKey(coati));
+
+        lambda.get().accept(coati);
+        Thread.sleep(100);
+
+        assertTrue(participants.getItems().contains(coati));
+        assertTrue(expenseParticipant.getItems().contains(coati));
+        assertTrue(event.getParticipantsList().contains(coati));
+        assertTrue(participantSubscriptionMap.containsKey(coati));
+        verify(debtsCtrl).refresh();
+    }
+
+    @Test
+    void refreshTagSubscription() throws InterruptedException {
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
+        AtomicReference<Consumer<Tag>> lambda = new AtomicReference<>();
+        when(server.registerForMessages(any(), any(), any())).then(mock -> {
+            if (mock.getArgument(0).equals("/topic/events/1/tags")
+                    && mock.getArgument(1).equals(Tag.class))
+                lambda.set(mock.getArgument(2));
+            return null;
+        });
+        Tag food = new Tag("food", "red");
+        food.setId(42);
+
+        sut.refresh();
+
+        assertFalse(tagSubscriptionMap.containsKey(food));
+
+        lambda.get().accept(food);
+        Thread.sleep(100);
+
+        assertTrue(tagSubscriptionMap.containsKey(food));
     }
 
     @Test
@@ -316,5 +560,13 @@ class OverviewCtrlTest {
 
     @Test
     void keyPressed() {
+    }
+
+    private Event getEvent() {
+        Event event = new Event("title", new Date(), new Date());
+        event.getParticipantsList().addAll(List.of(bob, mary, tom));
+        event.getExpensesList().addAll(List.of(expense1, expense2));
+        event.setInviteCode(1);
+        return event;
     }
 }
