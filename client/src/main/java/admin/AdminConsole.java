@@ -117,7 +117,7 @@ public class AdminConsole {
             try{
                 choseOption = Integer.parseInt(userInput.next());
             } catch (Exception e) {
-                System.out.println("this is not a number");
+                System.out.println("This is not a number. Please enter a number");
                 showOptions(userInput,adminConsole);
             }
             switch (choseOption) {
@@ -167,7 +167,16 @@ public class AdminConsole {
     public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("What would you like to do?");
         printerMenuPrintText();
-        switch (userInput.nextInt()){
+        int choseOption = 0;
+        while (choseOption == 0) {
+            try{
+                choseOption = Integer.parseInt(userInput.next());
+            } catch (Exception exception) {
+                System.out.println("This is not a number. Please enter a number");
+                printerMenuPrintText();
+            }
+        }
+        switch (choseOption){
             case 1:
                 adminConsole.updateEvents();
                 adminConsole.printEvents();
@@ -282,7 +291,7 @@ public class AdminConsole {
      * @return whether the deletion was confirmed
      */
     public boolean confirmationMenu(Scanner userInput, int invCode) {
-        System.out.println("Please confirm you want to delete event" + invCode + "\n" +
+        System.out.println("Please confirm you want to delete event " + invCode + "\n" +
                 "Y/N");
         String choice = userInput.next();
         switch (choice) {
@@ -385,7 +394,19 @@ public class AdminConsole {
             System.out.println("1. for retry password");
             System.out.println("2. change server address");
             System.out.println("3. to quit");
-            switch (userInput.nextInt()) {
+            int choseOption = 0;
+            while (choseOption == 0) {
+                try{
+                    choseOption = Integer.parseInt(userInput.next());
+                } catch (Exception exception) {
+                    System.out.println("This is not a number. Please enter a number");
+                    System.out.println("Password incorrect");
+                    System.out.println("1. for retry password");
+                    System.out.println("2. change server address");
+                    System.out.println("3. to quit");
+                }
+            }
+            switch (choseOption) {
                 case 1:
                     System.out.println("retry password");
                     signIn(userInput, adminConsole);
