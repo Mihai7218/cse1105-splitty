@@ -11,7 +11,7 @@ import jakarta.ws.rs.WebApplicationException;
 import java.util.Date;
 import java.util.List;
 
-public class EditExpenseCommand implements ICommand{
+public class EditExpenseCommand implements ICommand {
 
     double amount;
     double priorAmount;
