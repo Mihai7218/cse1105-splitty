@@ -1,12 +1,14 @@
 package client.scenes;
 
 import client.utils.LanguageManager;
+import com.sun.javafx.collections.ObservableListWrapper;
 import commons.Event;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -14,9 +16,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
@@ -73,9 +78,9 @@ class MainCtrlTest {
         verify(stage).setScene(any());
     }
 
-    @Test //TODO
+    @Test //TODO; verify behaviour for the stylesheets
     void showOverview2() {
-        
+
     }
 
     /**
@@ -141,12 +146,46 @@ class MainCtrlTest {
     void showDebts2(){
 
     }
-
-    //TODO: showInvitation, showStatistics, showManageTags, showEditTag, showAddExpense,
-    //TODO: showConnectToServer, showSettings
+    //TODO: showAddExpense, showConnectToServer, showExpenseConfirmation, showParticipantConfirmation
     //TODO: showExpenseConfirmation, showParticipantConfirmation
     //TODO: showInviteConfirmation, showEditConfirmation
     //TODO: pickLocation, getSettingsCtrl, getSettings, getPassword
+
+    @Test
+    void showInvitation(){
+        sut.showInvitation();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
+
+    @Test
+    void showStatistics(){
+        sut.showStatistics();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
+
+    @Test
+    void showManageTags(){
+        sut.showManageTags();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
+
+    @Test
+    void showEditTag(){
+        sut.showEditTag();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
+
+    @Test
+    void showSettings(){
+        sut.showSettings();
+        assertEquals(null, stageTitle);
+        verify(stage).setScene(any());
+    }
+
 
     /**
      * Tests that the stage that was set is returned when calling the getter for it.
