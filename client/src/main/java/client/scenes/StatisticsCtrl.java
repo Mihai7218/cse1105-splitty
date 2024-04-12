@@ -294,6 +294,10 @@ public class StatisticsCtrl implements Initializable {
 
         double total = 0;
         for (Expense expense : mainCtrl.getEvent().getExpensesList()) {
+            if(expense.getDescription().equals("transfer")
+                    || expense.getDescription().equals("settlement")){
+                continue;
+            }
             total += currencyConverter.convert(expense.getDate(),
                     expense.getCurrency(),
                     currency,
@@ -305,6 +309,10 @@ public class StatisticsCtrl implements Initializable {
                 String catagoryName = pair.getKey().getName();
                 double value = 0;
                 for (Expense expense : pair.getValue()) {
+                    if(expense.getDescription().equals("transfer")
+                            || expense.getDescription().equals("settlement")){
+                        continue;
+                    }
                     value += currencyConverter.convert(expense.getDate(),
                             expense.getCurrency(),
                             currency,
@@ -347,6 +355,10 @@ public class StatisticsCtrl implements Initializable {
         for (Tag tag : eventTagList) {
             List<Expense> expensesWithTag = new ArrayList<>();
             for (Expense expense : event.getExpensesList()) {
+                if(expense.getDescription().equals("transfer")
+                        || expense.getDescription().equals("settlement")){
+                    continue;
+                }
                 if (expense.getTag() != null && expense.getTag().equals(tag)) {
                     expensesWithTag.add(expense);
                 }
