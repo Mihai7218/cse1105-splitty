@@ -774,7 +774,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it goes to settle debts.
      *  - if ESCAPE is pressed, then it cancels and returns to the startscreen.
      *  - if Ctrl + p is pressed, then it opens the add participant scene.
      *  - if Ctrl + e is pressed, then it opens the add expense scene.
@@ -785,9 +784,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                settleDebts();
-                break;
             case ESCAPE:
                 startMenu();
                 break;
