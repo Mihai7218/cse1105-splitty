@@ -6,6 +6,8 @@ import client.utils.ServerUtils;
 import commons.Event;
 import commons.Expense;
 import commons.Tag;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -57,6 +59,7 @@ public class ManageTagsCtrlTest {
 
     @Start
     void setUp(Stage stage) {
+
         mainCtrl = mock(MainCtrl.class);
         serverUtils = mock(ServerUtils.class);
         languageManager = mock(LanguageManager.class);
@@ -68,6 +71,9 @@ public class ManageTagsCtrlTest {
         tagSubscription = mock(StompSession.Subscription.class);
         tagSubscriptionMap = mock(HashMap.class);
         tagsListView = mock(ListView.class);
+
+        ObservableList<Tag> tagObservableList = FXCollections.observableArrayList();
+        when(tagsListView.getItems()).thenReturn(tagObservableList);
 
         sut.setCancel(cancel);
         sut.setTagSubscription(tagSubscription);

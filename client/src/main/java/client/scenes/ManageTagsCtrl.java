@@ -64,7 +64,6 @@ public class ManageTagsCtrl implements Initializable {
             language = "en";
         }
         this.refreshLanguage();
-        tagsListView = new ListView<>();
         tagsListView.setCellFactory(x ->
                 new TagListCell(mainCtrl, languageManager, config, serverUtils));
         tagSubscriptionMap = new HashMap<>();
