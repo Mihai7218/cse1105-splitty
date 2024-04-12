@@ -260,8 +260,18 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
      */
     @Override
     public void exit(){
-        participantSubscription.unsubscribe();
-        participantSubscriptionMap.forEach((k,v) -> v.unsubscribe());
+        if (transferSubscription != null) {
+            transferSubscription.unsubscribe();
+            transferSubscription = null;
+        }
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
+        if (participantSubscriptionMap != null) {
+            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap = new HashMap<>();
+        }
         clearFields();
         mainCtrl.showOverview();
     }
@@ -311,10 +321,8 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
                 }
             }
         }
-
-        mainCtrl.showOverview();
-        removeHighlight();
-        clearFields();
+        exit();
+        mainCtrl.showEditConfirmation();
     }
 
     /**

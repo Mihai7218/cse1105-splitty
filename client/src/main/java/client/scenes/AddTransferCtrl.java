@@ -251,8 +251,7 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
             }
         }
 
-        mainCtrl.showOverview();
-        clearFields();
+        exit();
         removeHighlight();
     }
 
@@ -291,8 +290,14 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
      */
     @Override
     public void exit(){
-        participantSubscription.unsubscribe();
-        participantSubscriptionMap.forEach((k,v) -> v.unsubscribe());
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
+        if (participantSubscriptionMap != null) {
+            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap = new HashMap<>();
+        }
         clearFields();
         mainCtrl.showOverview();
     }
