@@ -11,10 +11,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
@@ -25,6 +22,7 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -52,6 +50,7 @@ public class EditTagCtrlTest {
 
 
     Alert alert;
+    Alert confirmation;
 
     Button cancelButton;
     TextField name;
@@ -82,11 +81,13 @@ public class EditTagCtrlTest {
         colorPicker = mock(ColorPicker.class);
         cancelButton = mock(Button.class);
         changeTag = mock(Button.class);
+        confirmation = mock(Alert.class);
 
         sut.setCancelButton(cancelButton);
         sut.setName(name);
         sut.setColorPicker(colorPicker);
         sut.setChangeTag(changeTag);
+        sut.setConfirmation(confirmation);
         sut.setTag(new Tag("test","blue"));
 
         doNothing().when(cancelButton).setGraphic(any(Node.class));
@@ -99,44 +100,18 @@ public class EditTagCtrlTest {
         assertFalse(cancelButton.isVisible());
         assertFalse(name.isVisible());
     }
-//    @Test
-//    void onTagReceiveTest() {
-//        Event test = new Event("test", null, null);
-//        Tag newTag = new Tag("TAG", "blue");
-//        newTag.setId(1);
-//        test.addTag(newTag);
-//        test.addExpense(new Expense(1, "EUR", "Title", "Desc", null, null, null, null));
-//        test.addExpense(new Expense(1, "EUR", "Title", "Desc", null, null, newTag, null));
-//        test.setInviteCode(1);
-//        when(serverUtils.getEvent(1)).thenReturn(test);
-//        when(mainCtrl.getEvent()).thenReturn(test);
-//
-//        ManageTagsCtrl testSut = spy(sut);
-//        testSut.setTagSubscription(null);
-//        testSut.setup();
-//
-//        Event testEvent = testSut.getMainCtrl().getEvent();
-//        assertEquals(testEvent.getTagsList().size(),1);
-//
-//
-//        Tag newTag2 = new Tag("TAG2", "blue");
-//        newTag2.setId(2);
-//        testSut.onTagReceive(newTag2);
-//
-//        verify(testSut, atLeastOnce()).subscribeToTag(newTag2);
-//        assertEquals(testEvent.getTagsList().size(),2);
-//        assertTrue(testEvent.getTagsList().contains(newTag2));
-//    }
 
 
-//    @Test
-//    void keyTestEscape() {
-//        KeyEvent ke = mock(KeyEvent.class);
-//        when(ke.getCode()).thenReturn(KeyCode.ESCAPE);
-//        EditTagCtrl test = spy(sut);
-//        test.keyPressed(ke);
-//        verify(test, atLeastOnce()).abort();
-//    }
+    @Test
+    void keyTestEscape() {
+        Optional<ButtonType> buttonType = Optional.of(ButtonType.OK);
+        when(confirmation.showAndWait()).thenReturn(buttonType);
+        KeyEvent ke = mock(KeyEvent.class);
+        when(ke.getCode()).thenReturn(KeyCode.ESCAPE);
+        EditTagCtrl test = spy(sut);
+        test.keyPressed(ke);
+        verify(test, atLeastOnce()).abort();
+    }
 
     @Test
     void keyTestM() {
