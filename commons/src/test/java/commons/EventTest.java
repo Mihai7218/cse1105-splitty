@@ -7,10 +7,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-
 import static org.junit.jupiter.api.Assertions.*;
 
 //TODO: edge case testing, null testing, etc
@@ -194,13 +190,77 @@ class EventTest {
      */
     @Test
     void setLastActivity() {
+        Event test = new Event();
         Date newLastActivity = new Date(2023, 1, 15);
-        event.setCreationDate(newLastActivity);
-        sameEvent.setCreationDate(newLastActivity);
-        differentEvent.setCreationDate(newLastActivity);
-        assertEquals(newLastActivity, event.getCreationDate());
-        assertEquals(newLastActivity, sameEvent.getCreationDate());
-        assertEquals(newLastActivity, differentEvent.getCreationDate());
+        event.setLastActivity(newLastActivity);
+        sameEvent.setLastActivity(newLastActivity);
+        differentEvent.setLastActivity(newLastActivity);
+        assertEquals(newLastActivity, event.getLastActivity());
+        assertEquals(newLastActivity, sameEvent.getLastActivity());
+        assertEquals(newLastActivity, differentEvent.getLastActivity());
+    }
+
+    @Test
+    void participantEqualsTest() {
+        Event event1 = new Event("",null,null);
+        Event event2 = new Event("",null,null);
+        event1.addParticipant(new Participant("Marco","","",""));
+        event2.addParticipant(new Participant("Marco","","",""));
+        assertTrue(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
+        event1.addParticipant(new Participant("Marco","","",""));
+        event2.addParticipant(new Participant("Marco2","","",""));
+        assertFalse(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
+        event2.addParticipant(null);
+        assertFalse(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
+        event2.setParticipantsList(null);
+        assertFalse(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
+        event2.setParticipantsList(null);
+        event1.setParticipantsList(null);
+        assertTrue(event1.participantsEquals(event1.getParticipantsList(),event2.getParticipantsList()));
+    }
+    @Test
+    void tagsEqualsEqualsTest() {
+        Event event1 = new Event("",null,null);
+        Event event2 = new Event("",null,null);
+        event1.addTag(new Tag("Tag","red"));
+        event2.addTag(new Tag("Tag","red"));
+        assertTrue(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
+        event1.addTag(new Tag("Tag","red"));
+        event2.addTag(new Tag("Tag1","red"));
+        assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
+        event1.addTag(new Tag("Tag11","red"));
+        event2.addTag(new Tag("Tag1","red"));
+        assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
+        event2.addTag(null);
+        assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
+        event2.setTagsList(null);
+        assertFalse(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
+        event2.setTagsList(null);
+        event1.setTagsList(null);
+        assertTrue(event1.tagsEquals(event1.getTagsList(),event2.getTagsList()));
+    }
+
+    @Test
+    void expensesEqualsEqualsTest() {
+        Participant Marco = new Participant("Marco","","","");
+        Event event1 = new Event("",null,null);
+        Event event2 = new Event("",null,null);
+        event1.addExpense(new Expense(0,"","expense","",new Date(),null,null,Marco));
+        event2.addExpense(new Expense(0,"","expense","",new Date(),null,null,Marco));
+        assertTrue(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
+        event1.addExpense(new Expense(0,"","expense","",new Date(),null,null,Marco));
+        event2.addExpense(new Expense(0,"","expense2","",new Date(),null,null,Marco));
+        assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
+        event1.addExpense(new Expense(0,"","expense3","",new Date(),null,null,Marco));
+        event2.addExpense(new Expense(0,"","expense2","",new Date(),null,null,Marco));
+        assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
+        event2.addExpense(null);
+        assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
+        event2.setExpensesList(null);
+        assertFalse(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
+        event2.setExpensesList(null);
+        event1.setExpensesList(null);
+        assertTrue(event1.expensesEquals(event1.getExpensesList(),event2.getExpensesList()));
     }
 
     /**
@@ -226,18 +286,23 @@ class EventTest {
         assertTrue(event.hashCode() != differentEvent.hashCode());
         assertTrue(sameEvent.hashCode() != differentEvent.hashCode());
     }
+    @Test
+    void equalsTest() {
+        assertEquals(event, event);
+        assertNotEquals(event, null);
+        Event testEvent = new Event("a",null,null);
+        testEvent.setInviteCode(event.getInviteCode());
+        assertEquals(event,testEvent);
+    }
 
     /**
      * Tests whether the toString version of event is as expected
      */
-    //@Test
-    //void testToString() {
-    //   String expected = "Event{" +
-    //           "inviteCode='" + event.getInviteCode() + '\'' +
-    //          ", title='" + event.getTitle() + '\'' +
-    //        ", creationDate='" + creationDate + '\'' +
-    //      ", lastActivity='" + lastActivity + '\'' +
-    //    '}';
-    //  assertEquals(expected, event.toString());
-    //}
+//    @Test
+//    void testToString() {
+//       String expected = "0\t\t\t\tTest Event\t\t\t0\t\t\t\t\t\t0" +
+//               "\t\t\t\t\tMon Apr 17 00:00:00 CEST 3922\n";
+//       event.setInviteCode(0);
+//      assertEquals(expected, event.toString());
+//    }
 }

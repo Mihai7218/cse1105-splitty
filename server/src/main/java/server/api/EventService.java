@@ -177,18 +177,6 @@ public class EventService {
         return ResponseEntity.ok(event);
     }
 
-    /**
-     * Method to add an event to the repository from a JSON import
-     * @param event event to be added to the eventRepository
-     * @return the event in a ResponseEntity
-     */
-    public ResponseEntity<Event> addCreatedEvent(Event event) {
-        if(validateEvent(event).getStatusCode().equals(OK)){
-            return ResponseEntity.ok(eventRepository.save(event));
-        }else{
-            return ResponseEntity.badRequest().build();
-        }
-    }
 
     /**
      * Sums the total of all expenses within an event
