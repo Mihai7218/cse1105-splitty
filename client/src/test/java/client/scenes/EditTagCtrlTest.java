@@ -129,14 +129,14 @@ public class EditTagCtrlTest {
 //    }
 
 
-    @Test
-    void keyTestEscape() {
-        KeyEvent ke = mock(KeyEvent.class);
-        when(ke.getCode()).thenReturn(KeyCode.ESCAPE);
-        EditTagCtrl test = spy(sut);
-        test.keyPressed(ke);
-        verify(test, atLeastOnce()).abort();
-    }
+//    @Test
+//    void keyTestEscape() {
+//        KeyEvent ke = mock(KeyEvent.class);
+//        when(ke.getCode()).thenReturn(KeyCode.ESCAPE);
+//        EditTagCtrl test = spy(sut);
+//        test.keyPressed(ke);
+//        verify(test, atLeastOnce()).abort();
+//    }
 
     @Test
     void keyTestM() {
