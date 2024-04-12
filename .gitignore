@@ -8,6 +8,7 @@ build/
 /server/src/main/resources/rates
 /client/src/main/resources/rates
 /client/client
+/server/server
 
 **/*.mv.db
 /coverage/*
