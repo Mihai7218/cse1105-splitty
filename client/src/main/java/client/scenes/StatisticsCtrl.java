@@ -246,7 +246,8 @@ public class StatisticsCtrl implements Initializable {
     public void backToOverview() {
         subscription.unsubscribe();
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -258,7 +259,8 @@ public class StatisticsCtrl implements Initializable {
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showOverview();
@@ -270,7 +272,8 @@ public class StatisticsCtrl implements Initializable {
     public void showManageTagsScreen() {
         subscription.unsubscribe();
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -282,7 +285,8 @@ public class StatisticsCtrl implements Initializable {
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showManageTags();
@@ -415,7 +419,8 @@ public class StatisticsCtrl implements Initializable {
     public void startMenu() {
         subscription.unsubscribe();
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -427,7 +432,8 @@ public class StatisticsCtrl implements Initializable {
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showStartMenu();

@@ -700,9 +700,17 @@ public abstract class ExpenseCtrl implements Initializable {
      * Exit method. Closes subscriptions and returns to the overview.
      */
     protected void exit() {
-        participantSubscription.unsubscribe();
-        participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
+        if (participantSubscriptionMap != null) {
+            participantSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
+            participantSubscriptionMap = new HashMap<>();
+        }
         clearFields();
+        removeHighlight();
         mainCtrl.showOverview();
     }
 

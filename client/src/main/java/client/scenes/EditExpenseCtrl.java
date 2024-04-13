@@ -162,11 +162,8 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             throwAlert("commons.warning", "addExpense.emptyShare");
             return;
         }
-        mainCtrl.showOverview();
+        exit();
         mainCtrl.showEditConfirmation();
-
-        // Optionally, clear input fields after adding the expense
-        clearFields();
     }
 
     /**
@@ -238,7 +235,10 @@ public class EditExpenseCtrl extends ExpenseCtrl {
      */
     @Override
     protected void exit() {
-        expenseSubscription.unsubscribe();
+        if (expenseSubscription != null) {
+            expenseSubscription.unsubscribe();
+            expenseSubscription = null;
+        }
         super.exit();
     }
 

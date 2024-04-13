@@ -23,10 +23,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
 
@@ -259,9 +256,20 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
      * Unsubscribes from websocket connections and returns to overview
      */
     @Override
-    public void exit() {
-        participantSubscription.unsubscribe();
-        participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+    public void exit(){
+        if (transferSubscription != null) {
+            transferSubscription.unsubscribe();
+            transferSubscription = null;
+        }
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
+        if (participantSubscriptionMap != null) {
+            participantSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
+            participantSubscriptionMap = new HashMap<>();
+        }
         clearFields();
         mainCtrl.showOverview();
     }
@@ -311,10 +319,8 @@ public class EditTransferCtrl extends ExpenseCtrl implements Initializable {
                 }
             }
         }
-
-        mainCtrl.showOverview();
-        removeHighlight();
-        clearFields();
+        exit();
+        mainCtrl.showEditConfirmation();
     }
 
     /**

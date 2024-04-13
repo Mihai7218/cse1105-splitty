@@ -429,7 +429,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void startMenu() {
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -445,7 +446,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         if (participantSubscription != null) {
@@ -453,7 +455,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             participantSubscription = null;
         }
         if (participantSubscriptionMap != null) {
-            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             participantSubscriptionMap = new HashMap<>();
         }
         clearFields();

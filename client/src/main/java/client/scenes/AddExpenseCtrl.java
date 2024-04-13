@@ -115,11 +115,8 @@ public class AddExpenseCtrl extends ExpenseCtrl {
                 }
             }
         }
-        mainCtrl.showOverview();
+        exit();
         mainCtrl.showExpenseConfirmation();
-
-        // Optionally, clear input fields after adding the expense
-        clearFields();
     }
 
     /**

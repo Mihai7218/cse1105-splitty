@@ -145,8 +145,7 @@ public class EditParticipantCtrl {
             return;
         }
 
-        clearFields();
-        mainCtrl.showOverview();
+        abort();
         mainCtrl.showEditConfirmation();
     }
 
@@ -154,7 +153,10 @@ public class EditParticipantCtrl {
      * When the abort button is pressed it goes back to the overview
      */
     public void abort() {
-        participantSubscription.unsubscribe();
+        if (participantSubscription != null) {
+            participantSubscription.unsubscribe();
+            participantSubscription = null;
+        }
         clearFields();
         mainCtrl.showOverview();
     }
