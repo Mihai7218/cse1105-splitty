@@ -108,7 +108,7 @@ public class ConnectToServerCtrl {
      * @param serverAddress the address of the server, to test whether available or not
      * @return whether the responseCode was OK
      * In the case of an IOException, it also returns that the server is not available
-     * This may be a TODO to handle some more descriptive handling?
+     * This may be a
      */
     private boolean isServerAvailable(String serverAddress) {
         try {

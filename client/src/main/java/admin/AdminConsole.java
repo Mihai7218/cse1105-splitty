@@ -100,7 +100,7 @@ public class AdminConsole {
         System.out.println("\t 1 - Show events in the database");
         System.out.println("\t 2 - Dump database to json file");
         System.out.println("\t 3 - Import events from json file");
-        System.out.println("\t 4 - Delete an event from the database"); //TODO
+        System.out.println("\t 4 - Delete an event from the database");
         System.out.println("\t 5 - exit");
     }
     /**

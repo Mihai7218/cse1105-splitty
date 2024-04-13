@@ -77,14 +77,9 @@ public class ServerUtils {
 
     /**
      * @param i the invite code of the event to be deleted
-     *          TODO: check for correctness
+     *
      */
     public Response deleteEvent(int i) {
-//        return ClientBuilder.newClient(new ClientConfig())
-//                .target(server).path("api/events/" + i)
-//                .request(APPLICATION_JSON)
-//                .accept(APPLICATION_JSON)
-//                .delete(Event.class);
         Response response = ClientBuilder.newClient(new ClientConfig())
                 .target(server)
                 .path("api/events/" + i)
