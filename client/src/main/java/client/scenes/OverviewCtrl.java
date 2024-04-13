@@ -30,6 +30,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
 import javafx.util.StringConverter;
 import org.springframework.messaging.simp.stomp.StompSession;
 
@@ -400,7 +401,15 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     /**
      * Opens transfer scene to add a transfer to an event
      */
-    public void addTransfer(){
+    public void addTransfer() {
+        if (participants.getItems().size() < 2) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager
+                    .bind("transfer.notEnoughParticipants"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.show();
+            return;
+        }
         mainCtrl.showTransfer();
     }
 
@@ -408,6 +417,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense() {
+        if (participants.getItems().size() < 2) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addExpense.notEnoughParticipants"));
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.show();
+            return;
+        }
         mainCtrl.showAddExpense();
     }
 

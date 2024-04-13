@@ -99,6 +99,9 @@ public class AddExpenseCtrl extends ExpenseCtrl {
             throwAlert("addExpense.invalidHeader", "addExpense.invalidBody");
             highlightMissing(false, true, false, false, false);
             return;
+        } catch (EmptySplitException e) {
+            throwAlert("commons.warning", "addExpense.emptyShare");
+            return;
         }
         try {
             serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
@@ -130,6 +133,11 @@ public class AddExpenseCtrl extends ExpenseCtrl {
         double priceVal = ((double)price)/100;
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
+
+        if (participantPayments != null && participantPayments.stream()
+                .allMatch(x -> x.getParticipant().equals(actualPayee))) {
+            throw new EmptySplitException();
+        }
 
         return new Expense(priceVal, currencyString, title, "testing",
                 actualDate, participantPayments, tag, actualPayee);
