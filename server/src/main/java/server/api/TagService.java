@@ -34,7 +34,6 @@ public class TagService {
      * @param inviteCode of the event which contains the expenses
      * @param tagName the name of the tag to search for
      * @return the list of all expenses with this tag
-     * TODO: do we want this to return an empty list when the tagName doesn't exist? with SC200
      */
     public ResponseEntity<List<Expense>> getAllExpensesWithTag(long inviteCode, String tagName) {
         if (inviteCode < 0 || !eventRepo.existsById(inviteCode) ||
@@ -72,7 +71,6 @@ public class TagService {
      * @param tag        the tag to be added
      * @param serverUtil
      * @return whether the tag could be added to the event
-     * TODO: add a check for duplicates
      */
     public ResponseEntity<Tag> addNewToEvent(long inviteCode, Tag tag,
                                              GerneralServerUtil serverUtil) {
@@ -134,7 +132,6 @@ public class TagService {
      * @param tagId      the id of the tag to be deleted
      * @param serverUtil
      * @return whether the tag was successfully deleted
-     * TODO: check if we need to delete tag specifically from event as well or from repo is fine
      */
     public ResponseEntity<Tag> deleteTagFromEvent(long inviteCode, long tagId,
                                                   GerneralServerUtil serverUtil) {

@@ -93,7 +93,7 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
     }
 
     /**
-     *
+     * Refreshes the page
      */
     public void refresh() {
         List<Event> currentlyInConfig = getRecentEventsFromConfig();
@@ -470,7 +470,8 @@ public class StartScreenCtrl implements Initializable, LanguageSwitcher {
     }
 
     /**
-     * @param actionEvent returns to the server selection menu
+     * returns to the server selection menu
+     * @param actionEvent the event
      */
     public void returnToServerSelect(ActionEvent actionEvent) {
         mainCtrl.showConnectToServer();

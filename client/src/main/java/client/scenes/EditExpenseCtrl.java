@@ -33,12 +33,13 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     private StompSession.Subscription expenseSubscription;
 
     /**
-     * @param mainCtrl
-     * @param config
-     * @param languageManager
-     * @param serverUtils
-     * @param alert
-     * @param currencyConverter
+     * Constructor for editExpenseController
+     * @param mainCtrl main controller
+     * @param config client config
+     * @param languageManager language manager for language switch
+     * @param serverUtils server utils
+     * @param alert alerts to throw
+     * @param currencyConverter currency converter for foreign currency
      */
     @Inject
     public EditExpenseCtrl(MainCtrl mainCtrl,
@@ -60,7 +61,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     }
 
     /**
-     *
+     * loads page and adds websocket subscriptions
      */
     @Override
     public void load() {
@@ -111,7 +112,6 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
-        //refresh();
     }
 
     /**
@@ -162,20 +162,6 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             highlightMissing(false, true, false, false, false);
             return;
         }
-//        try {
-//            serverUtils.updateExpense(mainCtrl.getEvent().getInviteCode(), expense);
-//        } catch (WebApplicationException e) {
-//            switch (e.getResponse().getStatus()) {
-//                case 400 -> {
-//                    throwAlert("addExpense.badReqHeader",
-//                            "addExpense.badReqBody");
-//                }
-//                case 404 -> {
-//                    throwAlert("addExpense.notFoundHeader",
-//                            "addExpense.notFoundBody");
-//                }
-//            }
-//        }
         mainCtrl.showOverview();
         mainCtrl.showEditConfirmation();
 
@@ -186,7 +172,6 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     /**
      * Method to create a new Expense object
      */
-
     public void modifyExpense(String title, int price, LocalDate date, Expense expense) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
@@ -211,16 +196,6 @@ public class EditExpenseCtrl extends ExpenseCtrl {
                 }
             }
         }
-//       new Expense(price, currency.getValue(), title, "testing",
-//                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
-
-//        expense.setTitle(title);
-//        expense.setAmount(price / 100.0);
-//        expense.setCurrency(currency.getValue());
-//        expense.setDate(java.sql.Date.valueOf(date));
-//        expense.setSplit(participantPayments);
-//        expense.setTag(tag);
-//        expense.setPayee(actualPayee);
     }
 
     /**

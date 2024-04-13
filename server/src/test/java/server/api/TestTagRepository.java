@@ -55,7 +55,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public List<Tag> findAll(Sort sort) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -65,7 +64,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public List<Tag> findAllById(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -76,7 +74,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> List<S> saveAll(Iterable<S> entities) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -85,7 +82,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void flush() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -96,7 +92,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> S saveAndFlush(S entity) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -107,7 +102,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> List<S> saveAllAndFlush(Iterable<S> entities) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -116,7 +110,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteAllInBatch(Iterable<Tag> entities) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -125,7 +118,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteAllByIdInBatch(Iterable<Long> ids) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -134,7 +126,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteAllInBatch() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -144,7 +135,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public Tag getOne(Long id) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -183,7 +173,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> List<S> findAll(Example<S> example) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -195,7 +184,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> List<S> findAll(Example<S> example, Sort sort) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -205,7 +193,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public Page<Tag> findAll(Pageable pageable) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -228,7 +215,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public Optional<Tag> findById(Long id) {
-        // TODO Auto-generated method stub
         call("findById");
         if (tags.size() > id) {
             return Optional.of(tags.get(Math.toIntExact(id)));
@@ -260,7 +246,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteById(Long id) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -269,7 +254,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void delete(Tag entity) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -278,7 +262,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteAllById(Iterable<? extends Long> ids) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -287,7 +270,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteAll(Iterable<? extends Tag> entities) {
-        // TODO Auto-generated method stub
 
     }
 
@@ -296,7 +278,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public void deleteAll() {
-        // TODO Auto-generated method stub
 
     }
 
@@ -307,7 +288,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> Optional<S> findOne(Example<S> example) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -319,7 +299,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> Page<S> findAll(Example<S> example, Pageable pageable) {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -330,7 +309,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> long count(Example<S> example) {
-        // TODO Auto-generated method stub
         return 0;
     }
 
@@ -341,7 +319,6 @@ public class TestTagRepository implements TagRepository {
      */
     @Override
     public <S extends Tag> boolean exists(Example<S> example) {
-        // TODO Auto-generated method stub
         return false;
     }
 
@@ -355,7 +332,6 @@ public class TestTagRepository implements TagRepository {
     @Override
     public <S extends Tag, R> R findBy(Example<S> example,
                                        Function<FetchableFluentQuery<S>, R> queryFunction) {
-        // TODO Auto-generated method stub
         return null;
     }
 }

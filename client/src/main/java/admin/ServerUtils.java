@@ -41,16 +41,16 @@ public class ServerUtils {
     }
 
     /**
-     * a
-      * @param server a
+     *  Setter for the server address
+      * @param server string
      */
     public void setServer(String server) {
         this.server = server;
     }
 
     /**
-     *
-     * @return
+     * Method to retrieve all events from backend for the admin
+     * @return list of events
      */
     public List<Event> getEvents(String password) {
         return ClientBuilder.newClient(new ClientConfig()) //
@@ -77,14 +77,9 @@ public class ServerUtils {
 
     /**
      * @param i the invite code of the event to be deleted
-     *          TODO: check for correctness
+     *
      */
     public Response deleteEvent(int i) {
-//        return ClientBuilder.newClient(new ClientConfig())
-//                .target(server).path("api/events/" + i)
-//                .request(APPLICATION_JSON)
-//                .accept(APPLICATION_JSON)
-//                .delete(Event.class);
         Response response = ClientBuilder.newClient(new ClientConfig())
                 .target(server)
                 .path("api/events/" + i)
@@ -113,9 +108,6 @@ public class ServerUtils {
                 .request(APPLICATION_JSON) //
                 .accept(APPLICATION_JSON) //
                 .post(Entity.entity(events, APPLICATION_JSON), Response.class);
-//        setParticipants(events.getParticipantsList(), password, events);
-//        setExpenses(events.getExpensesList(), password, events);
-//        setTags(events.getTagsList(), password, events);
 
     }
 

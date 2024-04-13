@@ -28,8 +28,8 @@ import javafx.stage.Modality;
 public class MyModule implements Module {
 
     /**
-     *
-     * @param binder
+     * Configures classes
+     * @param binder binder
      */
     @Override
     public void configure(Binder binder) {

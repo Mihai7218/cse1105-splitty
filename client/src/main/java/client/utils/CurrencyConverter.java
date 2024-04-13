@@ -30,12 +30,12 @@ public class CurrencyConverter {
     }
 
     /**
-     * Method that converts
-     * @param date
-     * @param from
-     * @param to
-     * @param sum
-     * @return
+     * Method that converts between currencies
+     * @param date date of the conversion
+     * @param from currency to convert from
+     * @param to currency to convert to
+     * @param sum value converted
+     * @return converted amount
      */
     public double convert(Date date, String from, String to, double sum) {
         if (from.equals(to))

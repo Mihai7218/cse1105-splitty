@@ -49,9 +49,9 @@ public class DebtPair implements Comparable<DebtPair> {
     }
 
     /**
-     *
+     * Compares two debt pairs
      * @param o the object to be compared.
-     * @return
+     * @return comparison between debt pairs
      */
     @Override
     public int compareTo(DebtPair o) {
