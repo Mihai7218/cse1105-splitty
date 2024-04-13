@@ -58,7 +58,11 @@ public class ConnectToServerCtrl {
          */
         String serverAddress = serverAddressField.getText();
         if (emptyServer(serverAddress)) {
-            showAlert("Server Address Required", "Please enter a server address.");
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.titleProperty().bind(languageManager.bind("commons.warning"));
+            alert.headerTextProperty().bind(languageManager.bind("connect.emptyAddress"));
+            alert.contentTextProperty().bind(languageManager.bind("connect.emptyAddressBody"));
+            alert.showAndWait();
             return;
         }
 
@@ -67,7 +71,11 @@ public class ConnectToServerCtrl {
             Alert the user if not and break out of the method to enter a new server
          */
         if (!isServerAvailable(serverAddress)) {
-            showAlert("Connection Error", "Could not establish a connection with the server.");
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.titleProperty().bind(languageManager.bind("commons.warning"));
+            alert.headerTextProperty().bind(languageManager.bind("connect.connectionError"));
+            alert.contentTextProperty().bind(languageManager.bind("connect.connectionErrorBody"));
+            alert.showAndWait();
             return;
         }
         // Update config if everything is fine and redirect to start screen

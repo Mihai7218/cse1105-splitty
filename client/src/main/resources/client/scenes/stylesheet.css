@@ -4,6 +4,12 @@
     -fx-font-family: Verdana;
 }
 
+.button:focus-visible, .text-field:focus-visible, .combo-box:focus-visible,
+.choice-box:focus-visible, .tab-pane:focus-visible, .list-view:focus-visible{
+    -fx-border-color: red;
+    -fx-border-width: 2px;
+    -fx-border-radius: 1px;
+}
 
 #disabledButton{
     -fx-background-radius: 50px;
@@ -80,6 +86,12 @@
     -fx-background-color:RGB(086,180,233);
 }
 
+#sendmail:focus-visible{
+    -fx-border-color: red;
+    -fx-border-width: 2px;
+    -fx-border-radius: 1px;
+}
+
 #addEntity:hover, #sendmail:hover{
     -fx-background-color:RGB(138, 200, 235);
     -fx-underline: true;
@@ -132,7 +144,7 @@
     -fx-cursor: hand;
 }
 /*Start Page Specific Styling*/
-#closeButton{
+#closeButton, #returnToServerSelect{
     -fx-background-color: RGB(235,64,52);
 }
 
