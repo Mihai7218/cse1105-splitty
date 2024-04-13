@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.commands.EditExpenseCommand;
 import client.commands.ICommand;
-import client.utils.ConfigInterface;
-import client.utils.CurrencyConverter;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Expense;
 import commons.Participant;
@@ -161,6 +158,9 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             throwAlert("addExpense.invalidHeader", "addExpense.invalidBody");
             highlightMissing(false, true, false, false, false);
             return;
+        } catch (EmptySplitException e) {
+            throwAlert("commons.warning", "addExpense.emptyShare");
+            return;
         }
         mainCtrl.showOverview();
         mainCtrl.showEditConfirmation();
@@ -178,13 +178,18 @@ public class EditExpenseCtrl extends ExpenseCtrl {
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        ICommand editExpense = new EditExpenseCommand(price/100.0, currency.getValue(), title,
+        if (participantPayments != null && participantPayments.stream()
+                .allMatch(x -> x.getParticipant().equals(actualPayee))) {
+            throw new EmptySplitException();
+        }
+
+        ICommand editExpense = new EditExpenseCommand(price / 100.0, currency.getValue(), title,
                 java.sql.Date.valueOf(date), participantPayments,
-                tag, actualPayee,expense,serverUtils,mainCtrl);
-        try{
+                tag, actualPayee, expense, serverUtils, mainCtrl);
+        try {
             editExpense.execute();
             mainCtrl.getOverviewCtrl().addToHistory(editExpense);
-        }catch(WebApplicationException e){
+        } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
                 case 400 -> {
                     throwAlert("addExpense.badReqHeader",
@@ -200,12 +205,13 @@ public class EditExpenseCtrl extends ExpenseCtrl {
 
     /**
      * Undoes the change to the expense and deals with exceptions
+     *
      * @param undoCommand the edits to undo
      */
-    public void undo(ICommand undoCommand){
-        try{
+    public void undo(ICommand undoCommand) {
+        try {
             undoCommand.undo();
-        }catch(WebApplicationException e){
+        } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
                 case 400 -> {
                     throwAlert("addExpense.badReqHeader",

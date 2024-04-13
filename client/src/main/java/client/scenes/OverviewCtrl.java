@@ -401,7 +401,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     /**
      * Opens transfer scene to add a transfer to an event
      */
-    public void addTransfer(){
+    public void addTransfer() {
+        if (participants.getItems().size() < 2) {
+            alert.contentTextProperty().bind(languageManager
+                    .bind("transfer.notEnoughParticipants"));
+            alert.show();
+            return;
+        }
         mainCtrl.showTransfer();
     }
 
@@ -409,6 +415,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense() {
+        if (participants.getItems().size() < 2) {
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addExpense.notEnoughParticipants"));
+            alert.show();
+            return;
+        }
         mainCtrl.showAddExpense();
     }
 

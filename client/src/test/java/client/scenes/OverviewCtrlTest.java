@@ -679,22 +679,54 @@ class OverviewCtrlTest {
     void addTransfer() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
         OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        sut2.setParticipants(participants);
+        participants.getItems().addAll(List.of(bob, tom, mary));
         sut2.addTransfer();
         verify(mainCtrl2).showTransfer();
+    }
+
+    @Test
+    void addTransferZeroParticipants() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        StringProperty sp = new SimpleStringProperty();
+        when(alert.contentTextProperty()).thenReturn(sp);
+        sut2.setParticipants(participants);
+        sut2.addTransfer();
+        verify(mainCtrl2, never()).showTransfer();
+        verify(alert).contentTextProperty();
+        verify(alert).show();
     }
 
     @Test
     void addExpense() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
         OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        sut2.setParticipants(participants);
+        participants.getItems().addAll(List.of(bob, tom, mary));
         sut2.addExpense();
         verify(mainCtrl2).showAddExpense();
+    }
+
+    @Test
+    void addExpenseZeroParticipants() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        StringProperty sp = new SimpleStringProperty();
+        when(alert.contentTextProperty()).thenReturn(sp);
+        sut2.setParticipants(participants);
+        sut2.addExpense();
+        verify(mainCtrl2, never()).showAddExpense();
+        verify(alert).contentTextProperty();
+        verify(alert).show();
     }
 
     @Test
     void keyPressedCTRLE() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
         OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        sut2.setParticipants(participants);
+        participants.getItems().addAll(List.of(bob, tom, mary));
         KeyEvent keyEvent = mock(KeyEvent.class);
         when(keyEvent.getCode()).thenReturn(KeyCode.E);
         when(keyEvent.isControlDown()).thenReturn(true);
