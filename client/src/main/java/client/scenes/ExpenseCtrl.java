@@ -87,6 +87,7 @@ public abstract class ExpenseCtrl implements Initializable {
     protected Expense expense;
     protected StompSession.Subscription participantSubscription;
     protected Map<Participant, StompSession.Subscription> participantSubscriptionMap;
+    protected boolean ignoreQuestion = false;
 
     /**
      * @param mainCtrl
@@ -426,7 +427,7 @@ public abstract class ExpenseCtrl implements Initializable {
             everyone.setSelected(true);
             only.setSelected(false);
             scrollNames.setVisible(false);
-            showQuestion();
+            if (!ignoreQuestion) showQuestion();
         } else if (atLeastOneSelected && only.isSelected()) {
             scrollNames.setVisible(true);
             everyone.setSelected(false); // Deselect "everyone" if not all names are selected
