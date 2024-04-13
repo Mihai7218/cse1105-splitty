@@ -2,10 +2,7 @@ package client.scenes;
 
 import client.commands.EditExpenseCommand;
 import client.commands.ICommand;
-import client.utils.ConfigInterface;
-import client.utils.CurrencyConverter;
-import client.utils.LanguageManager;
-import client.utils.ServerUtils;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Expense;
 import commons.Participant;
@@ -33,12 +30,13 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     private StompSession.Subscription expenseSubscription;
 
     /**
-     * @param mainCtrl
-     * @param config
-     * @param languageManager
-     * @param serverUtils
-     * @param alert
-     * @param currencyConverter
+     * Constructor for editExpenseController
+     * @param mainCtrl main controller
+     * @param config client config
+     * @param languageManager language manager for language switch
+     * @param serverUtils server utils
+     * @param alert alerts to throw
+     * @param currencyConverter currency converter for foreign currency
      */
     @Inject
     public EditExpenseCtrl(MainCtrl mainCtrl,
@@ -60,7 +58,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     }
 
     /**
-     *
+     * loads page and adds websocket subscriptions
      */
     @Override
     public void load() {
@@ -111,7 +109,6 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         super.initialize(url, resourceBundle);
-        //refresh();
     }
 
     /**
@@ -161,6 +158,9 @@ public class EditExpenseCtrl extends ExpenseCtrl {
             throwAlert("addExpense.invalidHeader", "addExpense.invalidBody");
             highlightMissing(false, true, false, false, false);
             return;
+        } catch (EmptySplitException e) {
+            throwAlert("commons.warning", "addExpense.emptyShare");
+            return;
         }
         exit();
         mainCtrl.showEditConfirmation();
@@ -169,20 +169,24 @@ public class EditExpenseCtrl extends ExpenseCtrl {
     /**
      * Method to create a new Expense object
      */
-
     public void modifyExpense(String title, int price, LocalDate date, Expense expense) {
         Tag tag = expenseType.getValue();
         Participant actualPayee = payee.getValue();
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
 
-        ICommand editExpense = new EditExpenseCommand(price/100.0, currency.getValue(), title,
+        if (participantPayments != null && participantPayments.stream()
+                .allMatch(x -> x.getParticipant().equals(actualPayee))) {
+            throw new EmptySplitException();
+        }
+
+        ICommand editExpense = new EditExpenseCommand(price / 100.0, currency.getValue(), title,
                 java.sql.Date.valueOf(date), participantPayments,
-                tag, actualPayee,expense,serverUtils,mainCtrl);
-        try{
+                tag, actualPayee, expense, serverUtils, mainCtrl);
+        try {
             editExpense.execute();
             mainCtrl.getOverviewCtrl().addToHistory(editExpense);
-        }catch(WebApplicationException e){
+        } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
                 case 400 -> {
                     throwAlert("addExpense.badReqHeader",
@@ -194,26 +198,17 @@ public class EditExpenseCtrl extends ExpenseCtrl {
                 }
             }
         }
-//       new Expense(price, currency.getValue(), title, "testing",
-//                java.sql.Date.valueOf(date), participantPayments, tag, actualPayee);
-
-//        expense.setTitle(title);
-//        expense.setAmount(price / 100.0);
-//        expense.setCurrency(currency.getValue());
-//        expense.setDate(java.sql.Date.valueOf(date));
-//        expense.setSplit(participantPayments);
-//        expense.setTag(tag);
-//        expense.setPayee(actualPayee);
     }
 
     /**
      * Undoes the change to the expense and deals with exceptions
+     *
      * @param undoCommand the edits to undo
      */
-    public void undo(ICommand undoCommand){
-        try{
+    public void undo(ICommand undoCommand) {
+        try {
             undoCommand.undo();
-        }catch(WebApplicationException e){
+        } catch (WebApplicationException e) {
             switch (e.getResponse().getStatus()) {
                 case 400 -> {
                     throwAlert("addExpense.badReqHeader",

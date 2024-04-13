@@ -43,6 +43,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private final LanguageManager languageManager;
     private final CurrencyConverter currencyConverter;
     private final ConfigInterface config;
+    private final Alert alert;
     @FXML
     public Button undoButton;
     @FXML
@@ -96,6 +97,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     private Map<Tag, StompSession.Subscription> tagSubscriptionMap;
     private StompSession.Subscription tagSubscription;
     private StompSession.Subscription participantSubscription;
+    private StompSession.Subscription eventSubscription;
 
     private Map<Participant, StompSession.Subscription> participantSubscriptionMap;
 
@@ -112,10 +114,10 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     /**
      * Constructs a new OverviewCtrl object.
      *
-     * @param languageManager LanguageManager object
-     * @param config Config object
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
+     * @param languageManager   LanguageManager object
+     * @param config            Config object
+     * @param server            ServerUtils object
+     * @param mainCtrl          MainCtrl object
      * @param currencyConverter CurrencyConverter object
      */
     @Inject
@@ -123,21 +125,14 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         ConfigInterface config,
                         ServerUtils server,
                         MainCtrl mainCtrl,
-                        CurrencyConverter currencyConverter) {
+                        CurrencyConverter currencyConverter,
+                        Alert alert) {
         this.languageManager = languageManager;
         this.config = config;
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.currencyConverter = currencyConverter;
-    }
-
-    /**
-     * Getter for the tag subscription map.
-     *
-     * @return - the tag subscription map of the overview controller.
-     */
-    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
-        return tagSubscriptionMap;
+        this.alert = alert;
     }
 
     /**
@@ -174,7 +169,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                 expenses = server.getAllExpenses(mainCtrl.getEvent().getInviteCode());
                 participantsList = server.getEvent(mainCtrl.getEvent().getInviteCode())
                         .getParticipantsList();
-            } catch (WebApplicationException e) {
+            } catch (WebApplicationException | NullPointerException e) {
                 e.printStackTrace();
             }
             for (Expense expense : expenses) {
@@ -193,9 +188,9 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             all.getItems().sort((o1, o2) -> -o1.getDate().compareTo(o2.getDate()));
             all.refresh();
             filterViews();
+            String base = getCurrency();
+            sumExpense.setText(String.format("%.2f %s", getSum(), base));
         }
-        String base = getCurrency();
-        sumExpense.setText(String.format("%.2f %s", getSum(), base));
     }
 
     /**
@@ -207,8 +202,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             List<Participant> serverparticipants = new ArrayList<>();
             try {
                 serverparticipants = server.getAllParticipants(mainCtrl.getEvent().getInviteCode());
-            }
-            catch (WebApplicationException e) {
+            } catch (WebApplicationException e) {
                 e.printStackTrace();
             }
             participants.getItems().clear();
@@ -247,11 +241,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             code.setText(String.valueOf(event.getInviteCode()));
             participants.getItems().sort(Comparator.comparing(Participant::getName));
             expenseparticipants.getItems().sort(Comparator.comparing(Participant::getName));
-            server.registerForMessages(String.format("/topic/events/%s",
-                    mainCtrl.getEvent().getInviteCode()), Event.class, q -> Platform.runLater(() ->{
-                        mainCtrl.getEvent().setTitle(q.getTitle());
-                        title.setText(q.getTitle());
-                    }));
+            if (eventSubscription == null)
+                eventSubscription = server.registerForMessages(String.format("/topic/events/%s",
+                        mainCtrl.getEvent().getInviteCode()), Event.class,
+                        q -> Platform.runLater(() ->{
+                            mainCtrl.getEvent().setTitle(q.getTitle());
+                            title.setText(q.getTitle());
+                        }));
             if (expensesSubscription == null)
                 expensesSubscription = server.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/expenses", Expense.class,
@@ -267,7 +263,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                                 sumExpense.setText(String.format(
                                         "%.2f %s", getSum(), getCurrency()));
                                 subscribeToExpense(expense);
-                                mainCtrl.getDebtsCtrl().refresh();
+                                if (mainCtrl.getDebtsCtrl() != null)
+                                    mainCtrl.getDebtsCtrl().refresh();
                             });
                         });
             if (participantSubscription == null)
@@ -310,7 +307,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                         if (!"deleted".equals(part.getIban())) {
                             mainCtrl.getEvent().getParticipantsList().add(part);
                         }
-                        mainCtrl.getDebtsCtrl().refresh();
+                        if (mainCtrl.getDebtsCtrl() != null)
+                            mainCtrl.getDebtsCtrl().refresh();
                         populateExpenses();
                         populateParticipants();
                     }));
@@ -320,6 +318,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Method that subscribes to updates for an tag.
+     *
      * @param tag - the tag to subscribe to.
      */
     private void subscribeToTag(Tag tag) {
@@ -329,7 +328,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
                     + tag.getId();
             var subscription = server.registerForMessages(dest, Tag.class,
                     exp -> Platform.runLater(() -> {
-                        mainCtrl.getEvent().getTagsList().remove(exp);
+                        mainCtrl.getEvent().getTagsList().remove(tag);
                         if (!"deleted".equals(exp.getColor())) {
                             mainCtrl.getEvent().getTagsList().add(exp);
                         }
@@ -342,6 +341,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Method that subscribes to updates for an expense.
+     *
      * @param expense - the expense to subscribe to.
      */
     private void subscribeToExpense(Expense expense) {
@@ -381,6 +381,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Method that gets the code of the currency that is currently set.
+     *
      * @return - the currency code.
      */
     private String getCurrency() {
@@ -400,7 +401,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     /**
      * Opens transfer scene to add a transfer to an event
      */
-    public void addTransfer(){
+    public void addTransfer() {
+        if (participants.getItems().size() < 2) {
+            alert.contentTextProperty().bind(languageManager
+                    .bind("transfer.notEnoughParticipants"));
+            alert.show();
+            return;
+        }
         mainCtrl.showTransfer();
     }
 
@@ -408,6 +415,12 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      * Opens the addExpense scene to be able to add Expenses to the event.
      */
     public void addExpense() {
+        if (participants.getItems().size() < 2) {
+            alert.contentTextProperty().bind(languageManager
+                    .bind("addExpense.notEnoughParticipants"));
+            alert.show();
+            return;
+        }
         mainCtrl.showAddExpense();
     }
 
@@ -416,19 +429,25 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void startMenu() {
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
             expensesSubscription.unsubscribe();
             expensesSubscription = null;
         }
+        if (eventSubscription != null) {
+            eventSubscription.unsubscribe();
+            eventSubscription = null;
+        }
         if (tagSubscription != null) {
             tagSubscription.unsubscribe();
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         if (participantSubscription != null) {
@@ -436,7 +455,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             participantSubscription = null;
         }
         if (participantSubscriptionMap != null) {
-            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             participantSubscriptionMap = new HashMap<>();
         }
         clearFields();
@@ -449,10 +469,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     public void sendInvites() {
         mainCtrl.showInvitation();
     }
+
     /**
      * Opens the statistics scene to be able to see the statistics.
      */
-    public void statistics(){
+    public void statistics() {
         mainCtrl.showStatistics();
     }
 
@@ -570,18 +591,19 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void removeParticipant(Participant participant) {
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
-        for(Expense e: expenses){
-            if(!e.getSplit().stream()
+        for (Expense e : expenses) {
+            if (!e.getSplit().stream()
                     .filter(item -> item.getParticipant()
                             .equals(participant)).toList().isEmpty()
-                || e.getPayee().equals(participant)){
-                Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
-                confirmation.contentTextProperty().bind(
+                    || e.getPayee().equals(participant)) {
+                alert.setAlertType(Alert.AlertType.CONFIRMATION);
+                alert.contentTextProperty().bind(
                         languageManager.bind("overview.removeParticipant"));
-                confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
-                confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
-                Optional<ButtonType> result = confirmation.showAndWait();
-                if(!(result.isPresent() && result.get() == ButtonType.OK)) {
+                alert.titleProperty().bind(languageManager.bind("commons.warning"));
+                alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
+                Optional<ButtonType> result = alert.showAndWait();
+                alert.setAlertType(Alert.AlertType.WARNING);
+                if (!(result.isPresent() && result.get() == ButtonType.OK)) {
                     return;
                 } else {
                     break;
@@ -591,7 +613,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         for (Expense expense : expenses) {
             if (removeExpenseLogic(participant, expense)) return;
         }
-        server.removeParticipant(mainCtrl.getEvent().getInviteCode(),participant);
+        server.removeParticipant(mainCtrl.getEvent().getInviteCode(), participant);
         participants.getItems().remove(participant);
         expenseparticipants.getItems().remove(participant);
         participants.refresh();
@@ -647,12 +669,13 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Recalculate expenses on deletion of participant.
-     * @param expense - the expense.
+     *
+     * @param expense     - the expense.
      * @param participant - the deleted participant.
      */
     private void recalculateSplit(Expense expense, Participant participant) {
         double amount = expense.getAmount();
-        int amountCents = (int) (amount*100);
+        int amountCents = (int) (amount * 100);
         List<Participant> participantsList = new ArrayList<>(expense.getSplit().stream()
                 .map(ParticipantPayment::getParticipant).toList());
         participantsList.remove(participant);
@@ -660,8 +683,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         int noParticipants = participantsList.size();
 
         Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
-        double amtAdded = (double)(amountCents/noParticipants)/100.0;
-        //System.out.println(amtAdded);
+        double amtAdded = (double) (amountCents / noParticipants) / 100.0;
         int remainder = amountCents % noParticipants;
         for (Participant p : participantsList) {
             ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
@@ -670,21 +692,21 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         }
         Collections.shuffle(participantsList);
         int counter = 0;
-        while(remainder > 0){
+        while (remainder > 0) {
             Participant subject = participantsList.get(counter);
             double initAmt = participantSplits.get(subject).getPaymentAmount();
             participantSplits.get(participantsList.get(counter)).setPaymentAmount(initAmt + 0.01);
             remainder--;
             counter++;
-            //System.out.println(subject.toString() + " got the extra cent!");
         }
     }
 
     /**
      * method to calculate the sum of all expenses in the event
+     *
      * @return double for the event total
      */
-    public double getSum(){
+    public double getSum() {
         double sum = 0;
         if (mainCtrl.getEvent() == null) return sum;
         List<Expense> expenses = mainCtrl.getEvent().getExpensesList();
@@ -720,6 +742,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Getter for the main controller
+     *
      * @return MainCtrl object
      */
     @Override
@@ -729,6 +752,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Getter for the languages combo box.
+     *
      * @return LanguageComboBox object
      */
     @Override
@@ -737,7 +761,15 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
+     * @param languages
+     */
+    void setLanguages(LanguageComboBox languages) {
+        this.languages = languages;
+    }
+
+    /**
      * Getter for the config.
+     *
      * @return - the config
      */
     @Override
@@ -747,6 +779,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Gets the notification label.
+     *
      * @return - the notification label.
      */
     @Override
@@ -764,19 +797,20 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     *
-     */
-    public ListView<Participant> getParticipantsListView() {
-        return participants;
-    }
-
-    /**
      * Gets the List of participants of the event
      */
     public List<Participant> getParticipants() {
         if (mainCtrl.getEvent() == null) return new ArrayList<>();
         List<Participant> participantsList = mainCtrl.getEvent().getParticipantsList();
         return participantsList;
+    }
+
+    /**
+     * Sets the listview containing participants
+     * @param participants listview
+     */
+    void setParticipants(ListView<Participant> participants) {
+        this.participants = participants;
     }
 
     /**
@@ -795,6 +829,7 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         mainCtrl.getSettingsCtrl().setPrevScene(true);
         mainCtrl.showSettings();
     }
+
     /**
      * Getter for the expense subscription map.
      *
@@ -806,7 +841,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it goes to settle debts.
      *  - if ESCAPE is pressed, then it cancels and returns to the startscreen.
      *  - if Ctrl + p is pressed, then it opens the add participant scene.
      *  - if Ctrl + e is pressed, then it opens the add expense scene.
@@ -817,42 +851,267 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void keyPressed(KeyEvent e) {
         switch (e.getCode()) {
-            case ENTER:
-                settleDebts();
-                break;
             case ESCAPE:
                 startMenu();
                 break;
             case E:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     addExpense();
                     break;
                 }
             case P:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     addParticipant();
                     break;
                 }
             case S:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     statistics();
                     break;
                 }
             case M:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     startMenu();
                     break;
                 }
             case T:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     settings();
                     break;
                 }
             case Z:
-                undo();
-                break;
+                if (e.isControlDown()) {
+                    undo();
+                    break;
+                }
             default:
                 break;
         }
+    }
+
+    /**
+     * Sets the showstatisticsbutton (testing)
+     * @param showStatisticsButton button
+     */
+    void setShowStatisticsButton(Button showStatisticsButton) {
+        this.showStatisticsButton = showStatisticsButton;
+    }
+
+    /**
+     * Sets the tab detailing who the expense is from
+     * @param fromTab tab
+     */
+    void setFromTab(Tab fromTab) {
+        this.fromTab = fromTab;
+    }
+
+    /**
+     * Sets the tab detailing expenses the participant is included in
+     * @param includingTab tab
+     */
+    void setIncludingTab(Tab includingTab) {
+        this.includingTab = includingTab;
+    }
+
+    /**
+     * Sets the title label
+     * @param title label
+     */
+    void setTitle(Label title) {
+        this.title = title;
+    }
+
+    /**
+     * Sets the label for the participants from
+     * @param participantFrom label
+     */
+    void setParticipantFrom(Label participantFrom) {
+        this.participantFrom = participantFrom;
+    }
+
+    /**
+     * Sets the label for participant including
+     * @param participantIncluding label
+     */
+    void setParticipantIncluding(Label participantIncluding) {
+        this.participantIncluding = participantIncluding;
+    }
+
+    /**
+     * Sets the listview with all expenses
+     * @param all listview
+     */
+    void setAll(ListView<Expense> all) {
+        this.all = all;
+    }
+
+    /**
+     * Sets the listview with expenses from certain participant
+     * @param from listview
+     */
+    void setFrom(ListView<Expense> from) {
+        this.from = from;
+    }
+
+    /**
+     * Sets the listview including a participant
+     * @param including listview
+     */
+    void setIncluding(ListView<Expense> including) {
+        this.including = including;
+    }
+
+    /**
+     * Sets the choicebox for the participants in an expense
+     * @param expenseparticipants choicebox
+     */
+    void setExpenseparticipants(ChoiceBox<Participant> expenseparticipants) {
+        this.expenseparticipants = expenseparticipants;
+    }
+
+    /**
+     * Sets the settings button
+     * @param settings button
+     */
+    void setSettings(Button settings) {
+        this.settings = settings;
+    }
+
+    /**
+     * Sets the add participant button
+     * @param addparticipant button
+     */
+    void setAddparticipant(Button addparticipant) {
+        this.addparticipant = addparticipant;
+    }
+
+    /**
+     * Sets the cancel button
+     * @param cancel button
+     */
+    void setCancel(Button cancel) {
+        this.cancel = cancel;
+    }
+
+    /**
+     * Sets the expense added button
+     * @param expenseAdded button
+     */
+    void setExpenseAdded(Label expenseAdded) {
+        this.expenseAdded = expenseAdded;
+    }
+
+    /**
+     * Sets the settleDebts button
+     * @param settleDebts button
+     */
+    void setSettleDebts(Button settleDebts) {
+        this.settleDebts = settleDebts;
+    }
+
+    /**
+     * Sets the addExpense button
+     * @param addExpenseButton button
+     */
+    void setAddExpenseButton(Button addExpenseButton) {
+        this.addExpenseButton = addExpenseButton;
+    }
+
+    /**
+     * Sets the sum expense label
+     * @param sumExpense label
+     */
+    void setSumExpense(Label sumExpense) {
+        this.sumExpense = sumExpense;
+    }
+
+    /**
+     * Sets the sum label
+     * @param sumLabel label
+     */
+    void setSumLabel(Label sumLabel) {
+        this.sumLabel = sumLabel;
+    }
+
+    /**
+     * Sets the label for the invite code
+     * @param code label
+     */
+    void setCode(Label code) {
+        this.code = code;
+    }
+
+    /**
+     * Sets the websocket subscription
+     * @param expensesSubscription subscription
+     */
+    void setExpensesSubscription(StompSession.Subscription expensesSubscription) {
+        this.expensesSubscription = expensesSubscription;
+    }
+
+    /**
+     * Sets the expense Subscription map
+     * @param expenseSubscriptionMap map
+     */
+    void setExpenseSubscriptionMap(Map<Expense, StompSession.Subscription> expenseSubscriptionMap) {
+        this.expenseSubscriptionMap = expenseSubscriptionMap;
+    }
+
+    /**
+     * Sets the tagSubscription map
+     * @param tagSubscriptionMap map
+     */
+    void setTagSubscriptionMap(Map<Tag, StompSession.Subscription> tagSubscriptionMap) {
+        this.tagSubscriptionMap = tagSubscriptionMap;
+    }
+
+    /**
+     * Sets the tag subscription for websockets
+     * @param tagSubscription subscription
+     */
+    void setTagSubscription(StompSession.Subscription tagSubscription) {
+        this.tagSubscription = tagSubscription;
+    }
+
+    /**
+     *  Sets the participant subscription for websockets
+     * @param participantSubscription subscription
+     */
+    void setParticipantSubscription(StompSession.Subscription participantSubscription) {
+        this.participantSubscription = participantSubscription;
+    }
+
+    /**
+     * Sets the participant subscription map
+     * @param participantSubscriptionMap map
+     */
+    void setParticipantSubscriptionMap(Map<Participant, StompSession.Subscription>
+                                               participantSubscriptionMap) {
+        this.participantSubscriptionMap = participantSubscriptionMap;
+    }
+
+    /**
+     * Sets the undo button
+     * @param undoButton button
+     */
+    void setUndoButton(Button undoButton) {
+        this.undoButton = undoButton;
+    }
+
+
+    /**
+     * Sets the add transfer button
+     * @param addTransferButton button
+     */
+    void setAddTransferButton(Button addTransferButton) {
+        this.addTransferButton = addTransferButton;
+    }
+
+    /**
+     * Sets the event subscription
+     * @param subscription subscription
+     */
+    void setEventSubscription(StompSession.Subscription subscription) {
+        this.eventSubscription = subscription;
     }
 }

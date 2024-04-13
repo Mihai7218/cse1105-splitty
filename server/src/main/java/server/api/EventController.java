@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Objects;
 
 
-//TODO: debt and owed endpoints
 @RestController
 @RequestMapping("/api/events")
 
@@ -166,7 +165,6 @@ public class EventController {
      * @param participantId the participant to calculate the debt of
      * @return the response entity containing the debt as a double
      */
-    //TODO
     @GetMapping(path = {"/{invitecode}/debt/{participantId}"})
     public ResponseEntity<Double> getDebt(@PathVariable("invitecode") Long eventId,
                                            @PathVariable("participantId") Long participantId){

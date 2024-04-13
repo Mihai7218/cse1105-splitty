@@ -91,8 +91,6 @@ public class StatisticsCtrl implements Initializable {
         this.refreshLanguage();
         expenseSubscriptionMap = new HashMap<>();
         tagSubscriptionMap = new HashMap<>();
-        pieChart = new PieChart();
-        ownLegend = new VBox();
     }
 
 
@@ -248,7 +246,8 @@ public class StatisticsCtrl implements Initializable {
     public void backToOverview() {
         subscription.unsubscribe();
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -260,7 +259,8 @@ public class StatisticsCtrl implements Initializable {
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showOverview();
@@ -272,7 +272,8 @@ public class StatisticsCtrl implements Initializable {
     public void showManageTagsScreen() {
         subscription.unsubscribe();
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -284,7 +285,8 @@ public class StatisticsCtrl implements Initializable {
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showManageTags();
@@ -335,9 +337,6 @@ public class StatisticsCtrl implements Initializable {
                 legendList.add(new Pair<>(pair.getKey(), value));
             }
         }
-        String legendStyle = "-fx-background-color: white; -fx-border-color: black;";
-        pieChart.getData().get(0).getNode().getParent().getParent()
-                .lookup(".chart-legend").setStyle(legendStyle);
 
         updateOwnLegend(legendList, total);
         StringBinding test = languageManager.bind("statistics.chartTitle");
@@ -420,7 +419,8 @@ public class StatisticsCtrl implements Initializable {
     public void startMenu() {
         subscription.unsubscribe();
         if (expenseSubscriptionMap != null) {
-            expenseSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            expenseSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             expenseSubscriptionMap = new HashMap<>();
         }
         if (expensesSubscription != null) {
@@ -432,7 +432,8 @@ public class StatisticsCtrl implements Initializable {
             tagSubscription = null;
         }
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         mainCtrl.showStartMenu();

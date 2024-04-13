@@ -9,7 +9,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-//TODO: edge case testing, null testing, etc
 class EventTest {
 
     private Date creationDate;

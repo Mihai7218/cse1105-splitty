@@ -5,10 +5,8 @@ import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import commons.Event;
-import commons.Expense;
 import commons.Participant;
 import commons.Tag;
-import jakarta.ws.rs.core.Response;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -33,7 +31,6 @@ import java.util.ResourceBundle;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doNothing;
 
 @ExtendWith(ApplicationExtension.class)
 public class AddExpenseCtrlTest {
@@ -249,5 +246,28 @@ public class AddExpenseCtrlTest {
         verify(price, times(1)).getText();
         verify(date, times(1)).getValue();
 
+    }
+    @Test
+    void testAddExpenseSameParticipant() {
+        String expenseTitle = "Test Expense";
+        String expensePriceText = "10.0";
+        LocalDate expenseDate = LocalDate.now();
+        Participant tom = new Participant("Tom", null, null, null);
+        event.getParticipantsList().add(tom);
+
+        when(payee.getValue()).thenReturn(tom);
+        when(title.getText()).thenReturn(expenseTitle);
+        when(price.getText()).thenReturn(expensePriceText);
+        when(date.getValue()).thenReturn(expenseDate);
+
+        sut.addExpense();
+
+        verify(title).getText();
+        verify(price).getText();
+        verify(date).getValue();
+        verify(alert).titleProperty();
+        verify(alert).headerTextProperty();
+        verify(alert).contentTextProperty();
+        verify(alert).showAndWait();
     }
 }

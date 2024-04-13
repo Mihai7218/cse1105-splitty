@@ -295,7 +295,8 @@ public class AddTransferCtrl extends ExpenseCtrl implements Initializable  {
             participantSubscription = null;
         }
         if (participantSubscriptionMap != null) {
-            participantSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            participantSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             participantSubscriptionMap = new HashMap<>();
         }
         clearFields();

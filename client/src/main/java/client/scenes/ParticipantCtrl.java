@@ -130,8 +130,6 @@ public class ParticipantCtrl {
             return;
         }
         try {
-//            server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
-//            mainCtrl.getEvent().getParticipantsList().add(getParticipant());
             server.addParticipant(mainCtrl.getEvent().getInviteCode(), getParticipant());
             mainCtrl.getOverviewCtrl().populateParticipants();
         } catch (WebApplicationException e) {

@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-//TODO: add endpoints for specific expense within an event if necessary
 
 @RestController
 @RequestMapping("/api/events")

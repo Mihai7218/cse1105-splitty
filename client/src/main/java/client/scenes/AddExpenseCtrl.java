@@ -23,12 +23,12 @@ public class AddExpenseCtrl extends ExpenseCtrl {
 
 
     /**
-     *
-     * @param mainCtrl
-     * @param config
-     * @param languageManager
-     * @param serverUtils
-     * @param alert
+     * Constructor for the AddExpenseController
+     * @param mainCtrl main controller
+     * @param config config for client
+     * @param languageManager language manager for lang switching
+     * @param serverUtils server utils
+     * @param alert alert to throw
      */
     @Inject
     public AddExpenseCtrl(MainCtrl mainCtrl,
@@ -99,6 +99,9 @@ public class AddExpenseCtrl extends ExpenseCtrl {
             throwAlert("addExpense.invalidHeader", "addExpense.invalidBody");
             highlightMissing(false, true, false, false, false);
             return;
+        } catch (EmptySplitException e) {
+            throwAlert("commons.warning", "addExpense.emptyShare");
+            return;
         }
         try {
             serverUtils.addExpense(mainCtrl.getEvent().getInviteCode(), newExpense);
@@ -127,6 +130,11 @@ public class AddExpenseCtrl extends ExpenseCtrl {
         double priceVal = ((double)price)/100;
 
         List<ParticipantPayment> participantPayments = getParticipantPayments(price, actualPayee);
+
+        if (participantPayments != null && participantPayments.stream()
+                .allMatch(x -> x.getParticipant().equals(actualPayee))) {
+            throw new EmptySplitException();
+        }
 
         return new Expense(priceVal, currencyString, title, "testing",
                 actualDate, participantPayments, tag, actualPayee);

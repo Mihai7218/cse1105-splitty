@@ -14,10 +14,7 @@ import javafx.scene.input.KeyEvent;
 import org.springframework.messaging.simp.stomp.StompSession;
 
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ManageTagsCtrl implements Initializable {
 
@@ -64,7 +61,6 @@ public class ManageTagsCtrl implements Initializable {
             language = "en";
         }
         this.refreshLanguage();
-        tagsListView = new ListView<>();
         tagsListView.setCellFactory(x ->
                 new TagListCell(mainCtrl, languageManager, config, serverUtils));
         tagSubscriptionMap = new HashMap<>();
@@ -88,7 +84,8 @@ public class ManageTagsCtrl implements Initializable {
      */
     public void backToStatistics() {
         if (tagSubscriptionMap != null) {
-            tagSubscriptionMap.forEach((k, v) -> v.unsubscribe());
+            tagSubscriptionMap.values().stream().filter(Objects::nonNull)
+                    .forEach(StompSession.Subscription::unsubscribe);
             tagSubscriptionMap = new HashMap<>();
         }
         if (tagSubscription != null) {
