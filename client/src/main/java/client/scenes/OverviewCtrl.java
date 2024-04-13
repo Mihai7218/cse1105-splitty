@@ -136,15 +136,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     * Getter for the tag subscription map.
-     *
-     * @return - the tag subscription map of the overview controller.
-     */
-    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
-        return tagSubscriptionMap;
-    }
-
-    /**
      * Adds a command to history
      * @param i command to add
      */
@@ -793,13 +784,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     *
-     */
-    public ListView<Participant> getParticipantsListView() {
-        return participants;
-    }
-
-    /**
      * Gets the List of participants of the event
      */
     public List<Participant> getParticipants() {
@@ -976,20 +960,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     * @param editparticipant
-     */
-    void setEditparticipant(Button editparticipant) {
-        this.editparticipant = editparticipant;
-    }
-
-    /**
-     * @param sendMail
-     */
-    void setSendMail(Button sendMail) {
-        this.sendMail = sendMail;
-    }
-
-    /**
      * @param cancel
      */
     void setCancel(Button cancel) {
@@ -1036,13 +1006,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     void setCode(Label code) {
         this.code = code;
-    }
-
-    /**
-     * @param inviteLang
-     */
-    void setInviteLang(Label inviteLang) {
-        this.inviteLang = inviteLang;
     }
 
     /**
@@ -1102,13 +1065,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         this.undoButton = undoButton;
     }
 
-    /**
-     *
-     * @param undoTooltip
-     */
-    void setUndoTooltip(Tooltip undoTooltip) {
-        this.undoTooltip = undoTooltip;
-    }
 
     /**
      *
@@ -1116,38 +1072,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     void setAddTransferButton(Button addTransferButton) {
         this.addTransferButton = addTransferButton;
-    }
-
-    /**
-     *
-     * @return
-     */
-    StompSession.Subscription getEventSubscription() {
-        return eventSubscription;
-    }
-
-    /**
-     *
-     * @return
-     */
-    StompSession.Subscription getParticipantSubscription() {
-        return participantSubscription;
-    }
-
-    /**
-     *
-     * @return
-     */
-    StompSession.Subscription getTagSubscription() {
-        return tagSubscription;
-    }
-
-    /**
-     *
-     * @return
-     */
-    StompSession.Subscription getExpensesSubscription() {
-        return expensesSubscription;
     }
 
     /**

@@ -6,8 +6,11 @@ import commons.*;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.ObservableMap;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -662,6 +665,17 @@ class OverviewCtrlTest {
     }
 
     @Test
+    void keyPressedCTRLP() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when(keyEvent.getCode()).thenReturn(KeyCode.P);
+        when(keyEvent.isControlDown()).thenReturn(true);
+        sut2.keyPressed(keyEvent);
+        verify(mainCtrl2).showParticipant();
+    }
+
+    @Test
     void addTransfer() {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
         OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
@@ -674,6 +688,17 @@ class OverviewCtrlTest {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
         OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
         sut2.addExpense();
+        verify(mainCtrl2).showAddExpense();
+    }
+
+    @Test
+    void keyPressedCTRLE() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when(keyEvent.getCode()).thenReturn(KeyCode.E);
+        when(keyEvent.isControlDown()).thenReturn(true);
+        sut2.keyPressed(keyEvent);
         verify(mainCtrl2).showAddExpense();
     }
 
@@ -714,6 +739,17 @@ class OverviewCtrlTest {
         MainCtrl mainCtrl2 = mock(MainCtrl.class);
         OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
         sut2.statistics();
+        verify(mainCtrl2).showStatistics();
+    }
+
+    @Test
+    void keyPressedCTRLS() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when(keyEvent.getCode()).thenReturn(KeyCode.S);
+        when(keyEvent.isControlDown()).thenReturn(true);
+        sut2.keyPressed(keyEvent);
         verify(mainCtrl2).showStatistics();
     }
 
@@ -765,6 +801,15 @@ class OverviewCtrlTest {
     void removeParticipantWAExc() {
         Event event = getEvent();
         mainCtrl.setEvent(event);
+        Participant coati = new Participant("Coati", null, null, null);
+        Expense expense3 = new Expense(20.0, "EUR", "title", "desc", java.sql.Date.valueOf("2024-01-01"), new ArrayList<>(List.of(
+                new ParticipantPayment(bob, 5.0),
+                new ParticipantPayment(mary, 5.0),
+                new ParticipantPayment(tom, 5.0),
+                new ParticipantPayment(coati, 5.0)
+        )), null, coati);
+        event.getParticipantsList().add(coati);
+        event.getExpensesList().add(expense3);
         when(server.getEvent(1)).thenReturn(event);
         when(server.getAllParticipants(1)).thenReturn(event.getParticipantsList());
         when(server.getAllExpenses(1)).thenReturn(event.getExpensesList());
@@ -775,7 +820,9 @@ class OverviewCtrlTest {
         when(alert.headerTextProperty()).thenReturn(sp);
         AtomicReference<Expense> modified = new AtomicReference<>();
         when(server.updateExpense(anyInt(), any())).then(mock -> {
-            modified.set(mock.getArgument(1));
+            if (mock.getArgument(1).getClass().equals(Expense.class)
+                    && ((Expense) mock.getArgument(1)).getId() == 2)
+                modified.set(mock.getArgument(1));
             throw new WebApplicationException();
         });
         doAnswer(mock -> {
@@ -795,59 +842,120 @@ class OverviewCtrlTest {
     }
 
     @Test
-    void getSum() {
-    }
-
-    @Test
-    void getLanguageManager() {
-    }
-
-    @Test
     void setLanguageManager() {
+        ObservableMap<String, Object> map = new LanguageManager(config);
+        sut.setLanguageManager(map);
+        assertEquals(map, sut.getLanguageManager());
     }
 
     @Test
     void getMainCtrl() {
+        assertEquals(mainCtrl, sut.getMainCtrl());
     }
 
     @Test
     void getLanguages() {
-    }
-
-    @Test
-    void getConfig() {
+        assertEquals(languages, sut.getLanguages());
     }
 
     @Test
     void getNotificationLabel() {
+        Label expenseAdded = new Label();
+        sut.setExpenseAdded(expenseAdded);
+        assertEquals(expenseAdded, sut.getNotificationLabel());
     }
 
     @Test
     void languageManagerProperty() {
-    }
-
-    @Test
-    void getParticipantsListView() {
+        assertEquals(languageManager, sut.languageManagerProperty());
     }
 
     @Test
     void getParticipants() {
-    }
+        Event event = getEvent();
+        mainCtrl.setEvent(event);
 
-    @Test
-    void updateLanguageComboBox() {
+        List<Participant> participants = sut.getParticipants();
+
+        assertEquals(List.of(bob, mary, tom), participants);
     }
 
     @Test
     void settings() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        SettingsCtrl settingsCtrl = mock(SettingsCtrl.class);
+        when(mainCtrl2.getSettingsCtrl()).thenReturn(settingsCtrl);
+        sut2.settings();
+        verify(settingsCtrl).setPrevScene(true);
+        verify(mainCtrl2).showSettings();
     }
 
     @Test
-    void getExpenseSubscriptionMap() {
+    void keyPressedCTRLT() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        SettingsCtrl settingsCtrl = mock(SettingsCtrl.class);
+        when(mainCtrl2.getSettingsCtrl()).thenReturn(settingsCtrl);
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when(keyEvent.getCode()).thenReturn(KeyCode.T);
+        when(keyEvent.isControlDown()).thenReturn(true);
+        sut2.keyPressed(keyEvent);
+        verify(settingsCtrl).setPrevScene(true);
+        verify(mainCtrl2).showSettings();
     }
 
     @Test
-    void keyPressed() {
+    void keyPressedESC() {
+        StompSession.Subscription subscription = mock(StompSession.Subscription.class);
+        sut.setExpensesSubscription(subscription);
+        sut.setTagSubscription(subscription);
+        sut.setEventSubscription(subscription);
+        sut.setParticipantSubscription(subscription);
+
+        Scene startMenu = mock(Scene.class);
+        mainCtrl.setStartScreen(startMenu);
+        Stage primaryStage = mock(Stage.class);
+        StringProperty sp = new SimpleStringProperty();
+        when(primaryStage.titleProperty()).thenReturn(sp);
+        mainCtrl.setHistory(new Stack<>());
+        mainCtrl.setPrimaryStage(primaryStage);
+
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when (keyEvent.getCode()).thenReturn(KeyCode.ESCAPE);
+        sut.keyPressed(keyEvent);
+
+        verify(subscription, times(4)).unsubscribe();
+        assertTrue(expenseSubscriptionMap.isEmpty());
+        assertTrue(tagSubscriptionMap.isEmpty());
+        assertTrue(participantSubscriptionMap.isEmpty());
+    }
+
+    @Test
+    void keyPressedCTRLM() {
+        StompSession.Subscription subscription = mock(StompSession.Subscription.class);
+        sut.setExpensesSubscription(subscription);
+        sut.setTagSubscription(subscription);
+        sut.setEventSubscription(subscription);
+        sut.setParticipantSubscription(subscription);
+
+        Scene startMenu = mock(Scene.class);
+        mainCtrl.setStartScreen(startMenu);
+        Stage primaryStage = mock(Stage.class);
+        StringProperty sp = new SimpleStringProperty();
+        when(primaryStage.titleProperty()).thenReturn(sp);
+        mainCtrl.setHistory(new Stack<>());
+        mainCtrl.setPrimaryStage(primaryStage);
+
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when (keyEvent.getCode()).thenReturn(KeyCode.M);
+        when (keyEvent.isControlDown()).thenReturn(true);
+        sut.keyPressed(keyEvent);
+
+        verify(subscription, times(4)).unsubscribe();
+        assertTrue(expenseSubscriptionMap.isEmpty());
+        assertTrue(tagSubscriptionMap.isEmpty());
+        assertTrue(participantSubscriptionMap.isEmpty());
     }
 
     private Event getEvent() {
@@ -856,5 +964,46 @@ class OverviewCtrlTest {
         event.getExpensesList().addAll(List.of(expense1, expense2));
         event.setInviteCode(1);
         return event;
+    }
+
+    @Test
+    void addToHistory() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        when(mainCtrl2.getHistory()).thenReturn(new Stack<>());
+        undoButton.setVisible(false);
+        ICommand iCommand = mock(ICommand.class);
+        undoButton = new Button();
+        sut2.setUndoButton(undoButton);
+        sut2.addToHistory(iCommand);
+        verify(mainCtrl2).addToHistory(iCommand);
+        assertTrue(undoButton.isVisible());
+    }
+
+    @Test
+    void undo() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        when(mainCtrl2.getHistory()).thenReturn(new Stack<>());
+        undoButton = new Button();
+        sut2.setUndoButton(undoButton);
+        sut2.undo();
+        verify(mainCtrl2).undo();
+        assertFalse(undoButton.isVisible());
+    }
+
+    @Test
+    void keyPressedCTRLZ() {
+        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+        OverviewCtrl sut2 = new OverviewCtrl(languageManager, config, server, mainCtrl2, currencyConverter, alert);
+        when(mainCtrl2.getHistory()).thenReturn(new Stack<>());
+        KeyEvent keyEvent = mock(KeyEvent.class);
+        when(keyEvent.getCode()).thenReturn(KeyCode.Z);
+        when(keyEvent.isControlDown()).thenReturn(true);
+        undoButton = new Button();
+        sut2.setUndoButton(undoButton);
+        sut2.keyPressed(keyEvent);
+        verify(mainCtrl2).undo();
+        assertFalse(undoButton.isVisible());
     }
 }
