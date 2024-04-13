@@ -44,8 +44,7 @@ public class ManageTagsCtrl implements Initializable {
     public ManageTagsCtrl(MainCtrl mainCtrl,
                        ConfigInterface config,
                        LanguageManager languageManager,
-                       ServerUtils serverUtils,
-                       CurrencyConverter currencyConverter) {
+                       ServerUtils serverUtils) {
         this.mainCtrl = mainCtrl;
         this.config = config;
         this.languageManager = languageManager;
@@ -65,20 +64,13 @@ public class ManageTagsCtrl implements Initializable {
             language = "en";
         }
         this.refreshLanguage();
+        tagsListView = new ListView<>();
         tagsListView.setCellFactory(x ->
                 new TagListCell(mainCtrl, languageManager, config, serverUtils));
         tagSubscriptionMap = new HashMap<>();
         refresh();
     }
 
-    /**
-     * Getter for the tag subscription map.
-     *
-     * @return - the tag subscription map of the overview controller.
-     */
-    public Map<Tag, StompSession.Subscription> getTagSubscriptionMap() {
-        return tagSubscriptionMap;
-    }
 
     /**
      * Method that refreshes the language.
@@ -143,14 +135,20 @@ public class ManageTagsCtrl implements Initializable {
                 tagSubscription = serverUtils.registerForMessages("/topic/events/" +
                                 mainCtrl.getEvent().getInviteCode() + "/tags", Tag.class,
                         tag -> {
-                            Platform.runLater(() -> {
-                                tagsListView.getItems().add(tag);
-                                mainCtrl.getEvent().getTagsList().add(tag);
-                                tagsListView.refresh();
-                                subscribeToTag(tag);
-                            });
+                            Platform.runLater(() -> {onTagReceive(tag);});
                         });
         }
+    }
+
+    /**
+     * What the system needs to do when a tag is received
+     * @param tag the received tag
+     */
+    public void onTagReceive(Tag tag) {
+        tagsListView.getItems().add(tag);
+        mainCtrl.getEvent().getTagsList().add(tag);
+        tagsListView.refresh();
+        subscribeToTag(tag);
     }
 
     /**
@@ -170,27 +168,33 @@ public class ManageTagsCtrl implements Initializable {
     }
 
     /**
-     * Method that subscribes to updates for an tag.
+     * Method that subscribes to updates for a tag.
      * @param item - the tag to subscribe to.
      */
-    private void subscribeToTag(Tag item) {
+    public void subscribeToTag(Tag item) {
         if (!tagSubscriptionMap.containsKey(item)) {
             String dest = "/topic/events/" +
                     mainCtrl.getEvent().getInviteCode() + "/tags/"
                     + item.getId();
             var subscription = serverUtils.registerForMessages(dest, Tag.class,
-                    tag -> Platform.runLater(() -> {
-                        tagsListView.getItems().remove(tag);
-                        mainCtrl.getEvent().getTagsList().remove(tag);
-                        tagsListView.refresh();
-                        if (!"deleted".equals(tag.getColor())) {
-                            tagsListView.getItems().add(tag);
-                            mainCtrl.getEvent().getTagsList().add(tag);
-                        }
-                        tagsListView.refresh();
-                    }));
+                    tag -> Platform.runLater(() -> {onTagUpdate(tag);}));
             tagSubscriptionMap.put(item, subscription);
         }
+    }
+
+    /**
+     * What the system needs to do when a tag is updated
+     * @param tag the tag to update
+     */
+    public void onTagUpdate(Tag tag) {
+        tagsListView.getItems().remove(tag);
+        mainCtrl.getEvent().getTagsList().remove(tag);
+        tagsListView.refresh();
+        if (!"deleted".equals(tag.getColor())) {
+            tagsListView.getItems().add(tag);
+            mainCtrl.getEvent().getTagsList().add(tag);
+        }
+        tagsListView.refresh();
     }
 
     /**
@@ -232,5 +236,50 @@ public class ManageTagsCtrl implements Initializable {
             default:
                 break;
         }
+    }
+
+
+    /**
+     * return the tagSubscription
+     *
+     * @param tagSubscription the tagSubscription of the controller
+     */
+    public void setTagSubscription(StompSession.Subscription tagSubscription) {
+        this.tagSubscription = tagSubscription;
+    }
+
+    /**
+     * return the tagSubscriptionMap
+     *
+     * @param tagSubscriptionMap the tagSubscriptionMap of the controller
+     */
+    public void setTagSubscriptionMap(Map<Tag, StompSession.Subscription> tagSubscriptionMap) {
+        this.tagSubscriptionMap = tagSubscriptionMap;
+    }
+
+    /**
+     * return the cancel
+     *
+     * @param cancel the cancel of the controller
+     */
+    public void setCancel(Button cancel) {
+        this.cancel = cancel;
+    }
+
+    /**
+     * return the tagsListView
+     *
+     * @param tagsListView the tagsListView of the controller
+     */
+    public void setTagsListView(ListView tagsListView) {
+        this.tagsListView = tagsListView;
+    }
+
+    /**
+     * get the main controller that is being used by the manageTags page
+     * @return the mainCtrl from the manageTags page
+     */
+    public MainCtrl getMainCtrl() {
+        return mainCtrl;
     }
 }

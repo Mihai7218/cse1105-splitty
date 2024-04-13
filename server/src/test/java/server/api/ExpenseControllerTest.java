@@ -214,15 +214,7 @@ public class ExpenseControllerTest {
 
     }
 
-    @Test
-    public void importExpense(){
-        Expense sample  = new Expense(10, "EUR", "test", "desc", null, null, null, null);
-        assertEquals(stubbedCtrl.addJsonImport(0, "password", sample).getStatusCode(), BAD_REQUEST);
-        validExpense = true;
-        assertEquals(stubbedCtrl.addJsonImport(0, "password", sample).getStatusCode(), OK);
-        assertEquals(stubbedCtrl.addJsonImport(0, "password", sample).getBody(), sample);
-        assertEquals(stubbedCtrl.addJsonImport(0, "wrongPassword", sample).getStatusCode(), BAD_REQUEST);
-    }
+
 
     /***
      * Tests for the getAllExpenses method

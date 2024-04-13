@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Objects;
 
-import static org.springframework.http.HttpStatus.OK;
-
 
 @RestController
 @RequestMapping("/api/events/{id}/expenses")
@@ -144,31 +142,4 @@ public class ExpenseController {
         }
         return resp;
     }
-
-
-    /**
-     * Post method to allow an admin to upload new expenses
-     * @param password string password
-     * @param expenses the list of expenses to be added
-     * @return the list of events if succesfully added
-     */
-    @PostMapping(path = {"/admin/{password}"})
-    public ResponseEntity<Expense> addJsonImport(@PathVariable("id") long id,
-            @PathVariable("password") String password,
-                                                 @RequestBody Expense expenses){
-        if (PasswordService.getPassword().equals(password)) {
-            if(expenseService.validateExpense(expenses).getStatusCode().equals(OK)){
-                expenseService.addCreatedExpense(expenses);
-                return ResponseEntity.ok(expenses);
-
-            }else{
-                return ResponseEntity.badRequest().build();
-            }
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
-
-
 }

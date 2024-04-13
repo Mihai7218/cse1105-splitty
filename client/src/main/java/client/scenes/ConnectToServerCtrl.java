@@ -4,6 +4,7 @@ import client.utils.ConfigInterface;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
 import com.google.inject.Inject;
+import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -135,5 +136,21 @@ public class ConnectToServerCtrl {
             default:
                 break;
         }
+    }
+
+    /**
+     * Get the language manager observable map.
+     * @return - the language manager observable map.
+     */
+    public ObservableMap<String, Object> getLanguageManager() {
+        return languageManager.get();
+    }
+
+    /**
+     * Get the language manager.
+     * @return - the language manager.
+     */
+    public LanguageManager languageManagerProperty() {
+        return languageManager;
     }
 }

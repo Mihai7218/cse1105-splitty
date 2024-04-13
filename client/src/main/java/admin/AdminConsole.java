@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -112,7 +113,14 @@ public class AdminConsole {
         boolean running = true;
         while (running){
             printOptions();
-            switch (userInput.nextInt()) {
+            int choseOption = 5;
+            try{
+                choseOption = Integer.parseInt(userInput.next());
+            } catch (Exception e) {
+                System.out.println("This is not a number. Please enter a number");
+                showOptions(userInput,adminConsole);
+            }
+            switch (choseOption) {
                 case 1:
                     printerMenu(userInput, adminConsole);
                     break;
@@ -124,7 +132,22 @@ public class AdminConsole {
                 case 3:
                     List<Event> importedEvents = adminConsole.readFromFile(new Scanner(System.in));
                     if(importedEvents == null || importedEvents.isEmpty()) break;
-                    for(Event e: importedEvents) adminConsole.setNewEvents(e);
+                    int succes = 0;
+                    int existed = 0;
+                    int error = 0;
+                    for(Event e: importedEvents) {
+                        Response response = adminConsole.setNewEvents(e);
+                        if (response.getStatus() == 200) {
+                            succes++;
+                        } else if (response.getStatus() == 404) {
+                            existed++;
+                        } else {
+                            error++;
+                        }
+                    }
+                    System.out.println(succes + " events where successfully imported");
+                    System.out.println(existed + " events already existed");
+                    System.out.println(error + " events encountered an error");
                     break;
                 case 4:
                     adminConsole.deleteEventMenu(userInput, adminConsole);
@@ -144,7 +167,16 @@ public class AdminConsole {
     public static void printerMenu(Scanner userInput, AdminConsole adminConsole){
         System.out.println("What would you like to do?");
         printerMenuPrintText();
-        switch (userInput.nextInt()){
+        int choseOption = 0;
+        while (choseOption == 0) {
+            try{
+                choseOption = Integer.parseInt(userInput.next());
+            } catch (Exception exception) {
+                System.out.println("This is not a number. Please enter a number");
+                printerMenuPrintText();
+            }
+        }
+        switch (choseOption){
             case 1:
                 adminConsole.updateEvents();
                 adminConsole.printEvents();
@@ -259,7 +291,7 @@ public class AdminConsole {
      * @return whether the deletion was confirmed
      */
     public boolean confirmationMenu(Scanner userInput, int invCode) {
-        System.out.println("Please confirm you want to delete event" + invCode + "\n" +
+        System.out.println("Please confirm you want to delete event " + invCode + "\n" +
                 "Y/N");
         String choice = userInput.next();
         switch (choice) {
@@ -286,13 +318,14 @@ public class AdminConsole {
         System.out.println("Where do you want to save the dump? " +
                 "Give the folder or type 'cancel' to cancel: ");
         String path = userInput.next();
+
         if(path.equals("cancel")){
             return;
         }
         LocalDateTime now = LocalDateTime.now();
         DateTimeFormatter timeFormat = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
         String formattedDateTime = now.format(timeFormat);
-        path += "\\Splitty-Dump-" + formattedDateTime + ".json";
+        path = Path.of(path, "Splitty-Dump-" + formattedDateTime + ".json").toString();
         FileWriter ewa = null;
         try {
             ewa = new FileWriter(path);
@@ -361,7 +394,19 @@ public class AdminConsole {
             System.out.println("1. for retry password");
             System.out.println("2. change server address");
             System.out.println("3. to quit");
-            switch (userInput.nextInt()) {
+            int choseOption = 0;
+            while (choseOption == 0) {
+                try{
+                    choseOption = Integer.parseInt(userInput.next());
+                } catch (Exception exception) {
+                    System.out.println("This is not a number. Please enter a number");
+                    System.out.println("Password incorrect");
+                    System.out.println("1. for retry password");
+                    System.out.println("2. change server address");
+                    System.out.println("3. to quit");
+                }
+            }
+            switch (choseOption) {
                 case 1:
                     System.out.println("retry password");
                     signIn(userInput, adminConsole);
@@ -443,10 +488,12 @@ public class AdminConsole {
 
     /**
      * Method to add imported events to the server
+     *
      * @param event the event to be added/validated
+     * @return
      */
-    public void setNewEvents(Event event){
-        utils.setEvents(event, password);
+    public Response setNewEvents(Event event){
+        return utils.setEvents(event, password);
     }
 
     /**
@@ -533,7 +580,7 @@ public class AdminConsole {
     public static void setServerAddress(Scanner userInput, AdminConsole adminConsole) {
         System.out.println("What is the address of the server?");
         adminConsole.utils.setServer(userInput.next());
-        //adminConsole.serverUtils.setServer("http://localhost:8080");
+        //adminConsole.utils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
     }
 

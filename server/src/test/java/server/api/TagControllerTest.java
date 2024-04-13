@@ -251,17 +251,7 @@ public class TagControllerTest {
         assertEquals(NOT_FOUND, ctrlStub.deleteTagFromEvent(0,100).getStatusCode());
     }
 
-    @Test
-    public void importJsonTest(){
-        Tag tester = new Tag("cool", "#000000");
-        setPassword("password");
-        validTag = true;
-        assertEquals(OK, ctrlStub.addJsonImport("password", tester).getStatusCode());
-        assertEquals(BAD_REQUEST, ctrlStub.addJsonImport("wrongpassword", tester).getStatusCode());
-        validTag = false;
-        assertEquals(BAD_REQUEST, ctrlStub.addJsonImport("password", tester).getStatusCode());
 
-    }
 
     @Test
     public void lastActivityTest() throws InterruptedException {

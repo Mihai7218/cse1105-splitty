@@ -11,6 +11,7 @@ class TagTest {
 
     @Test
     public void checkConstructor(){
+        Tag tag = new Tag();
         Tag TEST_TAG = new Tag("b", "blue");
         assertEquals("b", TEST_TAG.getName());
         assertEquals("blue", TEST_TAG.getColor());
@@ -45,6 +46,12 @@ class TagTest {
         Tag TAG_1 = new Tag("initialName", "yellow");
         TAG_1.setName("newName");
         assertEquals(TAG_1.getName(), "newName");
+    }
+    @Test
+    public void setID(){
+        Tag TAG_1 = new Tag("initialName", "yellow");
+        TAG_1.setId(123);
+        assertEquals(TAG_1.getId(), 123);
     }
 
     @Test

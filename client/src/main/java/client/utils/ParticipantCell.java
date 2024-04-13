@@ -109,9 +109,12 @@ public class ParticipantCell extends ListCell<Participant> {
             oweLabel.setStyle("-fx-font-style: italic");
             owed.setText(String.format("%.2f %s", itemOwed, getCurrency()));
             owedLabel.setStyle("-fx-font-style: italic");
-            if (itemShare < 0) share.setStyle("-fx-text-fill: red");
-            else if (itemShare > 0) share.setStyle("-fx-text-fill: green");
-            else share.setStyle("-fx-text-fill: black");
+            if (itemShare < -0.001) share.setStyle("-fx-text-fill: red");
+            else if (itemShare > 0.001) share.setStyle("-fx-text-fill: green");
+            else {
+                share.setStyle("-fx-text-fill: black");
+                share.setText("0.00 EUR");
+            }
             setGraphic(vBox);
 
         }

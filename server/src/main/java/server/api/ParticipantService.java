@@ -226,20 +226,4 @@ public class ParticipantService {
 
 
 
-    /**
-     * Method to add a participant from a JSOn import
-     * @param participant the participant to be imported
-     * @return participant if added successfully
-     */
-    public ResponseEntity<Participant> addPriorParticipant(Participant participant) {
-        if(participant==null || !validateBic(participant.getBic())
-                || !validateIban(participant.getIban()) ||!validateEmail(participant.getEmail())
-                || !validateName(participant.getName())){
-            return ResponseEntity.badRequest().build();
-        }else{
-            participantRepository.save(participant);
-            return  ResponseEntity.ok(participant);
-        }
-    }
-
 }

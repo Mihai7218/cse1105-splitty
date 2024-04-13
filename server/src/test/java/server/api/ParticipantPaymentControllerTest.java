@@ -168,16 +168,7 @@ public class ParticipantPaymentControllerTest {
         ctrlStubbed = new ParticipantPaymentController(serviceStubbed, serverUtil);
     }
 
-    @Test
-    public void importParticipantPayment(){
-        Participant other = new Participant("John Doe",
-                "jdoe@gmail.com","NL85RABO5253446745",
-                "HBUKGB4B");
-        ParticipantPayment pp = new ParticipantPayment(other, 25);
-        setPassword("password");
-        assertEquals(OK,participantPaymentController.addJsonImport("password", pp).getStatusCode());
-        assertEquals(BAD_REQUEST, participantPaymentController.addJsonImport("wrongpassword", pp).getStatusCode());
-    }
+
 
     @Test
     public void testGetAll(){

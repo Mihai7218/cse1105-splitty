@@ -4,8 +4,14 @@ import client.utils.ConfigInterface;
 import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
+import commons.Event;
+import commons.Expense;
 import commons.Participant;
 import commons.Tag;
+import jakarta.ws.rs.core.Response;
+import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -18,6 +24,10 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -64,8 +74,11 @@ public class AddExpenseCtrlTest {
     Button cancelButton;
     ColorPicker colorPicker;
     Button addExpenseButton;
-    private CurrencyConverter currencyConverter;
-
+    CurrencyConverter currencyConverter;
+    Event event;
+    List<Participant> participants;
+    StringProperty sp;
+    Participant participant;
 
     @Start
     void setUp(Stage stage) {
@@ -73,6 +86,7 @@ public class AddExpenseCtrlTest {
         serverUtils = mock(ServerUtils.class);
         languageManager = mock(LanguageManager.class);
         currencyConverter = mock(CurrencyConverter.class);
+        alert = mock(Alert.class);
         sut = new AddExpenseCtrl(mainCtrl, config, languageManager,
                 serverUtils, alert, currencyConverter);
         payee = mock(ChoiceBox.class);
@@ -92,6 +106,11 @@ public class AddExpenseCtrlTest {
         cancelButton=mock(Button.class);
         addExpenseButton = mock(Button.class);
         colorPicker = mock(ColorPicker.class);
+        var creationDate = new Date(2024, 2, 15);
+        var lastActivity = new Date(2022, 3, 17);
+
+        event = new Event("Test Event", creationDate, lastActivity);
+
 
         sut.setPayee(payee);
         sut.setCurrency(currency);
@@ -112,18 +131,35 @@ public class AddExpenseCtrlTest {
         sut.setAddExpense(addExpenseButton);
         sut.setColorPicker(colorPicker);
 
+        sp = new SimpleStringProperty("Hello");
+        when(languageManager.bind(anyString())).thenReturn(Bindings.createStringBinding(() -> ""));
+        when(alert.contentTextProperty()).thenReturn(sp);
+        when(alert.titleProperty()).thenReturn(sp);
+        when(alert.headerTextProperty()).thenReturn(sp);
+        participant = new Participant("john", "erra@gmail.com", "NL123ABN", "BRT");
+        participants = new ArrayList<>();
+        addParticipants();
+
         doNothing().when(addExpenseButton).setGraphic(any(Node.class));
         doNothing().when(cancelButton).setGraphic(any(Node.class));
         when(payee.getItems()).thenReturn(op);
         when(currency.getItems()).thenReturn(oc);
         when(expenseType.getItems()).thenReturn(ot);
         when(namesContainer.getChildren()).thenReturn(noc);
+        when(payee.getValue()).thenReturn(participant);
+        when(currency.getValue()).thenReturn("EUR");
+        when(mainCtrl.getEvent()).thenReturn(event);
+        event.setParticipantsList(participants);
 
         sut.initialize(mock(URL.class), mock(ResourceBundle.class));
     }
     public void addPeople(ObservableList noc){
         noc.add(0, "John");
         noc.add(1, "Heather");
+    }
+    public void addParticipants(){
+        participants.add(new Participant("part1", "erra@gmail.com", "NL123ABN", "BRT"));
+        participants.add(new Participant("part2", "maru@gmail.com", "NL13323ABN", "BRT"));
     }
     
     @Test
@@ -138,7 +174,7 @@ public class AddExpenseCtrlTest {
         everyone.setSelected(true);
         sut.everyoneCheck();
         assertFalse(only.isSelected());
-        assertTrue(namesContainer.getChildren().isEmpty());
+        assertEquals(0, namesContainer.getChildren().size());
 
         everyone.setSelected(false);
         only.setSelected(true);
@@ -147,5 +183,71 @@ public class AddExpenseCtrlTest {
         if(everyone.isSelected()) noc.clear();
         else addPeople(noc);
         assertFalse(namesContainer.getChildren().isEmpty());
+    }
+    @Test
+    void testAddExpenseGoodNumber() {
+        // Set up necessary dependencies and data
+        String expenseTitle = "Test Expense";
+        String expensePriceText = "10.00"; // Assuming valid price text
+        LocalDate expenseDate = LocalDate.now();
+
+        // Mock behavior for GUI elements
+        when(title.getText()).thenReturn(expenseTitle);
+        when(price.getText()).thenReturn(expensePriceText);
+        when(date.getValue()).thenReturn(expenseDate);
+        //when(serverUtils.addExpense(any(), any())).thenReturn(mock(Response.class)); // Mock server response
+
+        // Invoke the method
+        sut.addExpense();
+
+        // Verify behavior
+        verify(title, times(1)).getText();
+        verify(price, times(1)).getText();
+        verify(date, times(1)).getValue();
+
+    }
+    @Test
+    void testAddExpenseNegativeNumber() {
+        // Set up necessary dependencies and data
+        String expenseTitle = "Test Expense";
+        String expensePriceText = "-10.00"; // Assuming valid price text
+        LocalDate expenseDate = LocalDate.now();
+
+        // Mock behavior for GUI elements
+        when(title.getText()).thenReturn(expenseTitle);
+        when(price.getText()).thenReturn(expensePriceText);
+        when(date.getValue()).thenReturn(expenseDate);
+        //when(serverUtils.addExpense(any(), any())).thenReturn(mock(Response.class)); // Mock server response
+
+        // Invoke the method
+        sut.addExpense();
+
+        // Verify behavior
+        verify(title, times(1)).getText();
+        verify(price, times(1)).getText();
+        verify(date, times(1)).getValue();
+
+    }
+    @Test
+    void testAddExpenseTooManyDigitsNumber() {
+        // Set up necessary dependencies and data
+        String expenseTitle = "Test Expense";
+        String expensePriceText = "10.00223"; // Assuming valid price text
+        LocalDate expenseDate = LocalDate.now();
+
+        // Mock behavior for GUI elements
+        when(title.getText()).thenReturn(expenseTitle);
+        when(price.getText()).thenReturn(expensePriceText);
+        when(date.getValue()).thenReturn(expenseDate);
+        //when(serverUtils.addExpense(any(), any())).thenReturn(mock(Response.class)); // Mock server response
+
+        // Invoke the method
+        sut.addExpense();
+
+        // Verify behavior
+        verify(title, times(1)).getText();
+        verify(price, times(1)).getText();
+        verify(date, times(1)).getValue();
+
     }
 }
