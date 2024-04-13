@@ -91,8 +91,6 @@ public class StatisticsCtrl implements Initializable {
         this.refreshLanguage();
         expenseSubscriptionMap = new HashMap<>();
         tagSubscriptionMap = new HashMap<>();
-        pieChart = new PieChart();
-        ownLegend = new VBox();
     }
 
 
@@ -335,9 +333,6 @@ public class StatisticsCtrl implements Initializable {
                 legendList.add(new Pair<>(pair.getKey(), value));
             }
         }
-        String legendStyle = "-fx-background-color: white; -fx-border-color: black;";
-        pieChart.getData().get(0).getNode().getParent().getParent()
-                .lookup(".chart-legend").setStyle(legendStyle);
 
         updateOwnLegend(legendList, total);
         StringBinding test = languageManager.bind("statistics.chartTitle");

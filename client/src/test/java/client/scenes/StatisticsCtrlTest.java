@@ -8,6 +8,8 @@ import commons.Event;
 import commons.Expense;
 import commons.Tag;
 import javafx.beans.binding.StringBinding;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
@@ -69,6 +71,7 @@ public class StatisticsCtrlTest {
     Map<Expense, StompSession.Subscription> expenseSubscriptionMap;
     CurrencyConverter currencyConverter;
 
+    StringProperty sp;
     StompSession session;
 
 
@@ -93,6 +96,14 @@ public class StatisticsCtrlTest {
         expensesSubscription = mock(StompSession.Subscription.class);
         tagSubscriptionMap = mock(HashMap.class);
         expenseSubscriptionMap = mock(HashMap.class);
+
+        sp = new SimpleStringProperty("Hello");
+        when(pieChart.titleProperty()).thenReturn(sp);
+        ObservableList<PieChart.Data> tagObservableList = FXCollections.observableArrayList();
+        tagObservableList.add(new PieChart.Data("test",1));
+        when(pieChart.getData()).thenReturn(tagObservableList);
+        ObservableList<Node> nodeObservableList = FXCollections.observableArrayList();
+        when(ownLegend.getChildren()).thenReturn(nodeObservableList);
 
         sut.setManageTags(manageTags);
         sut.setCurrency(currency);

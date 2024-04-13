@@ -22,6 +22,7 @@ import org.testfx.framework.junit5.Start;
 
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
@@ -58,7 +59,7 @@ class TagCellTest {
 
     @Start
     void setUp(Stage stage) {
-        item = new Tag("test","#00ff00");
+        item = new Tag("","#00ff00");
         mainCtrl = mock(MainCtrl.class);
         languageManager = mock(LanguageManager.class);
         edit = mock(Button.class);
@@ -106,14 +107,12 @@ class TagCellTest {
     public void update() {
         boolean empty = false;
         sut.updateItem(item, empty);
-        //assertEquals(tagName.getText(), item.getName());
-        String ewa = tagName.getText();
+        assertEquals(tagName.getText(),"");
     }
     @Test
     public void updateEmpty() {
         boolean empty = true;
         sut.updateItem(item, empty);
-        //assertEquals(tagName.getText(), item.getName());
-        var ewa = tagName.getText();
+        assertEquals(tagName.getText(),"");
     }
 }
