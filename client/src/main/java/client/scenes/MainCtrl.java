@@ -758,4 +758,36 @@ public class MainCtrl {
 
         return dialog.showAndWait();
     }
+
+    /**
+     *
+     * @param history
+     */
+    void setHistory(Stack<ICommand> history) {
+        this.history = history;
+    }
+
+    /**
+     *
+     * @param debtsCtrl
+     */
+    void setDebtsCtrl(DebtsCtrl debtsCtrl) {
+        this.debtsCtrl = debtsCtrl;
+    }
+
+    /**
+     *
+     * @param startScreen
+     */
+    void setStartScreen(Scene startScreen) {
+        this.startScreen = startScreen;
+    }
+
+    /**
+     *
+     * @param overviewCtrl
+     */
+    void setOverviewCtrl(OverviewCtrl overviewCtrl) {
+        this.overviewCtrl = overviewCtrl;
+    }
 }
