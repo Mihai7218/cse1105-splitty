@@ -12,6 +12,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 import java.text.DateFormat;
@@ -62,7 +63,7 @@ public class ExpenseListCell extends ListCell<Expense> {
      *
      * @param item - expense item
      */
-    private void createGraphic(Expense item) {
+    protected void createGraphic(Expense item) {
         expenseName = new Label();
         paidLabel = new Label();
         paidLabel.textProperty().bind(languageManager.bind("overview.paidLabel"));
@@ -154,7 +155,7 @@ public class ExpenseListCell extends ListCell<Expense> {
      * Method to style the settlement in the expense cell
      * @param item the transfer
      */
-    private void createSettlement(Expense item) {
+    protected void createSettlement(Expense item) {
         expenseName = new Label();
         paidLabel = new Label();
         paidLabel.textProperty().bind(languageManager.bind("overview.settled"));
@@ -214,7 +215,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Updates the cell according to settlement specific styling
      */
-    private void updateSettlement(){
+    protected void updateSettlement(){
         boolean setCurrency = false;
         try {
             for(ParticipantPayment p : this.getItem().getSplit()){
@@ -252,7 +253,7 @@ public class ExpenseListCell extends ListCell<Expense> {
             price.setText("<invalid price>");
         }
         catch (CouldNotConvertException e) {
-            price.setText(Double.toString(this.getItem().getAmount()));
+            price.setText(String.format("%.2f", (this.getItem().getAmount())));
             setCurrency = true;
         }
         try {
@@ -266,15 +267,20 @@ public class ExpenseListCell extends ListCell<Expense> {
             currency.setText("<no currency>");
         }
         StringBuilder sb = new StringBuilder();
-        if (!this.getItem().getSplit().isEmpty()) {
-            sb.append("(");
-            for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
-                sb.append(this.getItem().getSplit().get(i).getParticipant().getName()).append(", ");
-            }
-            sb.append(this.getItem().getSplit()
-                    .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
-            sb.append(")");
-        } else sb.append("none");
+        try {
+            if (!this.getItem().getSplit().isEmpty()) {
+                sb.append("(");
+                for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
+                    sb.append(this.getItem().getSplit().get(i).getParticipant()
+                            .getName()).append(", ");
+                }
+                sb.append(this.getItem().getSplit()
+                        .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
+                sb.append(")");
+            } else sb.append("none");
+        }catch(NullPointerException n){
+            sb.append("none");
+        }
         payers.setText(sb.toString());
         try {
             var dateObj = this.getItem().getDate();
@@ -291,7 +297,7 @@ public class ExpenseListCell extends ListCell<Expense> {
      * Method to style the transfer in the expense cell
      * @param item the transfer
      */
-    private void createTransfer(Expense item) {
+    protected void createTransfer(Expense item) {
         expenseName = new Label();
         paidLabel = new Label();
         paidLabel.textProperty().bind(languageManager.bind("overview.transfered"));
@@ -357,7 +363,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Updates the cell according to transfer specific styling
      */
-    private void updateTransfer(){
+    protected void updateTransfer(){
         boolean setCurrency = false;
         try {
             for(ParticipantPayment p : this.getItem().getSplit()){
@@ -395,7 +401,7 @@ public class ExpenseListCell extends ListCell<Expense> {
             price.setText("<invalid price>");
         }
         catch (CouldNotConvertException e) {
-            price.setText(Double.toString(this.getItem().getAmount()));
+            price.setText(String.format("%.2f", (this.getItem().getAmount())));
             setCurrency = true;
         }
         try {
@@ -409,15 +415,20 @@ public class ExpenseListCell extends ListCell<Expense> {
             currency.setText("<no currency>");
         }
         StringBuilder sb = new StringBuilder();
-        if (!this.getItem().getSplit().isEmpty()) {
-            sb.append("(");
-            for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
-                sb.append(this.getItem().getSplit().get(i).getParticipant().getName()).append(", ");
-            }
-            sb.append(this.getItem().getSplit()
-                    .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
-            sb.append(")");
-        } else sb.append("none");
+        try{
+            if (!this.getItem().getSplit().isEmpty()) {
+                sb.append("(");
+                for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
+                    sb.append(this.getItem().getSplit().get(i).getParticipant()
+                            .getName()).append(", ");
+                }
+                sb.append(this.getItem().getSplit()
+                        .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
+                sb.append(")");
+            } else sb.append("none");
+        }catch (NullPointerException e){
+            sb.append("none");
+        }
         payers.setText(sb.toString());
         try {
             var dateObj = this.getItem().getDate();
@@ -431,7 +442,7 @@ public class ExpenseListCell extends ListCell<Expense> {
     /**
      * Updates the labels and sets the graphic to the HBox.
      */
-    private void update() {
+    protected void update() {
         boolean setCurrency = false;
         try {
             expenseName.setText(this.getItem().getTitle());
@@ -474,7 +485,7 @@ public class ExpenseListCell extends ListCell<Expense> {
             price.setText("<invalid price>");
         }
         catch (CouldNotConvertException e) {
-            price.setText(Double.toString(this.getItem().getAmount()));
+            price.setText(String.format("%.2f", this.getItem().getAmount()));
             setCurrency = true;
         }
         try {
@@ -488,15 +499,20 @@ public class ExpenseListCell extends ListCell<Expense> {
             currency.setText("<no currency>");
         }
         StringBuilder sb = new StringBuilder();
-        if (!this.getItem().getSplit().isEmpty()) {
-            sb.append("(");
-            for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
-                sb.append(this.getItem().getSplit().get(i).getParticipant().getName()).append(", ");
-            }
-            sb.append(this.getItem().getSplit()
-                    .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
-            sb.append(")");
-        } else sb.append("none");
+        try{
+            if (!this.getItem().getSplit().isEmpty()) {
+                sb.append("(");
+                for (int i = 0; i < this.getItem().getSplit().size() - 1; i++) {
+                    sb.append(this.getItem().getSplit().get(i).getParticipant()
+                            .getName()).append(", ");
+                }
+                sb.append(this.getItem().getSplit()
+                        .get(this.getItem().getSplit().size() - 1).getParticipant().getName());
+                sb.append(")");
+            } else sb.append("none");
+        }catch(NullPointerException e){
+            sb.append("none");
+        }
         payers.setText(sb.toString());
         try {
             var dateObj = this.getItem().getDate();
@@ -505,5 +521,101 @@ public class ExpenseListCell extends ListCell<Expense> {
             date.setText("<no date>");
         }
         setGraphic(hBox);
+    }
+
+    /**
+     * Getter for expense name (testing)
+     * @return label
+     */
+    public Label getExpenseName() {
+        return expenseName;
+    }
+
+    /**
+     * Getter for paid label (testing)
+     * @return label
+     */
+    public Label getPaidLabel() {
+        return paidLabel;
+    }
+
+    /**
+     * Getter for payee name (testing)
+     * @return label
+     */
+    public Label getPayeeName() {
+        return payeeName;
+    }
+
+    /**
+     * Getter for forLabel (testing)
+     * @return label
+     */
+    public Label getForLabel() {
+        return forLabel;
+    }
+
+    /**
+     * Getter for price (testing)
+     * @return label
+     */
+    public Label getPrice() {
+        return price;
+    }
+
+    /**
+     * Getter for currency (testing)
+     * @return label
+     */
+    public Label getCurrency() {
+        return currency;
+    }
+
+    /**
+     * Getter for date (testing))
+     * @return label
+     */
+    public Label getDate() {
+        return date;
+    }
+
+    /**
+     * Getter for payers (testing)
+     * @return label
+     */
+    public Label getPayers() {
+        return payers;
+    }
+
+    /**
+     * Getter for the edit button (Testing)
+     * @return button
+     */
+    public Button getEdit() {
+        return edit;
+    }
+
+    /**
+     * Getter for the removal button (Testing)
+     * @return button
+     */
+    public Button getRemove() {
+        return remove;
+    }
+
+    /**
+     * Getter for the tagName text (testing)
+     * @return text
+     */
+    public Text getTagName() {
+        return tagName;
+    }
+
+    /**
+     * Getter for rectangle for tag (testing)
+     * @return rectangle
+     */
+    public Rectangle getRectangle2() {
+        return rectangle2;
     }
 }
