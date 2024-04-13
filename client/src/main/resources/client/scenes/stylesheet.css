@@ -4,8 +4,8 @@
     -fx-font-family: Verdana;
 }
 
-.button:focused, .text-field:focused, .combo-box:focused,
-.choice-box:focused, .tab-pane:focused, .list-view:focused{
+.button:focus-visible, .text-field:focus-visible, .combo-box:focus-visible,
+.choice-box:focus-visible, .tab-pane:focus-visible, .list-view:focus-visible{
     -fx-border-color: red;
     -fx-border-width: 2px;
     -fx-border-radius: 1px;
@@ -86,7 +86,7 @@
     -fx-background-color:RGB(086,180,233);
 }
 
-#sendmail:focused{
+#sendmail:focus-visible{
     -fx-border-color: red;
     -fx-border-width: 2px;
     -fx-border-radius: 1px;
