@@ -669,7 +669,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
         Map<Participant, ParticipantPayment> participantSplits = new HashMap<>();
         double amtAdded = (double) (amountCents / noParticipants) / 100.0;
-        //System.out.println(amtAdded);
         int remainder = amountCents % noParticipants;
         for (Participant p : participantsList) {
             ParticipantPayment newP = new ParticipantPayment(p, amtAdded);
@@ -684,7 +683,6 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
             participantSplits.get(participantsList.get(counter)).setPaymentAmount(initAmt + 0.01);
             remainder--;
             counter++;
-            //System.out.println(subject.toString() + " got the extra cent!");
         }
     }
 
@@ -793,7 +791,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     * @param participants
+     * Sets the listview containing participants
+     * @param participants listview
      */
     void setParticipants(ListView<Participant> participants) {
         this.participants = participants;
@@ -876,181 +875,200 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     * @param showStatisticsButton
+     * Sets the showstatisticsbutton (testing)
+     * @param showStatisticsButton button
      */
     void setShowStatisticsButton(Button showStatisticsButton) {
         this.showStatisticsButton = showStatisticsButton;
     }
 
     /**
-     * @param fromTab
+     * Sets the tab detailing who the expense is from
+     * @param fromTab tab
      */
     void setFromTab(Tab fromTab) {
         this.fromTab = fromTab;
     }
 
     /**
-     * @param includingTab
+     * Sets the tab detailing expenses the participant is included in
+     * @param includingTab tab
      */
     void setIncludingTab(Tab includingTab) {
         this.includingTab = includingTab;
     }
 
     /**
-     * @param title
+     * Sets the title label
+     * @param title label
      */
     void setTitle(Label title) {
         this.title = title;
     }
 
     /**
-     * @param participantFrom
+     * Sets the label for the participants from
+     * @param participantFrom label
      */
     void setParticipantFrom(Label participantFrom) {
         this.participantFrom = participantFrom;
     }
 
     /**
-     * @param participantIncluding
+     * Sets the label for participant including
+     * @param participantIncluding label
      */
     void setParticipantIncluding(Label participantIncluding) {
         this.participantIncluding = participantIncluding;
     }
 
     /**
-     * @param all
+     * Sets the listview with all expenses
+     * @param all listview
      */
     void setAll(ListView<Expense> all) {
         this.all = all;
     }
 
     /**
-     * @param from
+     * Sets the listview with expenses from certain participant
+     * @param from listview
      */
     void setFrom(ListView<Expense> from) {
         this.from = from;
     }
 
     /**
-     * @param including
+     * Sets the listview including a participant
+     * @param including listview
      */
     void setIncluding(ListView<Expense> including) {
         this.including = including;
     }
 
     /**
-     * @param expenseparticipants
+     * Sets the choicebox for the participants in an expense
+     * @param expenseparticipants choicebox
      */
     void setExpenseparticipants(ChoiceBox<Participant> expenseparticipants) {
         this.expenseparticipants = expenseparticipants;
     }
 
     /**
-     * @param settings
+     * Sets the settings button
+     * @param settings button
      */
     void setSettings(Button settings) {
         this.settings = settings;
     }
 
     /**
-     * @param addparticipant
+     * Sets the add participant button
+     * @param addparticipant button
      */
     void setAddparticipant(Button addparticipant) {
         this.addparticipant = addparticipant;
     }
 
     /**
-     * @param cancel
+     * Sets the cancel button
+     * @param cancel button
      */
     void setCancel(Button cancel) {
         this.cancel = cancel;
     }
 
     /**
-     * @param expenseAdded
+     * Sets the expense added button
+     * @param expenseAdded button
      */
     void setExpenseAdded(Label expenseAdded) {
         this.expenseAdded = expenseAdded;
     }
 
     /**
-     * @param settleDebts
+     * Sets the settleDebts button
+     * @param settleDebts button
      */
     void setSettleDebts(Button settleDebts) {
         this.settleDebts = settleDebts;
     }
 
     /**
-     * @param addExpenseButton
+     * Sets the addExpense button
+     * @param addExpenseButton button
      */
     void setAddExpenseButton(Button addExpenseButton) {
         this.addExpenseButton = addExpenseButton;
     }
 
     /**
-     * @param sumExpense
+     * Sets the sum expense label
+     * @param sumExpense label
      */
     void setSumExpense(Label sumExpense) {
         this.sumExpense = sumExpense;
     }
 
     /**
-     * @param sumLabel
+     * Sets the sum label
+     * @param sumLabel label
      */
     void setSumLabel(Label sumLabel) {
         this.sumLabel = sumLabel;
     }
 
     /**
-     * @param code
+     * Sets the label for the invite code
+     * @param code label
      */
     void setCode(Label code) {
         this.code = code;
     }
 
     /**
-     *
-     * @param expensesSubscription
+     * Sets the websocket subscription
+     * @param expensesSubscription subscription
      */
     void setExpensesSubscription(StompSession.Subscription expensesSubscription) {
         this.expensesSubscription = expensesSubscription;
     }
 
     /**
-     *
-     * @param expenseSubscriptionMap
+     * Sets the expense Subscription map
+     * @param expenseSubscriptionMap map
      */
     void setExpenseSubscriptionMap(Map<Expense, StompSession.Subscription> expenseSubscriptionMap) {
         this.expenseSubscriptionMap = expenseSubscriptionMap;
     }
 
     /**
-     *
-     * @param tagSubscriptionMap
+     * Sets the tagSubscription map
+     * @param tagSubscriptionMap map
      */
     void setTagSubscriptionMap(Map<Tag, StompSession.Subscription> tagSubscriptionMap) {
         this.tagSubscriptionMap = tagSubscriptionMap;
     }
 
     /**
-     *
-     * @param tagSubscription
+     * Sets the tag subscription for websockets
+     * @param tagSubscription subscription
      */
     void setTagSubscription(StompSession.Subscription tagSubscription) {
         this.tagSubscription = tagSubscription;
     }
 
     /**
-     *
-     * @param participantSubscription
+     *  Sets the participant subscription for websockets
+     * @param participantSubscription subscription
      */
     void setParticipantSubscription(StompSession.Subscription participantSubscription) {
         this.participantSubscription = participantSubscription;
     }
 
     /**
-     *
-     * @param participantSubscriptionMap
+     * Sets the participant subscription map
+     * @param participantSubscriptionMap map
      */
     void setParticipantSubscriptionMap(Map<Participant, StompSession.Subscription>
                                                participantSubscriptionMap) {
@@ -1058,8 +1076,8 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     *
-     * @param undoButton
+     * Sets the undo button
+     * @param undoButton button
      */
     void setUndoButton(Button undoButton) {
         this.undoButton = undoButton;
@@ -1067,16 +1085,16 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
 
 
     /**
-     *
-     * @param addTransferButton
+     * Sets the add transfer button
+     * @param addTransferButton button
      */
     void setAddTransferButton(Button addTransferButton) {
         this.addTransferButton = addTransferButton;
     }
 
     /**
-     *
-     * @param subscription
+     * Sets the event subscription
+     * @param subscription subscription
      */
     void setEventSubscription(StompSession.Subscription subscription) {
         this.eventSubscription = subscription;

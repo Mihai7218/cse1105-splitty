@@ -265,6 +265,7 @@ public class EditTagCtrl implements Initializable {
                 break;
         }
     }
+
     /**
      * set the name
      *
@@ -273,6 +274,7 @@ public class EditTagCtrl implements Initializable {
     public void setName(TextField name) {
         this.name = name;
     }
+
     /**
      * set the colorPicker
      *
@@ -281,6 +283,7 @@ public class EditTagCtrl implements Initializable {
     public void setColorPicker(ColorPicker colorPicker) {
         this.colorPicker = colorPicker;
     }
+
     /**
      * set the cancelButton
      *
@@ -289,6 +292,7 @@ public class EditTagCtrl implements Initializable {
     public void setCancelButton(Button cancelButton) {
         this.cancelButton = cancelButton;
     }
+
     /**
      * set the changeTag
      *

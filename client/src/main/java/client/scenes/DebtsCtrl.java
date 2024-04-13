@@ -39,8 +39,6 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     private Accordion menu;
     @FXML
     private Button back;
-//    @FXML
-//    private Label noDebts;
 
     /**
      * @param mainCtrl
@@ -203,7 +201,6 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                     debt.getCreditor().getIban().equals("")) {
                 info.textProperty().bind(languageManager.bind("debts.unavailable"));
             } else {
-                //info.textProperty().bind(languageManager.bind("debts.available"));
                 String data = debt.getCreditor().getName() + "\nIBAN: " +
                         debt.getCreditor().getIban() + "\nBIC: " +
                         debt.getCreditor().getBic();
@@ -301,9 +298,7 @@ public class DebtsCtrl implements Initializable, NotificationSender {
                 }
             }
         }
-//        if(menu.getPanes().isEmpty()){
-//            noDebts.setVisible(true);
-//        }
+
     }
 
     /**

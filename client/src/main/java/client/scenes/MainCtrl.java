@@ -760,32 +760,32 @@ public class MainCtrl {
     }
 
     /**
-     *
-     * @param history
+     * Sets edit history
+     * @param history stack with command history
      */
     void setHistory(Stack<ICommand> history) {
         this.history = history;
     }
 
     /**
-     *
-     * @param debtsCtrl
+     * sets the debt controller
+     * @param debtsCtrl debts controller
      */
     void setDebtsCtrl(DebtsCtrl debtsCtrl) {
         this.debtsCtrl = debtsCtrl;
     }
 
     /**
-     *
-     * @param startScreen
+     * Sets the start screen scene
+     * @param startScreen scene
      */
     void setStartScreen(Scene startScreen) {
         this.startScreen = startScreen;
     }
 
     /**
-     *
-     * @param overviewCtrl
+     * Sets the overview controller
+     * @param overviewCtrl controller
      */
     void setOverviewCtrl(OverviewCtrl overviewCtrl) {
         this.overviewCtrl = overviewCtrl;

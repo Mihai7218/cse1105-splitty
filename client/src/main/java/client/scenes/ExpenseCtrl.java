@@ -685,7 +685,6 @@ public abstract class ExpenseCtrl implements Initializable {
      * When the abort button is pressed it goes back to the overview
      */
     public void abort() {
-        //alert.contentTextProperty().bind(languageManager.bind("startScreen.createEventEmpty"));
         removeHighlight();
         Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
         confirmation.contentTextProperty().bind(languageManager.bind("addExpense.abortAlert"));
@@ -708,42 +707,47 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     *
-     * @return
+     * Getter for payee choicebox (testing)
+     * @return choicebox
      */
     public ChoiceBox<Participant> getPayee() {
         return payee;
     }
 
     /**
-     * @param payee
+     * Setter for payee choicebox
+     * @param payee new payee value
      */
     public void setPayee(ChoiceBox<Participant> payee) {
         this.payee = payee;
     }
 
     /**
-     * @return
+     * Getter for the currency choicebox (testing)
+     * @return choicebox
      */
     public ChoiceBox<String> getCurrency() {
         return currency;
     }
 
     /**
-     * @param currency
+     * Setter for currency choicebox
+     * @param currency new currency choicebox
      */
     public void setCurrency(ChoiceBox<String> currency) {
         this.currency = currency;
     }
 
     /**
-     * @return
+     * Getter for the expense type combobox (testing)
+     * @return expense type combobox
      */
     public ComboBox<Tag> getExpenseType() {
         return expenseType;
     }
 
     /**
+     * Sets combobox for expense type (testing)
      * @param expenseType
      */
     public void setExpenseType(ComboBox<Tag> expenseType) {
@@ -751,70 +755,80 @@ public abstract class ExpenseCtrl implements Initializable {
     }
 
     /**
-     * @return
+     * Gets only checkbox (testing)
+     * @return only checkbox
      */
     public CheckBox getEveryone() {
         return everyone;
     }
 
     /**
-     * @param everyone
+     * Sets everyone checkbox (testing)
+     * @param everyone checkbox
      */
     public void setEveryone(CheckBox everyone) {
         this.everyone = everyone;
     }
 
     /**
-     * @return
+     * Gets only checkbox (testing)
+     * @return only checkbox
      */
     public CheckBox getOnly() {
         return only;
     }
 
     /**
-     * @param only
+     * Sets only checkbox (testing)
+     * @param only checkbox
      */
     public void setOnly(CheckBox only) {
         this.only = only;
     }
 
     /**
-     * @return
+     * Gets vbox for names container (Testing)
+     * @return vbox
      */
     public VBox getNamesContainer() {
         return namesContainer;
     }
 
     /**
-     * @param namesContainer
+     * Sets the names container vbox (Testing)
+     * @param namesContainer vbox
      */
     public void setNamesContainer(VBox namesContainer) {
         this.namesContainer = namesContainer;
     }
 
     /**
-     * @return
+     * Gets question label (testing)
+     * @return question label
      */
     public Label getQuestion() {
         return question;
     }
 
     /**
-     * @param question
+     * Sets question label (testing)
+     * @param question label
      */
     public void setQuestion(Label question) {
         this.question = question;
     }
 
     /**
-     * @return
+     * Gets title textfield (Testing)
+     * @return title textfield
      */
     public TextField getTitle() {
         return title;
     }
 
     /**
-     * @param title
+     * Gets title textfield (Testing)
+     * @param title textfield
      */
     public void setTitle(TextField title) {
         this.title = title;
@@ -823,70 +837,79 @@ public abstract class ExpenseCtrl implements Initializable {
     /**
      * getter for button for testing
      *
-     * @param addExpense
+     * @param addExpense button
      */
     public void setAddExpense(Button addExpense) {
         this.addExpense = addExpense;
     }
 
     /**
-     * @return
+     * Gets price textfield
+     * @return price textfield
      */
     public TextField getPrice() {
         return price;
     }
 
     /**
-     * @param price
+     * Sets price textfield (testing)
+     * @param price textfield
      */
     public void setPrice(TextField price) {
         this.price = price;
     }
 
     /**
-     * @return
+     * Gets datepicker (testing)
+     * @return datepicker
      */
     public DatePicker getDate() {
         return date;
     }
 
     /**
-     * @param date
+     * Sets datepicker (testing)
+     * @param date datepicker
      */
     public void setDate(DatePicker date) {
         this.date = date;
     }
 
     /**
-     * @param scrollNames
+     * Sets scrollpane (testing)
+     * @param scrollNames scrollpane
      */
     public void setScrollNames(ScrollPane scrollNames) {
         this.scrollNames = scrollNames;
     }
 
     /**
-     * @param addTag
+     * Sets addTag button (testing)
+     * @param addTag button
      */
     public void setAddTag(Button addTag) {
         this.addTag = addTag;
     }
 
     /**
-     * @param newTag
+     * Sets newTag textfield (testing)
+     * @param newTag textfield
      */
     public void setNewTag(TextField newTag) {
         this.newTag = newTag;
     }
 
     /**
-     * @param colorPicker
+     * Sets colorpicker (testing)
+     * @param colorPicker colorpicker
      */
     public void setColorPicker(ColorPicker colorPicker) {
         this.colorPicker = colorPicker;
     }
 
     /**
-     * @param instructions
+     * Sets the instructions label (testing)
+     * @param instructions instructions label
      */
     public void setInstructions(Label instructions) {
         this.instructions = instructions;
