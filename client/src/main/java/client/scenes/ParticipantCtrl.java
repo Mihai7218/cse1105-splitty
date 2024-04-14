@@ -48,11 +48,11 @@ public class ParticipantCtrl {
     private final LanguageManager languageManager;
 
 
-
     /**
      * Constructs a new ParticipantCtrl object.
-     * @param server ServerUtils object
-     * @param mainCtrl MainCtrl object
+     *
+     * @param server          ServerUtils object
+     * @param mainCtrl        MainCtrl object
      * @param languageManager LanguageManager object
      */
     @Inject
@@ -64,11 +64,11 @@ public class ParticipantCtrl {
 
     /**
      * Returns a new Participant object with the provided details.
+     *
      * @return a participant object with the details.
      */
-    private Participant getParticipant() {
-        var p = new Participant(name.getText(),email.getText(),iban.getText(),bic.getText());
-        return p;
+    public Participant getParticipant() {
+        return new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
     }
 
     /**
@@ -83,7 +83,7 @@ public class ParticipantCtrl {
         String emailRegex = "^[\\w!#$%&’*+/=?{|}~^-]+(?:\\." +
                 "[\\w!#$%&’*+/=?{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
         //Alerts if the name is empty
-        if (name.getText().isEmpty()){
+        if (name.getText().isEmpty()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("addParticipant.emptyFields"));
@@ -92,8 +92,8 @@ public class ParticipantCtrl {
             return;
         }
         //Alerts if the Email is not in the right form
-        if(emailPresent == false && Pattern.compile(emailRegex)
-                .matcher(email.getText()).matches() == false){
+        if (!emailPresent && !Pattern.compile(emailRegex)
+                .matcher(email.getText()).matches()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("addParticipant.invalidEmail"));
@@ -102,7 +102,7 @@ public class ParticipantCtrl {
             return;
         }
         //Alerts if there is only the bic or the iban but not both
-        if(bicPresent != ibanPresent){
+        if (bicPresent != ibanPresent) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager.bind("addParticipant.invalidPayment"));
             alert.initModality(Modality.APPLICATION_MODAL);
@@ -110,8 +110,8 @@ public class ParticipantCtrl {
             return;
         }
         //Alerts if the Iban is not in the right form
-        if(ibanPresent == false && Pattern.compile(ibanRegex)
-                .matcher(iban.getText()).matches() == false){
+        if (!ibanPresent && !Pattern.compile(ibanRegex)
+                .matcher(iban.getText()).matches()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("addParticipant.invalidIban"));
@@ -120,8 +120,8 @@ public class ParticipantCtrl {
             return;
         }
         //Alerts if the Bic is not in the right form
-        if(bicPresent == false && Pattern.compile(bicRegex)
-                .matcher(bic.getText()).matches() == false){
+        if (!bicPresent && !Pattern.compile(bicRegex)
+                .matcher(bic.getText()).matches()) {
             var alert = new Alert(Alert.AlertType.WARNING);
             alert.contentTextProperty().bind(languageManager
                     .bind("addParticipant.invalidBic"));
@@ -165,23 +165,24 @@ public class ParticipantCtrl {
     /**
      * Clears all the text fields
      */
-    private void clearFields() {
-        if(name!=null){
+    public void clearFields() {
+        if (name != null) {
             name.clear();
         }
-        if(email!=null){
+        if (email != null) {
             email.clear();
         }
-        if(iban!=null){
+        if (iban != null) {
             iban.clear();
         }
-        if(bic!=null){
+        if (bic != null) {
             bic.clear();
         }
     }
 
     /**
      * Getter for the language manager observable map.
+     *
      * @return - the language manager observable map.
      */
     public ObservableMap<String, Object> getLanguageManager() {
@@ -190,6 +191,7 @@ public class ParticipantCtrl {
 
     /**
      * Setter for the language manager observable map.
+     *
      * @param languageManager - the language manager observable map.
      */
     public void setLanguageManager(ObservableMap<String, Object> languageManager) {
@@ -198,6 +200,7 @@ public class ParticipantCtrl {
 
     /**
      * Getter for the language manager property.
+     *
      * @return - the language manager property.
      */
     public LanguageManager languageManagerProperty() {
@@ -206,10 +209,11 @@ public class ParticipantCtrl {
 
     /**
      * Checks whether a key is pressed and performs a certain action depending on that:
-     *  - if ENTER is pressed, then it adds the participant.
-     *  - if ESCAPE is pressed, then it cancels and returns to the overview.
-     *  - if Ctrl + m is pressed, then it returns to the startscreen.
-     *  - if Ctrl + o is pressed, then it returns to the overview.
+     * - if ENTER is pressed, then it adds the participant.
+     * - if ESCAPE is pressed, then it cancels and returns to the overview.
+     * - if Ctrl + m is pressed, then it returns to the startscreen.
+     * - if Ctrl + o is pressed, then it returns to the overview.
+     *
      * @param e KeyEvent
      */
     public void keyPressed(KeyEvent e) {
@@ -221,17 +225,49 @@ public class ParticipantCtrl {
                 abort();
                 break;
             case M:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     startMenu();
                     break;
                 }
             case O:
-                if(e.isControlDown()){
+                if (e.isControlDown()) {
                     abort();
                     break;
                 }
             default:
                 break;
         }
+    }
+
+    /**
+     * Sets the name textfield
+     * @param name textfield
+     */
+    public void setName(TextField name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the email textfield
+     * @param email textfield
+     */
+    public void setEmail(TextField email) {
+        this.email = email;
+    }
+
+    /**
+     * Sets the iban textfield
+     * @param iban textfield
+     */
+    public void setIban(TextField iban) {
+        this.iban = iban;
+    }
+
+    /**
+     * Sets the bic textfield
+     * @param bic textfield
+     */
+    public void setBic(TextField bic) {
+        this.bic = bic;
     }
 }

@@ -94,9 +94,8 @@ public class EditParticipantCtrl {
      *
      * @return a participant object with the details.
      */
-    private Participant getParticipant() {
-        var p = new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
-        return p;
+    public Participant getParticipant() {
+        return new Participant(name.getText(), email.getText(), iban.getText(), bic.getText());
     }
 
     /**
@@ -244,5 +243,45 @@ public class EditParticipantCtrl {
             default:
                 break;
         }
+    }
+
+    /**
+     * Sets the textifeld for the name
+     * @param name textfield
+     */
+    public void setName(TextField name) {
+        this.name = name;
+    }
+
+    /**
+     * Sets the textfield for the email
+     * @param email textfield
+     */
+    public void setEmail(TextField email) {
+        this.email = email;
+    }
+
+    /**
+     * Sets the textfield of the iban
+     * @param iban textfield
+     */
+    public void setIban(TextField iban) {
+        this.iban = iban;
+    }
+
+    /**
+     * Sets the bic textfield
+     * @param bic textfield
+     */
+    public void setBic(TextField bic) {
+        this.bic = bic;
+    }
+
+    /**
+     * Sets the websocket subscription
+     * @param participantSubscription subscription
+     */
+    public void setParticipantSubscription(StompSession.Subscription participantSubscription) {
+        this.participantSubscription = participantSubscription;
     }
 }
