@@ -1,21 +1,24 @@
 # Executing the Project
 The project can be executed through the following Gradle tasks:
-Server: 
+#### Server: 
 ```bash
 ./gradlew bootRun/run/bootRun
 ```
-Client: 
+#### Client: 
 ```bash
 ./gradlew bootRun/run/run
 ```
-Admin: 
+#### Admin: 
 ```bash
 ./gradlew bootRun/run/adminRun
 ```
 It can also be run from IntelliJ. The respective classes are:
-Server: server.Main (in server/src/main/java/server/Main.java)
-Client: client.Main (in client/src/main/java/client/Main.java)
-Admin: admin.AdminConsole (in client/src/main/java/admin/AdminConsole.java)
+#### Server: 
+server.Main (in server/src/main/java/server/Main.java)
+#### Client: 
+client.Main (in client/src/main/java/client/Main.java)
+#### Admin: 
+admin.AdminConsole (in client/src/main/java/admin/AdminConsole.java)
 
 # Accessing the admin interface
 To access the admin interface, run: ./gradlew adminRun
