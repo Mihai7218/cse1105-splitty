@@ -22,7 +22,7 @@ It can also be run from IntelliJ. The respective classes are:
 
 # Accessing the admin interface
 To access the admin interface, run: 
-\```bash
+```bash
 ./gradlew adminRun
 \```
 To access the admin interface, run: 
