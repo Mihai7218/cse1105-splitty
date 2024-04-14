@@ -21,7 +21,10 @@ It can also be run from IntelliJ. The respective classes are:
 [admin.AdminConsole](client/src/main/java/admin/AdminConsole.java)
 
 # Accessing the admin interface
-To access the admin interface, run: ./gradlew adminRun
+To access the admin interface, run: 
+\```bash
+./gradlew adminRun
+\```
 To run it without the Gradle progress bar, use: ./gradlew adminRun --console=plain
 It can also be run from IntelliJ, run the main method in admin.AdminConsole (located in client/src/main/java/admin/AdminConsole.java)
 
