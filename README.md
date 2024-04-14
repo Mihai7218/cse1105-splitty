@@ -10,7 +10,7 @@ The project can be executed through the following Gradle tasks:
 ```
 #### Admin: 
 ```bash
-./gradlew bootRun/run/adminRun
+./gradlew adminRun
 ```
 It can also be run from IntelliJ. The respective classes are:
 #### Server: 
