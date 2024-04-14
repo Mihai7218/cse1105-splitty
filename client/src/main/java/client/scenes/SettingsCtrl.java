@@ -344,14 +344,6 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
         cancel();
     }
 
-    /**
-     * Sets the notification label.
-     * @param  notificationLabel
-     */
-    @Override
-    public void setNotificationLabel(Label notificationLabel) {
-        this.confirmation = notificationLabel;
-    }
 
     /**
      * Back to the overview of the expenses of the Event
@@ -470,7 +462,7 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
      *
      * @param notificationLabel
      */
-    void setNotificationLabel(Label notificationLabel) {
+    public void setNotificationLabel(Label notificationLabel) {
         this.confirmation = notificationLabel;
     }
 }
