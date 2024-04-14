@@ -14,6 +14,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -270,4 +272,26 @@ public class AddExpenseCtrlTest {
         verify(alert).contentTextProperty();
         verify(alert).showAndWait();
     }
+//    @Test
+//    void testKeyPressed(){
+//        KeyEvent keyEvent = mock(KeyEvent.class);
+//        when(keyEvent.getCode()).thenReturn(KeyCode.ENTER);
+//        //when(keyEvent.isControlDown()).thenReturn(true);
+//        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+//        AddExpenseCtrl sut2 = new AddExpenseCtrl(mainCtrl2, config, languageManager, serverUtils, alert, currencyConverter);
+//        sut2.setTitle(title);
+//        sut2.setPrice(price);
+//        sut2.setDate(date);
+//        sut2.setCurrency(currency);
+//        String expenseTitle = "Test Expense";
+//        String expensePriceText = "10.0";
+//        LocalDate expenseDate = LocalDate.now();
+//
+//        when(title.getText()).thenReturn(expenseTitle);
+//        when(price.getText()).thenReturn(expensePriceText);
+//        when(date.getValue()).thenReturn(expenseDate);
+//        when(currency.getValue()).thenReturn("EUR");
+//        sut2.keyPressed(keyEvent);
+//        verify(mainCtrl).showAddExpense();
+//    }
 }
