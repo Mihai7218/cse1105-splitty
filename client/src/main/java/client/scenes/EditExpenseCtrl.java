@@ -81,6 +81,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
      * yet to be finished, choiceboxes do not work as intended
      */
     public void loadFields() {
+        ignoreQuestion = true;
         scrollNames.setVisible(false);
         //System.out.println(expense);
         payee.setValue(expense.getPayee());
@@ -98,6 +99,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
         expenseType.getItems().addAll(mainCtrl.getEvent().getTagsList());
         expenseType.setValue(expense.getTag());
         currency.setValue(expense.getCurrency());
+        ignoreQuestion = false;
     }
 
     /**

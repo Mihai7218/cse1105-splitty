@@ -9,9 +9,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.stage.Modality;
-
 import javafx.scene.input.KeyEvent;
+
 import java.net.URL;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -23,6 +22,7 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
     private final MainCtrl mainCtrl;
     private final CurrencyConverter currencyConverter;
     private final MailSender mailSender;
+    private final Alert alert;
     @FXML
     private TextField mailEmail;
     @FXML
@@ -61,12 +61,14 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
                         LanguageManager languageManager,
                         MainCtrl mainCtrl,
                         CurrencyConverter currencyConverter,
-                        MailSender mailSender) {
+                        MailSender mailSender,
+                        Alert alert) {
         this.config = config;
         this.languageManager = languageManager;
         this.mainCtrl = mainCtrl;
         this.currencyConverter = currencyConverter;
         this.mailSender = mailSender;
+        this.alert = alert;
     }
 
     /**
@@ -140,12 +142,13 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
         if (!noRecentEvents.getValue().toString().equals(config.getProperty("recentEventsLimit"))
                 || !currency.getValue().equals(config.getProperty("currency"))
                 || !languages.getValue().equals(config.getProperty("language"))) {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
-            confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
-            confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
-            confirmation.contentTextProperty()
+            alert.setAlertType(Alert.AlertType.CONFIRMATION);
+            alert.titleProperty().bind(languageManager.bind("commons.warning"));
+            alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
+            alert.contentTextProperty()
                     .bind(languageManager.bind("settings.cancelAlert"));
-            Optional<ButtonType> result = confirmation.showAndWait();
+            Optional<ButtonType> result = alert.showAndWait();
+            alert.setAlertType(Alert.AlertType.WARNING);
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 clearAndReturn();
             }
@@ -164,25 +167,6 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
     }
 
     /**
-     * Method that returns to the startmenu. It's used for the shortcut.
-     */
-    private void startMenu(){
-        if (!noRecentEvents.getValue().toString().equals(config.getProperty("recentEventsLimit"))
-                || !currency.getValue().equals(config.getProperty("currency"))
-                || !languages.getValue().equals(config.getProperty("language"))) {
-            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION, "");
-            confirmation.titleProperty().bind(languageManager.bind("commons.warning"));
-            confirmation.headerTextProperty().bind(languageManager.bind("commons.warning"));
-            confirmation.contentTextProperty()
-                    .bind(languageManager.bind("settings.cancelAlert"));
-            Optional<ButtonType> result = confirmation.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
-                mainCtrl.showStartMenu();
-            }
-        } else mainCtrl.showStartMenu();
-    }
-
-    /**
      * Method that clears the fields.
      */
     private void clearFields() {
@@ -192,6 +176,7 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
         mailHost.setText("");
         mailPort.setText("");
         mailUser.setText("");
+        mailEmail.setText("");
     }
 
     /**
@@ -286,8 +271,6 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
                 || mailPort.getText().isEmpty()
                 || mailUser.getText().isEmpty()
                 || mailEmail.getText().isEmpty()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
             alert.contentTextProperty().bind(languageManager.bind("mail.missingFields"));
             alert.showAndWait();
             highlightMissing(mailHost.getText().isEmpty(),
@@ -305,8 +288,6 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
                     mailEmail.getText());
             showNotification("settings.emailTestConfirmation");
         } catch (MessagingException e) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.initModality(Modality.APPLICATION_MODAL);
             if (e.getClass().equals(MissingPasswordException.class)) {
                 alert.contentTextProperty().bind(languageManager.bind("mail.noPassword"));
             }
@@ -341,9 +322,9 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
      */
     public void removeHighlight() {
         mailHost.setStyle("-fx-border-color: none;");
-        mailPort.setStyle("-fx-border-color: none; ");
-        mailUser.setStyle("-fx-border-color: none; ");
-        mailEmail.setStyle("-fx-border-color: none; ");
+        mailPort.setStyle("-fx-border-color: none;");
+        mailUser.setStyle("-fx-border-color: none;");
+        mailEmail.setStyle("-fx-border-color: none;");
     }
 
     /**
@@ -353,6 +334,14 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
     @Override
     public Label getNotificationLabel() {
         return confirmation;
+    }
+
+    /**
+     * Method that returns to the startmenu. It's used for the shortcut.
+     */
+    private void startMenu(){
+        prevScene = false;
+        cancel();
     }
 
     /**
@@ -368,7 +357,8 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
      * Back to the overview of the expenses of the Event
      */
     public void backToOverview() {
-        mainCtrl.showOverview();
+        prevScene = true;
+        cancel();
     }
 
     /**
@@ -402,5 +392,85 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
             default:
                 break;
         }
+    }
+
+    /**
+     *
+     * @param languages
+     */
+    void setLanguages(LanguageComboBox languages) {
+        this.languages = languages;
+    }
+
+    /**
+     *
+     * @param cancelButton
+     */
+    void setCancelButton(Button cancelButton) {
+        this.cancelButton = cancelButton;
+    }
+
+    /**
+     *
+     * @param saveButton
+     */
+    void setSaveButton(Button saveButton) {
+        this.saveButton = saveButton;
+    }
+
+    /**
+     *
+     * @param noRecentEvents
+     */
+    void setNoRecentEvents(Spinner<Integer> noRecentEvents) {
+        this.noRecentEvents = noRecentEvents;
+    }
+
+    /**
+     *
+     * @param currency
+     */
+    void setCurrency(ChoiceBox<String> currency) {
+        this.currency = currency;
+    }
+
+    /**
+     *
+     * @param mailHost
+     */
+    void setMailHost(TextField mailHost) {
+        this.mailHost = mailHost;
+    }
+
+    /**
+     *
+     * @param mailPort
+     */
+    void setMailPort(TextField mailPort) {
+        this.mailPort = mailPort;
+    }
+
+    /**
+     *
+     * @param mailUser
+     */
+    void setMailUser(TextField mailUser) {
+        this.mailUser = mailUser;
+    }
+
+    /**
+     *
+     * @param mailEmail
+     */
+    void setMailEmail(TextField mailEmail) {
+        this.mailEmail = mailEmail;
+    }
+
+    /**
+     *
+     * @param notificationLabel
+     */
+    void setNotificationLabel(Label notificationLabel) {
+        this.confirmation = notificationLabel;
     }
 }
