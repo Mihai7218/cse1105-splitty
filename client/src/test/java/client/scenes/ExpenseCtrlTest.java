@@ -4,10 +4,7 @@ import client.utils.ConfigInterface;
 import client.utils.CurrencyConverter;
 import client.utils.LanguageManager;
 import client.utils.ServerUtils;
-import commons.Event;
-import commons.Expense;
-import commons.Participant;
-import commons.Tag;
+import commons.*;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import javafx.beans.binding.Bindings;
@@ -36,10 +33,7 @@ import org.testfx.framework.junit5.Start;
 
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -224,6 +218,114 @@ public class ExpenseCtrlTest {
         verify(languageManager).bind("addExpense.notFoundBody");
         verify(alert).showAndWait();
     }
+    @Test
+    void testHighlightMissing(){
+        sut.highlightMissing(true,true,true,true,true);
+        when(title.getStyle()).thenReturn("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        when(price.getStyle()).thenReturn("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        when(date.getStyle()).thenReturn("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        when(currency.getStyle()).thenReturn("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        when(payee.getStyle()).thenReturn("-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+
+        assertEquals(title.getStyle(), "-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        assertEquals(price.getStyle(), "-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        assertEquals(date.getStyle(), "-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        assertEquals(currency.getStyle(), "-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+        assertEquals(payee.getStyle(), "-fx-border-color: red; -fx-border-width: 2px; -fx-border-radius:2px;");
+    }
+    @Test
+    void testRemoveHighlight(){
+        sut.removeHighlight();
+        assertNull(title.getStyle());
+        assertNull(price.getStyle());
+        assertNull(date.getStyle());
+        assertNull(currency.getStyle());
+        assertNull(payee.getStyle());
+    }
+    @Test
+    void testGetParticipantsPaymentsOnly(){
+        int price = 3;
+        Participant actualPayee = new Participant("john", null, null, null);
+        when(sut.only.isSelected()).thenReturn(true);
+        List<ParticipantPayment> expected = new ArrayList<>();
+        ParticipantPayment simple = new ParticipantPayment(actualPayee, 0.01);
+        expected.add(simple);
+        assertEquals(expected, sut.getParticipantPayments(price, actualPayee));
+    }
+    @Test
+    void testGetParticipantsPaymentsEveryone(){
+        int price = 3;
+        Participant actualPayee = new Participant("john", null, null, null);
+        when(sut.only.isSelected()).thenReturn(false);
+        System.out.println(only.isSelected());
+        List<ParticipantPayment> expected = new ArrayList<>();
+        ParticipantPayment simple = new ParticipantPayment(actualPayee, 0.01);
+        expected.add(simple);
+        assertEquals(expected, sut.getParticipantPayments(price, actualPayee));
+    }
+    @Test
+    void testClearFields(){
+        sut.clearFields();
+        verify(title).clear();
+        verify(price).clear();
+        verify(newTag).clear();
+        verify(colorPicker).setValue(Color.WHITE);
+        verify(date).setValue(null);
+        verify(currency).setValue(null);
+        verify(payee).setValue(null);
+        verify(everyone).setSelected(false);
+        verify(only).setSelected(false);
+        verify(expenseType).setValue(null);
+        verify(question, times(2)).setVisible(false);
+        verify(scrollNames, times(2)).setVisible(false);
+        verify(instructions, times(2)).setVisible(false);
+        verify(newTag, times(2)).setVisible(false);
+        verify(colorPicker, times(2)).setVisible(false);
+    }
+    @Test
+    void testValidateTrue(){
+        LocalDate t = LocalDate.now();
+        assertTrue(sut.validate("test", "23", t));
+    }
+    @Test
+    void testValidateFalse(){
+        LocalDate t = LocalDate.now();
+        boolean res = sut.validate("", "23", t);
+        assertFalse(res);
+    }
+    @Test
+    void testCheckAllSelectedFalse(){
+        CheckBox n1 = new CheckBox("Marius");
+        namesContainer.getChildren().add(n1);
+        n1.setSelected(false);
+        assertFalse(sut.checkAllSelected());
+    }
+    @Test
+    void testCheckAllSelectedTrue(){
+        CheckBox n1 = new CheckBox("Marius");
+        namesContainer.getChildren().add(n1);
+        n1.setSelected(true);
+        assertTrue(sut.checkAllSelected());
+    }
+
+//    @Test
+//    void testAbort(){
+//        when(alert.showAndWait()).thenReturn(Optional.of(ButtonType.OK));
+//        StringProperty sp = new SimpleStringProperty();
+//        when(alert.contentTextProperty()).thenReturn(sp);
+//        when(alert.titleProperty()).thenReturn(sp);
+//        when(alert.headerTextProperty()).thenReturn(sp);
+//        MainCtrl mainCtrl2 = mock(MainCtrl.class);
+//        ExpenseCtrl sut2 = new EditExpenseCtrl(mainCtrl2, config, languageManager, serverUtils, alert, currencyConverter);
+//        sut2.setTitle(title);
+//        sut2.setPrice(price);
+//        sut2.setDate(date);
+//        sut2.setCurrency(currency);
+//        sut2.setPayee(payee);
+//        sut2.abort();
+//        verify(alert).setAlertType(Alert.AlertType.CONFIRMATION);
+//
+//    }
 
 
 //    @Test
