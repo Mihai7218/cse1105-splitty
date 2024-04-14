@@ -28,7 +28,6 @@ To access the admin interface, run:
 To access the admin interface, run: 
 ```bash
 ./gradlew adminRun --console=plain
-\```
 It can also be run from IntelliJ, run the main method in [admin.AdminConsole](client/src/main/java/admin/AdminConsole.java)
 
 # Location of long-polling example:
