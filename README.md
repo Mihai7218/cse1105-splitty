@@ -18,7 +18,7 @@ It can also be run from IntelliJ. The respective classes are:
 #### Client: 
 [client.Main](client/src/main/java/client/Main.java)
 #### Admin: 
-admin.AdminConsole (in client/src/main/java/admin/AdminConsole.java)
+[admin.AdminConsole](client/src/main/java/admin/AdminConsole.java)
 
 # Accessing the admin interface
 To access the admin interface, run: ./gradlew adminRun
