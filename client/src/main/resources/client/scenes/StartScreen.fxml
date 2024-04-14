@@ -14,6 +14,7 @@
 
 <?import client.utils.LanguageComboBox?>
 
+<?import javafx.scene.control.Tooltip?>
 <Pane maxHeight="475.0" maxWidth="450.0" minHeight="475.0" minWidth="450.0" prefHeight="475.0" prefWidth="450.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.StartScreenCtrl">
    <children>
       <VBox alignment="TOP_CENTER" layoutX="70.0" layoutY="64.0" prefHeight="410.0" prefWidth="310.0">
@@ -90,7 +91,11 @@
                </font>
             </Text>
             <LanguageComboBox id="languages" fx:id="languages" layoutX="336.0" layoutY="1.0" onAction="#changeLanguage" prefWidth="50.0" />
-            <Button id="settings" fx:id="settings" layoutX="291.0" layoutY="5.0" onAction="#settings" />
+            <Button id="settings" fx:id="settings" layoutX="291.0" layoutY="5.0" onAction="#settings">
+               <tooltip>
+                  <Tooltip text="${controller.languageManager.settings.title}" />
+               </tooltip>
+            </Button>
          </children>
       </Pane>
    </children>

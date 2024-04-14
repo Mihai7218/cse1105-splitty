@@ -148,7 +148,11 @@
             </children>
         </HBox>
         <LanguageComboBox fx:id="languages" layoutX="565.0" layoutY="22.0" onAction="#changeLanguage" prefWidth="50.0"/>
-        <Button id="settings" fx:id="settings" layoutX="520.0" layoutY="25.0" onAction="#settings" />
+        <Button id="settings" fx:id="settings" layoutX="520.0" layoutY="25.0" onAction="#settings">
+            <tooltip>
+                <Tooltip text="${controller.languageManager.settings.title}" />
+            </tooltip>
+        </Button>
       <Button fx:id="undoButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutX="481.0" layoutY="21.0" mnemonicParsing="false" onAction="#undo">
             <tooltip>
                 <Tooltip id="tooltipAddParticipants" fx:id="undoTooltip" text="${controller.languageManager.overview.undo}" />
