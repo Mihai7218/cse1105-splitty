@@ -24,7 +24,6 @@ It can also be run from IntelliJ. The respective classes are:
 To access the admin interface, run: 
 ```bash
 ./gradlew adminRun
-\```
 To access the admin interface, run: 
 ```bash
 ./gradlew adminRun --console=plain
