@@ -88,7 +88,12 @@ public class EditExpenseCtrl extends ExpenseCtrl {
         populateParticipantCheckBoxes();
         title.setText(expense.getTitle());
         price.setText(String.valueOf(expense.getAmount()));
-        date.setValue(LocalDate.ofInstant(expense.getDate().toInstant(), ZoneId.systemDefault()));
+        try {
+            date.setValue(LocalDate.ofInstant(expense.getDate()
+                    .toInstant(), ZoneId.systemDefault()));
+        }catch(UnsupportedOperationException e){
+            System.out.println("Unsupported Operation.");
+        }
         if (!checkAllSelected()) {
             only.setSelected(true);
             onlyCheck();
@@ -284,5 +289,7 @@ public class EditExpenseCtrl extends ExpenseCtrl {
                 break;
         }
     }
+
+
 }
 

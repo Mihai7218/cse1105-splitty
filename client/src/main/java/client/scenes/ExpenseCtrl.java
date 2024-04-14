@@ -943,4 +943,19 @@ public abstract class ExpenseCtrl implements Initializable {
         this.cancelButton = cancelButton;
     }
 
+    /**
+     * Sets the participant checkbox map (testing)
+     * @param checkBoxParticipantMap map
+     */
+    public void setCheckBoxParticipantMap(Map<CheckBox, Participant> checkBoxParticipantMap) {
+        this.checkBoxParticipantMap = checkBoxParticipantMap;
+    }
+
+    /**
+     * Sets the participant checkbox map (testing)
+     * @param participantCheckBoxMap map
+     */
+    public void setParticipantCheckBoxMap(Map<Participant, CheckBox> participantCheckBoxMap) {
+        this.participantCheckBoxMap = participantCheckBoxMap;
+    }
 }
