@@ -191,4 +191,6 @@ public class TagListCell extends ListCell<Tag> {
     public void setRectangle(Rectangle rectangle) {
         this.rectangle = rectangle;
     }
+
+
 }

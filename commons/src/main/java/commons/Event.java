@@ -11,7 +11,6 @@ import java.util.Objects;
 
 @Entity
 public class Event {
-    //TODO: change invite code into string
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int inviteCode;
@@ -93,7 +92,7 @@ public class Event {
 
     /**
      * @param expensesList set the expenses list to a new list
-     *                     TODO: addExpense method
+     *
      */
     public void setExpensesList(List<Expense> expensesList) {
         this.expensesList = expensesList;
@@ -116,7 +115,7 @@ public class Event {
 
     /**
      * @param participantsList set the list of participants of the event
-     *                         TODO: addParticipant method
+     *
      */
     public void setParticipantsList(List<Participant> participantsList) {
         this.participantsList = participantsList;
@@ -139,7 +138,7 @@ public class Event {
 
     /**
      * @param tagsList change the list of tags of the event
-     *                 TODO: addTag method
+     *
      */
     public void setTagsList(List<Tag> tagsList) {
         this.tagsList = tagsList;

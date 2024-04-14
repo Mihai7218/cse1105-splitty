@@ -18,7 +18,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
-//import javafx.scene.control.*;
 
 
 public class InvitationCtrl implements Initializable, NotificationSender{
@@ -46,12 +45,12 @@ public class InvitationCtrl implements Initializable, NotificationSender{
     private final MailSender mailSender;
 
     /**
-     *
-     * @param mainCtrl
-     * @param config
-     * @param languageManager
-     * @param serverUtils
-     * @param alert
+     * Constructor for invitation controller
+     * @param mainCtrl main controller
+     * @param config config
+     * @param languageManager language manager for language switch
+     * @param serverUtils server utils
+     * @param alert alert
      */
     @Inject
     public InvitationCtrl(MainCtrl mainCtrl,
