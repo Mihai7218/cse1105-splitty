@@ -6,7 +6,7 @@ The project can be executed through the following Gradle tasks:
 ```
 #### Client: 
 ```bash
-./gradlew bootRun/run/run
+./gradlew run
 ```
 #### Admin: 
 ```bash
