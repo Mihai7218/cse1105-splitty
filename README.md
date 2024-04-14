@@ -29,7 +29,7 @@ To access the admin interface, run:
 \```bash
 ./gradlew adminRun --console=plain
 \```
-It can also be run from IntelliJ, run the main method in admin.AdminConsole (located in client/src/main/java/admin/AdminConsole.java)
+It can also be run from IntelliJ, run the main method in [admin.AdminConsole](client/src/main/java/admin/AdminConsole.java)
 
 # Location of long-polling example:
 The long-polling is implemented on the startscreen to refresh the recent events of the application using a thread for every event in the list with the function getEventUpdate in the serverUtils. At the server side it is handled with DeferredResult by the getPolling function in the eventService class.
