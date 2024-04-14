@@ -1,9 +1,13 @@
 package admin;
 
 import commons.Event;
+import jakarta.ws.rs.core.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.stubbing.OngoingStubbing;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.testfx.framework.junit5.ApplicationExtension;
 
 import java.util.ArrayList;
@@ -14,8 +18,7 @@ import java.util.Scanner;
 import static admin.AdminConsole.showOptions;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(ApplicationExtension.class)
 class AdminConsoleMenuTest {
@@ -101,5 +104,58 @@ class AdminConsoleMenuTest {
         comparison = (List.of(event3, event2, event1));
         assertEquals(ac.getEvents(),comparison);
     }
+
+    @Test
+    public void testOption4(){
+        String input =
+                "4 " +
+                "0 " +
+                "N " +
+                "5 " +
+                "5 " +
+                "5 ";
+        Scanner s = new Scanner(input);
+        ac.setUtils(server);
+        showOptions(s, ac);
+        comparison = (List.of(event3, event2, event1));
+        assertEquals(ac.getEvents(),comparison);
+    }
+
+    @Test
+    public void testOption4Cancel(){
+        String input =
+                "4 " +
+                        "cancel " +
+                        "5 " +
+                        "5 " +
+                        "5 ";
+        Scanner s = new Scanner(input);
+        ac.setUtils(server);
+        showOptions(s, ac);
+        comparison = (List.of(event3, event2, event1));
+        assertEquals(ac.getEvents(),comparison);
+    }
+
+    @Test
+    public void testOption4Delete(){
+        String input =
+                "4 " +
+                        "0 " +
+                        "Y " +
+                        "5 " +
+                        "5 " +
+                        "5 ";
+        Scanner s = new Scanner(input);
+
+        ac.setUtils(server);
+        Response r = mock(Response.class);
+        when(server.deleteEvent(anyInt())).thenReturn(r);
+        when(r.getStatus()).thenReturn(200);
+
+        showOptions(s, ac);
+        comparison = (List.of(event3, event2, event1));
+        assertEquals(ac.getEvents(),comparison);
+    }
+
 
 }
