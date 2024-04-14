@@ -14,8 +14,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.junit.jupiter.api.Test;
@@ -268,7 +266,7 @@ public class AddExpenseCtrlTest {
         verify(price).getText();
         verify(date).getValue();
         verify(alert).titleProperty();
-        verify(alert).headerTextProperty();
+        verify(alert, times(2)).headerTextProperty();
         verify(alert).contentTextProperty();
         verify(alert).showAndWait();
     }
