@@ -25,7 +25,10 @@ To access the admin interface, run:
 \```bash
 ./gradlew adminRun
 \```
-To run it without the Gradle progress bar, use: ./gradlew adminRun --console=plain
+To access the admin interface, run: 
+\```bash
+./gradlew adminRun --console=plain
+\```
 It can also be run from IntelliJ, run the main method in admin.AdminConsole (located in client/src/main/java/admin/AdminConsole.java)
 
 # Location of long-polling example:
