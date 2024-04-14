@@ -754,6 +754,11 @@ public class OverviewCtrl implements Initializable, LanguageSwitcher, Notificati
         return expenseAdded;
     }
 
+    @Override
+    public void setNotificationLabel(Label NotificationLabel) {
+        this.expenseAdded = NotificationLabel;
+    }
+
     /**
      * Getter for the language manager property.
      *

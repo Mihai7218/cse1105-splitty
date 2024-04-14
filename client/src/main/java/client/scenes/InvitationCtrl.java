@@ -176,6 +176,11 @@ public class InvitationCtrl implements Initializable, NotificationSender{
         return confirmation;
     }
 
+    @Override
+    public void setNotificationLabel(Label NotificationLabel) {
+        this.confirmation = NotificationLabel;
+    }
+
     /**
      * Getter for the language manager property.
      *

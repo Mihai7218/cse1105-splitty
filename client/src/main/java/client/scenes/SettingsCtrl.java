@@ -355,6 +355,11 @@ public class SettingsCtrl implements Initializable, LanguageSwitcher, Notificati
         return confirmation;
     }
 
+    @Override
+    public void setNotificationLabel(Label NotificationLabel) {
+        this.confirmation = NotificationLabel;
+    }
+
     /**
      * Back to the overview of the expenses of the Event
      */

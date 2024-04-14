@@ -39,6 +39,8 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     private Accordion menu;
     @FXML
     private Button back;
+    @FXML
+    private Button remind;
 //    @FXML
 //    private Label noDebts;
 
@@ -134,14 +136,6 @@ public class DebtsCtrl implements Initializable, NotificationSender {
         return serverUtils;
     }
 
-    public Label getConfirmation() {
-        return confirmation;
-    }
-
-    public void setConfirmation(Label confirmation) {
-        this.confirmation = confirmation;
-    }
-
     public Accordion getMenu() {
         return menu;
     }
@@ -203,6 +197,14 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     }
 
     /**
+     * Setter for canRemind boolean.
+     * @param canRemind - boolean for if reminders should be available.
+     */
+    public void setCanRemind(boolean canRemind) {
+        this.canRemind = canRemind;
+    }
+
+    /**
      * Populates the accordion with the information in the debt.
      * @param event - the event
      * @param debt - the debt.
@@ -219,7 +221,7 @@ public class DebtsCtrl implements Initializable, NotificationSender {
             AnchorPane anchorPane = new AnchorPane();
             Label info = new Label();
             Button mark = new Button();
-            Button remind = new Button();
+            remind = new Button();
             mark.setVisible(true);
             mark.textProperty().bind(languageManager.bind("debts.send"));
             mark.setOnAction(x ->
@@ -407,6 +409,14 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     }
 
     /**
+     * Sets the notification label.
+     * @param NotificationLabel - the notification label.
+     */
+    public void setNotificationLabel(Label NotificationLabel){
+        this.confirmation = NotificationLabel;
+    }
+
+    /**
      * Getter for the language manager property.
      *
      * @return - the language manager property.
@@ -427,6 +437,15 @@ public class DebtsCtrl implements Initializable, NotificationSender {
      */
     public void backToOverview() {
         mainCtrl.showOverview();
+    }
+
+    /**
+     * Getter for the remind button.
+     *
+     * @return - the button.
+     */
+    public Button getRemind() {
+        return remind;
     }
 
     /**
