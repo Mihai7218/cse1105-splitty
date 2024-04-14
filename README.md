@@ -26,7 +26,7 @@ To access the admin interface, run:
 ./gradlew adminRun
 \```
 To access the admin interface, run: 
-\```bash
+```bash
 ./gradlew adminRun --console=plain
 \```
 It can also be run from IntelliJ, run the main method in [admin.AdminConsole](client/src/main/java/admin/AdminConsole.java)
