@@ -16,7 +16,7 @@ It can also be run from IntelliJ. The respective classes are:
 #### Server: 
 [server.Main](server/src/main/java/server/Main.java)
 #### Client: 
-client.Main (in client/src/main/java/client/Main.java)
+[client.Main](client/src/main/java/client/Main.java)
 #### Admin: 
 admin.AdminConsole (in client/src/main/java/admin/AdminConsole.java)
 
