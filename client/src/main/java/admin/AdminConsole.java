@@ -154,7 +154,7 @@ public class AdminConsole {
                     break;
                 default:
                     running = false;
-                    exit();
+                    adminConsole.performExit();
             }
         }
 
@@ -582,6 +582,13 @@ public class AdminConsole {
         adminConsole.utils.setServer(userInput.next());
         //adminConsole.utils.setServer("http://localhost:8080");
         signIn(userInput, adminConsole);
+    }
+
+    /**
+     * Safe exit method for testing purposes
+     */
+    public void performExit(){
+        exit();
     }
 
     /**

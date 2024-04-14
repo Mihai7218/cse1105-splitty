@@ -51,7 +51,7 @@ public class ConnectToServerCtrl {
      * the config file is updated accordingly.
      */
     @FXML
-    private void connectButtonHandler() {
+    public void connectButtonHandler() {
         /*
             If the user leaves the server field empty, we break out of the method so the user
             can enter a new address
@@ -90,7 +90,7 @@ public class ConnectToServerCtrl {
      * Writes to the config file with the server address
      * @param serverAddress the server address to be replaced in the config file
      */
-    private void updateConfigFile(String serverAddress) {
+    public void updateConfigFile(String serverAddress) {
         configInterface.setProperty("server", serverAddress);
     }
 
@@ -112,7 +112,7 @@ public class ConnectToServerCtrl {
      * In the case of an IOException, it also returns that the server is not available
      * This may be a
      */
-    private boolean isServerAvailable(String serverAddress) {
+    public boolean isServerAvailable(String serverAddress) {
         try {
             URL url = new URL(serverAddress);
             HttpURLConnection testConnection = (HttpURLConnection) url.openConnection();
@@ -162,5 +162,37 @@ public class ConnectToServerCtrl {
      */
     public LanguageManager languageManagerProperty() {
         return languageManager;
+    }
+
+    /**
+     * Setter for the addressField
+     * @param serverAddressField textfield
+     */
+    public void setServerAddressField(TextField serverAddressField) {
+        this.serverAddressField = serverAddressField;
+    }
+
+    /**
+     * Seter for connect button
+     * @param connectButton button
+     */
+    public void setConnectButton(Button connectButton) {
+        this.connectButton = connectButton;
+    }
+
+    /**
+     * Setter for main controller
+     * @param mainCtrl mainctrl
+     */
+    public void setMainCtrl(MainCtrl mainCtrl) {
+        this.mainCtrl = mainCtrl;
+    }
+
+    /**
+     * Setter for languagemanager
+     * @param languageManager lang manager
+     */
+    public void setLanguageManager(ObservableMap<String, Object> languageManager) {
+        this.languageManager.set(languageManager);
     }
 }
