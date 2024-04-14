@@ -39,6 +39,10 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     private Accordion menu;
     @FXML
     private Button back;
+    @FXML
+    private Button remind;
+//    @FXML
+//    private Label noDebts;
 
     /**
      * @param mainCtrl
@@ -129,6 +133,46 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     }
 
     /**
+     * returns the serverutils object
+     * @return serverUtils
+     */
+    public ServerUtils getServerUtils() {
+        return serverUtils;
+    }
+
+    /**
+     * returns the accordion of the debts
+     * @return menu
+     */
+    public Accordion getMenu() {
+        return menu;
+    }
+
+    /**
+     * sets the accordion of the debts
+     * @param menu
+     */
+    public void setMenu(Accordion menu) {
+        this.menu = menu;
+    }
+
+    /**
+     * returns the back button
+     * @return back
+     */
+    public Button getBack() {
+        return back;
+    }
+
+    /**
+     * sets the back button
+     * @param back
+     */
+    public void setBack(Button back) {
+        this.back = back;
+    }
+
+    /**
      * return to overview
      */
     public void goBack() {
@@ -173,6 +217,14 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     }
 
     /**
+     * Setter for canRemind boolean.
+     * @param canRemind - boolean for if reminders should be available.
+     */
+    public void setCanRemind(boolean canRemind) {
+        this.canRemind = canRemind;
+    }
+
+    /**
      * Populates the accordion with the information in the debt.
      * @param event - the event
      * @param debt - the debt.
@@ -189,7 +241,7 @@ public class DebtsCtrl implements Initializable, NotificationSender {
             AnchorPane anchorPane = new AnchorPane();
             Label info = new Label();
             Button mark = new Button();
-            Button remind = new Button();
+            remind = new Button();
             mark.setVisible(true);
             mark.textProperty().bind(languageManager.bind("debts.send"));
             mark.setOnAction(x ->
@@ -374,6 +426,14 @@ public class DebtsCtrl implements Initializable, NotificationSender {
     }
 
     /**
+     * Sets the notification label.
+     * @param notificationLabel - the notification label.
+     */
+    public void setNotificationLabel(Label notificationLabel){
+        this.confirmation = notificationLabel;
+    }
+
+    /**
      * Getter for the language manager property.
      *
      * @return - the language manager property.
@@ -394,6 +454,15 @@ public class DebtsCtrl implements Initializable, NotificationSender {
      */
     public void backToOverview() {
         mainCtrl.showOverview();
+    }
+
+    /**
+     * Getter for the remind button.
+     *
+     * @return - the button.
+     */
+    public Button getRemind() {
+        return remind;
     }
 
     /**

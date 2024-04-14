@@ -40,6 +40,12 @@ public interface NotificationSender {
      */
     Label getNotificationLabel();
 
+    /**
+     * Sets the notification label.
+     * @param NotificationLabel - the notification label.
+     */
+    void setNotificationLabel(Label notificationLabel);
+
 
     /**
      * Getter for the language manager property.
