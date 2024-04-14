@@ -14,7 +14,7 @@ The project can be executed through the following Gradle tasks:
 ```
 It can also be run from IntelliJ. The respective classes are:
 #### Server: 
-server.Main (in server/src/main/java/server/Main.java)
+[server.Main](server/src/main/java/server/Main.java)
 #### Client: 
 client.Main (in client/src/main/java/client/Main.java)
 #### Admin: 
