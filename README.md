@@ -2,7 +2,7 @@
 The project can be executed through the following Gradle tasks:
 #### Server: 
 ```bash
-./gradlew bootRun/run/bootRun
+./gradlew bootRun
 ```
 #### Client: 
 ```bash
