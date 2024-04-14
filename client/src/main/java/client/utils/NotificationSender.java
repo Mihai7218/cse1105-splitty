@@ -44,7 +44,7 @@ public interface NotificationSender {
      * Sets the notification label.
      * @param NotificationLabel - the notification label.
      */
-    void setNotificationLabel(Label NotificationLabel);
+    void setNotificationLabel(Label notificationLabel);
 
 
     /**

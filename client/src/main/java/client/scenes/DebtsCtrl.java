@@ -132,22 +132,42 @@ public class DebtsCtrl implements Initializable, NotificationSender {
         }
     }
 
+    /**
+     * returns the serverutils object
+     * @return serverUtils
+     */
     public ServerUtils getServerUtils() {
         return serverUtils;
     }
 
+    /**
+     * returns the accordion of the debts
+     * @return menu
+     */
     public Accordion getMenu() {
         return menu;
     }
 
+    /**
+     * sets the accordion of the debts
+     * @param menu
+     */
     public void setMenu(Accordion menu) {
         this.menu = menu;
     }
 
+    /**
+     * returns the back button
+     * @return back
+     */
     public Button getBack() {
         return back;
     }
 
+    /**
+     * sets the back button
+     * @param back
+     */
     public void setBack(Button back) {
         this.back = back;
     }
@@ -410,10 +430,10 @@ public class DebtsCtrl implements Initializable, NotificationSender {
 
     /**
      * Sets the notification label.
-     * @param NotificationLabel - the notification label.
+     * @param notificationLabel - the notification label.
      */
-    public void setNotificationLabel(Label NotificationLabel){
-        this.confirmation = NotificationLabel;
+    public void setNotificationLabel(Label notificationLabel){
+        this.confirmation = notificationLabel;
     }
 
     /**

@@ -176,9 +176,13 @@ public class InvitationCtrl implements Initializable, NotificationSender{
         return confirmation;
     }
 
+    /**
+     * Gets the notification label.
+     * @param notificationLabel
+     */
     @Override
-    public void setNotificationLabel(Label NotificationLabel) {
-        this.confirmation = NotificationLabel;
+    public void setNotificationLabel(Label notificationLabel) {
+        this.confirmation = notificationLabel;
     }
 
     /**
