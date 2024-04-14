@@ -363,6 +363,7 @@ public class DebtsCtrl implements Initializable, NotificationSender {
         alert.headerTextProperty().bind(languageManager.bind(header));
         alert.contentTextProperty().bind(languageManager.bind(body));
         alert.showAndWait();
+        alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
     }
 
     /**

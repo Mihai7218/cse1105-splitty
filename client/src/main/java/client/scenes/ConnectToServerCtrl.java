@@ -63,6 +63,7 @@ public class ConnectToServerCtrl {
             alert.headerTextProperty().bind(languageManager.bind("connect.emptyAddress"));
             alert.contentTextProperty().bind(languageManager.bind("connect.emptyAddressBody"));
             alert.showAndWait();
+            alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
             return;
         }
 
@@ -76,6 +77,7 @@ public class ConnectToServerCtrl {
             alert.headerTextProperty().bind(languageManager.bind("connect.connectionError"));
             alert.contentTextProperty().bind(languageManager.bind("connect.connectionErrorBody"));
             alert.showAndWait();
+            alert.headerTextProperty().bind(languageManager.bind("commons.warning"));
             return;
         }
         // Update config if everything is fine and redirect to start screen
